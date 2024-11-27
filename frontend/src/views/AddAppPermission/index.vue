@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import ForestClientSection from "@/components/AddPermissions/ForestClientSection.vue";
 import RoleSelectTable from "@/components/AddPermissions/RoleSelectTable.vue";
 import UserDomainSelect from "@/components/AddPermissions/UserDomainSelect.vue";
 import UserNameInput from "@/components/AddPermissions/UserNameSection.vue";
@@ -28,6 +27,7 @@ import {
     getPageTitle,
     getRoleSectionSubtitle,
     getRoleSectionTitle,
+    isAbstractRoleSelected,
     NewAppAdminQueryParamKey,
     NewDelegatedAddminQueryParamKey,
     validateAppPermissionForm,
@@ -47,10 +47,11 @@ import {
 import ConfirmDialog from "primevue/confirmdialog";
 import { useConfirm } from "primevue/useconfirm";
 import { Form } from "vee-validate";
-import { computed, ref, watch } from "vue";
+import { computed, provide, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import NotificationMessage from "@/components/UI/NotificationMessage.vue";
 import { IDIM_DEPENDENCY_FAILURE_MESSAGE } from "@/constants/Notifications";
+import { APP_PERMISSION_FORM_KEY } from "@/constants/InjectionKeys";
 
 const router = useRouter();
 const auth = useAuth();
@@ -131,6 +132,8 @@ watch(
     { immediate: true }
 );
 
+provide(APP_PERMISSION_FORM_KEY, formData);
+
 const handleDomainChange = (userType: UserType) => {
     if (formData.value) {
         formData.value.domain = userType;
@@ -149,24 +152,9 @@ const handleUserVerification = (
     }
 };
 
-const isAbstractRoleSelected = (): boolean =>
-    formData.value?.role?.type_code === "A";
-
 const handleRoleChange = (role: FamRoleDto) => {
     if (formData.value) {
         formData.value.role = role;
-    }
-};
-
-const clearForestClients = () => {
-    if (formData.value) {
-        formData.value.forestClients = [];
-    }
-};
-
-const setVerifiedForestClients = (forestClients: FamForestClientSchema[]) => {
-    if (formData.value) {
-        formData.value.forestClients = forestClients;
     }
 };
 
@@ -304,18 +292,22 @@ const onSubmit = () => {
             :title="getPageTitle(props.requestType)"
             :subtitle="`Adding user permission to ${selectedApp?.application.description}. All fields are mandatory`"
         />
-        <div class="form-container">
+        <div class="app-permission-form-container container-fluid">
             <Form
                 v-slot="{ handleSubmit }"
                 ref="form"
                 as="div"
                 v-if="formData"
                 :validation-schema="
-                    validateAppPermissionForm(isAbstractRoleSelected())
+                    validateAppPermissionForm(isAbstractRoleSelected(formData))
                 "
                 validate-on-submit
+                class="row"
             >
-                <form id="add-app-permission-form-id">
+                <form
+                    id="add-app-permission-form-id"
+                    class="col-sm-12 col-md-12 col-lg-10 col-xl-10 col-xxl-6"
+                >
                     <StepContainer title="User information" divider>
                         <UserDomainSelect
                             class="domain-select"
@@ -341,22 +333,9 @@ const onSubmit = () => {
                         v-if="selectedApp?.roles"
                     >
                         <RoleSelectTable
-                            :role="formData.role"
+                            :app-id="applicationId"
                             :roleOptions="selectedApp.roles"
                             @change="handleRoleChange"
-                            @clearForestClients="clearForestClients"
-                        />
-                    </StepContainer>
-                    <StepContainer
-                        v-if="isAbstractRoleSelected()"
-                        title="Organization information"
-                        divider
-                    >
-                        <ForestClientSection
-                            :role="formData.role"
-                            :app-id="props.applicationId"
-                            :verified-clients="formData.forestClients"
-                            @setVerifiedForestClients="setVerifiedForestClients"
                         />
                     </StepContainer>
                     <StepContainer :divider="false">
@@ -399,12 +378,17 @@ const onSubmit = () => {
 <style lang="scss">
 .add-app-permission-container {
     padding-bottom: 2.5rem;
+
     .user-name-text-input {
         margin-top: 2rem;
     }
-    .form-container {
+
+    .app-permission-form-container {
         margin-top: 3rem;
-        width: 60%; // Temporary until we implement the grid system
+
+        .row > * {
+            padding: 0;
+        }
     }
 
     .domain-select {

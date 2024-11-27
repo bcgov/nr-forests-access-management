@@ -8,19 +8,25 @@ import type { FamRoleDto } from "fam-admin-mgmt-api/model";
 import { type FamForestClientSchema } from "fam-app-acsctl-api";
 import InputText from "primevue/inputtext";
 import { ErrorMessage, Field } from "vee-validate";
-import { computed, h, ref, watch } from "vue";
+import { computed, h, inject, ref, watch, type Ref } from "vue";
 import NotificationMessage from "../UI/NotificationMessage.vue";
 import {
     Severity,
     type ForestClientNotificationType,
 } from "@/types/NotificationTypes";
 import { FOREST_CLIENT_INPUT_MAX_LENGTH } from "@/constants/constants";
+import { APP_PERMISSION_FORM_KEY } from "@/constants/InjectionKeys";
+import type { AppPermissionFormType } from "@/views/AddAppPermission/utils";
+
+const formData = inject<Ref<AppPermissionFormType>>(APP_PERMISSION_FORM_KEY);
+
+if (!formData) {
+    throw new Error("formData is required but not provided");
+}
 
 const props = withDefaults(
     defineProps<{
-        role: FamRoleDto | null;
         appId: number;
-        verifiedClients: FamForestClientSchema[]; // The verified forest client numbers in the form data
         fieldId?: string;
     }>(),
     {
@@ -28,10 +34,9 @@ const props = withDefaults(
     }
 );
 
-const emit = defineEmits(["setVerifiedForestClients"]);
-
-const setVerifiedForestClients = (clients: FamForestClientSchema[]) =>
-    emit("setVerifiedForestClients", clients);
+const setVerifiedForestClients = (clients: FamForestClientSchema[]) => {
+    formData.value.forestClients = clients;
+};
 
 const isVerifying = ref<boolean>(false);
 const forestClientNumbersInput = ref("");
@@ -88,19 +93,6 @@ const clearNotifications = () => {
     invalidClientNumbers.value = [];
 };
 
-const cleanupForestClientSection = () => {
-    // remove the verified forest client numbers which already added to form data
-    setVerifiedForestClients([]);
-
-    clearNotifications();
-};
-
-// whenever user id or abstract role changed, cleanup the forest client section
-watch(
-    () => props.role,
-    () => cleanupForestClientSection()
-);
-
 const clientSearchMutation = useMutation({
     mutationFn: (clientNumber: string) => {
         return AppActlApiService.forestClientsApi
@@ -150,9 +142,10 @@ const verifyClients = async () => {
             .filter((fc): fc is FamForestClientSchema => fc !== null);
 
         // Combine the two lists
+        console.log(formData.value.role);
         const allClients = [
             ...verifiedClientsFromQuery,
-            ...props.verifiedClients,
+            ...formData.value.forestClients,
         ];
 
         // Create a map to track occurrences
@@ -186,7 +179,7 @@ const verifyClients = async () => {
 };
 
 const removeForestClientFromList = (clientNumber: string) => {
-    let fcList = [...props.verifiedClients];
+    let fcList = [...formData.value.forestClients];
     // remove the verified forest client from card
     fcList = fcList.filter(
         (client) => client.forest_client_number !== clientNumber
@@ -316,7 +309,7 @@ const enforceNumberAndComma = (event: Event) => {
         <Field
             :name="props.fieldId"
             v-slot="{ errorMessage }"
-            v-model="props.verifiedClients"
+            v-model="formData.forestClients"
         >
             <div class="input-with-verify-button">
                 <div>
@@ -380,9 +373,9 @@ const enforceNumberAndComma = (event: Event) => {
     <!-- Verified Card Section -->
 
     <ForestClientCard
-        v-if="verifiedClients.length > 0"
+        v-if="formData.forestClients.length > 0"
         class="fores-client-card-container custom-card px-0"
-        :forestClientData="verifiedClients"
+        :forestClientData="formData.forestClients"
         @remove-item="removeForestClientFromList"
     />
 </template>

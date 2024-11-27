@@ -1,14 +1,26 @@
 <script setup lang="ts">
+import { APP_PERMISSION_FORM_KEY } from "@/constants/InjectionKeys";
+import {
+    isAbstractRoleSelected,
+    type AppPermissionFormType,
+} from "@/views/AddAppPermission/utils";
 import type { FamRoleDto } from "fam-admin-mgmt-api/model";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
 import RadioButton from "primevue/radiobutton";
 import { ErrorMessage, Field } from "vee-validate";
-import { computed } from "vue";
+import { inject, type Ref } from "vue";
+import ForestClientSection from "./ForestClientSection.vue";
+
+const formData = inject<Ref<AppPermissionFormType>>(APP_PERMISSION_FORM_KEY);
+
+if (!formData) {
+    throw new Error("formData is required but not provided");
+}
 
 const props = withDefaults(
     defineProps<{
-        role: FamRoleDto | null;
+        appId: number;
         roleOptions: FamRoleDto[];
         label?: string;
         fieldId?: string;
@@ -20,17 +32,6 @@ const props = withDefaults(
 );
 
 const emit = defineEmits(["change", "clearForestClients"]);
-
-// Emit role selection to parent
-const computedRole = computed({
-    get() {
-        return props.role;
-    },
-    set(selectedRole: FamRoleDto | null) {
-        emit("change", selectedRole);
-        emit("clearForestClients");
-    },
-});
 </script>
 
 <template>
@@ -44,13 +45,13 @@ const computedRole = computed({
         <Field
             :name="props.fieldId"
             aria-label="Role Select"
-            v-model="computedRole"
+            v-model="formData.forestClients"
         >
             <DataTable :value="roleOptions">
                 <template #empty> No role found. </template>
                 <Column field="roleSelect">
                     <template #body="{ data }">
-                        <RadioButton v-model="computedRole" :value="data" />
+                        <RadioButton v-model="formData.role" :value="data" />
                     </template>
                 </Column>
                 <Column field="roleName" header="Role">
@@ -61,6 +62,14 @@ const computedRole = computed({
                 <Column field="roleDescription" header="Description">
                     <template #body="{ data }">
                         <span>{{ data.description }}</span>
+
+                        <ForestClientSection
+                            v-if="
+                                isAbstractRoleSelected(formData) &&
+                                formData.role?.id === data.id
+                            "
+                            :app-id="props.appId"
+                        />
                     </template>
                 </Column>
             </DataTable>

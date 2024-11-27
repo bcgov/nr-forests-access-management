@@ -165,3 +165,7 @@ export const getApplicationWithUniqueRoles = (
         roles: uniqueRoles,
     };
 };
+
+export const isAbstractRoleSelected = (
+    formData?: AppPermissionFormType
+): boolean => formData?.role?.type_code === "A";
