@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.27.1](https://github.com/bcgov/nr-forests-access-management/compare/v1.27.0...v1.27.1) (2024-11-27)
+
+
+### Bug Fixes
+
+* [#1675](https://github.com/bcgov/nr-forests-access-management/issues/1675) (b) Temporary fix FAM search IDIR user scenario by switching to 'idir-account-detail` new IDIM-proxy endpoint. ([#1676](https://github.com/bcgov/nr-forests-access-management/issues/1676)) ([01ff3f6](https://github.com/bcgov/nr-forests-access-management/commit/01ff3f605f249d38961de4059579766e316ae5b9))
+
 ## [1.27.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.26.0...v1.27.0) (2024-11-26)
 
 
