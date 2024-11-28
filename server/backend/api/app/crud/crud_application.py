@@ -98,7 +98,7 @@ def get_application_role_assignments(
         select(models.FamUserRoleXref)
         .join(models.FamUser)
         .join(models.FamRole)
-        .outerjoin(models.FamRole.client_number)
+        .outerjoin(models.FamRole.forest_client_relation)
         .filter(models.FamRole.application_id == application_id)
     )
 
