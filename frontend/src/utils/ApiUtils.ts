@@ -64,6 +64,29 @@ export const getUniqueApplications = (
 };
 
 /**
+ * Retrieves a unique application by its ID from the AdminUserAccessResponse.
+ *
+ * - Filters applications using `getUniqueApplications` to ensure no duplicates.
+ * - Searches the resulting unique applications for a matching ID.
+ *
+ * @param {number} appId - The ID of the application to find.
+ * @param {AdminUserAccessResponse} [data] - The response containing user access information.
+ * @returns {FamApplicationDto | undefined} The application with the matching ID, or undefined if not found.
+ */
+export const getApplicationById = (
+    appId: number,
+    data?: AdminUserAccessResponse
+): FamApplicationDto | undefined => {
+    if (!data) {
+        return;
+    }
+
+    const uniqueApps = getUniqueApplications(data);
+
+    return uniqueApps.find((app) => app.id === appId);
+};
+
+/**
  * Checks if the selected application has the specified authorization key.
  *
  * @param {AdminRoleAuthGroup} authKey - The authorization key to check ("APP_ADMIN", "DELEGATED_ADMIN", etc.).

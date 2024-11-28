@@ -14,7 +14,6 @@ import {
     AdminMgmtApiService,
     AppActlApiService,
 } from "@/services/ApiServiceFactory";
-import { EnvironmentSettings } from "@/services/EnvironmentSettings";
 import { isProdAppSelectedOnProdEnv } from "@/services/utils";
 import type { BreadCrumbType } from "@/types/BreadCrumbTypes";
 import type { AddAppPermissionRouteProps } from "@/types/RouteTypes";
@@ -53,7 +52,6 @@ import { useRouter } from "vue-router";
 
 const router = useRouter();
 const auth = useAuth();
-const env = new EnvironmentSettings();
 
 const props = defineProps<AddAppPermissionRouteProps>();
 

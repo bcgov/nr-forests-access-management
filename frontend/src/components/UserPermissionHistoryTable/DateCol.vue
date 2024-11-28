@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { utcToTableLocalDateTime } from '@/utils/DateUtils';
+import { utcToLocalDateTime } from "@/utils/DateUtils";
 
 const props = defineProps<{
     utcDate: string;
@@ -7,7 +7,7 @@ const props = defineProps<{
 </script>
 
 <template>
-    <p className="table-date-column">{{ utcToTableLocalDateTime(props.utcDate) }}</p>
+    <p className="table-date-column">{{ utcToLocalDateTime(props.utcDate) }}</p>
 </template>
 
 <style lang="scss" scoped>

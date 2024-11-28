@@ -3,8 +3,8 @@ import ManagePermissionsTable from "@/components/ManagePermissionsTable";
 import TablePlaceholder from "@/components/ManagePermissionsTable/TablePlaceholder.vue";
 import Dropdown from "@/components/UI/Dropdown.vue";
 import PageTitle from "@/components/UI/PageTitle.vue";
+import Button from "@/components/UI/Button.vue";
 import { AdminMgmtApiService } from "@/services/ApiServiceFactory";
-import { EnvironmentSettings } from "@/services/EnvironmentSettings";
 import {
     activeTabIndex,
     selectedApp,
@@ -22,8 +22,10 @@ import {
     isSelectedAppAuthorized,
 } from "@/utils/ApiUtils";
 import NotificationStack from "@/views/ManagePermissionsView/NotificationStack.vue";
+import { AddAppPermissionRoute, AddFamPermissionRoute } from "@/router/routes";
 import EnterpriseIcon from "@carbon/icons-vue/es/enterprise/16";
 import UserIcon from "@carbon/icons-vue/es/user/16";
+import AddIcon from "@carbon/icons-vue/es/add/16";
 import { useQuery, useQueryClient } from "@tanstack/vue-query";
 import { isAxiosError } from "axios";
 import { AdminRoleAuthGroup } from "fam-admin-mgmt-api/model";
@@ -54,8 +56,6 @@ const queryClient = useQueryClient();
 const route = useRoute();
 const router = useRouter();
 const appIdFromQueryParam = ref(route.query.appId);
-
-const environment = new EnvironmentSettings();
 
 // Fetch notification Data
 const addAppUserPermissionSuccessData =
@@ -215,6 +215,32 @@ const addNotifications = (newNotifications: PermissionNotificationType[]) => {
     notifications.value = newNotifications;
 };
 
+/**
+ * Handle the add permission action
+ */
+const handleAddButton = () => {
+    if (!selectedApp.value?.id) {
+        return;
+    }
+    // FAM application id = 1
+    else if (selectedApp.value.id === 1) {
+        router.push({ name: AddFamPermissionRoute.name });
+    } else {
+        // App User table will have a tab index of 0
+        // Delegated admin table will have a tab index of 1
+        router.push({
+            name: AddAppPermissionRoute.name,
+            query: {
+                requestType:
+                    activeTabIndex.value === 0
+                        ? "addUserPermission"
+                        : "addDelegatedAdmin",
+                applicationId: selectedApp.value?.id,
+            },
+        });
+    }
+};
+
 // Function to set `activeTabIndex` to the first visible tab
 const updateActiveIndex = () => {
     if (activeTabIndex.value >= visibleTabs.value.length) {
@@ -258,24 +284,35 @@ onUnmounted(() => {
             title="Manage permissions"
             subtitle="Manage users and add permissions for the selected application"
         />
-        <Dropdown
-            id="application-selector-dropdown-id"
-            class="application-dropdown"
-            name="application-selector-dropdown"
-            label-text="Application:"
-            :value="selectedApp"
-            @change="handleApplicatoinChange"
-            :options="getUniqueApplications(adminUserAccessQuery.data.value)"
-            option-label="description"
-            placeholder="Choose an application to manage permissions"
-            :is-fetching="adminUserAccessQuery.isLoading.value"
-            :is-error="adminUserAccessQuery.isError.value"
-            :error-msg="
-                isAxiosError(adminUserAccessQuery.error.value)
-                    ? formatAxiosError(adminUserAccessQuery.error.value)
-                    : 'Failed to fetch data.'
-            "
-        />
+        <div class="dropdown-and-button-container">
+            <Dropdown
+                id="application-selector-dropdown-id"
+                class="application-dropdown"
+                name="application-selector-dropdown"
+                label-text="Application:"
+                :value="selectedApp"
+                @change="handleApplicatoinChange"
+                :options="
+                    getUniqueApplications(adminUserAccessQuery.data.value)
+                "
+                option-label="description"
+                placeholder="Choose an application to manage permissions"
+                :is-fetching="adminUserAccessQuery.isLoading.value"
+                :is-error="adminUserAccessQuery.isError.value"
+                :error-msg="
+                    isAxiosError(adminUserAccessQuery.error.value)
+                        ? formatAxiosError(adminUserAccessQuery.error.value)
+                        : 'Failed to fetch data.'
+                "
+            />
+            <Button
+                v-if="selectedApp"
+                outlined
+                label="Add permission"
+                :icon="AddIcon"
+                @click="handleAddButton"
+            />
+        </div>
 
         <div class="content-container">
             <NotificationStack
@@ -315,8 +352,18 @@ onUnmounted(() => {
 
 <style lang="scss">
 .manage-permission-view {
-    .application-dropdown {
+    .dropdown-and-button-container {
+        width: 100%;
         margin-top: 2.5rem;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: end;
+
+        .fam-button {
+            width: 14rem;
+            height: 3rem;
+        }
     }
 
     .content-container {
@@ -333,6 +380,7 @@ onUnmounted(() => {
             height: 3rem;
         }
     }
+
     .tab-table {
         margin-top: -0.0625rem;
     }

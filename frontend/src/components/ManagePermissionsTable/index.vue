@@ -27,22 +27,18 @@ import {
     TABLE_PAGINATOR_TEMPLATE,
     TABLE_ROWS_PER_PAGE,
 } from "@/constants/constants";
-import {
-    AddAppPermissionRoute,
-    AddFamPermissionRoute,
-    UserDetailsRoute,
-} from "@/router/routes";
+import { UserDetailsRoute } from "@/router/routes";
 import {
     AdminMgmtApiService,
     AppActlApiService,
 } from "@/services/ApiServiceFactory";
-import { EnvironmentSettings } from "@/services/EnvironmentSettings";
 import { selectedApp } from "@/store/ApplicationState";
 import { ManagePermissionsTableEnum } from "@/types/ManagePermissionsTypes";
 import type { PermissionNotificationType } from "@/types/NotificationTypes";
 import { formatAxiosError } from "@/utils/ApiUtils";
 import { formatForestClientDisplayName } from "@/utils/ForestClientUtils";
 import { formatUserNameAndId } from "@/utils/UserUtils";
+import { utcToLocalDate } from "@/utils/DateUtils";
 import {
     NewAppAdminQueryParamKey,
     NewDelegatedAddminQueryParamKey,
@@ -57,7 +53,6 @@ import {
     deleteDelegatedAdminNotificationContext,
     deleteFamPermissionNotificationContext,
     filterList,
-    getGrantButtonLabel,
     getHeaders,
     getTableHeaderDescription,
     getTableHeaderTitle,
@@ -67,8 +62,6 @@ import {
 
 const router = useRouter();
 const route = useRoute();
-
-const environment = new EnvironmentSettings();
 
 const newFamAdminIds = route.query[NewFamAdminQueryParamKey]
     ? String(route.query[NewFamAdminQueryParamKey]).split(",").map(Number)
@@ -91,7 +84,7 @@ const props = defineProps<{
     addNotifications: (newNotifications: PermissionNotificationType[]) => void;
 }>();
 
-// Fam App Admins data query
+// Fam App Admins data query, this query has no pagination and create date
 const appAdminQuery = useQuery({
     queryKey: ["application_admins"],
     queryFn: () =>
@@ -126,15 +119,16 @@ const appUserQuery = useQuery({
     refetchOnMount: "always",
     enabled: props.tableType === ManagePermissionsTableEnum.AppUser,
     select: (data) => {
-        const sortedByUserName = data.sort((a, b) =>
-            a.user.user_name.localeCompare(b.user.user_name)
-        );
-        // Move matching IDs to the start of the array
+        const updatedData = data.map((item) => ({
+            ...item,
+            create_date: utcToLocalDate(item.create_date),
+        }));
+
         return [
-            ...sortedByUserName.filter((item) =>
+            ...updatedData.filter((item) =>
                 newAppUserIds.includes(item.user_role_xref_id)
             ),
-            ...sortedByUserName.filter(
+            ...updatedData.filter(
                 (item) => !newAppUserIds.includes(item.user_role_xref_id)
             ),
         ];
@@ -151,15 +145,17 @@ const delegatedAdminQuery = useQuery({
     refetchOnMount: "always",
     enabled: props.tableType === ManagePermissionsTableEnum.DelegatedAdmin,
     select: (data) => {
-        const sortedByUserName = data.sort((a, b) =>
-            a.user.user_name.localeCompare(b.user.user_name)
-        );
-        // Move matching IDs to the start of the array
+        // Convert date to human friendly format for display and sorting
+        const updatedData = data.map((item) => ({
+            ...item,
+            create_date: utcToLocalDate(item.create_date),
+        }));
+
         return [
-            ...sortedByUserName.filter((item) =>
+            ...updatedData.filter((item) =>
                 newDelegatedAdminIds.includes(item.access_control_privilege_id)
             ),
-            ...sortedByUserName.filter(
+            ...updatedData.filter(
                 (item) =>
                     !newDelegatedAdminIds.includes(
                         item.access_control_privilege_id
@@ -238,28 +234,6 @@ const getQueryErrorValue = () => {
     }
 
     return undefined;
-};
-
-const handleAddButton = () => {
-    if (props.tableType === ManagePermissionsTableEnum.AppAdmin) {
-        router.push({ name: AddFamPermissionRoute.name });
-    } else if (props.tableType === ManagePermissionsTableEnum.AppUser) {
-        router.push({
-            name: AddAppPermissionRoute.name,
-            query: {
-                requestType: "addUserPermission",
-                applicationId: props.appId,
-            },
-        });
-    } else if (props.tableType === ManagePermissionsTableEnum.DelegatedAdmin) {
-        router.push({
-            name: AddAppPermissionRoute.name,
-            query: {
-                requestType: "addDelegatedAdmin",
-                applicationId: props.appId,
-            },
-        });
-    }
 };
 
 const navigateToUserDetails = (userId: string) => {
@@ -523,8 +497,6 @@ const displayForestClient = (
 
         <TableToolbar
             :filter="tableFilter['global'].value"
-            :btn-label="getGrantButtonLabel(tableType)"
-            :btn-on-click="handleAddButton"
             input-placeholder="Search by keyword"
             @change="handleSearchChange"
         />
@@ -553,6 +525,14 @@ const displayForestClient = (
             :paginatorTemplate="TABLE_PAGINATOR_TEMPLATE"
             :currentPageReportTemplate="TABLE_CURRENT_PAGE_REPORT_TEMPLATE"
             :rowStyle="highlightNewUserAccessRow"
+            :sort-field="
+                tableType === ManagePermissionsTableEnum.AppAdmin
+                    ? 'user.user_name'
+                    : 'create_date'
+            "
+            :sort-order="
+                tableType === ManagePermissionsTableEnum.AppAdmin ? 1 : -1
+            "
         >
             <template #empty> No user found. </template>
 
@@ -642,6 +622,13 @@ const displayForestClient = (
                     />
                 </template>
             </Column>
+
+            <Column
+                v-if="tableType !== ManagePermissionsTableEnum.AppAdmin"
+                header="Added On"
+                field="create_date"
+                sortable
+            />
 
             <Column header="Action">
                 <template #body="{ data }">
