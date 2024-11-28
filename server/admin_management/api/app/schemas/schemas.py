@@ -178,7 +178,7 @@ class FamRoleCreateDto(FamRoleBase):
         Field(default=None, title="Forest Client this role is associated with")
     )
     create_user: Annotated[str, StringConstraints(max_length=100)]
-    client_number: Optional[FamForestClientCreateDto] = (
+    forest_client_relation: Optional[FamForestClientCreateDto] = (
         None  # this is matched with the model
     )
 
@@ -193,7 +193,7 @@ class FamRoleWithClientDto(BaseModel):
         validation_alias="role_purpose"
     )
     forest_client: Optional[FamForestClientBase] = Field(
-        validation_alias="client_number",
+        validation_alias="forest_client_relation",
         serialization_alias="forest_client"
     )
     parent_role: Optional[FamRoleBase] = None

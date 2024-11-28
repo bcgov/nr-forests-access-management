@@ -123,7 +123,7 @@ class AccessControlPrivilegeRepository(SimplePaginateRepository):
             select(FamAccessControlPrivilege)
             .join(FamUser)
             .join(FamRole)
-            .outerjoin(FamRole.client_number)
+            .outerjoin(FamRole.forest_client_relation)
             .filter(FamRole.application_id == application_id)
         )
         return super().get_paginated_results(

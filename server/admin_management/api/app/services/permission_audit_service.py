@@ -135,7 +135,7 @@ class PermissionAuditService:
         forest_client_name = None
         # Search forest client name for storing audit record. Current FAM does not store forest client name in db.
         if (is_forest_client_scoped_role):
-            forest_client_number = revoked_permission_role.client_number.forest_client_number
+            forest_client_number = revoked_permission_role.forest_client_relation.forest_client_number
             api_instance_env = utils_service.use_api_instance_by_app_env(
                 revoked_permission_role.application.app_environment
             )
