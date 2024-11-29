@@ -7,7 +7,7 @@ const props = defineProps<{
 </script>
 
 <template>
-    <p className="table-date-column">{{ utcToLocalDateTime(props.utcDate) }}</p>
+    <p class="table-date-column">{{ utcToLocalDateTime(props.utcDate) }}</p>
 </template>
 
 <style lang="scss" scoped>

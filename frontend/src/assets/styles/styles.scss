@@ -78,17 +78,25 @@ p {
 
     background: var(--layer-02, #fff);
 
-    border-radius: 0 0.25rem 0.25rem 0.25rem;
+    border-radius: 0.25rem;
     border: 0.0625rem solid var(--border-subtle-00);
 
     .p-datatable-thead {
         .p-column-title {
-            padding: 1rem 1rem 1rem 0;
+            padding: 1rem 0.5rem 1rem 0;
             color: var(--text-primary);
         }
         svg {
             margin: 0;
         }
+    }
+
+    .p-datatable-thead > tr > th {
+        background: var(--layer-accent-01);
+    }
+
+    .p-datatable-tbody > tr > td {
+        padding: 1rem;
     }
 
     .p-datatable-tbody {

@@ -6,7 +6,6 @@ import Spinner from "@/components/UI/Spinner.vue";
 defineProps<{
     label?: string;
     name?: string;
-    className?: string; // Custom class to replace default class
     severity?: ButtonProps["severity"];
     outlined?: boolean;
     link?: boolean;
@@ -34,7 +33,7 @@ const handleKeyDown = (event: KeyboardEvent) => {
 </script>
 <template>
     <Button
-        :class="iconOnly ? className : [className, 'fam-button']"
+        :class="iconOnly ? 'fam-icon-button' : 'fam-button'"
         :severity="severity"
         :type="type ?? 'button'"
         :name="name ?? label"
@@ -96,5 +95,22 @@ const handleKeyDown = (event: KeyboardEvent) => {
             height: 1rem;
         }
     }
+}
+
+.p-button.fam-icon-button {
+    background-color: colors.$white;
+    border: none;
+
+    svg {
+        fill: var(--icon-primary);
+    }
+}
+
+.p-button.fam-icon-button:enabled:hover {
+    background-color: var(--background-hover);
+}
+
+.p-button.fam-icon-button:enabled:focus {
+    background-color: var(--background-active);
 }
 </style>

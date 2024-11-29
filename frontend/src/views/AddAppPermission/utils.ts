@@ -63,18 +63,6 @@ export const getPageTitle = (
         ? "Add user permission"
         : "Add a delegated admin";
 
-export const getRoleSectionTitle = (requestType: AddAppPermissionRequestType) =>
-    requestType === "addUserPermission"
-        ? "User roles"
-        : "Assign a role to the user";
-
-export const getRoleSectionSubtitle = (
-    requestType: AddAppPermissionRequestType
-) =>
-    requestType === "addUserPermission"
-        ? undefined
-        : "Assign a role the delgated admin can manage";
-
 /**
  * Validation schema for app admin and delegated admin
  */
@@ -99,10 +87,8 @@ export const validateAppPermissionForm = (isAbstractRoleSelected: boolean) => {
             .when("role", {
                 is: () => isAbstractRoleSelected,
                 then: (schema) =>
-                    schema
-                        .min(1, "At least one organization is required")
-                        .nullable(),
-                otherwise: (schema) => schema.nullable(),
+                    schema.min(1, "At least one organization is required"),
+                otherwise: (schema) => schema.default([]).nullable(),
             }),
     });
 };

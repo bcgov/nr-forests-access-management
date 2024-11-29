@@ -25,8 +25,6 @@ import {
     getApplicationWithUniqueRoles,
     getDefaultFormData,
     getPageTitle,
-    getRoleSectionSubtitle,
-    getRoleSectionTitle,
     isAbstractRoleSelected,
     NewAppAdminQueryParamKey,
     NewDelegatedAddminQueryParamKey,
@@ -39,7 +37,6 @@ import type { FamAccessControlPrivilegeCreateRequest } from "fam-admin-mgmt-api/
 import { AdminRoleAuthGroup, type FamRoleDto } from "fam-admin-mgmt-api/model";
 import {
     UserType,
-    type FamForestClientSchema,
     type FamUserRoleAssignmentCreateSchema,
     type IdimProxyBceidInfoSchema,
     type IdimProxyIdirInfoSchema,
@@ -150,12 +147,6 @@ const handleUserVerification = (
     }
 };
 
-const handleRoleChange = (role: FamRoleDto) => {
-    if (formData.value) {
-        formData.value.role = role;
-    }
-};
-
 const queryClient = useQueryClient();
 
 const appAdminMutation = useMutation({
@@ -241,26 +232,26 @@ const isSubmitting = ref<boolean>(false);
 const confirm = useConfirm();
 
 const onSubmit = () => {
-    if (formData.value) {
-        const payload = generatePayload(formData.value);
-
-        if (props.requestType === "addUserPermission") {
-            isSubmitting.value = true;
-            appAdminMutation.mutate(payload);
-        } else if (props.requestType === "addDelegatedAdmin") {
-            confirm.require({
-                group: "addDelegatedAdmin",
-                header: "Add a delegated admin",
-                rejectLabel: "Cancel",
-                acceptLabel: "Submit delegated admin",
-                acceptClass: "dialog-accept-button",
-                accept: () => {
-                    isSubmitting.value = true;
-                    delegatedAdminMutation.mutate(payload);
-                },
-            });
-        }
-    }
+    // console.log(isAbstractRoleSelected(formData.value));
+    // if (formData.value) {
+    //     const payload = generatePayload(formData.value);
+    //     if (props.requestType === "addUserPermission") {
+    //         isSubmitting.value = true;
+    //         appAdminMutation.mutate(payload);
+    //     } else if (props.requestType === "addDelegatedAdmin") {
+    //         confirm.require({
+    //             group: "addDelegatedAdmin",
+    //             header: "Add a delegated admin",
+    //             rejectLabel: "Cancel",
+    //             acceptLabel: "Submit delegated admin",
+    //             acceptClass: "dialog-accept-button",
+    //             accept: () => {
+    //                 isSubmitting.value = true;
+    //                 delegatedAdminMutation.mutate(payload);
+    //             },
+    //         });
+    //     }
+    // }
 };
 </script>
 
@@ -320,15 +311,14 @@ const onSubmit = () => {
                         />
                     </StepContainer>
                     <StepContainer
-                        :title="getRoleSectionTitle(props.requestType)"
-                        :subtitle="getRoleSectionSubtitle(props.requestType)"
+                        title="User roles"
+                        subtitle="Select a role for this user"
                         divider
                         v-if="selectedApp?.roles"
                     >
                         <RoleSelectTable
                             :app-id="applicationId"
                             :roleOptions="selectedApp.roles"
-                            @change="handleRoleChange"
                         />
                     </StepContainer>
                     <StepContainer :divider="false">

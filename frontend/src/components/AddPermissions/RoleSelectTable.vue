@@ -9,8 +9,9 @@ import Column from "primevue/column";
 import DataTable from "primevue/datatable";
 import RadioButton from "primevue/radiobutton";
 import { ErrorMessage, Field } from "vee-validate";
-import { inject, type Ref } from "vue";
+import { inject, watch, type Ref } from "vue";
 import ForestClientSection from "./ForestClientSection.vue";
+import Label from "../UI/Label.vue";
 
 const formData = inject<Ref<AppPermissionFormType>>(APP_PERMISSION_FORM_KEY);
 
@@ -26,17 +27,16 @@ const props = withDefaults(
         fieldId?: string;
     }>(),
     {
-        label: "Assign a role to the user",
+        label: "Role",
         fieldId: "role",
     }
 );
-
-const emit = defineEmits(["change", "clearForestClients"]);
 </script>
 
 <template>
     <div class="role-select-table-container">
-        <label :for="props.fieldId">{{ props.label }}</label>
+        <Label :for="props.fieldId" :label-text="props.label" required />
+
         <ErrorMessage
             class="table-error invalid-feedback"
             :name="props.fieldId"
@@ -45,16 +45,16 @@ const emit = defineEmits(["change", "clearForestClients"]);
         <Field
             :name="props.fieldId"
             aria-label="Role Select"
-            v-model="formData.forestClients"
+            v-model="formData.role"
         >
-            <DataTable :value="roleOptions">
+            <DataTable :value="roleOptions" class="fam-table">
                 <template #empty> No role found. </template>
                 <Column field="roleSelect">
                     <template #body="{ data }">
-                        <RadioButton v-model="formData.role" :value="data" />
+                        <RadioButton :value="data" v-model="formData.role" />
                     </template>
                 </Column>
-                <Column field="roleName" header="Role">
+                <Column class="role-name-col" field="roleName" header="Role">
                     <template #body="{ data }">
                         <span>{{ data.display_name }}</span>
                     </template>
@@ -69,6 +69,7 @@ const emit = defineEmits(["change", "clearForestClients"]);
                                 formData.role?.id === data.id
                             "
                             :app-id="props.appId"
+                            field-id="forestClients"
                         />
                     </template>
                 </Column>
@@ -78,17 +79,17 @@ const emit = defineEmits(["change", "clearForestClients"]);
 </template>
 <style lang="scss">
 .role-select-table-container {
+    margin-top: 2.5rem;
+
+    td.role-name-col {
+        display: flex;
+        flex-direction: row;
+        align-items: start;
+    }
+
     .p-datatable {
-        .p-datatable-thead > tr > th {
-            background: var(--layer-accent-01);
-        }
-
-        .p-column-header-content .p-column-title {
-            padding: 0;
-        }
-
-        .p-datatable-tbody > tr > td {
-            padding: 1rem;
+        .p-datatable-tbody > tr:hover {
+            background-color: colors.$white;
         }
     }
 

@@ -174,6 +174,7 @@ watch(
                 </div>
 
                 <Button
+                    class="verify-username-button"
                     :aria-label="`Verify user ${
                         props.domain === UserType.I
                             ? IdpProvider.IDIR
@@ -184,7 +185,7 @@ watch(
                             ? 'verifyIdir'
                             : 'verifyBusinessBceid'
                     "
-                    label="Verify"
+                    label="Verify username"
                     outlined
                     :icon="SearchLocateIcon"
                     @click="handleVerify(props.domain)"
@@ -205,4 +206,8 @@ watch(
     </div>
 </template>
 
-<style lang="scss"></style>
+<style lang="scss" scoped>
+.verify-username-button {
+    width: 12rem;
+}
+</style>

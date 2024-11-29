@@ -618,6 +618,8 @@ const highlightNewUserAccessRow = (
 </template>
 <style lang="scss">
 .fam-table {
+    border: 0 0.25rem 0.25rem 0.25rem;
+
     .error-text-container {
         height: 2rem;
         padding: 1rem;
