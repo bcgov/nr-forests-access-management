@@ -26,15 +26,6 @@ class ForestClientIntegrationService():
           For FAM environment management relating to the use of external API,
           see ref @FAM Wiki: https://github.com/bcgov/nr-forests-access-management/wiki/Environment-Management
     """
-    @staticmethod
-    def construct_fc_number_search_params(
-        forest_client_numbers: List[str]
-    ):
-        # return format as e.g.: &id=00001011&id=00001012
-        return "" if not forest_client_numbers else (
-            "".join(f"&id={item}" for item in forest_client_numbers)
-        )
-
 
     # https://requests.readthedocs.io/en/latest/user/quickstart/#timeouts
     # https://docs.python-requests.org/en/latest/user/advanced/#timeouts
@@ -89,7 +80,7 @@ class ForestClientIntegrationService():
                 [{"clientNumber": "00001011"}]
         """
         request_params = (f"page={search_params.page}&size={search_params.size}{
-            ForestClientIntegrationService.construct_fc_number_search_params(search_params.forest_client_numbers)
+            self.__construct_fc_number_search_params(search_params.forest_client_numbers)
         }")
         url = f"{self.api_clients_url}/search?{request_params}"
         LOGGER.debug(f"ForestClientService search() - url: {url}")
@@ -124,3 +115,9 @@ class ForestClientIntegrationService():
             # Else raise error, including 500
             # There is a general error handler, see: requests_http_error_handler
             raise he
+
+    def __construct_fc_number_search_params(self, forest_client_numbers: List[str]):
+        # return format as e.g.: &id=00001011&id=00001012
+        return "" if not forest_client_numbers else (
+            "".join(f"&id={item}" for item in forest_client_numbers)
+        )
