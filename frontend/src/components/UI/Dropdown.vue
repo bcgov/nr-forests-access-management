@@ -2,6 +2,7 @@
 import Dropdown, { type DropdownChangeEvent } from "primevue/dropdown";
 import InputSkeleton from "@/components/Skeletons/InputSkeleton.vue";
 import ErrorText from "@/components/UI/ErrorText.vue";
+import Label from "./Label.vue";
 
 const props = defineProps<{
     class: string;
@@ -25,7 +26,11 @@ const props = defineProps<{
             'fam-dropdown-container' + (props.class ? ` ${props.class}` : '')
         "
     >
-        <label v-if="props.labelText" :for="props.name">{{ labelText }}</label>
+        <Label
+            v-if="props.labelText"
+            :for="props.name"
+            :label-text="props.labelText"
+        />
         <InputSkeleton v-if="props.isFetching" />
 
         <Dropdown

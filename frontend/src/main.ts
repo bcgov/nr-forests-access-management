@@ -6,6 +6,7 @@ import { router } from "@/router";
 
 import PrimeVue from "primevue/config";
 import ConfirmationService from "primevue/confirmationservice";
+import Tooltip from "primevue/tooltip";
 import { VueQueryPlugin, QueryClient } from "@tanstack/vue-query";
 import { isAxiosError } from "axios";
 import { THREE_HOURS } from "@/constants/TimeUnits";
@@ -50,6 +51,7 @@ app.use(router);
 app.use(PrimeVue);
 app.use(ConfirmationService);
 app.use(VueQueryPlugin, { queryClient });
+app.directive("tooltip", Tooltip);
 
 // Mount the app
 app.mount("#app");

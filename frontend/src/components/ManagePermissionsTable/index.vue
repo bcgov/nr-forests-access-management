@@ -239,7 +239,7 @@ const navigateToUserDetails = (userId: string) => {
     router.push({
         name: UserDetailsRoute.name,
         params: {
-            applicationId: selectedApp.value?.id,
+            appId: selectedApp.value?.id,
             userId,
         },
     });

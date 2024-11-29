@@ -1,6 +1,7 @@
 @use "sass:map";
 @use "@bcgov-nr/nr-theme/design-tokens/type-family.scss" as typeFamily;
 @use "@carbon/type" as type;
+@use "@bcgov-nr/nr-theme/design-tokens/colors.scss" as colors;
 
 // Import all of Bootstrap's CSS
 @import "~bootstrap/scss/bootstrap";
@@ -107,4 +108,20 @@ p {
 
 .error-icon {
     fill: var(--support-error);
+}
+
+.confirm-dialog-with-blue-button {
+    .p-confirm-dialog-accept {
+        border: 0.0625rem solid colors.$blue-60;
+        background-color: colors.$blue-60;
+    }
+
+    .dialog-accept-button:hover {
+        border: 0.0625rem solid colors.$blue-65;
+        background-color: colors.$blue-65;
+    }
+}
+
+.p-tooltip-text {
+    @include type.type-style("body-compact-01");
 }

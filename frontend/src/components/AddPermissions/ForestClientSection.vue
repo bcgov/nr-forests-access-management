@@ -8,17 +8,19 @@ import { AppActlApiService } from "@/services/ApiServiceFactory";
 import { useMutation } from "@tanstack/vue-query";
 import InputText from "primevue/inputtext";
 import { Field, useField } from "vee-validate";
-import { inject, ref, watch, type Ref, type VNode } from "vue";
+import { inject, onUnmounted, ref, type Ref } from "vue";
 import { FOREST_CLIENT_INPUT_MAX_LENGTH } from "@/constants/constants";
 import { APP_PERMISSION_FORM_KEY } from "@/constants/InjectionKeys";
 import type { AppPermissionFormType } from "@/views/AddAppPermission/utils";
 import Label from "../UI/Label.vue";
 import Chip from "../UI/Chip.vue";
 import HelperText from "../UI/HelperText.vue";
+import SubsectionTitle from "../UI/SubsectionTitle.vue";
 
-const formData = inject<Ref<AppPermissionFormType>>(APP_PERMISSION_FORM_KEY);
 const INACTIVE_ERROR =
     "This organization can’t be added due to its status. For more information ";
+
+const formData = inject<Ref<AppPermissionFormType>>(APP_PERMISSION_FORM_KEY);
 
 if (!formData) {
     throw new Error("formData is required but not provided");
@@ -27,6 +29,7 @@ if (!formData) {
 const props = defineProps<{
     appId: number;
     fieldId: string;
+    setIsVerifyingClient: (verifying: boolean) => void;
 }>();
 
 const { validate } = useField(props.fieldId);
@@ -48,7 +51,17 @@ const clearVerificationError = () => {
 };
 
 const clientSearchMutation = useMutation({
+    mutationKey: [
+        "forest_clients",
+        "search",
+        {
+            client_number: forestClientNumberInput.value,
+            application_id: props.appId,
+        },
+    ],
     mutationFn: (clientNumber: string) => {
+        isVerifying.value = true;
+        props.setIsVerifyingClient(isVerifying.value);
         return AppActlApiService.forestClientsApi
             .search(clientNumber, props.appId)
             .then((res) => res.data);
@@ -65,13 +78,14 @@ const clientSearchMutation = useMutation({
             forestClientNumberInput.value = "";
         }
     },
-    onError: (_error, clientNumber) => {
-        if (clientNumber) {
-            // errorClientNumbers.value.push(clientNumber);
-        }
+    onError: () => {
+        setVerificationError(
+            "The organization could not be added. Please try again"
+        );
     },
     onSettled: () => {
         isVerifying.value = false;
+        props.setIsVerifyingClient(isVerifying.value);
         validate();
     },
 });
@@ -116,19 +130,20 @@ const addOrganization = () => {
         return;
     }
 
-    isVerifying.value = true;
     clientSearchMutation.mutate(forestClientNumberInput.value);
 };
+
+onUnmounted(() => {
+    clientSearchMutation.reset();
+});
 </script>
 
 <template>
     <div class="foresnt-client-section-container">
-        <div class="section-title-container">
-            <span class="title">Restrict access by organizations</span>
-            <p class="subtitle">
-                Add one or more organizations for this user to have access to
-            </p>
-        </div>
+        <SubsectionTitle
+            title="Restrict access by organizations"
+            subtitle="Add one or more organizations for this user to have access to"
+        />
         <Label
             for="forestClientInput"
             label-text="Organization's client number"
@@ -197,7 +212,13 @@ const addOrganization = () => {
 
             <Column header="Status">
                 <template #body="{ data }">
-                    <Chip color="green" :label="data.status.description" />
+                    <Chip
+                        v-tooltip.top="
+                            'Current status of this organization in the Client Management System'
+                        "
+                        color="green"
+                        :label="data.status.description"
+                    />
                 </template>
             </Column>
 
@@ -220,11 +241,8 @@ const addOrganization = () => {
 
 <style lang="scss">
 .foresnt-client-section-container {
-    .section-title-container {
+    .subsection-title-container {
         margin: 1.5rem 0;
-        .title {
-            @include type.type-style("heading-01");
-        }
     }
 
     .input-with-verify-button {

@@ -6,7 +6,6 @@ import {
     type IdimProxyBceidInfoSchema,
     type IdimProxyIdirInfoSchema,
 } from "fam-app-acsctl-api/model";
-import type { AddAppPermissionRequestType } from "../../types/RouteTypes";
 import type {
     FamAccessControlPrivilegeCreateRequest,
     FamGrantDetailDto,
@@ -55,13 +54,6 @@ export const getDefaultFormData = (
         sendUserEmail,
     };
 };
-
-export const getPageTitle = (
-    requestType: AddAppPermissionRequestType
-): string =>
-    requestType === "addUserPermission"
-        ? "Add user permission"
-        : "Add a delegated admin";
 
 /**
  * Validation schema for app admin and delegated admin
@@ -115,41 +107,19 @@ export const generatePayload = (
     requires_send_user_email: formData.sendUserEmail,
 });
 
-/**
- * Retrieves a consolidated application object with unique roles based on the specified application ID.
- *
- * @param {FamGrantDetailDto[]} data - Array of grant details, each containing application and roles information.
- * @param {number} applicationId - The ID of the application to filter and retrieve unique roles for.
- * @returns {{ application: Object, roles: FamRoleDto[] } | null} - An object containing the application details and a list of unique roles, or null if no matching application is found.
- */
-export const getApplicationWithUniqueRoles = (
-    data: FamGrantDetailDto[],
-    applicationId: number
-) => {
-    const matchedEntries = data.filter(
-        (entry) => entry.application.id === applicationId
+export const getRolesByAppId = (data: FamGrantDetailDto[], appId: number) => {
+    const foundGrantByAppId = data.find(
+        (grant) => grant.application.id === appId
     );
 
-    if (matchedEntries.length === 0) return null; // Return null if no matches are found
+    if (foundGrantByAppId) {
+        return {
+            application: foundGrantByAppId.application,
+            roles: foundGrantByAppId.roles,
+        };
+    }
 
-    // Combine unique roles from all matching entries, explicitly filtering out any null or undefined roles
-    const uniqueRoles: FamRoleDto[] = [
-        ...new Map(
-            matchedEntries
-                .flatMap((entry) => entry.roles)
-                .filter(
-                    (role): role is FamRoleDto =>
-                        role !== null && role !== undefined
-                ) // Narrow type to FamRoleDto
-                .map((role) => [role.id, role]) // Use role id as the map key for uniqueness
-        ).values(),
-    ];
-
-    // Use the first matching entry for the application details
-    return {
-        application: matchedEntries[0].application,
-        roles: uniqueRoles,
-    };
+    return null;
 };
 
 export const isAbstractRoleSelected = (
