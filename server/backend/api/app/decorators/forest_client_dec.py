@@ -39,6 +39,8 @@ def __post_sync_forest_clients(result_list: List[FamApplicationUserRoleAssignmen
     search_forest_client_numbers = [
         fcn for fcn in [map_to_fc(item) for item in result_list] if fcn
     ]  # loop to collect and filter out 'None'
+    if not search_forest_client_numbers:
+        return result_list
 
     # Do FC API search
     application = result_list[0].role.application
@@ -47,6 +49,7 @@ def __post_sync_forest_clients(result_list: List[FamApplicationUserRoleAssignmen
     fc_search_params = ForestClientIntegrationSearchParmsSchema(
         forest_client_numbers=search_forest_client_numbers,
         size=len(search_forest_client_numbers)
+        # currently no need to specify FC API 'page'. it can search more than 50 and return in the first page.
     )
 
     # Note, FC API result items are not 1 to 1 (duplicates and non-exist will be filtered out from external
@@ -54,7 +57,7 @@ def __post_sync_forest_clients(result_list: List[FamApplicationUserRoleAssignmen
     # [{'clientNumber': '00001011', 'clientName': 'AKIECA EXPLORERS LTD.', 'clientStatusCode': 'ACT', 'clientTypeCode': 'C'}]
     fc_search_results: List[ForestClientIntegrationFindResponseSchema] = forest_client_integration_service.search(fc_search_params)
 
-    # Only sync client_name when there is a FC search result
+    # Only update client_name when there is a FC search result
     if fc_search_results:
         # Transform FC search result (won't have duplicates) into a dict for easy indexing e.g.,: {00001011: 'AKIECA EXPLORERS LTD.'}
         fc_search_client_name_dict = {fc["clientNumber"]: fc["clientName"] for fc in fc_search_results}
