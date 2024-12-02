@@ -1,3 +1,4 @@
+import functools
 import logging
 from typing import List
 
@@ -13,16 +14,20 @@ from api.app.schemas.pagination import PagedResultsSchema
 
 LOGGER = logging.getLogger(__name__)
 
-def post_sync_forest_clients_dec(func):
+def post_sync_forest_clients_dec(original_func):
     """
     A decorator to perform post action on syncing forest client details from external Forest Client API search.
     Only intended for use at functions with return type of 'PagedResultsSchema[FamApplicationUserRoleAssignmentGetSchema]'
+
+    Important! using the Python `@functools.wraps(original_func)` feature. This makes decorated_func get almost all the
+          original function's metadata and makes it possible and easier for testing original function in isolation.
     """
-    def wrapper(*args, **kwargs):
-        func_return: PagedResultsSchema[FamApplicationUserRoleAssignmentGetSchema] = func(*args, **kwargs)
+    @functools.wraps(original_func)
+    def decorated_func(*args, **kwargs):
+        func_return: PagedResultsSchema[FamApplicationUserRoleAssignmentGetSchema] = original_func(*args, **kwargs)
         func_return.results = __post_sync_forest_clients(func_return.results)
         return func_return
-    return wrapper
+    return decorated_func
 
 def __post_sync_forest_clients(result_list: List[FamApplicationUserRoleAssignmentGetSchema]):
     if not result_list:
