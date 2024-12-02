@@ -21,6 +21,7 @@ def post_sync_forest_clients_dec(original_func):
 
     Important! using the Python `@functools.wraps(original_func)` feature. This makes decorated_func get almost all the
           original function's metadata and makes it possible and easier for testing original function in isolation.
+          Ref: https://docs.python.org/3/library/functools.html#functools.wraps
     """
     @functools.wraps(original_func)
     def decorated_func(*args, **kwargs):
