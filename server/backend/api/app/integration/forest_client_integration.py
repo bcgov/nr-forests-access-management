@@ -1,4 +1,5 @@
 import logging
+import urllib
 from http import HTTPStatus
 from typing import List
 
@@ -56,7 +57,7 @@ class ForestClientIntegrationService():
                  wild card search and Forest Client API could be capable of doing that
                  in next version.
         """
-        url = f"{self.api_clients_url}/findByClientNumber/{p_client_number}"
+        url = f"{self.api_clients_url}/findByClientNumber/{urllib.parse.quote_plus(p_client_number)}"
         LOGGER.debug(f"ForestClientService find_by_client_number() - url: {url}")
 
         find_result = self.__do_request(url=url)
