@@ -152,16 +152,15 @@ const onSubmit = () => {
                             helperText="Only IDIR users are allowed to be added as application admins"
                         />
                     </StepContainer>
-                    <StepContainer
-                        title="Add application"
-                        subtitle="Select an application this user will be able to manage"
-                    >
+                    <StepContainer title="Add application">
                         <Field
                             name="application"
                             v-slot="{ errorMessage }"
                             v-model="formData.application"
                         >
                             <Dropdown
+                                required
+                                label-text="Select an application this user will be able to manage"
                                 class="application-dropdown"
                                 name="application-dropdown"
                                 :value="formData.application"

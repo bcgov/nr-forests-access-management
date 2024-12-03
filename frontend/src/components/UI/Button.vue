@@ -3,7 +3,7 @@ import Button, { type ButtonProps } from "primevue/button";
 import { type Component } from "vue";
 import Spinner from "@/components/UI/Spinner.vue";
 
-const props = defineProps<{
+defineProps<{
     label?: string;
     name?: string;
     severity?: ButtonProps["severity"];

@@ -67,11 +67,10 @@ const adminUserAccessQuery = useQuery({
             <div class="profile-header">
                 <h2>Profile</h2>
                 <FamButton
-                    class-name="btn-icon"
+                    class="btn-icon"
                     @click="profileSidebarState.toggleVisible()"
                     aria-label="Close profile sidebar"
                     :icon="CloseIcon"
-                    severity="secondary"
                     text
                     icon-only
                 >

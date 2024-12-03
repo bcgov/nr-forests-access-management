@@ -11,7 +11,7 @@ const props = defineProps<{
 <template>
     <label
         :class="{
-            'fam-input-label': !props.unstyled,
+            'fam-label': !props.unstyled,
         }"
         :for="props.for"
         :id="props.id"
@@ -22,7 +22,7 @@ const props = defineProps<{
 </template>
 
 <style lang="scss">
-.fam-input-label {
+.fam-label {
     @include type.type-style("label-02");
     display: flex;
     flex-direction: row;
