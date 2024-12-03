@@ -7,8 +7,8 @@ defineProps<{
 
 <template>
     <div class="subsection-title-container">
-        <span class="title">{{ title }}</span>
-        <p v-if="subtitle" class="subtitle">
+        <span class="subsection-title">{{ title }}</span>
+        <p v-if="subtitle" class="subsection-subtitle">
             {{ subtitle }}
         </p>
     </div>
@@ -16,12 +16,12 @@ defineProps<{
 
 <style lang="scss">
 .subsection-title-container {
-    .title {
+    .subsection-title {
         @include type.type-style("heading-01");
         color: var(--text-primary);
     }
 
-    .subtitle {
+    .subsection-subtitle {
         @include type.type-style("body-01");
         color: var(--text-secondary);
     }
