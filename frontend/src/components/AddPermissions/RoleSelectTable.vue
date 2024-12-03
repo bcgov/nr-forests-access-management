@@ -44,10 +44,6 @@ const { resetField: resetForestClientsField } = useField(
  */
 const selectedRole = ref<FamRoleDto | null>(formData.value.role);
 
-const setIsVerifyingClient = (verifying: boolean) => {
-    formData.value.forestClientInput.isVerifying = verifying;
-};
-
 /**
  * A fake d-admin row data for display purpose in the role table.
  */
@@ -158,7 +154,6 @@ const handleRoleSelect = (role: FamRoleDto) => {
                             "
                             :app-id="props.appId"
                             :field-id="props.forestClientsFieldId"
-                            :set-is-verifying-client="setIsVerifyingClient"
                         />
 
                         <DelegatedAdminSection
