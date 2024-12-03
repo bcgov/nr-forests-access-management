@@ -5,8 +5,6 @@ const props = defineProps<{
     text: string;
     isError?: boolean;
     id?: string;
-    link?: string;
-    linkLabel?: string;
 }>();
 </script>
 
@@ -16,13 +14,6 @@ const props = defineProps<{
         :id="props.id"
     >
         {{ props.text }}
-        <a
-            class="helper-text-link"
-            v-if="props.link && props.linkLabel"
-            target="_blank"
-            :href="link"
-            >{{ linkLabel }}</a
-        >
     </p>
 </template>
 
@@ -39,9 +30,5 @@ const props = defineProps<{
 
 .fam-error-helper-text {
     color: var(--text-error);
-}
-
-.helper-text-link {
-    color: var(--link-primary);
 }
 </style>

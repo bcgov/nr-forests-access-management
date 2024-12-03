@@ -16,14 +16,6 @@ import ConfirmDialog from "primevue/confirmdialog";
 import { useConfirm } from "primevue/useconfirm";
 import DelegatedAdminSection from "./DelegatedAdminSection.vue";
 
-const formData = inject<Ref<AppPermissionFormType>>(APP_PERMISSION_FORM_KEY);
-
-if (!formData) {
-    throw new Error("formData is required but not provided");
-}
-
-const confirm = useConfirm();
-
 const props = defineProps<{
     appId: number;
     roleOptions: FamRoleDto[];
@@ -32,23 +24,30 @@ const props = defineProps<{
     isDelegatedAdminOnly: boolean;
 }>();
 
+const formData = inject<Ref<AppPermissionFormType>>(APP_PERMISSION_FORM_KEY);
+
+if (!formData) {
+    throw new Error("formData is required but not provided");
+}
+
+const confirm = useConfirm();
+
 const { resetField: resetForestClientsField } = useField(
     props.forestClientsFieldId
 );
 
 /**
- * Track if a verification of a client number is in progress.
- * Disable role selection if it's verifying, otherwise a client might be added
- * right after switching.
+ * An intermediate value to accommodate the fake role delegated admin.
  */
-const isVerifyingClient = ref<boolean>(false);
+const selectedRole = ref<FamRoleDto | null>(formData.value.role);
 
 const setIsVerifyingClient = (verifying: boolean) => {
-    isVerifyingClient.value = verifying;
+    formData.value.forestClientInput.isVerifying = verifying;
 };
 
-const isDelegatedAdminRowSelected = ref<boolean>(false);
-
+/**
+ * A fake d-admin row data for display purpose in the role table.
+ */
 const delegatedAdminRow: FamRoleDto = {
     id: -999,
     name: "delegated_admin",
@@ -67,12 +66,18 @@ const rows = computed<FamRoleDto[]>(() => {
     return props.roleOptions;
 });
 
+/**
+ * Sets the role selectedRole then formData accordingly.
+ */
 const setRoleAndClearClients = (role: FamRoleDto) => {
     if (role.id === delegatedAdminRow.id) {
-        isDelegatedAdminRowSelected.value = true;
+        selectedRole.value = role;
+        formData.value.role = null;
+        formData.value.isAddingDelegatedAdmin = true;
     } else {
-        isDelegatedAdminRowSelected.value = false;
+        selectedRole.value = role;
         formData.value.role = role;
+        formData.value.isAddingDelegatedAdmin = false;
     }
 
     formData.value.forestClients = [];
@@ -127,9 +132,9 @@ const handleRoleSelect = (role: FamRoleDto) => {
                     <template #body="{ data }">
                         <RadioButton
                             :value="data"
-                            :model-value="formData.role"
+                            :model-value="selectedRole"
                             @update:model-value="handleRoleSelect"
-                            :disabled="isVerifyingClient"
+                            :disabled="formData.forestClientInput.isVerifying"
                         />
                     </template>
                 </Column>
@@ -141,9 +146,10 @@ const handleRoleSelect = (role: FamRoleDto) => {
                 <Column field="roleDescription" header="Description">
                     <template #body="{ data }">
                         <span>{{ data.description }}</span>
+
                         <ForestClientSection
                             v-if="
-                                !isDelegatedAdminRowSelected &&
+                                selectedRole?.id !== delegatedAdminRow.id &&
                                 isAbstractRoleSelected(formData) &&
                                 formData.role?.id === data.id
                             "
@@ -151,10 +157,16 @@ const handleRoleSelect = (role: FamRoleDto) => {
                             :field-id="props.forestClientsFieldId"
                             :set-is-verifying-client="setIsVerifyingClient"
                         />
+
                         <DelegatedAdminSection
                             v-else-if="
-                                isDelegatedAdminRowSelected &&
-                                formData.role?.id === data.id
+                                selectedRole?.id === delegatedAdminRow.id &&
+                                selectedRole?.id === data.id
+                            "
+                            :role-options="props.roleOptions"
+                            :app-id="props.appId"
+                            :forest-clients-field-id="
+                                props.forestClientsFieldId
                             "
                         />
                     </template>

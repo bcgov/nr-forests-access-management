@@ -11,6 +11,7 @@ import type {
     FamGrantDetailDto,
     FamRoleDto,
 } from "fam-admin-mgmt-api/model";
+import type { TextInputType } from "@/types/InputTypes";
 
 export const AddAppUserPermissionSuccessQuerykey = "app-admin-mutation-success";
 export const AddAppUserPermissionErrorQuerykey = "app-admin-mutation-error";
@@ -28,6 +29,15 @@ export type AppPermissionFormType = {
     forestClients: FamForestClientSchema[];
     role: FamRoleDto | null;
     sendUserEmail: boolean;
+    forestClientInput: TextInputType & {
+        /**
+         * Track if a verification of a client number is in progress.
+         * Disable role selection if it's verifying, otherwise a client might be added
+         * right after switching.
+         */
+        isVerifying: boolean;
+    };
+    isAddingDelegatedAdmin: boolean;
 };
 
 export type AppPermissionQueryErrorType = {
@@ -41,6 +51,14 @@ const defaultFormData: AppPermissionFormType = {
     forestClients: [],
     role: null,
     sendUserEmail: false,
+    forestClientInput: {
+        id: "forest-client-number-input",
+        value: "",
+        isValid: true,
+        errorMsg: "",
+        isVerifying: false,
+    },
+    isAddingDelegatedAdmin: false,
 };
 
 export const getDefaultFormData = (

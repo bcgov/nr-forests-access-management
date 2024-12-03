@@ -17,9 +17,6 @@ import Chip from "../UI/Chip.vue";
 import HelperText from "../UI/HelperText.vue";
 import SubsectionTitle from "../UI/SubsectionTitle.vue";
 
-const INACTIVE_ERROR =
-    "This organization can’t be added due to its status. For more information ";
-
 const formData = inject<Ref<AppPermissionFormType>>(APP_PERMISSION_FORM_KEY);
 
 if (!formData) {
@@ -29,25 +26,19 @@ if (!formData) {
 const props = defineProps<{
     appId: number;
     fieldId: string;
-    setIsVerifyingClient: (verifying: boolean) => void;
 }>();
 
-const { validate } = useField(props.fieldId);
-
-const verificationError = ref<boolean>(false);
-const verificationErrorMessage = ref<string>("");
-
-const isVerifying = ref<boolean>(false);
-const forestClientNumberInput = ref("");
+const { setErrors: setForestClientsError } = useField(props.fieldId);
 
 const setVerificationError = (errorMessage: string) => {
-    verificationError.value = true;
-    verificationErrorMessage.value = errorMessage;
+    formData.value.forestClientInput.isValid = false;
+    formData.value.forestClientInput.errorMsg = errorMessage;
 };
 
 const clearVerificationError = () => {
-    verificationError.value = false;
-    verificationErrorMessage.value = "";
+    setForestClientsError("");
+    formData.value.forestClientInput.isValid = true;
+    formData.value.forestClientInput.errorMsg = "";
 };
 
 const clientSearchMutation = useMutation({
@@ -55,13 +46,12 @@ const clientSearchMutation = useMutation({
         "forest_clients",
         "search",
         {
-            client_number: forestClientNumberInput.value,
+            client_number: formData.value.forestClientInput.value,
             application_id: props.appId,
         },
     ],
     mutationFn: (clientNumber: string) => {
-        isVerifying.value = true;
-        props.setIsVerifyingClient(isVerifying.value);
+        formData.value.forestClientInput.isVerifying = true;
         return AppActlApiService.forestClientsApi
             .search(clientNumber, props.appId)
             .then((res) => res.data);
@@ -72,10 +62,12 @@ const clientSearchMutation = useMutation({
                 "No organization found. Check the client number and try again"
             );
         } else if (data[0].status?.status_code !== "A") {
-            setVerificationError(INACTIVE_ERROR);
+            setVerificationError(
+                "This organization can't be added due to its status"
+            );
         } else {
             formData.value.forestClients.push(data[0]);
-            forestClientNumberInput.value = "";
+            formData.value.forestClientInput.value = "";
         }
     },
     onError: () => {
@@ -84,9 +76,7 @@ const clientSearchMutation = useMutation({
         );
     },
     onSettled: () => {
-        isVerifying.value = false;
-        props.setIsVerifyingClient(isVerifying.value);
-        validate();
+        formData.value.forestClientInput.isVerifying = false;
     },
 });
 
@@ -110,19 +100,30 @@ const enforceNumber = (event: Event) => {
     }
 
     target.value = newValue;
-    forestClientNumberInput.value = newValue;
+    formData.value.forestClientInput.value = newValue;
 };
 
 const addOrganization = () => {
     clearVerificationError();
 
-    if (!forestClientNumberInput.value) {
+    if (!formData.value.forestClientInput.value) {
+        return;
+    }
+
+    if (
+        formData.value.forestClientInput.value.length <
+        FOREST_CLIENT_INPUT_MAX_LENGTH
+    ) {
+        setVerificationError(
+            `Client number must be ${FOREST_CLIENT_INPUT_MAX_LENGTH} digits long`
+        );
         return;
     }
     // Check duplication
     const duplicate = formData.value.forestClients.find(
         (client) =>
-            client.forest_client_number === forestClientNumberInput.value
+            client.forest_client_number ===
+            formData.value.forestClientInput.value
     );
 
     if (duplicate) {
@@ -130,7 +131,7 @@ const addOrganization = () => {
         return;
     }
 
-    clientSearchMutation.mutate(forestClientNumberInput.value);
+    clientSearchMutation.mutate(formData.value.forestClientInput.value);
 };
 
 onUnmounted(() => {
@@ -158,34 +159,31 @@ onUnmounted(() => {
             <div class="input-with-verify-button">
                 <div>
                     <InputText
-                        id="forestClientInput"
+                        :id="formData.forestClientInput.id"
                         class="w-100 custom-height"
-                        v-model="forestClientNumberInput"
+                        v-model="formData.forestClientInput.value"
                         :maxlength="FOREST_CLIENT_INPUT_MAX_LENGTH"
                         @input="enforceNumber"
                         @keydown.enter.prevent="addOrganization()"
                         :class="{
-                            'is-invalid': errorMessage || verificationError,
+                            'is-invalid':
+                                errorMessage ||
+                                !formData.forestClientInput.isValid,
                         }"
                         @blur="addOrganization()"
-                        :disabled="isVerifying"
+                        :disabled="formData.forestClientInput.isVerifying"
                     />
                     <HelperText
                         :text="
                             errorMessage ||
-                            verificationErrorMessage ||
+                            formData.forestClientInput.errorMsg ||
                             'Enter the 8-digit client number'
                         "
-                        :is-error="!!(errorMessage || verificationError)"
-                        :link="
-                            verificationErrorMessage === INACTIVE_ERROR
-                                ? 'https://github.com/bcgov/nr-forest-client/'
-                                : undefined
-                        "
-                        :link-label="
-                            verificationErrorMessage === INACTIVE_ERROR
-                                ? 'Go to Client Management System'
-                                : undefined
+                        :is-error="
+                            !!(
+                                errorMessage ||
+                                !formData.forestClientInput.isValid
+                            )
                         "
                     />
                 </div>
@@ -197,7 +195,7 @@ onUnmounted(() => {
                     label="Add organization"
                     @click="addOrganization"
                     :icon="AddIcon"
-                    :is-loading="isVerifying"
+                    :is-loading="formData.forestClientInput.isVerifying"
                 />
             </div>
         </Field>

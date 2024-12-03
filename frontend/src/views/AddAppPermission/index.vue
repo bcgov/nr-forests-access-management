@@ -47,6 +47,8 @@ import { useRouter } from "vue-router";
 import { APP_PERMISSION_FORM_KEY } from "@/constants/InjectionKeys";
 import { EnvironmentSettings } from "@/services/EnvironmentSettings";
 import { isUserDelegatedAdminOnly } from "@/utils/AuthUtils";
+import { IdpProvider } from "@/enum/IdpEnum";
+import { activeTabIndex } from "@/store/ApplicationState";
 
 const router = useRouter();
 const auth = useAuth();
@@ -124,7 +126,7 @@ const handleDomainChange = (userType: UserType) => {
 };
 
 const handleUserVerification = (
-    user: IdimProxyIdirInfoSchema | IdimProxyBceidInfoSchema,
+    user: IdimProxyIdirInfoSchema | IdimProxyBceidInfoSchema | null,
     domain?: UserType
 ) => {
     if (formData.value) {
@@ -182,6 +184,7 @@ const delegatedAdminMutation = useMutation({
         ),
     onSuccess: (res) => {
         queryClient.setQueryData([AddDelegatedAdminSuccessQuerykey], res.data);
+        activeTabIndex.value = 1;
         router.push({
             name: ManagePermissionsRoute.name,
             query: {
@@ -215,30 +218,45 @@ const delegatedAdminMutation = useMutation({
 });
 
 const isSubmitting = ref<boolean>(false);
+const isVerifyingUser = ref<boolean>(false);
+const setIsVerifyingUser = (verifying: boolean) => {
+    isVerifyingUser.value = verifying;
+};
 
 const confirm = useConfirm();
 
 const onSubmit = () => {
-    if (formData.value) {
-        // const payload = generatePayload(formData.value);
-        // if (props.requestType === "addUserPermission") {
-        //     isSubmitting.value = true;
-        //     appAdminMutation.mutate(payload);
-        // } else if (props.requestType === "addDelegatedAdmin") {
-        //     confirm.require({
-        //         group: "addDelegatedAdmin",
-        //         header: "Add a delegated admin",
-        //         rejectLabel: "Cancel",
-        //         acceptLabel: "Submit delegated admin",
-        //         acceptClass: "dialog-accept-button",
-        //         accept: () => {
-        //             isSubmitting.value = true;
-        //             delegatedAdminMutation.mutate(payload);
-        //         },
-        //     });
-        // }
+    if (
+        formData.value &&
+        formData.value.forestClientInput.isValid &&
+        !formData.value.forestClientInput.isVerifying
+    ) {
+        const payload = generatePayload(formData.value);
+        if (!formData.value.isAddingDelegatedAdmin) {
+            isSubmitting.value = true;
+            appAdminMutation.mutate(payload);
+        } else {
+            confirm.require({
+                group: "addDelegatedAdmin",
+                header: "Add a delegated admin",
+                rejectLabel: "Cancel",
+                acceptLabel: "Submit delegated admin",
+                acceptClass: "dialog-accept-button",
+                accept: () => {
+                    isSubmitting.value = true;
+                    delegatedAdminMutation.mutate(payload);
+                },
+            });
+        }
     }
 };
+
+const getUserNameInputHelperText = () =>
+    `Type user's ${
+        formData.value?.domain === UserType.I
+            ? IdpProvider.IDIR
+            : IdpProvider.BCEIDBUSINESS
+    } and click "Verify username"`;
 </script>
 
 <template>
@@ -276,7 +294,7 @@ const onSubmit = () => {
             >
                 <form
                     id="add-app-permission-form-id"
-                    class="col-sm-12 col-md-12 col-lg-10 col-xl-10 col-xxl-6"
+                    class="col-sm-12 col-md-12 col-lg-10 col-xl-10 col-xxl-7"
                 >
                     <StepContainer title="User information" divider>
                         <UserDomainSelect
@@ -286,6 +304,7 @@ const onSubmit = () => {
                                 'idir'
                             "
                             :domain="formData.domain"
+                            :is-verifying-user="isVerifyingUser"
                             @change="handleDomainChange"
                         />
                         <UserNameInput
@@ -293,7 +312,9 @@ const onSubmit = () => {
                             :domain="formData.domain"
                             :user="formData.user"
                             :app-id="appId"
+                            :helper-text="getUserNameInputHelperText()"
                             @setVerifyResult="handleUserVerification"
+                            :set-is-verifying="setIsVerifyingUser"
                         />
                     </StepContainer>
                     <StepContainer
@@ -359,9 +380,7 @@ const onSubmit = () => {
     .app-permission-form-container {
         margin-top: 3rem;
 
-        .row > * {
-            padding: 0;
-        }
+        padding: 0;
     }
 
     .domain-select {

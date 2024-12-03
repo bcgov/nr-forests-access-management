@@ -17,6 +17,8 @@ const props = defineProps<{
     isFetching?: boolean;
     isError?: boolean;
     errorMsg?: string;
+    required?: boolean;
+    disabled?: boolean;
 }>();
 </script>
 
@@ -30,6 +32,7 @@ const props = defineProps<{
             v-if="props.labelText"
             :for="props.name"
             :label-text="props.labelText"
+            :required="props.required"
         />
         <InputSkeleton v-if="props.isFetching" />
 
@@ -40,9 +43,10 @@ const props = defineProps<{
             @change="props.onChange"
             :options="props.options"
             :optionLabel="props.optionLabel"
-            placeholder="Choose an application to manage permissions"
+            :placeholder="props.placeholder"
             class="fam-dropdown"
             :model-value="props.value"
+            :disabled="props.disabled"
         />
         <ErrorText v-if="props.isError" :error-msg="errorMsg" show-icon />
     </div>

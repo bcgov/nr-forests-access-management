@@ -4,13 +4,20 @@ const props = defineProps<{
     for?: string;
     id?: string;
     required?: boolean;
+    unstyled?: boolean;
 }>();
 </script>
 
 <template>
-    <label class="fam-input-label" :for="props.for" :id="props.id">
+    <label
+        :class="{
+            'fam-input-label': !props.unstyled,
+        }"
+        :for="props.for"
+        :id="props.id"
+    >
         <span class="required-symbol" v-if="props.required">*</span>
-        <span class="label-text">&nbsp;{{ props.labelText }}</span>
+        <span class="label-text">{{ props.labelText }}</span>
     </label>
 </template>
 
@@ -19,6 +26,8 @@ const props = defineProps<{
     @include type.type-style("label-02");
     display: flex;
     flex-direction: row;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
 
     .required-symbol {
         color: var(--text-error);
