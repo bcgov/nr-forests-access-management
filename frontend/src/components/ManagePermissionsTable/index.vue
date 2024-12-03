@@ -497,14 +497,6 @@ const highlightNewUserAccessRow = (
             :paginatorTemplate="TABLE_PAGINATOR_TEMPLATE"
             :currentPageReportTemplate="TABLE_CURRENT_PAGE_REPORT_TEMPLATE"
             :rowStyle="highlightNewUserAccessRow"
-            :sort-field="
-                tableType === ManagePermissionsTableEnum.AppAdmin
-                    ? 'user.user_name'
-                    : 'create_date'
-            "
-            :sort-order="
-                tableType === ManagePermissionsTableEnum.AppAdmin ? 1 : -1
-            "
         >
             <template #empty> No user found. </template>
 
