@@ -21,6 +21,9 @@ const props = defineProps<{
     roleOptions: FamRoleDto[];
     roleFieldId: string;
     forestClientsFieldId: string;
+    /**
+     * Determines whether the logged in user is only a d-admin and not an app admin
+     */
     isDelegatedAdminOnly: boolean;
 }>();
 
@@ -37,7 +40,7 @@ const { resetField: resetForestClientsField } = useField(
 );
 
 /**
- * An intermediate value to accommodate the fake role delegated admin.
+ * An intermediate value to accommodate the fake delegated admin role.
  */
 const selectedRole = ref<FamRoleDto | null>(formData.value.role);
 

@@ -128,7 +128,7 @@ const onSubmit = () => {
             title="Add application admin"
             subtitle="All fields are mandatory"
         />
-        <div class="form-container">
+        <div class="app-admin-form-container container-fluid">
             <Form
                 v-slot="{ handleSubmit }"
                 ref="form"
@@ -136,8 +136,12 @@ const onSubmit = () => {
                 v-if="formData"
                 :validation-schema="validateFamPermissionForm()"
                 validate-on-submit
+                class="row"
             >
-                <form id="add-fam-permission-form-id">
+                <form
+                    id="add-fam-permission-form-id"
+                    class="col-sm-12 col-md-12 col-lg-10 col-xl-10 col-xxl-7"
+                >
                     <StepContainer title="User information" divider>
                         <UserNameInput
                             class="user-name-text-input"
@@ -210,9 +214,9 @@ const onSubmit = () => {
 </template>
 <style lang="scss">
 .add-fam-permission-container {
-    .form-container {
+    .app-admin-form-container {
         margin-top: 3rem;
-        width: 60%; // Temporary until we implement the grid system
+        padding: 0;
 
         .invalid-feedback {
             display: block;
