@@ -16,6 +16,7 @@ import { useConfirm } from "primevue/useconfirm";
 import { nextTick, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
+import { displayForestClient } from "@/components/ManagePermissionsTable/utils";
 import TableSkeleton from "@/components/Skeletons/TableSkeleton.vue";
 import TableHeaderTitle from "@/components/Table/TableHeaderTitle.vue";
 import TableToolbar from "@/components/Table/TableToolbar.vue";
@@ -36,9 +37,8 @@ import { selectedApp } from "@/store/ApplicationState";
 import { ManagePermissionsTableEnum } from "@/types/ManagePermissionsTypes";
 import type { PermissionNotificationType } from "@/types/NotificationTypes";
 import { formatAxiosError } from "@/utils/ApiUtils";
-import { formatForestClientDisplayName } from "@/utils/ForestClientUtils";
-import { formatUserNameAndId } from "@/utils/UserUtils";
 import { utcToLocalDate } from "@/utils/DateUtils";
+import { formatUserNameAndId } from "@/utils/UserUtils";
 import {
     NewAppAdminQueryParamKey,
     NewDelegatedAddminQueryParamKey,
@@ -449,33 +449,6 @@ const highlightNewUserAccessRow = (
             return undefined;
     }
 };
-
-/**
- * DataTable 'Organization' column display expression.
- * @param {FamApplicationUserRoleAssignmentGetSchema | FamAccessControlPrivilegeGetResponse} data - provided
- *        datatable data to extract and format forest client information for the 'Organization' column. Only
- *        user table and delegated admin table have this column.
- */
-const displayForestClient = (
-    data:
-        | FamApplicationUserRoleAssignmentGetSchema
-        | FamAccessControlPrivilegeGetResponse
-) => {
-    const forestClientData = data.role.forest_client;
-    if (props.tableType === ManagePermissionsTableEnum.AppUser) {
-        // Display formatted forest client display name.
-        return forestClientData
-            ? formatForestClientDisplayName(
-                  forestClientData.forest_client_number,
-                  forestClientData.client_name
-              )
-            : "";
-    } else {
-        // For delegated admin data.
-        // TODO: No client name available from backend yet, implement soon. Only display client number. # noqa NOSONAR
-        return forestClientData?.forest_client_number;
-    }
-};
 </script>
 
 <template>
@@ -598,7 +571,7 @@ const displayForestClient = (
                 sortable
             >
                 <template #body="{ data }">
-                    {{ displayForestClient(data) }}
+                    {{ displayForestClient(tableType, data) }}
                 </template>
             </Column>
 
