@@ -158,13 +158,11 @@ const visibleTabs = computed(() => tabs.filter((tab) => tab.visible.value));
 const notifications = ref<PermissionNotificationType[]>([
     ...(addAppUserPermissionSuccessData
         ? generateAppPermissionSuccessNotifications(
-              "addUserPermission",
               addAppUserPermissionSuccessData
           )
         : []),
     ...(addDelegatedAdminSuccessData
         ? generateAppPermissionSuccessNotifications(
-              "addUserPermission",
               addDelegatedAdminSuccessData
           )
         : []),

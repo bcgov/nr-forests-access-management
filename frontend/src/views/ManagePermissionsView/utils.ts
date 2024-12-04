@@ -69,7 +69,7 @@ export const generateAppPermissionSuccessNotifications = (
         famUser.last_name
     );
 
-    let actionTerm = "Added permission to manage";
+    let actionTerm = "added permission to manage";
 
     // Success notifications for abstract roles
     if (successClientList.length && successRoleList.length) {
@@ -129,7 +129,7 @@ export const generateAppPermissionSuccessNotifications = (
         });
     }
 
-    actionTerm = "already has the permission to manage";
+    actionTerm = "already has permission to manage";
 
     // Conflict notifications for Abstract roles
     if (conflictClientList.length && conflictRoleList.length) {
