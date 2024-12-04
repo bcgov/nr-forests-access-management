@@ -75,6 +75,7 @@ const computedDomain = computed({
     flex-direction: column;
     row-gap: 0.5rem;
     padding: 0;
+    margin: 0;
 
     .idp-select-col {
         display: flex;
@@ -83,7 +84,7 @@ const computedDomain = computed({
         gap: 0.5rem;
 
         label {
-            @include type.type-style("body-compact-02");
+            @include type.type-style("body-compact-01");
         }
     }
 }

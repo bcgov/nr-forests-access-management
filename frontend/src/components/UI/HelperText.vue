@@ -20,7 +20,7 @@ const props = defineProps<{
 <style lang="scss">
 .fam-helper-text,
 .fam-error-helper-text {
-    @include type.type-style("label-02");
+    @include type.type-style("label-01");
     padding: 0;
 }
 

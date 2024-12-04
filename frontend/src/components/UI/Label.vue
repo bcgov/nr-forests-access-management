@@ -23,7 +23,7 @@ const props = defineProps<{
 
 <style lang="scss">
 .fam-label {
-    @include type.type-style("label-02");
+    @include type.type-style("label-01");
     display: flex;
     flex-direction: row;
     gap: 0.5rem;

@@ -87,7 +87,7 @@ const handleKeyDown = (event: KeyboardEvent) => {
         justify-content: space-between;
         align-items: center;
         .button-label {
-            @include type.type-style("body-compact-02");
+            @include type.type-style("body-compact-01");
         }
 
         .button-icon {

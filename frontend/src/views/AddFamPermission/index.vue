@@ -140,7 +140,7 @@ const onSubmit = () => {
             >
                 <form
                     id="add-fam-permission-form-id"
-                    class="col-sm-12 col-md-12 col-lg-10 col-xl-10 col-xxl-7"
+                    class="col-sm-12 col-md-12 col-lg-10"
                 >
                     <StepContainer title="User information" divider>
                         <UserNameInput
