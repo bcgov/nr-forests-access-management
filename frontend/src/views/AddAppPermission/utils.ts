@@ -6,10 +6,11 @@ import {
     type IdimProxyBceidInfoSchema,
     type IdimProxyIdirInfoSchema,
 } from "fam-app-acsctl-api/model";
-import type {
-    FamAccessControlPrivilegeCreateRequest,
-    FamGrantDetailDto,
-    FamRoleDto,
+import {
+    RoleType,
+    type FamAccessControlPrivilegeCreateRequest,
+    type FamGrantDetailDto,
+    type FamRoleDto,
 } from "fam-admin-mgmt-api/model";
 import type { TextInputType } from "@/types/InputTypes";
 
@@ -142,4 +143,4 @@ export const getRolesByAppId = (data: FamGrantDetailDto[], appId: number) => {
 
 export const isAbstractRoleSelected = (
     formData?: AppPermissionFormType
-): boolean => formData?.role?.type_code === "A";
+): boolean => formData?.role?.type_code === RoleType.A;
