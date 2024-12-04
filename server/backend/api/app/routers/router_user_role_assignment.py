@@ -172,8 +172,8 @@ def delete_user_role_assignment(
         raise e
 
     finally:
-        if user_role.role.client_number:
+        if user_role.role.forest_client_relation:
             audit_event_log.forest_client_number = (
-                user_role.role.client_number.forest_client_number
+                user_role.role.forest_client_relation.forest_client_number
             )
         audit_event_log.log_event()

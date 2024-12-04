@@ -16,6 +16,7 @@ import { useConfirm } from "primevue/useconfirm";
 import { nextTick, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
+import { getOrganizationName } from "@/components/ManagePermissionsTable/utils";
 import TableSkeleton from "@/components/Skeletons/TableSkeleton.vue";
 import TableHeaderTitle from "@/components/Table/TableHeaderTitle.vue";
 import TableToolbar from "@/components/Table/TableToolbar.vue";
@@ -36,8 +37,8 @@ import { selectedApp } from "@/store/ApplicationState";
 import { ManagePermissionsTableEnum } from "@/types/ManagePermissionsTypes";
 import type { PermissionNotificationType } from "@/types/NotificationTypes";
 import { formatAxiosError } from "@/utils/ApiUtils";
-import { formatUserNameAndId } from "@/utils/UserUtils";
 import { utcToLocalDate } from "@/utils/DateUtils";
+import { formatUserNameAndId } from "@/utils/UserUtils";
 import {
     NewAppAdminQueryParamKey,
     NewDelegatedAddminQueryParamKey,
@@ -561,9 +562,18 @@ const highlightNewUserAccessRow = (
                         ? 'role.forest_client.forest_client_number'
                         : 'role.client_number.forest_client_number'
                 "
-                header="Client Number"
+                :sort-field="
+                    tableType === ManagePermissionsTableEnum.AppUser
+                        ? 'role.forest_client.forest_client_number'
+                        : 'role.client_number.forest_client_number'
+                "
+                header="Organization"
                 sortable
-            ></Column>
+            >
+                <template #body="{ data }">
+                    {{ getOrganizationName(tableType, data) }}
+                </template>
+            </Column>
 
             <Column
                 :header="

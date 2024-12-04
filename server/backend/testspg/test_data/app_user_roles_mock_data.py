@@ -37,7 +37,7 @@ APP_USER_ROLE_PAGED_RESULT_2_RECORDS = PagedResultsSchema[FamApplicationUserRole
           "role_id": 4,
           "display_name": "Reviewer",
           "role_purpose": "Provides the privilege to review all FOMs in the system",
-          "client_number": None,
+          "forest_client_relation": None,
           "parent_role": None
         },
         "create_date": "2024-11-01T19:44:47.497785Z"
@@ -67,7 +67,7 @@ APP_USER_ROLE_PAGED_RESULT_2_RECORDS = PagedResultsSchema[FamApplicationUserRole
           "role_id": 128,
           "display_name": "Submitter",
           "role_purpose": "Provides the privilege to submit a FOM (on behalf of a specific forest client) for 00001011",
-          "client_number": {
+          "forest_client_relation": {
             "client_name": None,
             "forest_client_number": "00001011",
             "status": None

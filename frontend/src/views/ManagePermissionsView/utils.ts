@@ -1,25 +1,18 @@
+import type { PermissionNotificationType } from "@/types/NotificationTypes";
 import type { AddAppPermissionRequestType } from "@/types/RouteTypes";
+import { formatForestClientDisplayName } from "@/utils/ForestClientUtils";
+import { formatUserNameAndId } from "@/utils/UserUtils";
 import type {
+    FamAccessControlPrivilegeCreateResponse,
     FamAccessControlPrivilegeResponse,
     FamRoleWithClientDto,
-    FamAccessControlPrivilegeCreateResponse,
 } from "fam-admin-mgmt-api/model";
 import type {
     FamRoleWithClientSchema,
     FamUserRoleAssignmentRes,
 } from "fam-app-acsctl-api/model";
-import type { PermissionNotificationType } from "@/types/NotificationTypes";
-import { formatUserNameAndId } from "@/utils/UserUtils";
-import { formatForestClientDisplayName } from "@/utils/ForestClientUtils";
-import type { AppPermissionQueryErrorType } from "../AddAppPermission/utils";
 import { Severity } from "../../types/NotificationTypes";
-
-// Define a type guard to check if the role is FamRoleWithClientSchema
-function isFamRoleWithClientSchema(
-    role: FamRoleWithClientSchema | FamRoleWithClientDto
-): role is FamRoleWithClientSchema {
-    return (role as FamRoleWithClientSchema).forest_client !== undefined;
-}
+import type { AppPermissionQueryErrorType } from "../AddAppPermission/utils";
 
 export const generateAppPermissionSuccessNotifications = (
     requestType: AddAppPermissionRequestType,
@@ -44,11 +37,7 @@ export const generateAppPermissionSuccessNotifications = (
             .map((filtered) => filtered.detail.role);
 
     const successClientList = successRoleList
-        .map((role) =>
-            isFamRoleWithClientSchema(role)
-                ? role.forest_client
-                : role.client_number
-        )
+        .map((role) => role.forest_client)
         .filter((client) => client !== undefined && client !== null);
 
     const conflictRoleList: FamRoleWithClientSchema[] | FamRoleWithClientDto[] =
@@ -57,11 +46,7 @@ export const generateAppPermissionSuccessNotifications = (
             .map((filtered) => filtered.detail.role);
 
     const conflictClientList = conflictRoleList
-        .map((role) =>
-            isFamRoleWithClientSchema(role)
-                ? role.forest_client
-                : role.client_number
-        )
+        .map((role) => role.forest_client)
         .filter((client) => client !== undefined && client !== null);
 
     const famUser = data.assignments_detail[0].detail.user;

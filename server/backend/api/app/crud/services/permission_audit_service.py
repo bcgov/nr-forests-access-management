@@ -139,7 +139,7 @@ class PermissionAuditService:
         forest_client_name = None
         # Search forest client name for storing audit record. Current FAM does not store forest client name in db.
         if (is_forest_client_scoped_role):
-            forest_client_number = revoked_permission_role.client_number.forest_client_number
+            forest_client_number = revoked_permission_role.forest_client_relation.forest_client_number
             api_instance_env = crud_utils.use_api_instance_by_app(revoked_permission_role.application)
             forest_client_integration_service = ForestClientIntegrationService(api_instance_env)
             fc_search_result = forest_client_integration_service.find_by_client_number(

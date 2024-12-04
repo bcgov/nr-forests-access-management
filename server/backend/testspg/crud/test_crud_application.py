@@ -64,7 +64,10 @@ def test_get_application_role_assignments_on_pagination(
     mocker.patch("api.app.crud.crud_utils.is_app_admin", return_value=True)
     paginate_service_get_paginated_results_fn_spy = mocker.spy(PaginateService, 'get_paginated_results')
 
-    paged_results = crud_application.get_application_role_assignments(
+    # Important! the `.__wrapped__` contains the original function (without decorated) so tests can use it.
+    # See note at 'forest_client_dec.py'
+    original_get_application_role_assignments_fn = crud_application.get_application_role_assignments.__wrapped__
+    paged_results = original_get_application_role_assignments_fn(
         db=session, application_id=FOM_DEV_APPLICATION_ID, requester=dummy_test_requester, page_params=test_page_params
     )
 

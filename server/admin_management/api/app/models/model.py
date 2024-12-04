@@ -245,7 +245,7 @@ class FamRole(Base):
 
     application: Mapped[FamApplication] = relationship("FamApplication", back_populates="fam_role")
 
-    client_number: Mapped['FamForestClient'] = relationship(
+    forest_client_relation: Mapped['FamForestClient'] = relationship(
         "FamForestClient", back_populates="fam_role", lazy="joined"
     )
     parent_role = relationship(
@@ -492,7 +492,7 @@ class FamForestClient(Base):
         comment="The date and time the record was created or last updated.",
     )
 
-    fam_role = relationship("FamRole", back_populates="client_number")
+    fam_role = relationship("FamRole", back_populates="forest_client_relation")
 
 
 class FamUserType(Base):

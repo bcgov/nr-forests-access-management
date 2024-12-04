@@ -71,7 +71,7 @@ class RoleService:
             forest_client_record = self.forest_client_service.find_or_create(
                 forest_client_number, fam_role_dict.get("create_user")
             )
-            fam_role_dict["client_number"] = forest_client_record
+            fam_role_dict["forest_client_relation"] = forest_client_record
 
         fam_role_model = self.role_repo.create_role(fam_role_dict)
         return fam_role_model

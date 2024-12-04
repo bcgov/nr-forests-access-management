@@ -210,7 +210,7 @@ def test_store_delegated_admin_audit_history_revoke_role_with_client_scopes(
 	mock_delete_record.user_id = change_target_user.user_id
 	mock_delete_record.user = change_target_user
 	mock_forest_client_number = "00001011"
-	mock_delete_record.role.client_number.forest_client_number = mock_forest_client_number
+	mock_delete_record.role.forest_client_relation.forest_client_number = mock_forest_client_number
 	mock_delete_record.role.role_name = f"FOM_SUBMITTER_{mock_forest_client_number}"
 	mock_forest_client_integration_service.find_by_client_number.return_value = MOCK_FIND_CLIENT_00001011_RETURN
 
@@ -266,7 +266,7 @@ def test_store_delegated_admin_audit_history_revoke_role_client_search_error(
 	assert str(e.value.detail.get("code")).find(ERROR_CODE_UNKNOWN_STATE) != -1
 	error_msg = (
 		"Revoke delegated admin permission encountered problem."
-		+ f"Unknown forest client number {mock_delete_record.role.client_number.forest_client_number} for "
+		+ f"Unknown forest client number {mock_delete_record.role.forest_client_relation.forest_client_number} for "
 		+ f"scoped permission {mock_delete_record.role.role_name}."
 	)
 	assert str(e.value.detail.get("description")).find(error_msg) != -1
@@ -300,14 +300,14 @@ def verify_delegated_admin_user_granted_privilege_details(
 	granted_role = mock_delegated_admin_permission_granted_list[0].detail.role
 	assert audit_role["role"] == granted_role.display_name
 	audit_scopes = audit_role.get("scopes")
-	if granted_role.client_number is None:
+	if granted_role.forest_client is None:
 		# "scopes" attribute is not present  in json structure if the granted role has no scope.
 		assert audit_scopes is None
 
 	else:
 		assert len(audit_scopes) == len(mock_delegated_admin_permission_granted_list)
 		org_id_list = list(map(
-			lambda item: item.detail.role.client_number.forest_client_number, mock_delegated_admin_permission_granted_list
+			lambda item: item.detail.role.forest_client.forest_client_number, mock_delegated_admin_permission_granted_list
 		))
 		for scope in audit_scopes:
 			scope.get("scope_type") == PrivilegeDetailsScopeTypeEnum.CLIENT  # Current FAM supports 'CLIENT' type only, more in future.
@@ -346,7 +346,7 @@ sample_delegated_admin_permission_granted_no_scope_details = FamAccessControlPri
 			user_type_relation=FamUserTypeDto(user_type_code=UserType.BCEID, description='BCEID')),
 		role=FamRoleWithClientDto(role_name='FOM_REVIEWER',
 		application=FamApplicationBase(application_id=2, application_name='FOM_DEV', application_description='Forest Operations Map (DEV)'),
-		role_id=999, display_name='Reviewer', role_purpose='Provides the privilege to review all FOMs in the system', client_number=None, parent_role=None),
+		role_id=999, display_name='Reviewer', role_purpose='Provides the privilege to review all FOMs in the system', forest_client_relation=None, parent_role=None),
 		create_date=datetime(2024, 11, 1, 19, 44, 47)),
 		'error_message': None
 	}
@@ -362,7 +362,7 @@ sample_delegated_admin_permission_granted_with_scope_details = FamAccessControlP
 		role=FamRoleWithClientDto(role_name='FOM_SUBMITTER_00001012',
 		application=FamApplicationBase(application_id=2, application_name='FOM_DEV', application_description='Forest Operations Map (DEV)'),
 		role_id=127, display_name='Submitter', role_purpose='Provides the privilege to submit a FOM (on behalf of a specific forest client)',
-		client_number=FamForestClientBase(client_name=None, forest_client_number="00001012", status=None),
+		forest_client_relation=FamForestClientBase(client_name=None, forest_client_number="00001012", status=None),
 		parent_role=FamRoleBase(role_name="FOM_SUBMITTER", role_type_code="A",
 			application=FamApplicationBase(application_id=2, application_name='FOM_DEV', application_description='Forest Operations Map (DEV)'))),
 			create_date=datetime(2024, 11, 1, 19, 44, 47)),
@@ -383,7 +383,7 @@ sameple_delegated_admin_role_with_client_revoked_record = FamAccessControlPrivil
 	"user": FamUser(**{"user_id": 111}),
 	"role": FamRole(**{"display_name": "Submitter", "role_name": "FOM_SUBMITTER_00001011",
 		"application": FamApplication(** {"application_id": TEST_APPLICATION_ID_FOM_DEV, }),
-		"client_number_id": 3, "client_number": FamForestClient(**{
+		"client_number_id": 3, "forest_client_relation": FamForestClient(**{
 			"forest_client_number": "00001011"
 		})
    })
@@ -394,7 +394,7 @@ sameple_delegated_admin_role_with_notfound_client_revoked_record = FamAccessCont
 	"user": FamUser(**{"user_id": 111}),
 	"role": FamRole(**{"display_name": "Submitter", "role_name": "FOM_SUBMITTER_09090909",
 		"application": FamApplication(** {"application_id": TEST_APPLICATION_ID_FOM_DEV, }),
-		"client_number_id": 3, "client_number": FamForestClient(**{
+		"client_number_id": 3, "forest_client_relation": FamForestClient(**{
 			"forest_client_number": "09090909"
 		})
    })

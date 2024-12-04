@@ -4,6 +4,7 @@ from datetime import datetime
 from api.app.constants import UserRoleSortByEnum, UserType
 from api.app.crud.services.paginate_service import PaginateService
 from api.app.datetime_format import TIMESTAMP_FORMAT_DEFAULT
+from api.app.decorators.forest_client_dec import post_sync_forest_clients_dec
 from api.app.models import model as models
 from api.app.schemas import (FamApplicationUserRoleAssignmentGetSchema,
                              RequesterSchema)
@@ -72,7 +73,7 @@ def __build_filter_criteria(page_params: UserRolePageParamsSchema):
         else None
     )
 
-
+@post_sync_forest_clients_dec
 def get_application_role_assignments(
     db: Session, application_id: int, requester: RequesterSchema, page_params: UserRolePageParamsSchema
 ) -> PagedResultsSchema[FamApplicationUserRoleAssignmentGetSchema]:
@@ -97,7 +98,7 @@ def get_application_role_assignments(
         select(models.FamUserRoleXref)
         .join(models.FamUser)
         .join(models.FamRole)
-        .outerjoin(models.FamRole.client_number)
+        .outerjoin(models.FamRole.forest_client_relation)
         .filter(models.FamRole.application_id == application_id)
     )
 
