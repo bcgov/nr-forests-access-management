@@ -35,10 +35,6 @@ if (!formData) {
 
 const confirm = useConfirm();
 
-const { resetField: resetForestClientsField } = useField(
-    props.forestClientsFieldId
-);
-
 /**
  * An intermediate value to accommodate the fake delegated admin role.
  */
@@ -80,7 +76,9 @@ const setRoleAndClearClients = (role: FamRoleDto) => {
     }
 
     formData.value.forestClients = [];
-    resetForestClientsField();
+    formData.value.forestClientInput.value = "";
+    formData.value.forestClientInput.isValid = true;
+    formData.value.forestClientInput.errorMsg = "";
 };
 
 const handleRoleSelect = (role: FamRoleDto) => {
