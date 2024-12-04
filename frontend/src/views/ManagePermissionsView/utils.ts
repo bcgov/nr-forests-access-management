@@ -1,4 +1,3 @@
-import type { AddAppPermissionRequestType } from "@/types/RouteTypes";
 import type {
     FamAccessControlPrivilegeResponse,
     FamRoleWithClientDto,
@@ -22,7 +21,6 @@ function isFamRoleWithClientSchema(
 }
 
 export const generateAppPermissionSuccessNotifications = (
-    requestType: AddAppPermissionRequestType,
     data: FamUserRoleAssignmentRes | FamAccessControlPrivilegeResponse
 ): PermissionNotificationType[] => {
     const notifications: PermissionNotificationType[] = [];
@@ -71,10 +69,7 @@ export const generateAppPermissionSuccessNotifications = (
         famUser.last_name
     );
 
-    let actionTerm =
-        requestType === "addUserPermission"
-            ? "added with"
-            : "granted privilege to manage";
+    let actionTerm = "Added permission to manage";
 
     // Success notifications for abstract roles
     if (successClientList.length && successRoleList.length) {
@@ -134,10 +129,7 @@ export const generateAppPermissionSuccessNotifications = (
         });
     }
 
-    actionTerm =
-        requestType === "addUserPermission"
-            ? "already exists with"
-            : "already has the privilege to manage";
+    actionTerm = "already has the permission to manage";
 
     // Conflict notifications for Abstract roles
     if (conflictClientList.length && conflictRoleList.length) {
