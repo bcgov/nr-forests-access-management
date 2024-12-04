@@ -16,7 +16,7 @@ import { useConfirm } from "primevue/useconfirm";
 import { nextTick, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
-import { displayForestClient } from "@/components/ManagePermissionsTable/utils";
+import { getOrganizationName } from "@/components/ManagePermissionsTable/utils";
 import TableSkeleton from "@/components/Skeletons/TableSkeleton.vue";
 import TableHeaderTitle from "@/components/Table/TableHeaderTitle.vue";
 import TableToolbar from "@/components/Table/TableToolbar.vue";
@@ -571,7 +571,7 @@ const highlightNewUserAccessRow = (
                 sortable
             >
                 <template #body="{ data }">
-                    {{ displayForestClient(tableType, data) }}
+                    {{ getOrganizationName(tableType, data) }}
                 </template>
             </Column>
 

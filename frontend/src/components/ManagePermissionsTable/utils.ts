@@ -265,7 +265,7 @@ export const NEW_ACCESS_STYLE_IN_TABLE = {
  *        datatable data to extract and format forest client information for the 'Organization' column. Only
  *        user table and delegated admin table have this column.
  */
-export const displayForestClient = (
+export const getOrganizationName = (
     tableType: ManagePermissionsTableEnum,
     data:
         | FamApplicationUserRoleAssignmentGetSchema
