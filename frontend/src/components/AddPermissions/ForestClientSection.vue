@@ -170,7 +170,6 @@ onUnmounted(() => {
                                 errorMessage ||
                                 !formData.forestClientInput.isValid,
                         }"
-                        @blur="addOrganization()"
                         :disabled="formData.forestClientInput.isVerifying"
                     />
                     <HelperText
