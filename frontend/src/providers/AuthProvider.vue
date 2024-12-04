@@ -337,6 +337,7 @@ const debouncedResetInactivityTimeout = debounce(
 onMounted(() => {
     window.addEventListener("mousemove", debouncedResetInactivityTimeout);
     window.addEventListener("keydown", debouncedResetInactivityTimeout);
+    window.addEventListener("click", debouncedResetInactivityTimeout);
 
     const currentPath = window.location.pathname;
     if (currentPath === "/authCallback") {
@@ -360,6 +361,7 @@ onBeforeUnmount(() => {
 
     window.removeEventListener("mousemove", debouncedResetInactivityTimeout);
     window.removeEventListener("keydown", debouncedResetInactivityTimeout);
+    window.removeEventListener("click", debouncedResetInactivityTimeout);
 });
 
 /**
