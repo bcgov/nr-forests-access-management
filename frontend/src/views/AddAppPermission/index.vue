@@ -76,7 +76,7 @@ const adminUserAccessQuery = useQuery({
             .then((res) => res.data),
 });
 
-const selectedApp = computed(() => {
+const rolesUnderSelectedApp = computed(() => {
     if (!adminUserAccessQuery.data.value) return null;
 
     const adminUserAccess = adminUserAccessQuery.data.value;
@@ -102,7 +102,7 @@ const selectedApp = computed(() => {
 const formData = ref<AppPermissionFormType | undefined>(undefined);
 
 watch(
-    () => adminUserAccessQuery.isSuccess && selectedApp.value,
+    () => adminUserAccessQuery.isSuccess && rolesUnderSelectedApp.value,
     (isSuccessful) => {
         if (isSuccessful) {
             formData.value = getDefaultFormData(
@@ -278,7 +278,7 @@ const getUserNameInputHelperText = () =>
         <BreadCrumbs :crumbs="crumbs" />
         <PageTitle
             title="Add permission"
-            :subtitle="`Add a new user permission to ${selectedApp?.application.description}`"
+            :subtitle="`Add a new user permission to ${rolesUnderSelectedApp?.application.description}`"
         />
         <div class="app-permission-form-container container-fluid">
             <Form
@@ -321,11 +321,11 @@ const getUserNameInputHelperText = () =>
                         title="User roles"
                         subtitle="Select a role for this user"
                         divider
-                        v-if="selectedApp?.roles"
+                        v-if="rolesUnderSelectedApp?.roles"
                     >
                         <RoleSelectTable
                             :app-id="appId"
-                            :roleOptions="selectedApp.roles"
+                            :roleOptions="rolesUnderSelectedApp.roles"
                             :is-delegated-admin-only="
                                 isUserDelegatedAdminOnly(
                                     props.appId,
