@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.28.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.27.1...v1.28.0) (2024-12-05)
+
+
+### Features
+
+* [#1638](https://github.com/bcgov/nr-forests-access-management/issues/1638) Forest Client Search integration and show FC client name ([#1678](https://github.com/bcgov/nr-forests-access-management/issues/1678)) ([092c875](https://github.com/bcgov/nr-forests-access-management/commit/092c8753df373a480d6f2abfc331b9abef6a2f71))
+* [#1654](https://github.com/bcgov/nr-forests-access-management/issues/1654) combine grant app user role and d admin role screens ([#1679](https://github.com/bcgov/nr-forests-access-management/issues/1679)) ([8bde1ae](https://github.com/bcgov/nr-forests-access-management/commit/8bde1aee7148d16b14b1a940d6a2c5c9db3a148d))
+
+
+### Bug Fixes
+
+* [#1638](https://github.com/bcgov/nr-forests-access-management/issues/1638) Fix updating forest client name error after search when forest client number isn't a valid one.  ([#1687](https://github.com/bcgov/nr-forests-access-management/issues/1687)) ([887b230](https://github.com/bcgov/nr-forests-access-management/commit/887b230ef9865b4ed973069e564d0989e2eeb63e))
+* [#1685](https://github.com/bcgov/nr-forests-access-management/issues/1685) style fixes on add/manage permission pages ([#1686](https://github.com/bcgov/nr-forests-access-management/issues/1686)) ([6456a9b](https://github.com/bcgov/nr-forests-access-management/commit/6456a9b1af65c52987dc48c0c25444176bc8ec89))
+* Quick fix to add default size to frontend to query more than 50 items from backend. ([#1688](https://github.com/bcgov/nr-forests-access-management/issues/1688)) ([c312218](https://github.com/bcgov/nr-forests-access-management/commit/c312218d691a61d26924f7202726464ad72a50ca))
+
 ## [1.27.1](https://github.com/bcgov/nr-forests-access-management/compare/v1.27.0...v1.27.1) (2024-11-27)
 
 
