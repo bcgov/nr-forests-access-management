@@ -34,12 +34,16 @@ def dummy_fn_to_be_decorated(
             TestAppUserRoleResultDictKeys.NO_RESULT
         ),
         (   # fn return with no FC in items.
-            APP_USER_ROLE_GET_RESULTS_NO_PAGE_META[TestAppUserRoleResultDictKeys.NO_FC_RESULTS],
-            TestAppUserRoleResultDictKeys.NO_FC_RESULTS
+            APP_USER_ROLE_GET_RESULTS_NO_PAGE_META[TestAppUserRoleResultDictKeys.NO_FC_IN_RESULTS],
+            TestAppUserRoleResultDictKeys.NO_FC_IN_RESULTS
         ),
         (   # fn return with FC in items.
-            APP_USER_ROLE_GET_RESULTS_NO_PAGE_META[TestAppUserRoleResultDictKeys.WITH_FC_RESULTS],
-            TestAppUserRoleResultDictKeys.WITH_FC_RESULTS
+            APP_USER_ROLE_GET_RESULTS_NO_PAGE_META[TestAppUserRoleResultDictKeys.WITH_FC_IN_RESULTS],
+            TestAppUserRoleResultDictKeys.WITH_FC_IN_RESULTS
+        ),
+        (   # fn return with FC in items but FC does not exist in search (legacy or not active).
+            APP_USER_ROLE_GET_RESULTS_NO_PAGE_META[TestAppUserRoleResultDictKeys.WITH_FC_NOT_ACTIVE_RESULT],
+            TestAppUserRoleResultDictKeys.WITH_FC_NOT_ACTIVE_RESULT
         ),
     ],
 )
@@ -62,10 +66,13 @@ def test_should_update_client_name_for_forest_client_fn_results(
     # call decorated function
     fn_dec_return = dummy_fn_to_be_decorated(mock_fn_return)
 
-    if expected_results_condition is not TestAppUserRoleResultDictKeys.WITH_FC_RESULTS:
+    if expected_results_condition is not TestAppUserRoleResultDictKeys.WITH_FC_IN_RESULTS:
         # expect decorated results is the same and no forest client name update.
         assert fn_dec_return.results == APP_USER_ROLE_GET_RESULTS_NO_PAGE_META[expected_results_condition]
-        assert mock_fc_search.call_count == 0
+        if (expected_results_condition is TestAppUserRoleResultDictKeys.WITH_FC_NOT_ACTIVE_RESULT):
+            assert mock_fc_search.call_count == 1
+        else:
+            assert mock_fc_search.call_count == 0
 
     else:
         # expect decorated results contains client name update.
