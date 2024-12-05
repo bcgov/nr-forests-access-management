@@ -137,7 +137,9 @@ const handleRoleSelect = (role: FamRoleDto) => {
                 </Column>
                 <Column class="align-top-col" field="roleName" header="Role">
                     <template #body="{ data }">
-                        <span>{{ data.display_name }}</span>
+                        <span class="role-display-name">{{
+                            data.display_name
+                        }}</span>
                     </template>
                 </Column>
                 <Column field="roleDescription" header="Description">
@@ -187,6 +189,10 @@ const handleRoleSelect = (role: FamRoleDto) => {
 
     .table-error {
         display: block;
+    }
+
+    .role-display-name {
+        white-space: nowrap;
     }
 }
 </style>

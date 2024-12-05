@@ -14,7 +14,8 @@ import { Severity } from "../../types/NotificationTypes";
 import type { AppPermissionQueryErrorType } from "../AddAppPermission/utils";
 
 export const generateAppPermissionSuccessNotifications = (
-    data: FamUserRoleAssignmentRes | FamAccessControlPrivilegeResponse
+    data: FamUserRoleAssignmentRes | FamAccessControlPrivilegeResponse,
+    isDelegatedAdmin: boolean
 ): PermissionNotificationType[] => {
     const notifications: PermissionNotificationType[] = [];
 
@@ -54,7 +55,9 @@ export const generateAppPermissionSuccessNotifications = (
         famUser.last_name
     );
 
-    let actionTerm = "added permission to manage";
+    let actionTerm = isDelegatedAdmin
+        ? "granted privilege to manage"
+        : "added with";
 
     // Success notifications for abstract roles
     if (successClientList.length && successRoleList.length) {
@@ -114,7 +117,9 @@ export const generateAppPermissionSuccessNotifications = (
         });
     }
 
-    actionTerm = "already has permission to manage";
+    actionTerm = isDelegatedAdmin
+        ? "already has the privilege to manage"
+        : "already exists with";
 
     // Conflict notifications for Abstract roles
     if (conflictClientList.length && conflictRoleList.length) {
