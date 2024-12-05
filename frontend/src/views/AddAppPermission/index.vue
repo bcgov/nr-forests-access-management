@@ -148,6 +148,7 @@ const appAdminMutation = useMutation({
             [AddAppUserPermissionSuccessQuerykey],
             res.data
         );
+        activeTabIndex.value = 0;
         router.push({
             name: ManagePermissionsRoute.name,
             query: {

@@ -20,7 +20,7 @@ const props = defineProps<{
             </template>
 
             <template #content>
-                <div class="container">
+                <div class="container-fluid">
                     <div class="row gy-4">
                         <CardColumn
                             :id="`user-card-id-${props.userIdentity.userId}`"
