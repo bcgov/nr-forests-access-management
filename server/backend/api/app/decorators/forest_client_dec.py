@@ -72,6 +72,6 @@ def __post_sync_forest_clients(result_list: List[FamApplicationUserRoleAssignmen
         for item in result_list:
             if item.role.forest_client:
                 fcn = item.role.forest_client.forest_client_number
-                item.role.forest_client.client_name = fc_search_client_name_dict[fcn]
+                item.role.forest_client.client_name = fc_search_client_name_dict.get(fcn)
 
     return result_list
