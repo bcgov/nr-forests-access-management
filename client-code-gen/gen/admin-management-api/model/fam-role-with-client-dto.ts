@@ -58,7 +58,7 @@ export interface FamRoleWithClientDto {
      * @type {FamForestClientBase}
      * @memberof FamRoleWithClientDto
      */
-    'client_number'?: FamForestClientBase | null;
+    'forest_client': FamForestClientBase | null;
     /**
      * 
      * @type {FamRoleBase}

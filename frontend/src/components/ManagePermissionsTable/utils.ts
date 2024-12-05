@@ -1,14 +1,15 @@
+import { ManagePermissionsTableEnum } from "@/types/ManagePermissionsTypes";
+import type { PermissionNotificationType } from "@/types/NotificationTypes";
+import { Severity } from "@/types/NotificationTypes";
+import { formatAxiosError } from "@/utils/ApiUtils";
+import { formatForestClientDisplayName } from "@/utils/ForestClientUtils";
+import { formatUserNameAndId } from "@/utils/UserUtils";
 import { isAxiosError } from "axios";
 import {
     type FamAccessControlPrivilegeGetResponse,
     type FamAppAdminGetResponse,
 } from "fam-admin-mgmt-api/model";
-import { formatUserNameAndId } from "@/utils/UserUtils";
-import { formatAxiosError } from "@/utils/ApiUtils";
-import type { PermissionNotificationType } from "@/types/NotificationTypes";
 import type { FamApplicationUserRoleAssignmentGetSchema } from "fam-app-acsctl-api/model";
-import { Severity } from "@/types/NotificationTypes";
-import { ManagePermissionsTableEnum } from "@/types/ManagePermissionsTypes";
 
 export type ConfirmTextType = {
     role: string;
@@ -255,4 +256,33 @@ export const createNotification = <T>(
 export const NEW_ACCESS_STYLE_IN_TABLE = {
     "background-color": "#C2E0FF",
     "box-shadow": "inset 0 0 0 0.063rem #85C2FF",
+};
+
+/**
+ * DataTable 'Organization' column display expression.
+ * @param {ManagePermissionsTableEnum} tableType - ManagePermissionsTable table types.
+ * @param {FamApplicationUserRoleAssignmentGetSchema | FamAccessControlPrivilegeGetResponse} data - provided
+ *        datatable data to extract and format forest client information for the 'Organization' column. Only
+ *        user table and delegated admin table have this column.
+ */
+export const getOrganizationName = (
+    tableType: ManagePermissionsTableEnum,
+    data:
+        | FamApplicationUserRoleAssignmentGetSchema
+        | FamAccessControlPrivilegeGetResponse
+) => {
+    const forestClientData = data.role.forest_client;
+    if (tableType === ManagePermissionsTableEnum.AppUser) {
+        // Display formatted forest client display name.
+        return forestClientData
+            ? formatForestClientDisplayName(
+                  forestClientData.forest_client_number,
+                  forestClientData.client_name
+              )
+            : "";
+    } else {
+        // For delegated admin data.
+        // TODO: No client name available from backend yet, implement soon. Only display client number. # noqa NOSONAR
+        return forestClientData?.forest_client_number;
+    }
 };

@@ -159,7 +159,7 @@ class AdminUserAccessService:
                     # roles of forest_clients associated.
                     role_dto = FamRoleDto(**parent_role.__dict__)
                     forest_client_numbers = list(
-                        map(lambda fam_role: fam_role.client_number.forest_client_number,
+                        map(lambda fam_role: fam_role.forest_client_relation.forest_client_number,
                             child_roles_group))
                     role_dto.forest_clients = forest_client_numbers
                     roles_details.append(role_dto)

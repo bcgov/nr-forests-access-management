@@ -94,7 +94,7 @@ def load_fom_dev_user_role_test_data(db_pg_session: Session, load_test_users):
                 role_purpose=f"Submitter role for test application scoped with forest client {fc.forest_client_number}",
                 display_name="Submitter",
                 application=fom_dev_submitter_role.application,
-                client_number=fc,
+                forest_client_relation=fc,
                 parent_role=fom_dev_submitter_role,
                 create_user=TEST_CREATOR,
                 role_type_code=RoleType.ROLE_TYPE_CONCRETE

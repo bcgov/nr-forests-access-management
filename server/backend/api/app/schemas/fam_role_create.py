@@ -1,8 +1,8 @@
 from typing import Optional, Union
+
+from api.app.constants import ROLE_NAME_MAX_LEN, RoleType
 from pydantic import BaseModel, ConfigDict, Field, StringConstraints
 from typing_extensions import Annotated
-
-from api.app.constants import RoleType, ROLE_NAME_MAX_LEN
 
 from .fam_forest_client_create import FamForestClientCreateSchema
 
@@ -20,6 +20,5 @@ class FamRoleCreateSchema(BaseModel):
         Annotated[str, StringConstraints(max_length=8)], None
     ] = Field(default=None, title="Forest Client this role is associated with")
     create_user: Annotated[str, StringConstraints(max_length=100)]
-    client_number: Optional[FamForestClientCreateSchema] = None
 
     model_config = ConfigDict(from_attributes=True)

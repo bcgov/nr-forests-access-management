@@ -8,6 +8,7 @@ from api.app.constants import (APPLICATION_FAM,
                                ApiInstanceEnv, AppEnv, AwsTargetEnv)
 from api.app.crud import crud_application
 from api.app.models import model as models
+from api.app.schemas.fam_application import FamApplicationSchema
 from api.app.utils.utils import raise_http_exception
 from sqlalchemy import func
 from sqlalchemy.inspection import inspect
@@ -114,7 +115,7 @@ def is_on_aws_prod() -> bool:
     return get_aws_target_env() == AwsTargetEnv.PROD
 
 
-def use_api_instance_by_app(application: models.FamApplication) -> ApiInstanceEnv:
+def use_api_instance_by_app(application: models.FamApplication | FamApplicationSchema) -> ApiInstanceEnv:
     """
     FAM PROD environment supports (DEV/TET/PROD) integrated applications.
     Only PROD application at FAM PROD uses API instance in PROD.

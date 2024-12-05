@@ -1,8 +1,12 @@
 import logging
+import urllib
 from http import HTTPStatus
+from typing import List
 
 import requests
 from api.app.constants import ApiInstanceEnv
+from api.app.schemas.forest_client_integration import \
+    ForestClientIntegrationSearchParmsSchema
 from api.config import config
 
 LOGGER = logging.getLogger(__name__)
@@ -23,6 +27,7 @@ class ForestClientIntegrationService():
           For FAM environment management relating to the use of external API,
           see ref @FAM Wiki: https://github.com/bcgov/nr-forests-access-management/wiki/Environment-Management
     """
+
     # https://requests.readthedocs.io/en/latest/user/quickstart/#timeouts
     # https://docs.python-requests.org/en/latest/user/advanced/#timeouts
     TIMEOUT = (5, 10)  # Timeout (connect, read) in seconds.
@@ -52,17 +57,46 @@ class ForestClientIntegrationService():
                  wild card search and Forest Client API could be capable of doing that
                  in next version.
         """
-        url = f"{self.api_clients_url}/findByClientNumber/{p_client_number}"
+        url = f"{self.api_clients_url}/findByClientNumber/{urllib.parse.quote_plus(p_client_number)}"
         LOGGER.debug(f"ForestClientService find_by_client_number() - url: {url}")
 
+        find_result = self.__do_request(url=url)
+        return [find_result] if find_result else []
+
+    def search(self, search_params: ForestClientIntegrationSearchParmsSchema):
+        """
+        Find Forest Client(s) with FC API "search"
+
+        :param search_params (ForestClientIntegrationSearchParmsSchema): search params
+            for making FC API search request.
+
+        :return (json): Search result as List for a Forest Client information object.
+            FC API will return:
+            * Not found case (e.g., &id=99999999): 200 []
+            * Found case (e.g., &id=00001011&id=00001012): 200 [
+                {"clientNumber": "00001011",...},{"clientNumber": "00001012",...}]
+            * Invalid format (e.g., &id=kfjencid): 200 []
+            * Not exact 8 digits: 200 []
+            * With mix of ids found and ids not found (e.g., &id=00001011&id=99999999):
+                [{"clientNumber": "00001011"}]
+        """
+        request_params = (f"page={search_params.page}&size={search_params.size}{
+            self.__construct_fc_number_search_params(search_params.forest_client_numbers)
+        }")
+        url = f"{self.api_clients_url}/search?{request_params}"
+        LOGGER.debug(f"ForestClientService search() - url: {url}")
+
+        return self.__do_request(url=url)
+
+    def __do_request(self, url, params=None):
         try:
-            r = self.session.get(url, timeout=self.TIMEOUT)
+            r = self.session.get(url, timeout=self.TIMEOUT, params=params)
             r.raise_for_status()
             # !! Don't map and return FamForestClientSchema or object from "scheam.py" as that
             # will create circular dependency issue. let crud to map the result.
             api_result = r.json()
-            LOGGER.debug(f"API result: {api_result}")
-            return [api_result]
+            LOGGER.debug(f"FC API result: {api_result}. Took: {r.elapsed.total_seconds()} seconds")
+            return api_result
 
         # Below except catches only HTTPError not general errors like network connection/timeout.
         except requests.exceptions.HTTPError as he:
@@ -82,3 +116,9 @@ class ForestClientIntegrationService():
             # Else raise error, including 500
             # There is a general error handler, see: requests_http_error_handler
             raise he
+
+    def __construct_fc_number_search_params(self, forest_client_numbers: List[str]):
+        # return format as e.g.: &id=00001011&id=00001012
+        return "" if not forest_client_numbers else (
+            "".join(f"&id={item}" for item in forest_client_numbers)
+        )

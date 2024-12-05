@@ -1,13 +1,11 @@
 import logging
 from typing import Optional
-from sqlalchemy.orm import Session
 
 from api.app.models import model as models
 from api.app.schemas import FamForestClientCreateSchema, FamRoleCreateSchema
 from sqlalchemy.orm import Session
 
 from . import crud_forest_client
-
 
 LOGGER = logging.getLogger(__name__)
 
@@ -55,9 +53,9 @@ def create_role(role: FamRoleCreateSchema, db: Session) -> models.FamRole:
             )
 
             # finally add the forests client record to the role
-            fam_role_model.client_number = forest_client_model
+            fam_role_model.forest_client_relation = forest_client_model
         else:
-            fam_role_model.client_number = forest_client_record
+            fam_role_model.forest_client_relation = forest_client_record
 
     db.add(fam_role_model)
     db.flush()

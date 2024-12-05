@@ -14,7 +14,7 @@ class FamRoleWithClientSchema(FamRoleMinSchema):
         validation_alias="role_purpose"
     )
     forest_client: Optional[FamForestClientSchema] = Field(
-        validation_alias="client_number",
+        validation_alias="forest_client_relation",
         serialization_alias="forest_client"
     )
     parent_role: Optional[FamRoleMinSchema] = None
