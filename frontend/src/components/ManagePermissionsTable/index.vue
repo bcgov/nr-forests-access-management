@@ -114,7 +114,7 @@ const appUserQuery = useQuery({
     queryKey: ["fam_applications", props.appId, "user_role_assignment"],
     queryFn: () =>
         AppActlApiService.applicationsApi
-            .getFamApplicationUserRoleAssignment(props.appId)
+            .getFamApplicationUserRoleAssignment(props.appId, null, 100000)
             .then((res) => res.data.results),
     refetchOnMount: "always",
     enabled: props.tableType === ManagePermissionsTableEnum.AppUser,
@@ -140,7 +140,11 @@ const delegatedAdminQuery = useQuery({
     queryKey: ["access_control_privileges", { application_id: props.appId }],
     queryFn: () =>
         AdminMgmtApiService.delegatedAdminApi
-            .getAccessControlPrivilegesByApplicationId(props.appId)
+            .getAccessControlPrivilegesByApplicationId(
+                props.appId,
+                null,
+                100000
+            )
             .then((res) => res.data.results),
     refetchOnMount: "always",
     enabled: props.tableType === ManagePermissionsTableEnum.DelegatedAdmin,
