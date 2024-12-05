@@ -7,12 +7,6 @@ export enum Severity {
     Error = "error",
 }
 
-export type ForestClientNotificationType = {
-    type: "Duplicate" | "Error" | "NotExist" | "NotActive" | "Invalid";
-    severity: Severity;
-    clientNumbers: string[];
-};
-
 export type PermissionNotificationType = {
     serverity: MessageProps["severity"];
     message: string | VNode | (() => VNode);

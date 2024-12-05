@@ -240,7 +240,7 @@ const navigateToUserDetails = (userId: string) => {
     router.push({
         name: UserDetailsRoute.name,
         params: {
-            applicationId: selectedApp.value?.id,
+            appId: selectedApp.value?.id,
             userId,
         },
     });
@@ -498,14 +498,6 @@ const highlightNewUserAccessRow = (
             :paginatorTemplate="TABLE_PAGINATOR_TEMPLATE"
             :currentPageReportTemplate="TABLE_CURRENT_PAGE_REPORT_TEMPLATE"
             :rowStyle="highlightNewUserAccessRow"
-            :sort-field="
-                tableType === ManagePermissionsTableEnum.AppAdmin
-                    ? 'user.user_name'
-                    : 'create_date'
-            "
-            :sort-order="
-                tableType === ManagePermissionsTableEnum.AppAdmin ? 1 : -1
-            "
         >
             <template #empty> No user found. </template>
 
@@ -628,6 +620,8 @@ const highlightNewUserAccessRow = (
 </template>
 <style lang="scss">
 .fam-table {
+    border: 0 0.25rem 0.25rem 0.25rem;
+
     .error-text-container {
         height: 2rem;
         padding: 1rem;

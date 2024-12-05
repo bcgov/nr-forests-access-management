@@ -17,9 +17,9 @@ const route = useRoute();
 
 // Access the path parameters
 const userId = route.params.userId as string | undefined;
-const applicationId = route.params.applicationId as string | undefined;
+const appId = route.params.appId as string | undefined;
 
-if (!userId || !applicationId) {
+if (!userId || !appId) {
     console.warn("Missing required path params");
     router.push("/");
 }
@@ -27,12 +27,12 @@ if (!userId || !applicationId) {
 const navigateBack = () => {
     router.push({
         name: ManagePermissionsRoute.name,
-        query: { appId: applicationId },
+        query: { appId: appId },
     });
 };
 
 /**
- * Get the FamApplicationDto with the applicationId,
+ * Get the FamApplicationDto with the appId,
  * it is used to display the app name in subtitle.
  */
 const adminUserAccessQuery = useQuery({
@@ -41,7 +41,7 @@ const adminUserAccessQuery = useQuery({
         AdminMgmtApiService.adminUserAccessesApi
             .adminUserAccessPrivilege()
             .then((res) => res.data),
-    select: (data) => getApplicationById(Number(applicationId), data),
+    select: (data) => getApplicationById(Number(appId), data),
 });
 
 // Breadcrumb configuration
@@ -61,12 +61,9 @@ const crumbs: BreadCrumbType[] = [
             title="Permissions History"
             :subtitle="`Check a user's ${adminUserAccessQuery.data.value?.description} permission history`"
         />
-        <UserSummaryCard :user-id="userId!" :application-id="applicationId!" />
+        <UserSummaryCard :user-id="userId!" :app-id="appId!" />
         <div class="gray-container">
-            <UserPermissionHistoryTable
-                :user-id="userId!"
-                :application-id="applicationId!"
-            />
+            <UserPermissionHistoryTable :user-id="userId!" :app-id="appId!" />
             <div class="back-button-container">
                 <Button
                     label="Back"

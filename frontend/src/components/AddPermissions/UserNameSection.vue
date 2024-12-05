@@ -13,7 +13,9 @@ import type {
 } from "fam-app-acsctl-api";
 import { UserType } from "fam-app-acsctl-api";
 import InputText from "primevue/inputtext";
-import { ErrorMessage, Field } from "vee-validate";
+import { Field } from "vee-validate";
+import Label from "../UI/Label.vue";
+import HelperText from "../UI/HelperText.vue";
 
 const auth = useAuth();
 
@@ -22,8 +24,9 @@ const props = withDefaults(
         domain: UserType;
         user: IdimProxyIdirInfoSchema | IdimProxyBceidInfoSchema | null;
         appId: number;
+        helperText: string;
         fieldId?: string;
-        helperText?: string;
+        setIsVerifying?: (verifying: boolean) => void;
     }>(),
     {
         fieldId: "user",
@@ -51,6 +54,8 @@ const isCurrentUser = (): boolean => {
 const handleMutationError = (error: any) => {
     emit("setVerifyResult", null);
 
+    errorMsg.value = "Failed to load username's data. Try verifying it again";
+
     // Check if error and response properties exist
     if (error.response && error.response.status === 403) {
         const detail = error.response.data?.detail;
@@ -59,35 +64,62 @@ const handleMutationError = (error: any) => {
                 auth.authState.famLoginUser?.organization ??
                 "Unknown organization"
             }`;
-        } else {
-            errorMsg.value = "An unknown error occurred.";
         }
-    } else {
-        errorMsg.value =
-            "Unable to verify the user due to a network or server error.";
     }
 };
 
+const setUserNotFoundError = () => {
+    emit("setVerifyResult", null);
+    errorMsg.value =
+        "No user found. Check the spelling or try another username";
+};
+
 const verifyIdirMutation = useMutation({
-    mutationFn: () =>
-        AppActlApiService.idirBceidProxyApi
+    mutationFn: () => {
+        if (props.setIsVerifying) {
+            props.setIsVerifying(true);
+        }
+        return AppActlApiService.idirBceidProxyApi
             .idirSearch(userIdInput.value, props.appId)
-            .then((res) => res.data),
+            .then((res) => res.data);
+    },
     onSuccess: (data) => {
-        emit("setVerifyResult", data, UserType.I);
+        if (data.found) {
+            emit("setVerifyResult", data);
+        } else {
+            setUserNotFoundError();
+        }
     },
     onError: (error) => handleMutationError(error),
+    onSettled: () => {
+        if (props.setIsVerifying) {
+            props.setIsVerifying(false);
+        }
+    },
 });
 
 const verifyBceidMutation = useMutation({
-    mutationFn: () =>
-        AppActlApiService.idirBceidProxyApi
+    mutationFn: () => {
+        if (props.setIsVerifying) {
+            props.setIsVerifying(true);
+        }
+        return AppActlApiService.idirBceidProxyApi
             .bceidSearch(userIdInput.value, props.appId)
-            .then((res) => res.data),
+            .then((res) => res.data);
+    },
     onSuccess: (data) => {
-        emit("setVerifyResult", data, UserType.B);
+        if (data.found) {
+            emit("setVerifyResult", data);
+        } else {
+            setUserNotFoundError();
+        }
     },
     onError: (error) => handleMutationError(error),
+    onSettled: () => {
+        if (props.setIsVerifying) {
+            props.setIsVerifying(false);
+        }
+    },
 });
 
 const handleVerify = (userType: UserType) => {
@@ -129,10 +161,17 @@ watch(
 
 <template>
     <div class="form-field">
-        <label for="userIdInput">Username</label>
+        <Label
+            for="userIdInput"
+            :label-text="`Username (${
+                props.domain === UserType.I
+                    ? IdpProvider.IDIR
+                    : IdpProvider.BCEIDBUSINESS
+            })`"
+            required
+        />
         <Field
             :name="props.fieldId"
-            :validateOnChange="true"
             v-slot="{ errorMessage }"
             v-model="props.user"
         >
@@ -140,12 +179,6 @@ watch(
                 <div>
                     <InputText
                         id="userIdInput"
-                        :placeholder="
-                            props.domain === UserType.I
-                                ? `Type user\'s ${IdpProvider.IDIR}`
-                                : `Type user\'s ${IdpProvider.BCEIDBUSINESS}`
-                        "
-                        :validateOnChange="true"
                         class="w-100 custom-height"
                         type="text"
                         maxlength="20"
@@ -153,27 +186,19 @@ watch(
                         :class="{ 'is-invalid': errorMessage || errorMsg }"
                         @keydown.enter.prevent="handleVerify(props.domain)"
                         @blur="handleVerify(props.domain)"
+                        :disabled="
+                            verifyBceidMutation.isPending.value ||
+                            verifyIdirMutation.isPending.value
+                        "
                     />
-                    <small
-                        id="userIdInput-helper"
-                        class="helper-text"
-                        v-if="helperText && !errorMessage && !errorMsg"
-                        >{{ helperText }}</small
-                    >
-                    <small
-                        id="userIdInput-err-msg"
-                        class="invalid-feedback"
-                        v-if="errorMsg"
-                        >{{ errorMsg }}</small
-                    >
-                    <ErrorMessage
-                        class="invalid-feedback"
-                        :name="props.fieldId"
-                        style="display: inline"
+                    <HelperText
+                        :text="errorMsg || errorMessage || helperText"
+                        :is-error="!!(errorMessage || errorMsg)"
                     />
                 </div>
 
                 <Button
+                    class="verify-username-button"
                     :aria-label="`Verify user ${
                         props.domain === UserType.I
                             ? IdpProvider.IDIR
@@ -184,7 +209,7 @@ watch(
                             ? 'verifyIdir'
                             : 'verifyBusinessBceid'
                     "
-                    label="Verify"
+                    label="Verify username"
                     outlined
                     :icon="SearchLocateIcon"
                     @click="handleVerify(props.domain)"
@@ -205,4 +230,8 @@ watch(
     </div>
 </template>
 
-<style lang="scss"></style>
+<style lang="scss" scoped>
+.verify-username-button {
+    width: 12rem;
+}
+</style>

@@ -1,6 +1,7 @@
 @use "sass:map";
 @use "@bcgov-nr/nr-theme/design-tokens/type-family.scss" as typeFamily;
 @use "@carbon/type" as type;
+@use "@bcgov-nr/nr-theme/design-tokens/colors.scss" as colors;
 
 // Import all of Bootstrap's CSS
 @import "~bootstrap/scss/bootstrap";
@@ -78,17 +79,25 @@ p {
 
     background: var(--layer-02, #fff);
 
-    border-radius: 0 0.25rem 0.25rem 0.25rem;
+    border-radius: 0.25rem;
     border: 0.0625rem solid var(--border-subtle-00);
 
     .p-datatable-thead {
         .p-column-title {
-            padding: 1rem 1rem 1rem 0;
+            padding: 1rem 0.5rem 1rem 0;
             color: var(--text-primary);
         }
         svg {
             margin: 0;
         }
+    }
+
+    .p-datatable-thead > tr > th {
+        background: var(--layer-accent-01);
+    }
+
+    .p-datatable-tbody > tr > td {
+        padding: 1rem;
     }
 
     .p-datatable-tbody {
@@ -99,4 +108,20 @@ p {
 
 .error-icon {
     fill: var(--support-error);
+}
+
+.confirm-dialog-with-blue-button {
+    .p-confirm-dialog-accept {
+        border: 0.0625rem solid colors.$blue-60;
+        background-color: colors.$blue-60;
+    }
+
+    .dialog-accept-button:hover {
+        border: 0.0625rem solid colors.$blue-65;
+        background-color: colors.$blue-65;
+    }
+}
+
+.p-tooltip-text {
+    @include type.type-style("body-compact-01");
 }

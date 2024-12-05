@@ -12,9 +12,10 @@ const props = defineProps<{
     severity: MessageProps["severity"];
     hasFullMsg?: boolean;
     fullMessage?: string | VNode | (() => VNode);
-    hideSeverityText?: boolean;
+    hideTitle?: boolean;
     closable?: boolean;
     onClose?: Function;
+    title?: string;
 }>();
 
 const showAll = ref(false);
@@ -43,7 +44,9 @@ const displayMessage = computed(() => {
             <WarnIcon v-else />
 
             <span class="custom-message-text">
-                <strong v-if="!hideSeverityText">{{ props.severity }}</strong>
+                <strong v-if="!hideTitle">{{
+                    props.title ?? props.severity
+                }}</strong>
                 <!-- Render `displayMessage` based on its type -->
                 <span class="message-content">
                     <!-- If `displayMessage` is a function, invoke it to get the VNode -->

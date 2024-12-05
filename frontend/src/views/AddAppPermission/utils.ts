@@ -6,12 +6,13 @@ import {
     type IdimProxyBceidInfoSchema,
     type IdimProxyIdirInfoSchema,
 } from "fam-app-acsctl-api/model";
-import type { AddAppPermissionRequestType } from "../../types/RouteTypes";
-import type {
-    FamAccessControlPrivilegeCreateRequest,
-    FamGrantDetailDto,
-    FamRoleDto,
+import {
+    RoleType,
+    type FamAccessControlPrivilegeCreateRequest,
+    type FamGrantDetailDto,
+    type FamRoleDto,
 } from "fam-admin-mgmt-api/model";
+import type { TextInputType } from "@/types/InputTypes";
 
 export const AddAppUserPermissionSuccessQuerykey = "app-admin-mutation-success";
 export const AddAppUserPermissionErrorQuerykey = "app-admin-mutation-error";
@@ -29,6 +30,15 @@ export type AppPermissionFormType = {
     forestClients: FamForestClientSchema[];
     role: FamRoleDto | null;
     sendUserEmail: boolean;
+    forestClientInput: TextInputType & {
+        /**
+         * Track if a verification of a client number is in progress.
+         * Disable role selection if it's verifying, otherwise a client might be added
+         * right after switching.
+         */
+        isVerifying: boolean;
+    };
+    isAddingDelegatedAdmin: boolean;
 };
 
 export type AppPermissionQueryErrorType = {
@@ -42,6 +52,14 @@ const defaultFormData: AppPermissionFormType = {
     forestClients: [],
     role: null,
     sendUserEmail: false,
+    forestClientInput: {
+        id: "forest-client-number-input",
+        value: "",
+        isValid: true,
+        errorMsg: "",
+        isVerifying: false,
+    },
+    isAddingDelegatedAdmin: false,
 };
 
 export const getDefaultFormData = (
@@ -55,25 +73,6 @@ export const getDefaultFormData = (
         sendUserEmail,
     };
 };
-
-export const getPageTitle = (
-    requestType: AddAppPermissionRequestType
-): string =>
-    requestType === "addUserPermission"
-        ? "Add user permission"
-        : "Add a delegated admin";
-
-export const getRoleSectionTitle = (requestType: AddAppPermissionRequestType) =>
-    requestType === "addUserPermission"
-        ? "User roles"
-        : "Assign a role to the user";
-
-export const getRoleSectionSubtitle = (
-    requestType: AddAppPermissionRequestType
-) =>
-    requestType === "addUserPermission"
-        ? undefined
-        : "Assign a role the delgated admin can manage";
 
 /**
  * Validation schema for app admin and delegated admin
@@ -99,10 +98,8 @@ export const validateAppPermissionForm = (isAbstractRoleSelected: boolean) => {
             .when("role", {
                 is: () => isAbstractRoleSelected,
                 then: (schema) =>
-                    schema
-                        .min(1, "At least one organization is required")
-                        .nullable(),
-                otherwise: (schema) => schema.nullable(),
+                    schema.min(1, "At least one organization is required"),
+                otherwise: (schema) => schema.default([]).nullable(),
             }),
     });
 };
@@ -129,39 +126,21 @@ export const generatePayload = (
     requires_send_user_email: formData.sendUserEmail,
 });
 
-/**
- * Retrieves a consolidated application object with unique roles based on the specified application ID.
- *
- * @param {FamGrantDetailDto[]} data - Array of grant details, each containing application and roles information.
- * @param {number} applicationId - The ID of the application to filter and retrieve unique roles for.
- * @returns {{ application: Object, roles: FamRoleDto[] } | null} - An object containing the application details and a list of unique roles, or null if no matching application is found.
- */
-export const getApplicationWithUniqueRoles = (
-    data: FamGrantDetailDto[],
-    applicationId: number
-) => {
-    const matchedEntries = data.filter(
-        (entry) => entry.application.id === applicationId
+export const getRolesByAppId = (data: FamGrantDetailDto[], appId: number) => {
+    const foundGrantByAppId = data.find(
+        (grant) => grant.application.id === appId
     );
 
-    if (matchedEntries.length === 0) return null; // Return null if no matches are found
+    if (foundGrantByAppId) {
+        return {
+            application: foundGrantByAppId.application,
+            roles: foundGrantByAppId.roles,
+        };
+    }
 
-    // Combine unique roles from all matching entries, explicitly filtering out any null or undefined roles
-    const uniqueRoles: FamRoleDto[] = [
-        ...new Map(
-            matchedEntries
-                .flatMap((entry) => entry.roles)
-                .filter(
-                    (role): role is FamRoleDto =>
-                        role !== null && role !== undefined
-                ) // Narrow type to FamRoleDto
-                .map((role) => [role.id, role]) // Use role id as the map key for uniqueness
-        ).values(),
-    ];
-
-    // Use the first matching entry for the application details
-    return {
-        application: matchedEntries[0].application,
-        roles: uniqueRoles,
-    };
+    return null;
 };
+
+export const isAbstractRoleSelected = (
+    formData?: AppPermissionFormType
+): boolean => formData?.role?.type_code === RoleType.A;

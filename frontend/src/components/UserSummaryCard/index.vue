@@ -9,19 +9,16 @@ import { formatFullName } from "@/utils/UserUtils";
 
 const props = defineProps<{
     userId: string; // Fam User ID
-    applicationId: string;
+    appId: string;
 }>();
 
 const userQuery = useQuery({
-    queryKey: ["fam_applications", props.applicationId, "users", props.userId],
+    queryKey: ["fam_applications", props.appId, "users", props.userId],
     queryFn: () =>
         AppActlApiService.applicationsApi
-            .getApplicationUserById(
-                Number(props.userId),
-                Number(props.applicationId)
-            )
+            .getApplicationUserById(Number(props.userId), Number(props.appId))
             .then((res) => res.data),
-    enabled: !!props.userId && !!props.applicationId,
+    enabled: !!props.userId && !!props.appId,
 });
 </script>
 

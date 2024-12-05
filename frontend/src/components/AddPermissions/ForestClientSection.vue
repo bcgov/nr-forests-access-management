@@ -1,400 +1,259 @@
 <script setup lang="ts">
+import DataTable from "primevue/datatable";
+import Column from "primevue/column";
 import Button from "@/components/UI/Button.vue";
-import SearchLocateIcon from "@carbon/icons-vue/es/search--locate/16";
-import ForestClientCard from "@/components/AddPermissions/ForestClientCard.vue";
+import AddIcon from "@carbon/icons-vue/es/add/16";
+import TrashIcon from "@carbon/icons-vue/es/trash-can/16";
 import { AppActlApiService } from "@/services/ApiServiceFactory";
 import { useMutation } from "@tanstack/vue-query";
-import type { FamRoleDto } from "fam-admin-mgmt-api/model";
-import { type FamForestClientSchema } from "fam-app-acsctl-api";
 import InputText from "primevue/inputtext";
-import { ErrorMessage, Field } from "vee-validate";
-import { computed, h, ref, watch } from "vue";
-import NotificationMessage from "../UI/NotificationMessage.vue";
-import {
-    Severity,
-    type ForestClientNotificationType,
-} from "@/types/NotificationTypes";
+import { Field, useField } from "vee-validate";
+import { inject, onUnmounted, ref, type Ref } from "vue";
 import { FOREST_CLIENT_INPUT_MAX_LENGTH } from "@/constants/constants";
+import { APP_PERMISSION_FORM_KEY } from "@/constants/InjectionKeys";
+import type { AppPermissionFormType } from "@/views/AddAppPermission/utils";
+import Label from "../UI/Label.vue";
+import Chip from "../UI/Chip.vue";
+import HelperText from "../UI/HelperText.vue";
+import SubsectionTitle from "../UI/SubsectionTitle.vue";
 
-const props = withDefaults(
-    defineProps<{
-        role: FamRoleDto | null;
-        appId: number;
-        verifiedClients: FamForestClientSchema[]; // The verified forest client numbers in the form data
-        fieldId?: string;
-    }>(),
-    {
-        fieldId: "forestClients",
-    }
-);
+const formData = inject<Ref<AppPermissionFormType>>(APP_PERMISSION_FORM_KEY);
 
-const emit = defineEmits(["setVerifiedForestClients"]);
+if (!formData) {
+    throw new Error("formData is required but not provided");
+}
 
-const setVerifiedForestClients = (clients: FamForestClientSchema[]) =>
-    emit("setVerifiedForestClients", clients);
+const props = defineProps<{
+    appId: number;
+    fieldId: string;
+}>();
 
-const isVerifying = ref<boolean>(false);
-const forestClientNumbersInput = ref("");
-const numbersToVerify = ref<string[]>([]);
+const { setErrors: setForestClientsError } = useField(props.fieldId);
 
-// Numbers that aren't exactly FOREST_CLIENT_INPUT_MAX_LENGTH long
-const invalidClientNumbers = ref<string[]>([]);
-
-// Numbers that encountered error while validating
-const errorClientNumbers = ref<string[]>([]);
-
-// Numbers that don't exist in Forest Client directory
-const notExistClientNumbers = ref<string[]>([]);
-
-// Numbers that have already been added
-const duplicateClientNumbers = ref<string[]>([]);
-
-// Numbers that are associated with an inactive forest client
-const notActiveClientNumbers = ref<string[]>([]);
-
-const notifications = computed<ForestClientNotificationType[]>(() => [
-    {
-        type: "Duplicate",
-        severity: Severity.Warn,
-        clientNumbers: duplicateClientNumbers.value,
-    },
-    {
-        type: "Error",
-        severity: Severity.Error,
-        clientNumbers: errorClientNumbers.value,
-    },
-    {
-        type: "NotExist",
-        severity: Severity.Error,
-        clientNumbers: notExistClientNumbers.value,
-    },
-    {
-        type: "NotActive",
-        severity: Severity.Error,
-        clientNumbers: notActiveClientNumbers.value,
-    },
-    {
-        type: "Invalid",
-        severity: Severity.Error,
-        clientNumbers: invalidClientNumbers.value,
-    },
-]);
-
-const clearNotifications = () => {
-    errorClientNumbers.value = [];
-    notExistClientNumbers.value = [];
-    duplicateClientNumbers.value = [];
-    notActiveClientNumbers.value = [];
-    invalidClientNumbers.value = [];
+const setVerificationError = (errorMessage: string) => {
+    formData.value.forestClientInput.isValid = false;
+    formData.value.forestClientInput.errorMsg = errorMessage;
 };
 
-const cleanupForestClientSection = () => {
-    // remove the verified forest client numbers which already added to form data
-    setVerifiedForestClients([]);
-
-    clearNotifications();
+const clearVerificationError = () => {
+    setForestClientsError("");
+    formData.value.forestClientInput.isValid = true;
+    formData.value.forestClientInput.errorMsg = "";
 };
-
-// whenever user id or abstract role changed, cleanup the forest client section
-watch(
-    () => props.role,
-    () => cleanupForestClientSection()
-);
 
 const clientSearchMutation = useMutation({
+    mutationKey: [
+        "forest_clients",
+        "search",
+        {
+            client_number: formData.value.forestClientInput.value,
+            application_id: props.appId,
+        },
+    ],
     mutationFn: (clientNumber: string) => {
+        formData.value.forestClientInput.isVerifying = true;
         return AppActlApiService.forestClientsApi
             .search(clientNumber, props.appId)
             .then((res) => res.data);
     },
-    onSuccess: (data, clientNumber) => {
+    onSuccess: (data) => {
         if (!data.length) {
-            notExistClientNumbers.value.push(clientNumber);
+            setVerificationError(
+                "No organization found. Check the client number and try again"
+            );
         } else if (data[0].status?.status_code !== "A") {
-            notActiveClientNumbers.value.push(clientNumber);
+            setVerificationError(
+                "This organization can't be added due to its status"
+            );
+        } else {
+            formData.value.forestClients.push(data[0]);
+            formData.value.forestClientInput.value = "";
         }
     },
-    onError: (_error, clientNumber) => {
-        if (clientNumber) {
-            errorClientNumbers.value.push(clientNumber);
-        }
+    onError: () => {
+        setVerificationError(
+            "The organization could not be added. Please try again"
+        );
+    },
+    onSettled: () => {
+        formData.value.forestClientInput.isVerifying = false;
     },
 });
 
-const verifyClients = async () => {
-    if (!isVerifying.value) {
-        isVerifying.value = true;
-        clearNotifications();
-        duplicateClientNumbers.value = [];
-        const verifyPromises = numbersToVerify.value.map((clientNumber) =>
-            clientSearchMutation.mutateAsync(clientNumber)
-        );
-
-        const settledPromise = await Promise.allSettled(verifyPromises);
-
-        isVerifying.value = false;
-        forestClientNumbersInput.value = "";
-
-        const verifiedClientsFromQuery: FamForestClientSchema[] = settledPromise
-            .filter(
-                (
-                    promise
-                ): promise is PromiseFulfilledResult<FamForestClientSchema[]> =>
-                    promise.status === "fulfilled"
-            )
-            .map((data) =>
-                data.value.length && data.value[0].status?.status_code === "A"
-                    ? data.value[0]
-                    : null
-            )
-            .filter((fc): fc is FamForestClientSchema => fc !== null);
-
-        // Combine the two lists
-        const allClients = [
-            ...verifiedClientsFromQuery,
-            ...props.verifiedClients,
-        ];
-
-        // Create a map to track occurrences
-        const clientMap = new Map<string, FamForestClientSchema[]>();
-
-        allClients.forEach((client) => {
-            const key = client.forest_client_number;
-            if (!clientMap.has(key)) {
-                clientMap.set(key, [client]);
-            } else {
-                clientMap.get(key)!.push(client);
-            }
-        });
-
-        // Extract unique clients
-        const uniqueVerifiedClients = [
-            ...Array.from(clientMap.values())
-                .filter((clients) => clients.length)
-                .map((clients) => clients[0]),
-        ];
-
-        // Extract duplicates
-        const duppedClientNumbers = Array.from(clientMap.entries())
-            .filter(([, clients]) => clients.length > 1)
-            .map(([forest_client_number]) => forest_client_number);
-
-        duplicateClientNumbers.value = duppedClientNumbers;
-
-        setVerifiedForestClients(uniqueVerifiedClients);
-    }
-};
-
 const removeForestClientFromList = (clientNumber: string) => {
-    let fcList = [...props.verifiedClients];
-    // remove the verified forest client from card
-    fcList = fcList.filter(
-        (client) => client.forest_client_number !== clientNumber
-    );
-
-    // Emit the updated list
-    setVerifiedForestClients(fcList);
-};
-
-const parseAndCleanNumbers = (input: string): string[] => {
-    return Array.from(
-        new Set(
-            input
-                .split(",")
-                .map((num) => num.trim()) // Remove any surrounding spaces
-                .filter((num) => num) // Remove empty strings if there are multiple commas
-        )
+    formData.value.forestClients.splice(
+        formData.value.forestClients.findIndex(
+            (client) => client.forest_client_number === clientNumber
+        ),
+        1
     );
 };
 
-const addClientNumbers = () => {
-    if (!forestClientNumbersInput.value) {
-        return;
-    }
-    numbersToVerify.value = parseAndCleanNumbers(
-        forestClientNumbersInput.value
-    );
-
-    const invalidNumbers = numbersToVerify.value.filter(
-        (clientNumber) => clientNumber.length !== FOREST_CLIENT_INPUT_MAX_LENGTH
-    );
-
-    if (invalidNumbers.length) {
-        invalidClientNumbers.value = invalidNumbers.map((clientNumber) =>
-            clientNumber.length > FOREST_CLIENT_INPUT_MAX_LENGTH
-                ? `${clientNumber.substring(
-                      0,
-                      FOREST_CLIENT_INPUT_MAX_LENGTH
-                  )}...`
-                : clientNumber
-        );
-
-        return;
-    }
-
-    verifyClients();
-};
-
-const generateNotificationMsg = (
-    type: ForestClientNotificationType["type"]
-) => {
-    let clientNumbers: string[];
-    let message: string;
-
-    // Determine the appropriate client numbers and message for each type
-    switch (type) {
-        case "NotExist":
-            clientNumbers = notExistClientNumbers.value;
-            message =
-                clientNumbers.length > 1 ? "do not exist" : "does not exist";
-            break;
-        case "NotActive":
-            clientNumbers = notActiveClientNumbers.value;
-            message =
-                clientNumbers.length > 1 ? "are not active" : "is not active";
-            break;
-        case "Duplicate":
-            clientNumbers = duplicateClientNumbers.value;
-            message =
-                clientNumbers.length > 1
-                    ? "have already been added"
-                    : "has already been added";
-            break;
-        case "Error":
-            clientNumbers = errorClientNumbers.value;
-            message = "encountered an error while being added";
-            break;
-        case "Invalid":
-            clientNumbers = invalidClientNumbers.value;
-            message = `
-            ${clientNumbers.length > 1 ? "are" : "is"}
-            not
-            ${FOREST_CLIENT_INPUT_MAX_LENGTH} digits long
-             `;
-            break;
-        default:
-            clientNumbers = [];
-            message = "encountered an error while being added";
-            break;
-    }
-
-    // Map and format the client numbers
-    const numberText = clientNumbers.map((number, index) => [
-        h("b", number),
-        index < clientNumbers.length - 1 ? ", " : "",
-    ]);
-
-    return h("p", {}, [
-        "Client number",
-        clientNumbers.length > 1 ? "s " : " ",
-        ...numberText,
-        ` ${message}`,
-    ]);
-};
-
-const enforceNumberAndComma = (event: Event) => {
+const enforceNumber = (event: Event) => {
     const target = event.target as HTMLInputElement;
     let newValue = "";
 
     for (const char of target.value) {
-        if ((char >= "0" && char <= "9") || char === "," || char === " ") {
+        if (char >= "0" && char <= "9") {
             newValue += char;
         }
     }
 
     target.value = newValue;
-    forestClientNumbersInput.value = newValue;
+    formData.value.forestClientInput.value = newValue;
 };
+
+const addOrganization = () => {
+    clearVerificationError();
+
+    if (!formData.value.forestClientInput.value) {
+        return;
+    }
+
+    if (
+        formData.value.forestClientInput.value.length <
+        FOREST_CLIENT_INPUT_MAX_LENGTH
+    ) {
+        setVerificationError(
+            `Client number must be ${FOREST_CLIENT_INPUT_MAX_LENGTH} digits long`
+        );
+        return;
+    }
+    // Check duplication
+    const duplicate = formData.value.forestClients.find(
+        (client) =>
+            client.forest_client_number ===
+            formData.value.forestClientInput.value
+    );
+
+    if (duplicate) {
+        setVerificationError("Client number has already been added");
+        return;
+    }
+
+    clientSearchMutation.mutate(formData.value.forestClientInput.value);
+};
+
+onUnmounted(() => {
+    clientSearchMutation.reset();
+});
 </script>
 
 <template>
-    <!-- Input section -->
-    <div>
-        <label for="forestClientInput">
-            Organization's client number (8 digits)
-        </label>
+    <div class="foresnt-client-section-container">
+        <SubsectionTitle
+            title="Restrict access by organizations"
+            subtitle="Add one or more organizations for this user to have access to"
+        />
+        <Label
+            for="forestClientInput"
+            label-text="Organization's client number"
+            required
+        />
         <Field
             :name="props.fieldId"
             v-slot="{ errorMessage }"
-            v-model="props.verifiedClients"
+            v-model="formData.forestClients"
         >
+            <!-- Input section -->
             <div class="input-with-verify-button">
                 <div>
                     <InputText
-                        id="forestClientInput"
-                        placeholder="Enter and verify the client number"
+                        :id="formData.forestClientInput.id"
                         class="w-100 custom-height"
-                        v-model="forestClientNumbersInput"
-                        :maxlength="200"
-                        @input="enforceNumberAndComma"
-                        @keydown.enter.prevent="
-                            forestClientNumbersInput.length &&
-                                addClientNumbers()
-                        "
+                        v-model="formData.forestClientInput.value"
+                        :maxlength="FOREST_CLIENT_INPUT_MAX_LENGTH"
+                        @input="enforceNumber"
+                        @keydown.enter.prevent="addOrganization()"
                         :class="{
                             'is-invalid':
-                                errorMessage || errorClientNumbers.length > 0,
+                                errorMessage ||
+                                !formData.forestClientInput.isValid,
                         }"
-                        @blur="
-                            forestClientNumbersInput.length &&
-                                addClientNumbers()
-                        "
-                        :disabled="isVerifying"
+                        :disabled="formData.forestClientInput.isVerifying"
                     />
-                    <small
-                        id="forestClientInput-help"
-                        class="helper-text"
-                        v-if="!errorMessage"
-                        >Add one or more separated by commas</small
-                    >
-                    <ErrorMessage
-                        class="invalid-feedback"
-                        :name="props.fieldId"
+                    <HelperText
+                        :text="
+                            errorMessage ||
+                            formData.forestClientInput.errorMsg ||
+                            'Enter the 8-digit client number'
+                        "
+                        :is-error="
+                            !!(
+                                errorMessage ||
+                                !formData.forestClientInput.isValid
+                            )
+                        "
                     />
                 </div>
                 <Button
                     outlined
-                    aria-label="verify organizations"
-                    name="verify organizations"
-                    label="Verify"
-                    @click="addClientNumbers"
-                    :icon="SearchLocateIcon"
-                    :is-loading="isVerifying"
+                    class="add-organization-button"
+                    aria-label="add organizations"
+                    name="add organizations"
+                    label="Add organization"
+                    @click="addOrganization"
+                    :icon="AddIcon"
+                    :is-loading="formData.forestClientInput.isVerifying"
                 />
             </div>
         </Field>
+
+        <!-- Table section -->
+        <DataTable class="fam-table" :value="formData.forestClients">
+            <template #empty>No organization added yet</template>
+
+            <Column header="Client number" field="forest_client_number" />
+
+            <Column header="Name" field="client_name" />
+
+            <Column header="Status">
+                <template #body="{ data }">
+                    <Chip
+                        v-tooltip.top="
+                            'Current status of this organization in the Client Management System'
+                        "
+                        color="green"
+                        :label="data.status.description"
+                    />
+                </template>
+            </Column>
+
+            <Column header="Action">
+                <template #body="{ data }">
+                    <Button
+                        icon-only
+                        :icon="TrashIcon"
+                        @click="
+                            removeForestClientFromList(
+                                data.forest_client_number
+                            )
+                        "
+                    />
+                </template>
+            </Column>
+        </DataTable>
     </div>
-
-    <div v-for="notification in notifications">
-        <NotificationMessage
-            v-if="notification.clientNumbers.length"
-            :key="notification.type"
-            :message="generateNotificationMsg(notification.type)"
-            :severity="notification.severity"
-            class="forest-client-warn-notification"
-            hide-severity-text
-            :closable="false"
-        />
-    </div>
-
-    <!-- Verified Card Section -->
-
-    <ForestClientCard
-        v-if="verifiedClients.length > 0"
-        class="fores-client-card-container custom-card px-0"
-        :forestClientData="verifiedClients"
-        @remove-item="removeForestClientFromList"
-    />
 </template>
 
 <style lang="scss">
-@import "@/assets/styles/card.scss";
-.fores-client-card-container {
-    margin-top: 2rem;
-}
-.forest-client-warn-notification {
-    .p-message {
-        position: relative;
+.foresnt-client-section-container {
+    .subsection-title-container {
+        margin: 1.5rem 0;
+    }
+
+    .input-with-verify-button {
+        .add-organization-button {
+            width: 12rem;
+        }
+    }
+
+    .fam-table {
+        margin-top: 1.5rem;
+
+        .p-datatable-emptymessage {
+            background-color: var(--layer-01);
+        }
     }
 }
 </style>

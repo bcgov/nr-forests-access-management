@@ -3,10 +3,6 @@ body {
     margin: 0;
 }
 
-label {
-    margin-bottom: 0.5rem;
-}
-
 // Container
 .main {
     position: absolute;
@@ -71,19 +67,7 @@ input[type="number"] {
     align-items: center;
 }
 
-.custom-data-table {
-    background: transparent;
-    border-radius: 0 0.25rem 0.25rem 0.25rem;
-    border: 0.0625rem solid $light-border-subtle-00;
-}
-
 //------ media queries
-
-@media (max-width: 320px) {
-    .custom-data-table {
-        border-radius: 0 0;
-    }
-}
 
 @media (min-width: 768px) {
     .main {

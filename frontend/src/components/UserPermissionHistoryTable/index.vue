@@ -16,22 +16,22 @@ import ErrorText from "../UI/ErrorText.vue";
 
 const props = defineProps<{
     userId: string;
-    applicationId: string;
+    appId: string;
 }>();
 
 const auditHistoryQuery = useQuery({
     queryKey: [
         "permission-audit-history",
-        { user_id: props.userId, application_id: props.applicationId },
+        { user_id: props.userId, application_id: props.appId },
     ],
     queryFn: () =>
         AppActlApiService.permissionAuditApi
             .getPermissionAuditHistoryByUserAndApplication(
                 Number(props.userId),
-                Number(props.applicationId)
+                Number(props.appId)
             )
             .then((res) => res.data),
-    enabled: !!props.userId && !!props.applicationId,
+    enabled: !!props.userId && !!props.appId,
     staleTime: 0,
     gcTime: 0,
 });

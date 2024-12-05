@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { useRouter, type RouteRecordName } from "vue-router";
 import { sideNavState } from "@/store/SideNavState";
+import EmailIcon from "@carbon/icons-vue/es/email/16";
 import Sidebar from "primevue/sidebar";
 import { sideNavItems } from "@/constants/SideNavConfig";
+import Label from "@/components/UI/Label.vue";
 
 const router = useRouter();
 
@@ -67,14 +69,16 @@ const isMenuItemHighlighted = (
                             </p>
                         </li>
                         <li
-                            class="sub-menu-item"
                             v-for="subMenuItem in item.subMenuItems"
-                            :class="{
-                                'sidenav-selected': isMenuItemHighlighted(
-                                    subMenuItem.routeName
-                                ),
-                                'sidenav-disabled': subMenuItem.disabled,
-                            }"
+                            :class="[
+                                'sub-menu-item',
+                                {
+                                    'sidenav-selected': isMenuItemHighlighted(
+                                        subMenuItem.routeName
+                                    ),
+                                    'sidenav-disabled': subMenuItem.disabled,
+                                },
+                            ]"
                             @click="
                                 subMenuItem.disabled
                                     ? () => {}
@@ -87,13 +91,18 @@ const isMenuItemHighlighted = (
                         </li>
                     </template>
                 </ul>
+                <ul>
+                    <Label label-text="Support" />
+                    <li class="sub-menu-item">
+                        <EmailIcon />
+                        <a href="mailto:heartwood@gov.bc.ca">Contact us</a>
+                    </li>
+                </ul>
             </div>
         </nav>
     </Sidebar>
 </template>
 <style lang="scss" scoped>
-@import "@/assets/styles/styles.scss";
-
 .fam-sidenav {
     .sidenav {
         position: fixed;
@@ -106,6 +115,24 @@ const isMenuItemHighlighted = (
         .content {
             position: relative;
             min-height: auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+
+            .fam-label {
+                // Should use padding here but primevue-components-overrides.scss
+                // has !important for all <label>
+                margin: 1rem;
+            }
+
+            .sub-menu-item {
+                a {
+                    @include type.type-style("heading-compact-01");
+                    color: var(--text-secondary);
+                    text-decoration: none;
+                }
+            }
         }
 
         ul {
@@ -115,10 +142,9 @@ const isMenuItemHighlighted = (
         }
 
         li {
-            @extend %helper-text-01;
-            color: $light-text-secondary;
-            font-size: 1rem;
-            font-weight: 400;
+            @include type.type-style("heading-compact-01");
+            color: var(--text-secondary);
+
             padding: 0.9375rem 1rem;
             display: flex;
             flex-direction: row;
@@ -126,7 +152,7 @@ const isMenuItemHighlighted = (
 
             svg {
                 margin-right: 1.5rem;
-                fill: colors.$blue-70;
+                fill: var(--link-primary);
             }
 
             p {
@@ -138,34 +164,34 @@ const isMenuItemHighlighted = (
             }
 
             &:hover {
-                background: $light-layer-hover-01;
-                color: $light-text-primary;
+                background: var(--layer-hover-01);
+                color: var(--text-primary);
                 cursor: pointer;
             }
 
             &.sidenav-selected {
-                background: $light-layer-selected-01;
-                box-shadow: inset 0.25rem 0rem 0rem $light-border-interactive;
-                color: $light-text-primary;
+                background: var(--layer-selected-01);
+                box-shadow: inset 0.25rem 0rem 0rem var(--border-interactive);
+                color: var(--text-primary);
                 font-weight: 700;
 
                 &:hover {
-                    background: $light-layer-selected-hover-01;
+                    background: var(--layer-selected-hover-01);
                 }
             }
 
             &.sidenav-disabled {
-                color: colors.$gray-30;
+                color: var(--text-disabled);
                 cursor: not-allowed;
 
                 svg {
-                    fill: colors.$gray-30;
+                    fill: var(--text-disabled);
                 }
 
                 &:hover {
                     background: none;
 
-                    color: colors.$gray-30;
+                    color: var(--text-disabled);
                     cursor: not-allowed;
                 }
             }

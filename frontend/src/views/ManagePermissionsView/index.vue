@@ -16,11 +16,8 @@ import {
     type ManagePermissionsTabType,
 } from "@/types/ManagePermissionsTypes";
 import type { PermissionNotificationType } from "@/types/NotificationTypes";
-import {
-    formatAxiosError,
-    getUniqueApplications,
-    isSelectedAppAuthorized,
-} from "@/utils/ApiUtils";
+import { formatAxiosError, getUniqueApplications } from "@/utils/ApiUtils";
+import { isSelectedAppAuthorized } from "@/utils/AuthUtils";
 import NotificationStack from "@/views/ManagePermissionsView/NotificationStack.vue";
 import { AddAppPermissionRoute, AddFamPermissionRoute } from "@/router/routes";
 import EnterpriseIcon from "@carbon/icons-vue/es/enterprise/16";
@@ -161,13 +158,11 @@ const visibleTabs = computed(() => tabs.filter((tab) => tab.visible.value));
 const notifications = ref<PermissionNotificationType[]>([
     ...(addAppUserPermissionSuccessData
         ? generateAppPermissionSuccessNotifications(
-              "addUserPermission",
               addAppUserPermissionSuccessData
           )
         : []),
     ...(addDelegatedAdminSuccessData
         ? generateAppPermissionSuccessNotifications(
-              "addUserPermission",
               addDelegatedAdminSuccessData
           )
         : []),
@@ -231,11 +226,7 @@ const handleAddButton = () => {
         router.push({
             name: AddAppPermissionRoute.name,
             query: {
-                requestType:
-                    activeTabIndex.value === 0
-                        ? "addUserPermission"
-                        : "addDelegatedAdmin",
-                applicationId: selectedApp.value?.id,
+                appId: selectedApp.value?.id,
             },
         });
     }

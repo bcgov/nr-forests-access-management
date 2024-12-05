@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import ForestClientSection from "@/components/AddPermissions/ForestClientSection.vue";
 import RoleSelectTable from "@/components/AddPermissions/RoleSelectTable.vue";
 import UserDomainSelect from "@/components/AddPermissions/UserDomainSelect.vue";
 import UserNameInput from "@/components/AddPermissions/UserNameSection.vue";
@@ -14,7 +13,6 @@ import {
     AdminMgmtApiService,
     AppActlApiService,
 } from "@/services/ApiServiceFactory";
-import { isProdAppSelectedOnProdEnv } from "@/services/utils";
 import type { BreadCrumbType } from "@/types/BreadCrumbTypes";
 import type { AddAppPermissionRouteProps } from "@/types/RouteTypes";
 import {
@@ -23,11 +21,9 @@ import {
     AddDelegatedAdminErrorQuerykey,
     AddDelegatedAdminSuccessQuerykey,
     generatePayload,
-    getApplicationWithUniqueRoles,
+    getRolesByAppId,
     getDefaultFormData,
-    getPageTitle,
-    getRoleSectionSubtitle,
-    getRoleSectionTitle,
+    isAbstractRoleSelected,
     NewAppAdminQueryParamKey,
     NewDelegatedAddminQueryParamKey,
     validateAppPermissionForm,
@@ -36,10 +32,9 @@ import {
 import CheckmarkIcon from "@carbon/icons-vue/es/checkmark/16";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 import type { FamAccessControlPrivilegeCreateRequest } from "fam-admin-mgmt-api/model";
-import { AdminRoleAuthGroup, type FamRoleDto } from "fam-admin-mgmt-api/model";
+import { AdminRoleAuthGroup } from "fam-admin-mgmt-api/model";
 import {
     UserType,
-    type FamForestClientSchema,
     type FamUserRoleAssignmentCreateSchema,
     type IdimProxyBceidInfoSchema,
     type IdimProxyIdirInfoSchema,
@@ -47,20 +42,21 @@ import {
 import ConfirmDialog from "primevue/confirmdialog";
 import { useConfirm } from "primevue/useconfirm";
 import { Form } from "vee-validate";
-import { computed, ref, watch } from "vue";
+import { computed, provide, ref, watch } from "vue";
 import { useRouter } from "vue-router";
+import { APP_PERMISSION_FORM_KEY } from "@/constants/InjectionKeys";
+import { EnvironmentSettings } from "@/services/EnvironmentSettings";
+import { isUserDelegatedAdminOnly } from "@/utils/AuthUtils";
+import { IdpProvider } from "@/enum/IdpEnum";
+import { activeTabIndex } from "@/store/ApplicationState";
 
 const router = useRouter();
 const auth = useAuth();
+const environments = new EnvironmentSettings();
 
 const props = defineProps<AddAppPermissionRouteProps>();
 
-if (
-    !props.applicationId ||
-    !props.requestType ||
-    (props.requestType !== "addUserPermission" &&
-        props.requestType !== "addDelegatedAdmin")
-) {
+if (!props.appId) {
     console.warn("Invalid or missing required query params");
     router.push("/");
 }
@@ -78,56 +74,49 @@ const adminUserAccessQuery = useQuery({
         AdminMgmtApiService.adminUserAccessesApi
             .adminUserAccessPrivilege()
             .then((res) => res.data),
-    select: (data) => {
-        if (props.requestType === "addUserPermission") {
-            const delegatedAdminGrants =
-                data.access.find(
-                    (authGrantDto) =>
-                        authGrantDto.auth_key ===
-                        AdminRoleAuthGroup.DelegatedAdmin
-                )?.grants ?? [];
-            const appAdminGrants =
-                data.access.find(
-                    (authGrantDto) =>
-                        authGrantDto.auth_key === AdminRoleAuthGroup.AppAdmin
-                )?.grants ?? [];
-            return delegatedAdminGrants.concat(appAdminGrants);
-        } else {
-            return (
-                data.access.find(
-                    (authGrantDto) =>
-                        authGrantDto.auth_key === AdminRoleAuthGroup.AppAdmin
-                )?.grants ?? []
-            );
-        }
-    },
 });
 
-const selectedApp = computed(() => {
+const rolesUnderSelectedApp = computed(() => {
     if (!adminUserAccessQuery.data.value) return null;
 
-    return getApplicationWithUniqueRoles(
-        adminUserAccessQuery.data.value,
-        props.applicationId
+    const adminUserAccess = adminUserAccessQuery.data.value;
+
+    const isDelegatedAdminOnly = isUserDelegatedAdminOnly(
+        props.appId,
+        adminUserAccess
     );
+
+    const availableRoles = isDelegatedAdminOnly
+        ? adminUserAccess.access.find(
+              (authGrantDto) =>
+                  authGrantDto.auth_key === AdminRoleAuthGroup.DelegatedAdmin
+          )?.grants ?? []
+        : adminUserAccess.access.find(
+              (authGrantDto) =>
+                  authGrantDto.auth_key === AdminRoleAuthGroup.AppAdmin
+          )?.grants ?? [];
+
+    return getRolesByAppId(availableRoles, props.appId);
 });
 
 const formData = ref<AppPermissionFormType | undefined>(undefined);
 
 watch(
-    () => adminUserAccessQuery.isSuccess && selectedApp.value,
+    () => adminUserAccessQuery.isSuccess && rolesUnderSelectedApp.value,
     (isSuccessful) => {
         if (isSuccessful) {
             formData.value = getDefaultFormData(
                 auth.authState.famLoginUser?.idpProvider === "idir"
                     ? UserType.I
                     : UserType.B,
-                isProdAppSelectedOnProdEnv()
+                environments.isProdEnvironment()
             );
         }
     },
     { immediate: true }
 );
+
+provide(APP_PERMISSION_FORM_KEY, formData);
 
 const handleDomainChange = (userType: UserType) => {
     if (formData.value) {
@@ -137,34 +126,13 @@ const handleDomainChange = (userType: UserType) => {
 };
 
 const handleUserVerification = (
-    user: IdimProxyIdirInfoSchema | IdimProxyBceidInfoSchema,
+    user: IdimProxyIdirInfoSchema | IdimProxyBceidInfoSchema | null,
     domain?: UserType
 ) => {
     if (formData.value) {
         formData.value.user = user;
         // Prevent user from chaning domain while it's verifying
         formData.value.domain = domain ?? formData.value.domain;
-    }
-};
-
-const isAbstractRoleSelected = (): boolean =>
-    formData.value?.role?.type_code === "A";
-
-const handleRoleChange = (role: FamRoleDto) => {
-    if (formData.value) {
-        formData.value.role = role;
-    }
-};
-
-const clearForestClients = () => {
-    if (formData.value) {
-        formData.value.forestClients = [];
-    }
-};
-
-const setVerifiedForestClients = (forestClients: FamForestClientSchema[]) => {
-    if (formData.value) {
-        formData.value.forestClients = forestClients;
     }
 };
 
@@ -183,7 +151,7 @@ const appAdminMutation = useMutation({
         router.push({
             name: ManagePermissionsRoute.name,
             query: {
-                appId: props.applicationId,
+                appId: props.appId,
                 [NewAppAdminQueryParamKey]: res.data.assignments_detail
                     .filter((assignment) => assignment.status_code === 200)
                     .map((assignment) => assignment.detail.user_role_xref_id)
@@ -199,7 +167,7 @@ const appAdminMutation = useMutation({
         router.push({
             name: ManagePermissionsRoute.name,
             query: {
-                appId: props.applicationId,
+                appId: props.appId,
             },
         });
     },
@@ -216,10 +184,11 @@ const delegatedAdminMutation = useMutation({
         ),
     onSuccess: (res) => {
         queryClient.setQueryData([AddDelegatedAdminSuccessQuerykey], res.data);
+        activeTabIndex.value = 1;
         router.push({
             name: ManagePermissionsRoute.name,
             query: {
-                appId: props.applicationId,
+                appId: props.appId,
                 [NewDelegatedAddminQueryParamKey]: res.data.assignments_detail
                     .filter((assignment) => assignment.status_code === 200)
                     .map(
@@ -238,7 +207,7 @@ const delegatedAdminMutation = useMutation({
         router.push({
             name: ManagePermissionsRoute.name,
             query: {
-                appId: props.applicationId,
+                appId: props.appId,
             },
         });
     },
@@ -249,17 +218,24 @@ const delegatedAdminMutation = useMutation({
 });
 
 const isSubmitting = ref<boolean>(false);
+const isVerifyingUser = ref<boolean>(false);
+const setIsVerifyingUser = (verifying: boolean) => {
+    isVerifyingUser.value = verifying;
+};
 
 const confirm = useConfirm();
 
 const onSubmit = () => {
-    if (formData.value) {
+    if (
+        formData.value &&
+        formData.value.forestClientInput.isValid &&
+        !formData.value.forestClientInput.isVerifying
+    ) {
         const payload = generatePayload(formData.value);
-
-        if (props.requestType === "addUserPermission") {
+        if (!formData.value.isAddingDelegatedAdmin) {
             isSubmitting.value = true;
             appAdminMutation.mutate(payload);
-        } else if (props.requestType === "addDelegatedAdmin") {
+        } else {
             confirm.require({
                 group: "addDelegatedAdmin",
                 header: "Add a delegated admin",
@@ -274,13 +250,20 @@ const onSubmit = () => {
         }
     }
 };
+
+const getUserNameInputHelperText = () =>
+    `Type user's ${
+        formData.value?.domain === UserType.I
+            ? IdpProvider.IDIR
+            : IdpProvider.BCEIDBUSINESS
+    } and click "Verify username"`;
 </script>
 
 <template>
     <div class="add-app-permission-container">
         <ConfirmDialog
             group="addDelegatedAdmin"
-            class="delegated-admin-confrim-dialog"
+            class="confirm-dialog-with-blue-button"
         >
             <template #message>
                 <p>
@@ -294,21 +277,25 @@ const onSubmit = () => {
         </ConfirmDialog>
         <BreadCrumbs :crumbs="crumbs" />
         <PageTitle
-            :title="getPageTitle(props.requestType)"
-            :subtitle="`Adding user permission to ${selectedApp?.application.description}. All fields are mandatory`"
+            title="Add permission"
+            :subtitle="`Add a new user permission to ${rolesUnderSelectedApp?.application.description}`"
         />
-        <div class="form-container">
+        <div class="app-permission-form-container container-fluid">
             <Form
                 v-slot="{ handleSubmit }"
                 ref="form"
                 as="div"
                 v-if="formData"
                 :validation-schema="
-                    validateAppPermissionForm(isAbstractRoleSelected())
+                    validateAppPermissionForm(isAbstractRoleSelected(formData))
                 "
                 validate-on-submit
+                class="row"
             >
-                <form id="add-app-permission-form-id">
+                <form
+                    id="add-app-permission-form-id"
+                    class="col-sm-12 col-md-12 col-lg-10"
+                >
                     <StepContainer title="User information" divider>
                         <UserDomainSelect
                             class="domain-select"
@@ -317,39 +304,36 @@ const onSubmit = () => {
                                 'idir'
                             "
                             :domain="formData.domain"
+                            :is-verifying-user="isVerifyingUser"
                             @change="handleDomainChange"
                         />
                         <UserNameInput
                             class="user-name-text-input"
                             :domain="formData.domain"
                             :user="formData.user"
-                            :app-id="applicationId"
+                            :app-id="appId"
+                            :helper-text="getUserNameInputHelperText()"
                             @setVerifyResult="handleUserVerification"
+                            :set-is-verifying="setIsVerifyingUser"
                         />
                     </StepContainer>
                     <StepContainer
-                        :title="getRoleSectionTitle(props.requestType)"
-                        :subtitle="getRoleSectionSubtitle(props.requestType)"
+                        title="User roles"
+                        subtitle="Select a role for this user"
                         divider
-                        v-if="selectedApp?.roles"
+                        v-if="rolesUnderSelectedApp?.roles"
                     >
                         <RoleSelectTable
-                            :role="formData.role"
-                            :roleOptions="selectedApp.roles"
-                            @change="handleRoleChange"
-                            @clearForestClients="clearForestClients"
-                        />
-                    </StepContainer>
-                    <StepContainer
-                        v-if="isAbstractRoleSelected()"
-                        title="Organization information"
-                        divider
-                    >
-                        <ForestClientSection
-                            :role="formData.role"
-                            :app-id="props.applicationId"
-                            :verified-clients="formData.forestClients"
-                            @setVerifiedForestClients="setVerifiedForestClients"
+                            :app-id="appId"
+                            :roleOptions="rolesUnderSelectedApp.roles"
+                            :is-delegated-admin-only="
+                                isUserDelegatedAdminOnly(
+                                    props.appId,
+                                    adminUserAccessQuery.data.value
+                                )
+                            "
+                            role-field-id="role"
+                            forest-clients-field-id="forestClients"
                         />
                     </StepContainer>
                     <StepContainer :divider="false">
@@ -368,17 +352,13 @@ const onSubmit = () => {
                                     router.push({
                                         name: ManagePermissionsRoute.name,
                                         query: {
-                                            appId: props.applicationId,
+                                            appId: props.appId,
                                         },
                                     })
                             "
                         />
                         <Button
-                            :label="`${
-                                props.requestType === 'addUserPermission'
-                                    ? 'Grant Access'
-                                    : 'Create Delegated Admin'
-                            } `"
+                            label="Add user permission"
                             @click="handleSubmit(onSubmit)"
                             :icon="CheckmarkIcon"
                             :is-loading="isSubmitting"
@@ -392,12 +372,15 @@ const onSubmit = () => {
 <style lang="scss">
 .add-app-permission-container {
     padding-bottom: 2.5rem;
+
     .user-name-text-input {
         margin-top: 2rem;
     }
-    .form-container {
+
+    .app-permission-form-container {
         margin-top: 3rem;
-        width: 60%; // Temporary until we implement the grid system
+
+        padding: 0;
     }
 
     .domain-select {
@@ -426,18 +409,6 @@ const onSubmit = () => {
                 animation: none;
             }
         }
-    }
-}
-
-.delegated-admin-confrim-dialog {
-    .p-confirm-dialog-accept {
-        border: 0.0625rem solid colors.$blue-60;
-        background-color: colors.$blue-60;
-    }
-
-    .dialog-accept-button:hover {
-        border: 0.0625rem solid colors.$blue-65;
-        background-color: colors.$blue-65;
     }
 }
 </style>

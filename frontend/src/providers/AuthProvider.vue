@@ -12,7 +12,7 @@ import type { CognitoUserSession } from "amazon-cognito-identity-js";
 
 import type { IdpTypes, AuthContext, FamLoginUser } from "@/types/AuthTypes";
 import { AUTH_KEY } from "@/constants/InjectionKeys";
-import { THREE_MINUTES, HALF_HOUR } from "@/constants/TimeUnits";
+import { ONE_SECOND, THREE_MINUTES, HALF_HOUR } from "@/constants/TimeUnits";
 import { IdpProvider } from "@/enum/IdpEnum";
 import { EnvironmentSettings } from "@/services/EnvironmentSettings";
 import { authState } from "@/providers/authState";
@@ -166,13 +166,24 @@ const handlePostLogin = async () => {
     }
 };
 
+/**
+ * Prevents concurrent token refresh attempts, reducing potential race conditions.
+ */
+let isRefreshing = false;
+
 const refreshUserSession = (
     cognitoUser: CognitoUser,
-    refreshToekn: CognitoRefreshToken
+    refreshToken: CognitoRefreshToken
 ) => {
+    if (isRefreshing) {
+        return;
+    }
+
+    isRefreshing = true;
     cognitoUser.refreshSession(
-        refreshToekn,
+        refreshToken,
         (err, session: CognitoUserSession) => {
+            isRefreshing = false;
             if (err) {
                 console.error("Token refresh failed:", err);
                 logout();
@@ -259,14 +270,74 @@ const startSilentRefresh = (cognitoUser: CognitoUser) => {
 };
 
 /**
+ * Creates a debounced version of the provided function, ensuring it is not
+ * called more frequently than the specified delay.
+ *
+ * @template T - The type of the function to debounce.
+ * @param {T} func - The function to debounce.
+ * @param {number} delay - The delay in milliseconds to wait before invoking the function.
+ * @returns {T} A debounced version of the input function.
+ *
+ * @example
+ * const debouncedLog = debounce(() => console.log('Debounced!'), ONE_SECOND);
+ * window.addEventListener('resize', debouncedLog);
+ *
+ * @description
+ * This function is useful in scenarios where an operation, such as an API call
+ * or DOM manipulation, should not be triggered excessively. It ensures that
+ * the input function is executed only after the specified delay has elapsed
+ * since the last invocation.
+ *
+ * In this context, it prevents `resetInactivityTimeout` from being triggered
+ * repeatedly during rapid user interactions, such as mouse movements or key presses.
+ */
+const debounce = <T extends (...args: any[]) => void>(
+    func: T,
+    delay: number
+): T => {
+    let timer: ReturnType<typeof setTimeout> | null = null;
+
+    return ((...args: Parameters<T>) => {
+        if (timer) clearTimeout(timer);
+        timer = setTimeout(() => func(...args), delay);
+    }) as T;
+};
+
+/**
+ * A debounced function to reset the inactivity timeout.
+ *
+ * @description
+ * This function resets the inactivity timeout whenever user activity (e.g., mouse movement,
+ * keypress) is detected. It ensures the user remains logged in as long as they are active
+ * by postponing the logout triggered by inactivity. If no activity is detected within the
+ * defined `INACTIVITY_TIMEOUT`, the user is logged out for security reasons.
+ *
+ * The debounce mechanism minimizes the number of calls to the underlying `resetInactivityTimeout`
+ * function, even during rapid, frequent interactions (e.g., continuous mouse movements).
+ * This reduces redundant operations and improves performance.
+ *
+ * @example
+ * // Add event listeners for user activity
+ * window.addEventListener('mousemove', debouncedResetInactivityTimeout);
+ * window.addEventListener('keydown', debouncedResetInactivityTimeout);
+ *
+ * @see {@link debounce} for how the debounce mechanism works.
+ */
+const debouncedResetInactivityTimeout = debounce(
+    resetInactivityTimeout,
+    ONE_SECOND
+);
+
+/**
  * Lifecycle hook that runs when the component is mounted.
  * - Adds event listeners for user activity (mousemove and keydown) to reset inactivity timeout.
  * - Checks the current path. If the user is on the `/authCallback` path, it handles the login process.
  * - If not on the `/authCallback` path, it attempts to restore the user's session.
  */
 onMounted(() => {
-    window.addEventListener("mousemove", resetInactivityTimeout);
-    window.addEventListener("keydown", resetInactivityTimeout);
+    window.addEventListener("mousemove", debouncedResetInactivityTimeout);
+    window.addEventListener("keydown", debouncedResetInactivityTimeout);
+    window.addEventListener("click", debouncedResetInactivityTimeout);
 
     const currentPath = window.location.pathname;
     if (currentPath === "/authCallback") {
@@ -288,8 +359,9 @@ onBeforeUnmount(() => {
         clearTimeout(inactivityTimeoutId);
     }
 
-    window.removeEventListener("mousemove", resetInactivityTimeout);
-    window.removeEventListener("keydown", resetInactivityTimeout);
+    window.removeEventListener("mousemove", debouncedResetInactivityTimeout);
+    window.removeEventListener("keydown", debouncedResetInactivityTimeout);
+    window.removeEventListener("click", debouncedResetInactivityTimeout);
 });
 
 /**
