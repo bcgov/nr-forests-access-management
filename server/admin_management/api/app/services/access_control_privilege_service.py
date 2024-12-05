@@ -8,6 +8,8 @@ from api.app.integration.forest_client_integration import \
 from api.app.integration.gc_notify import GCNotifyEmailService
 from api.app.repositories.access_control_privilege_repository import \
     AccessControlPrivilegeRepository
+from api.app.schemas.forest_client_integration import \
+    ForestClientIntegrationSearchParmsSchema
 from api.app.schemas.pagination import (DelegatedAdminPageParamsSchema,
                                         PagedResultsSchema)
 from api.app.schemas.schemas import (FamAccessControlPrivilegeCreateDto,
@@ -141,8 +143,8 @@ class AccessControlPrivilegeService:
             )
             for forest_client_number in request.forest_client_numbers:
                 # validate the forest client number
-                forest_client_search_return = forest_client_integration_service.find_by_client_number(
-                    forest_client_number
+                forest_client_search_return = forest_client_integration_service.search(
+                    ForestClientIntegrationSearchParmsSchema(forest_client_numbers=[forest_client_number])
                 )
                 if not forest_client_number_exists(forest_client_search_return):
                     error_msg = (

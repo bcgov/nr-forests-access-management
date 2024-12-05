@@ -212,11 +212,11 @@ def test_store_delegated_admin_audit_history_revoke_role_with_client_scopes(
 	mock_forest_client_number = "00001011"
 	mock_delete_record.role.forest_client_relation.forest_client_number = mock_forest_client_number
 	mock_delete_record.role.role_name = f"FOM_SUBMITTER_{mock_forest_client_number}"
-	mock_forest_client_integration_service.find_by_client_number.return_value = MOCK_FIND_CLIENT_00001011_RETURN
+	mock_forest_client_integration_service.search.return_value = MOCK_FIND_CLIENT_00001011_RETURN
 
 	enduser_privliege_revoked_details_fn_spy = mocker.spy(PermissionAuditService, 'to_delegated_admin_privliege_revoked_details')
 	change_performer_user_details_fn_spy = mocker.spy(PermissionAuditService, 'to_change_performer_user_details')
-	forest_client_integration_fn_spy = mocker.spy(ForestClientIntegrationService, 'find_by_client_number')
+	forest_client_integration_fn_spy = mocker.spy(ForestClientIntegrationService, 'search')
 
 	# test the service: revoking end user role with scopes.
 	permission_audit_service.store_delegated_admin_permissions_revoked_audit_history(performer, mock_delete_record)
@@ -257,8 +257,8 @@ def test_store_delegated_admin_audit_history_revoke_role_client_search_error(
 		TEST_USER_GUID_BCEID
 	)
 	mock_delete_record = copy.copy(sameple_delegated_admin_role_with_notfound_client_revoked_record)
-	mock_forest_client_integration_service.find_by_client_number.return_value = [] # FC external service result not found.
-	forest_client_integration_fn_spy = mocker.spy(ForestClientIntegrationService, 'find_by_client_number')
+	mock_forest_client_integration_service.search.return_value = [] # FC external service result not found.
+	forest_client_integration_fn_spy = mocker.spy(ForestClientIntegrationService, 'search')
 
 	with pytest.raises(HTTPException) as e:
 		permission_audit_service.store_delegated_admin_permissions_revoked_audit_history(performer, mock_delete_record)

@@ -297,7 +297,7 @@ class FamApplicationDto(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class FamRoleDto(BaseModel):
+class FamGrantRoleDto(BaseModel):
     # Note, this "id" for role can either be concrete role's or abstract role's id.
     # In abstract role with this id, forest_clients should be present.
     id: int = Field(validation_alias="role_id")
@@ -309,14 +309,15 @@ class FamRoleDto(BaseModel):
         validation_alias="role_purpose"
     )
     type_code: RoleType = Field(validation_alias="role_type_code")
-    forest_clients: Optional[List[str]] = Field(default=None)
+    # forest_clients: Optional[List[str]] = Field(default=None)
+    forest_clients: Optional[FamForestClientBase] = Field(default=None)
 
     model_config = ConfigDict(from_attributes=True)
 
 
 class FamGrantDetailDto(BaseModel):
     application: FamApplicationDto
-    roles: Optional[List[FamRoleDto]] = Field(default=None)
+    roles: Optional[List[FamGrantRoleDto]] = Field(default=None)
 
     model_config = ConfigDict(from_attributes=True)
 
