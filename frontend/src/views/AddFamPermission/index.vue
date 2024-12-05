@@ -128,7 +128,7 @@ const onSubmit = () => {
             title="Add application admin"
             subtitle="All fields are mandatory"
         />
-        <div class="form-container">
+        <div class="app-admin-form-container container-fluid">
             <Form
                 v-slot="{ handleSubmit }"
                 ref="form"
@@ -136,8 +136,12 @@ const onSubmit = () => {
                 v-if="formData"
                 :validation-schema="validateFamPermissionForm()"
                 validate-on-submit
+                class="row"
             >
-                <form id="add-fam-permission-form-id">
+                <form
+                    id="add-fam-permission-form-id"
+                    class="col-sm-12 col-md-12 col-lg-10"
+                >
                     <StepContainer title="User information" divider>
                         <UserNameInput
                             class="user-name-text-input"
@@ -148,16 +152,15 @@ const onSubmit = () => {
                             helperText="Only IDIR users are allowed to be added as application admins"
                         />
                     </StepContainer>
-                    <StepContainer
-                        title="Add application"
-                        subtitle="Select an application this user will be able to manage"
-                    >
+                    <StepContainer title="Add application">
                         <Field
                             name="application"
                             v-slot="{ errorMessage }"
                             v-model="formData.application"
                         >
                             <Dropdown
+                                required
+                                label-text="Select an application this user will be able to manage"
                                 class="application-dropdown"
                                 name="application-dropdown"
                                 :value="formData.application"
@@ -210,9 +213,9 @@ const onSubmit = () => {
 </template>
 <style lang="scss">
 .add-fam-permission-container {
-    .form-container {
+    .app-admin-form-container {
         margin-top: 3rem;
-        width: 60%; // Temporary until we implement the grid system
+        padding: 0;
 
         .invalid-feedback {
             display: block;

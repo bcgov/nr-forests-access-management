@@ -1,5 +1,4 @@
 import type { PermissionNotificationType } from "@/types/NotificationTypes";
-import type { AddAppPermissionRequestType } from "@/types/RouteTypes";
 import { formatForestClientDisplayName } from "@/utils/ForestClientUtils";
 import { formatUserNameAndId } from "@/utils/UserUtils";
 import type {
@@ -15,8 +14,8 @@ import { Severity } from "../../types/NotificationTypes";
 import type { AppPermissionQueryErrorType } from "../AddAppPermission/utils";
 
 export const generateAppPermissionSuccessNotifications = (
-    requestType: AddAppPermissionRequestType,
-    data: FamUserRoleAssignmentRes | FamAccessControlPrivilegeResponse
+    data: FamUserRoleAssignmentRes | FamAccessControlPrivilegeResponse,
+    isDelegatedAdmin: boolean
 ): PermissionNotificationType[] => {
     const notifications: PermissionNotificationType[] = [];
 
@@ -56,10 +55,9 @@ export const generateAppPermissionSuccessNotifications = (
         famUser.last_name
     );
 
-    let actionTerm =
-        requestType === "addUserPermission"
-            ? "added with"
-            : "granted privilege to manage";
+    let actionTerm = isDelegatedAdmin
+        ? "granted privilege to manage"
+        : "added with";
 
     // Success notifications for abstract roles
     if (successClientList.length && successRoleList.length) {
@@ -119,10 +117,9 @@ export const generateAppPermissionSuccessNotifications = (
         });
     }
 
-    actionTerm =
-        requestType === "addUserPermission"
-            ? "already exists with"
-            : "already has the privilege to manage";
+    actionTerm = isDelegatedAdmin
+        ? "already has the privilege to manage"
+        : "already exists with";
 
     // Conflict notifications for Abstract roles
     if (conflictClientList.length && conflictRoleList.length) {

@@ -30,9 +30,7 @@ export const AddAppPermissionRoute: RouteRecordRaw = {
     path: "/manage-permissions/add-app-permission",
     component: () => import("@/views/AddAppPermission"),
     props: (route): AddAppPermissionRouteProps => ({
-        requestType: route.query
-            .requestType as AddAppPermissionRouteProps["requestType"],
-        applicationId: Number(route.query.applicationId),
+        appId: Number(route.query.appId),
     }),
     name: "AddAppPermission",
     meta: protectedLayoutMeta,
@@ -46,7 +44,7 @@ export const AddFamPermissionRoute: RouteRecordRaw = {
 };
 
 export const UserDetailsRoute: RouteRecordRaw = {
-    path: "/manage-permissions/user-details/applications/:applicationId/users/:userId",
+    path: "/manage-permissions/user-details/applications/:appId/users/:userId",
     component: () => import("@/views/UserDetails"),
     name: "UserDetails",
     meta: protectedLayoutMeta,

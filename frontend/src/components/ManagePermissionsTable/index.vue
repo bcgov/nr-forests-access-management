@@ -114,7 +114,7 @@ const appUserQuery = useQuery({
     queryKey: ["fam_applications", props.appId, "user_role_assignment"],
     queryFn: () =>
         AppActlApiService.applicationsApi
-            .getFamApplicationUserRoleAssignment(props.appId)
+            .getFamApplicationUserRoleAssignment(props.appId, null, 100000)
             .then((res) => res.data.results),
     refetchOnMount: "always",
     enabled: props.tableType === ManagePermissionsTableEnum.AppUser,
@@ -140,7 +140,11 @@ const delegatedAdminQuery = useQuery({
     queryKey: ["access_control_privileges", { application_id: props.appId }],
     queryFn: () =>
         AdminMgmtApiService.delegatedAdminApi
-            .getAccessControlPrivilegesByApplicationId(props.appId)
+            .getAccessControlPrivilegesByApplicationId(
+                props.appId,
+                null,
+                100000
+            )
             .then((res) => res.data.results),
     refetchOnMount: "always",
     enabled: props.tableType === ManagePermissionsTableEnum.DelegatedAdmin,
@@ -240,7 +244,7 @@ const navigateToUserDetails = (userId: string) => {
     router.push({
         name: UserDetailsRoute.name,
         params: {
-            applicationId: selectedApp.value?.id,
+            appId: selectedApp.value?.id,
             userId,
         },
     });
@@ -498,21 +502,15 @@ const highlightNewUserAccessRow = (
             :paginatorTemplate="TABLE_PAGINATOR_TEMPLATE"
             :currentPageReportTemplate="TABLE_CURRENT_PAGE_REPORT_TEMPLATE"
             :rowStyle="highlightNewUserAccessRow"
-            :sort-field="
-                tableType === ManagePermissionsTableEnum.AppAdmin
-                    ? 'user.user_name'
-                    : 'create_date'
-            "
-            :sort-order="
-                tableType === ManagePermissionsTableEnum.AppAdmin ? 1 : -1
-            "
         >
             <template #empty> No user found. </template>
 
             <Column header="User Name" field="user.user_name" sortable>
                 <template #body="{ data }">
-                    <NewUserTag v-if="highlightNewUserAccessRow(data)" />
-                    <span>{{ data.user.user_name }}</span>
+                    <div class="nowrap-cell">
+                        <NewUserTag v-if="highlightNewUserAccessRow(data)" />
+                        <span>{{ data.user.user_name }}</span>
+                    </div>
                 </template>
             </Column>
 
@@ -605,22 +603,27 @@ const highlightNewUserAccessRow = (
 
             <Column header="Action">
                 <template #body="{ data }">
-                    <button
-                        v-if="tableType !== ManagePermissionsTableEnum.AppAdmin"
-                        title="User permission history"
-                        class="btn btn-icon"
-                        @click="navigateToUserDetails(data.user_id)"
-                    >
-                        <RecentlyViewedIcon />
-                    </button>
+                    <div class="nowrap-cell">
+                        <button
+                            v-if="
+                                tableType !==
+                                ManagePermissionsTableEnum.AppAdmin
+                            "
+                            title="User permission history"
+                            class="btn btn-icon"
+                            @click="navigateToUserDetails(data.user_id)"
+                        >
+                            <RecentlyViewedIcon />
+                        </button>
 
-                    <button
-                        title="Delete user"
-                        class="btn btn-icon"
-                        @click="handleDelete(data)"
-                    >
-                        <TrashIcon />
-                    </button>
+                        <button
+                            title="Delete user"
+                            class="btn btn-icon"
+                            @click="handleDelete(data)"
+                        >
+                            <TrashIcon />
+                        </button>
+                    </div>
                 </template>
             </Column>
         </DataTable>
@@ -628,9 +631,19 @@ const highlightNewUserAccessRow = (
 </template>
 <style lang="scss">
 .fam-table {
+    border: 0 0.25rem 0.25rem 0.25rem;
+
     .error-text-container {
         height: 2rem;
         padding: 1rem;
+    }
+
+    .nowrap-cell {
+        white-space: nowrap;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 0.25rem;
     }
 }
 </style>

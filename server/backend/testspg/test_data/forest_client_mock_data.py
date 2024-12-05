@@ -17,8 +17,9 @@ from api.app.schemas.fam_user_type import FamUserTypeSchema
 
 class TestAppUserRoleResultDictKeys(str, Enum):
     NO_RESULT = "no_result"
-    NO_FC_RESULTS = "no_fc_results"
-    WITH_FC_RESULTS = "with_fc_results"
+    NO_FC_IN_RESULTS = "no_fc_results"
+    WITH_FC_IN_RESULTS = "with_fc_results",
+    WITH_FC_NOT_ACTIVE_RESULT = "with_fc_but_not_active_no_result"
 
 """
 Mock data for `get_application_role_assignments()` return in PagedResultsSchema.results.
@@ -26,7 +27,7 @@ Use 'TestAppUserRoleResultDictKeys' enum to identify different set of data.
 """
 APP_USER_ROLE_GET_RESULTS_NO_PAGE_META: dict[str, List[FamApplicationUserRoleAssignmentGetSchema]] = {
     TestAppUserRoleResultDictKeys.NO_RESULT: [],
-    TestAppUserRoleResultDictKeys.NO_FC_RESULTS: [
+    TestAppUserRoleResultDictKeys.NO_FC_IN_RESULTS: [
         FamApplicationUserRoleAssignmentGetSchema(user_role_xref_id=900, user_id=900, role_id=900,
             user=FamUserInfoSchema(user_name="tu_1", user_type_relation=FamUserTypeSchema(user_type_code=UserType.BCEID, description="dummy_desc")),
             role=FamRoleWithClientSchema(role_id=900, role_name="r1", role_type_code=RoleType.ROLE_TYPE_CONCRETE, role_purpose="Test dummy role",
@@ -45,7 +46,7 @@ APP_USER_ROLE_GET_RESULTS_NO_PAGE_META: dict[str, List[FamApplicationUserRoleAss
             ),
             create_date=datetime.datetime(2024, 11, 1, 19, 44, 47)),
     ],
-    TestAppUserRoleResultDictKeys.WITH_FC_RESULTS: [
+    TestAppUserRoleResultDictKeys.WITH_FC_IN_RESULTS: [
         FamApplicationUserRoleAssignmentGetSchema(user_role_xref_id=902, user_id=903, role_id=990,
             user=FamUserInfoSchema(user_name="tu_1", user_type_relation=FamUserTypeSchema(user_type_code=UserType.BCEID, description="dummy_desc")),
             role=FamRoleWithClientSchema(role_id=990, role_name="r2_00001011", role_type_code=RoleType.ROLE_TYPE_CONCRETE, role_purpose="Test dummy role",
@@ -75,5 +76,17 @@ APP_USER_ROLE_GET_RESULTS_NO_PAGE_META: dict[str, List[FamApplicationUserRoleAss
                 forest_client_relation=None
             ),
             create_date=datetime.datetime(2024, 11, 1, 19, 44, 47)) # no FC
+    ],
+    TestAppUserRoleResultDictKeys.WITH_FC_NOT_ACTIVE_RESULT: [
+       FamApplicationUserRoleAssignmentGetSchema(user_role_xref_id=904, user_id=904, role_id=992,
+            user=FamUserInfoSchema(user_name="tu_1", user_type_relation=FamUserTypeSchema(user_type_code=UserType.BCEID, description="dummy_desc")),
+            role=FamRoleWithClientSchema(role_id=992, role_name="r2_12345678", role_type_code=RoleType.ROLE_TYPE_CONCRETE, role_purpose="Test dummy role",
+                application=FamApplicationSchema(
+                    application_id=900, application_name="a1", application_description="dummy_app"
+                ), forest_client_relation=FamForestClientSchema(forest_client_number="12345678"), parent_role=FamRoleMinSchema(role_name="r2",
+                role_type_code=RoleType.ROLE_TYPE_ABSTRACT, application=FamApplicationSchema(application_id=900, application_name="a1",
+                application_description="dummy_app")
+            )),
+            create_date=datetime.datetime(2024, 11, 1, 19, 44, 47)), # FC exist in db but not valid (legacy data or not active)
     ]
 }
