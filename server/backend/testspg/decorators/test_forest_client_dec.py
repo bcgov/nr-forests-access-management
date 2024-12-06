@@ -2,15 +2,18 @@ import logging
 from typing import List
 
 import pytest
+from api.app.constants import AppEnv
 from api.app.decorators.forest_client_dec import post_sync_forest_clients_dec
 from api.app.integration.forest_client_integration import \
     ForestClientIntegrationService
+from api.app.models.model import FamApplication
 from api.app.schemas.fam_application_user_role_assignment_get import \
     FamApplicationUserRoleAssignmentGetSchema
 from api.app.schemas.forest_client_integration import \
     ForestClientIntegrationFindResponseSchema
 from api.app.schemas.pagination import PagedResultsSchema, PageResultMetaSchema
 from mock import patch
+from sqlalchemy.orm import Session
 from testspg.test_data.forest_client_mock_data import (
     APP_USER_ROLE_GET_RESULTS_NO_PAGE_META, TestAppUserRoleResultDictKeys)
 
@@ -18,6 +21,7 @@ LOGGER = logging.getLogger(__name__)
 
 @post_sync_forest_clients_dec
 def dummy_fn_to_be_decorated(
+    db: Session,
     some_results: List[FamApplicationUserRoleAssignmentGetSchema]
 ) -> PagedResultsSchema[FamApplicationUserRoleAssignmentGetSchema]:
     """ Dummy function to test decorator 'post_sync_forest_clients_dec' """
@@ -26,9 +30,6 @@ def dummy_fn_to_be_decorated(
         results=some_results
     )
 
-@pytest.mark.skip(
-    reason="Fix soon, will let pipeline pass first for fixing production issue."
-)
 @pytest.mark.parametrize(
     "mock_fn_return, expected_results_condition",
     [
@@ -54,9 +55,11 @@ def dummy_fn_to_be_decorated(
 def test_should_update_client_name_for_forest_client_fn_results(
         mock_fc_search,
         mock_fn_return: List[FamApplicationUserRoleAssignmentGetSchema],
-        expected_results_condition
+        expected_results_condition,
+        db_pg_session,
+        mocker
 ):
-    # prepare for mocking
+    # prepare mocking
     fcapi_search_return_dict = [
         ForestClientIntegrationFindResponseSchema(
             clientName=f"client_{fc.forest_client_number}", clientNumber=fc.forest_client_number, clientStatusCode="ACT", clientTypeCode="C"
@@ -66,8 +69,11 @@ def test_should_update_client_name_for_forest_client_fn_results(
     if any(fcapi_search_return_dict):
         mock_fc_search.return_value = fcapi_search_return_dict
 
+    mocker.patch("api.app.decorators.forest_client_dec.crud_application.get_application",
+                 return_value=FamApplication(app_environment=AppEnv.APP_ENV_TYPE_DEV))
+
     # call decorated function
-    fn_dec_return = dummy_fn_to_be_decorated(mock_fn_return)
+    fn_dec_return = dummy_fn_to_be_decorated(db=db_pg_session, some_results=mock_fn_return)
 
     if expected_results_condition is not TestAppUserRoleResultDictKeys.WITH_FC_IN_RESULTS:
         # expect decorated results is the same and no forest client name update.
