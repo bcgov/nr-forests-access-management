@@ -3,6 +3,7 @@ import logging
 from typing import List
 
 from api.app.constants import APPLICATION_FAM, AdminRoleAuthGroup
+from api.app.decorators.forest_client_dec import post_sync_forest_clients_dec
 from api.app.models.model import FamApplication, FamRole
 from api.app.repositories.access_control_privilege_repository import \
     AccessControlPrivilegeRepository
@@ -27,6 +28,7 @@ class AdminUserAccessService:
         self.application_repo = ApplicationRepository(db)
         self.role_repo = RoleRepository(db)
 
+    @post_sync_forest_clients_dec
     def get_access_grants(self, user_id: int) -> AdminUserAccessResponse:
         """
         Find out access privilege granted for the user

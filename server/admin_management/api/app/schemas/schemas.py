@@ -309,7 +309,6 @@ class FamGrantRoleDto(BaseModel):
         validation_alias="role_purpose"
     )
     type_code: RoleType = Field(validation_alias="role_type_code")
-    # forest_clients: Optional[List[str]] = Field(default=None)
     forest_clients: Optional[FamForestClientBase] = Field(default=None)
 
     model_config = ConfigDict(from_attributes=True)
