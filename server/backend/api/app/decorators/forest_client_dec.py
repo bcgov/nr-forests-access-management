@@ -2,7 +2,7 @@ import functools
 import logging
 from typing import List
 
-from api.app.crud import crud_utils
+from api.app.crud import crud_application, crud_utils
 from api.app.integration.forest_client_integration import \
     ForestClientIntegrationService
 from api.app.schemas.fam_application_user_role_assignment_get import \
@@ -11,6 +11,7 @@ from api.app.schemas.forest_client_integration import (
     ForestClientIntegrationFindResponseSchema,
     ForestClientIntegrationSearchParmsSchema)
 from api.app.schemas.pagination import PagedResultsSchema
+from sqlalchemy.orm import Session
 
 LOGGER = logging.getLogger(__name__)
 
@@ -25,12 +26,13 @@ def post_sync_forest_clients_dec(original_func):
     """
     @functools.wraps(original_func)
     def decorated_func(*args, **kwargs):
+        db = kwargs.get("db")
         func_return: PagedResultsSchema[FamApplicationUserRoleAssignmentGetSchema] = original_func(*args, **kwargs)
-        func_return.results = __post_sync_forest_clients(func_return.results)
+        func_return.results = __post_sync_forest_clients(db, func_return.results)
         return func_return
     return decorated_func
 
-def __post_sync_forest_clients(result_list: List[FamApplicationUserRoleAssignmentGetSchema]):
+def __post_sync_forest_clients(db: Session, result_list: List[FamApplicationUserRoleAssignmentGetSchema]):
     if not result_list:
         return result_list
 
@@ -49,8 +51,8 @@ def __post_sync_forest_clients(result_list: List[FamApplicationUserRoleAssignmen
         return result_list
 
     # Do FC API search
-    application = result_list[0].role.application
-    api_instance_env = crud_utils.use_api_instance_by_app(application)
+    fam_application = crud_application.get_application(db, result_list[0].role.application.application_id)
+    api_instance_env = crud_utils.use_api_instance_by_app(fam_application)
     forest_client_integration_service = ForestClientIntegrationService(api_instance_env)
     fc_search_params = ForestClientIntegrationSearchParmsSchema(
         forest_client_numbers=search_forest_client_numbers,
