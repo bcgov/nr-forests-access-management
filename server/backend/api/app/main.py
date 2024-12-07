@@ -101,24 +101,24 @@ app.include_router(
 )
 app.include_router(
     router_user_role_assignment.router,
-    prefix=apiPrefix + "/user_role_assignment",
+    prefix=apiPrefix + "/user-role-assignment",
     tags=["FAM User Role Assignment"],
 )
 app.include_router(
     router_forest_client.router,
-    prefix=apiPrefix + "/forest_clients",
+    prefix=apiPrefix + "/forest-clients",
     dependencies=[Depends(router_guards.authorize)],
     tags=["FAM Forest Clients"],
 )
 app.include_router(
     router_idim_proxy.router,
-    prefix=apiPrefix + "/identity_search",
+    prefix=apiPrefix + "/identity-search",
     dependencies=[Depends(router_guards.authorize)],
     tags=["IDIR/BCeID Proxy"],
 )
 app.include_router(
     router_user_terms_conditions.router,
-    prefix=apiPrefix + "/user_terms_conditions",
+    prefix=apiPrefix + "/user-terms-conditions",
     dependencies=[Depends(router_guards.authorize)],
     tags=["FAM User Terms and Conditions"],
 )

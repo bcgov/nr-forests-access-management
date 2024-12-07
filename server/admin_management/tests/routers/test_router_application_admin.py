@@ -2,7 +2,6 @@ import logging
 from http import HTTPStatus
 
 import starlette.testclient
-
 import tests.jwt_utils as jwt_utils
 from api.app.constants import (ERROR_CODE_INVALID_REQUEST_PARAMETER,
                                AdminRoleAuthGroup, UserType)
@@ -17,7 +16,7 @@ from tests.constants import (TEST_APPLICATION_NAME_FAM,
                              TEST_NOT_EXIST_APPLICATION_ID)
 
 LOGGER = logging.getLogger(__name__)
-endPoint = f"{apiPrefix}/application_admins"
+endPoint = f"{apiPrefix}/application-admins"
 
 
 def test_create_application_admin(

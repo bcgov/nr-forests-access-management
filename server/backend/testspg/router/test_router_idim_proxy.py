@@ -21,8 +21,8 @@ from testspg.constants import (FOM_DEV_APPLICATION_ID,
 LOGGER = logging.getLogger(__name__)
 
 
-endPoint_search_idir = f"{apiPrefix}/identity_search/idir"
-endPoint_search_bceid = f"{apiPrefix}/identity_search/bceid"
+endPoint_search_idir = f"{apiPrefix}/identity-search/idir"
+endPoint_search_bceid = f"{apiPrefix}/identity-search/bceid"
 endPoint_search_param_application_id = f"&application_id={FOM_DEV_APPLICATION_ID}"
 valid_user_id_param = "CMENG"
 valid_user_id_param_business_bceid = "LOAD-2-TEST"

@@ -5,24 +5,21 @@ import starlette.testclient
 import tests.jwt_utils as jwt_utils
 from api.app.constants import AdminRoleAuthGroup, AppEnv, RoleType
 from api.app.main import apiPrefix
-from tests.constants import (
-    TEST_APP_FOM_NAME,
-    TEST_APP_ROLE_NAME_FOM_REVIEWER,
-    TEST_APP_ROLE_NAME_FOM_SUBMITTER,
-    TEST_APPLICATION_ID_FAM,
-    TEST_APPLICATION_ID_FOM_DEV,
-    TEST_APPLICATION_ID_FOM_TEST,
-    TEST_APPLICATION_NAME_FAM,
-    TEST_DUMMY_COGNITO_USER_ID,
-    TEST_FOM_DEV_REVIEWER_ROLE_ID,
-    TEST_FOM_DEV_SUBMITTER_ROLE_ID,
-    TEST_FOM_TEST_REVIEWER_ROLE_ID,
-    TEST_FOM_TEST_SUBMITTER_ROLE_ID,
-    TEST_FOREST_CLIENT_NUMBER,
-    TEST_FOREST_CLIENT_NUMBER_TWO,
-    TEST_NEW_BCEID_USER,
-    TEST_NEW_IDIR_USER,
-)
+from tests.constants import (TEST_APP_FOM_NAME,
+                             TEST_APP_ROLE_NAME_FOM_REVIEWER,
+                             TEST_APP_ROLE_NAME_FOM_SUBMITTER,
+                             TEST_APPLICATION_ID_FAM,
+                             TEST_APPLICATION_ID_FOM_DEV,
+                             TEST_APPLICATION_ID_FOM_TEST,
+                             TEST_APPLICATION_NAME_FAM,
+                             TEST_DUMMY_COGNITO_USER_ID,
+                             TEST_FOM_DEV_REVIEWER_ROLE_ID,
+                             TEST_FOM_DEV_SUBMITTER_ROLE_ID,
+                             TEST_FOM_TEST_REVIEWER_ROLE_ID,
+                             TEST_FOM_TEST_SUBMITTER_ROLE_ID,
+                             TEST_FOREST_CLIENT_NUMBER,
+                             TEST_FOREST_CLIENT_NUMBER_TWO,
+                             TEST_NEW_BCEID_USER, TEST_NEW_IDIR_USER)
 
 LOGGER = logging.getLogger(__name__)
 test_end_point = f"{apiPrefix}/admin-user-accesses"
@@ -320,7 +317,7 @@ def test_get_admin_user_access__user_with_multiple_delegated_admin_privilege(
         fom_test_role_grants_submitter["type_code"] == RoleType.ROLE_TYPE_ABSTRACT.value
     )
     # should contains exact 2 forest_clients the new_user can administer
-    assert set(fom_test_role_grants_submitter["forest_clients"]) == set(
+    assert set(fc["forest_client_number"] for fc in fom_test_role_grants_submitter["forest_clients"]) == set(
         dga_submitter_forest_clients
     )
 
@@ -446,6 +443,6 @@ def test_get_admin_user_access__user_with_app_admin_and_delegated_admin_privileg
     assert fom_dev_submitter_grant["name"] == TEST_APP_ROLE_NAME_FOM_SUBMITTER
     assert fom_dev_submitter_grant["type_code"] == RoleType.ROLE_TYPE_ABSTRACT.value
     assert fom_dev_submitter_grant["forest_clients"] is not None
-    assert set(fom_dev_submitter_grant["forest_clients"]) == set(
+    assert set(fc["forest_client_number"] for fc in fom_dev_submitter_grant["forest_clients"]) == set(
         dga_submitter_forest_clients
     )

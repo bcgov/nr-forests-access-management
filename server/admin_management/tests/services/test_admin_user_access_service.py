@@ -4,17 +4,14 @@ from api.app.constants import AdminRoleAuthGroup, AppEnv, RoleType
 from api.app.repositories.application_repository import ApplicationRepository
 from api.app.repositories.role_repository import RoleRepository
 from api.app.services.admin_user_access_service import AdminUserAccessService
-from tests.constants import (
-    TEST_APPLICATION_ID_FAM,
-    TEST_APPLICATION_ID_FOM_DEV,
-    TEST_APPLICATION_ID_FOM_TEST,
-    TEST_FOM_DEV_REVIEWER_ROLE_ID,
-    TEST_FOM_TEST_SUBMITTER_ROLE_ID,
-    TEST_FOREST_CLIENT_NUMBER,
-    TEST_FOREST_CLIENT_NUMBER_TWO,
-    TEST_NEW_BCEID_USER,
-    TEST_NEW_IDIR_USER,
-)
+from tests.constants import (TEST_APPLICATION_ID_FAM,
+                             TEST_APPLICATION_ID_FOM_DEV,
+                             TEST_APPLICATION_ID_FOM_TEST,
+                             TEST_FOM_DEV_REVIEWER_ROLE_ID,
+                             TEST_FOM_TEST_SUBMITTER_ROLE_ID,
+                             TEST_FOREST_CLIENT_NUMBER,
+                             TEST_FOREST_CLIENT_NUMBER_TWO,
+                             TEST_NEW_BCEID_USER, TEST_NEW_IDIR_USER)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -229,6 +226,6 @@ def test_get_access_grants_user_with_delegated_admin_privilege(
     assert fom_test_granted_role.id == TEST_FOM_TEST_SUBMITTER_ROLE_ID
     assert fom_test_granted_role.type_code == RoleType.ROLE_TYPE_ABSTRACT
     assert len(fom_test_granted_role.forest_clients) == 2
-    assert set(fom_test_granted_role.forest_clients) == set(
+    assert set(fc.forest_client_number for fc in fom_test_granted_role.forest_clients) == set(
         dga_submitter_forest_clients
     )
