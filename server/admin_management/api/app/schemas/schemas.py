@@ -282,7 +282,7 @@ class FamAccessControlPrivilegeResponse(BaseModel):
 
 
 # ------------------------------------- FAM Admin User Access ---------------------------------------- #
-class FamApplicationDto(BaseModel):
+class FamApplicationGrantDto(BaseModel):
     id: int = Field(validation_alias="application_id")
     name: Annotated[str, StringConstraints(max_length=100)] = Field(
         validation_alias="application_name"
@@ -297,7 +297,7 @@ class FamApplicationDto(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class FamGrantRoleDto(BaseModel):
+class FamRoleGrantDto(BaseModel):
     # Note, this "id" for role can either be concrete role's or abstract role's id.
     # In abstract role with this id, forest_clients should be present.
     id: int = Field(validation_alias="role_id")
@@ -315,8 +315,8 @@ class FamGrantRoleDto(BaseModel):
 
 
 class FamGrantDetailDto(BaseModel):
-    application: FamApplicationDto
-    roles: Optional[List[FamGrantRoleDto]] = Field(default=None)
+    application: FamApplicationGrantDto
+    roles: Optional[List[FamRoleGrantDto]] = Field(default=None)
 
     model_config = ConfigDict(from_attributes=True)
 

@@ -12,9 +12,9 @@ from api.app.repositories.application_admin_repository import \
 from api.app.repositories.application_repository import ApplicationRepository
 from api.app.repositories.role_repository import RoleRepository
 from api.app.schemas.schemas import (AdminUserAccessResponse,
-                                     FamApplicationDto, FamAuthGrantDto,
+                                     FamApplicationGrantDto, FamAuthGrantDto,
                                      FamForestClientBase, FamGrantDetailDto,
-                                     FamGrantRoleDto)
+                                     FamRoleGrantDto)
 from api.app.utils import utils
 from sqlalchemy.orm import Session
 
@@ -90,7 +90,7 @@ class AdminUserAccessService:
             "auth_key": AdminRoleAuthGroup.FAM_ADMIN,
             "grants": self.__preprocess_grant_details(list(map(
                 lambda fam_application: FamGrantDetailDto(**{
-                    "application": FamApplicationDto(
+                    "application": FamApplicationGrantDto(
                         **fam_application.__dict__
                     )
                 }), fam_applications)))
@@ -109,11 +109,11 @@ class AdminUserAccessService:
             "auth_key": AdminRoleAuthGroup.APP_ADMIN,
             "grants": self.__preprocess_grant_details(list(map(
                 lambda fam_application: FamGrantDetailDto(**{
-                    "application": FamApplicationDto(
+                    "application": FamApplicationGrantDto(
                         **fam_application.__dict__
                     ),
                     "roles": list(map(
-                        lambda role: FamGrantRoleDto(**role.__dict__),
+                        lambda role: FamRoleGrantDto(**role.__dict__),
                         self.role_repo.get_base_roles_by_app_id(
                             fam_application.application_id
                         )
@@ -151,7 +151,7 @@ class AdminUserAccessService:
             for key, group in parent_id_grouped_roles:
                 if (key is None):  # Abstract role case (role without parent_role_id).
                     roles_details.extend(list(
-                        map(lambda fam_role: FamGrantRoleDto(**fam_role.__dict__),
+                        map(lambda fam_role: FamRoleGrantDto(**fam_role.__dict__),
                             group)))
 
                 else:  # Concrete role case.
@@ -160,7 +160,7 @@ class AdminUserAccessService:
 
                     # role_dto is an dto for abstract(parent) role with child
                     # roles of forest_clients associated.
-                    role_dto = FamGrantRoleDto(**parent_role.__dict__)
+                    role_dto = FamRoleGrantDto(**parent_role.__dict__)
                     forest_client_numbers = list(
                         # map(lambda fam_role: fam_role.forest_client_relation.forest_client_number,
                         #     child_roles_group))  TODO: remove this.
@@ -169,7 +169,7 @@ class AdminUserAccessService:
                     roles_details.append(role_dto)
 
             delegated_admin_grants_details.append(FamGrantDetailDto(**{
-                "application": FamApplicationDto(**fam_application.__dict__),
+                "application": FamApplicationGrantDto(**fam_application.__dict__),
                 "roles": roles_details
             }))
 
@@ -193,6 +193,6 @@ class AdminUserAccessService:
         return grant_details
 
     # remove suffix from application.name (e.g., FOM_DEV to FOM)
-    def __remove_app_env_suffix(self, application: FamApplicationDto):
+    def __remove_app_env_suffix(self, application: FamApplicationGrantDto):
         application.name = utils.remove_app_env_suffix(application.name)
         return application

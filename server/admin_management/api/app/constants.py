@@ -41,7 +41,7 @@ class AdminRoleAuthGroup(str, Enum):
     FAM data model does not explicitly have these role group of admins.
     However, business rules do differentiate purpose of admins as:
         (FAM_ADMIN, [APP]_ADMIN, DELEGATED_ADMIN)
-    # Referencing to FAM confluence for design:
+    - Referencing to FAM confluence for design:
       https://apps.nrs.gov.bc.ca/int/confluence/display/FSAST1/Delegated+Access+Administration+Design (Auth Function)
     """
 

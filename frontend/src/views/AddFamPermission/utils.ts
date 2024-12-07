@@ -1,6 +1,6 @@
 import type {
     FamAppAdminCreateRequest,
-    FamApplicationDto,
+    FamApplicationGrantDto,
 } from "fam-admin-mgmt-api/model";
 import { UserType } from "fam-app-acsctl-api";
 import type { IdimProxyIdirInfoSchema } from "fam-app-acsctl-api/model";
@@ -13,7 +13,7 @@ export const NewFamAdminQueryParamKey = "newFamAdminIds";
 
 export type FamPermissionFormType = {
     user: IdimProxyIdirInfoSchema | null;
-    application: FamApplicationDto | null;
+    application: FamApplicationGrantDto | null;
 };
 
 const defaultFormData: FamPermissionFormType = {
@@ -34,7 +34,7 @@ export const validateFamPermissionForm = () => {
             .test("is-user-found", "A valid user ID is required", (value) => {
                 return value?.found === true;
             }),
-        application: mixed<FamApplicationDto>().required(
+        application: mixed<FamApplicationGrantDto>().required(
             "Please select an application"
         ),
     });

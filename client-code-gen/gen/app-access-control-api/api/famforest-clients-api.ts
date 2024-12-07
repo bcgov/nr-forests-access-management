@@ -44,7 +44,7 @@ export const FAMForestClientsApiAxiosParamCreator = function (configuration?: Co
             assertParamExists('search', 'clientNumber', clientNumber)
             // verify required parameter 'applicationId' is not null or undefined
             assertParamExists('search', 'applicationId', applicationId)
-            const localVarPath = `/forest_clients/search`;
+            const localVarPath = `/forest-clients/search`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;

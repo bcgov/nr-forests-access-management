@@ -15,50 +15,53 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
+import { FamForestClientBase } from './fam-forest-client-base';
+// May contain unused imports in some cases
+// @ts-ignore
 import { RoleType } from './role-type';
 
 /**
  * 
  * @export
- * @interface FamRoleDto
+ * @interface FamRoleGrantDto
  */
-export interface FamRoleDto {
+export interface FamRoleGrantDto {
     /**
      * 
      * @type {number}
-     * @memberof FamRoleDto
+     * @memberof FamRoleGrantDto
      */
     'id': number;
     /**
      * 
      * @type {string}
-     * @memberof FamRoleDto
+     * @memberof FamRoleGrantDto
      */
     'name': string;
     /**
      * 
      * @type {string}
-     * @memberof FamRoleDto
+     * @memberof FamRoleGrantDto
      */
     'display_name'?: string | null;
     /**
      * 
      * @type {string}
-     * @memberof FamRoleDto
+     * @memberof FamRoleGrantDto
      */
     'description': string | null;
     /**
      * 
      * @type {RoleType}
-     * @memberof FamRoleDto
+     * @memberof FamRoleGrantDto
      */
     'type_code': RoleType;
     /**
      * 
-     * @type {Array<string>}
-     * @memberof FamRoleDto
+     * @type {Array<FamForestClientBase>}
+     * @memberof FamRoleGrantDto
      */
-    'forest_clients'?: Array<string> | null;
+    'forest_clients'?: Array<FamForestClientBase> | null;
 }
 
 
