@@ -1,6 +1,5 @@
 import functools
 import logging
-from typing import List
 
 from api.app.constants import AdminRoleAuthGroup
 from api.app.integration.forest_client_integration import \
@@ -45,8 +44,10 @@ def __post_sync_forest_clients(func_return: AdminUserAccessResponse):
 
     if delegatged_admin_grants:
         for app_grants in delegatged_admin_grants.grants:
+            # find out forest_client_numbers within each privilege given to an application.
             search_forest_client_numbers = [
-                (fc.forest_client_number for fc in role.forest_clients if fc) for role in app_grants.roles
+               forest_client.forest_client_number for role in app_grants.roles if role.forest_clients
+               for forest_client in role.forest_clients
             ]
 
             # Do FC API search
@@ -69,9 +70,10 @@ def __post_sync_forest_clients(func_return: AdminUserAccessResponse):
                 fc_search_client_name_dict = {fc["clientNumber"]: fc["clientName"] for fc in fc_search_results}
 
                 # Update client_name on each using 'fc_search_client_name_dict'
-                for role in app_grants.roles if role.forest_clients else None:
-                    for forest_client in role.forest_clients:
-                        fcn = forest_client.forest_client_number
-                        forest_client.client_name = fc_search_client_name_dict.get(fcn)
+                for role in app_grants.roles:
+                    if role.forest_clients:
+                        for forest_client in role.forest_clients:
+                            fcn = forest_client.forest_client_number
+                            forest_client.client_name = fc_search_client_name_dict.get(fcn)
 
     return func_return
