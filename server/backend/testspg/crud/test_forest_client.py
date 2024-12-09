@@ -41,16 +41,18 @@ class TestForestClientServiceClass(object):
         ("99999999", []),  # 8 digits - client not exist.
         ("000001011", [])  # more than 8 digits.
     ])
-    def test_find_by_client_number_not_exists_noresult(self, client_id_to_test, expcted_result):
-        assert self.fc_api.find_by_client_number(client_id_to_test) == expcted_result
+    def test_search__client_number_not_exists_no_result(self, client_id_to_test, expcted_result):
+        assert self.fc_api.search(
+            ForestClientIntegrationSearchParmsSchema(forest_client_numbers=[client_id_to_test])
+        ) == expcted_result
 
-    def test_find_by_client_number_exists_returns_list_one_item(self):
+    def test_search__client_number_exists_returns_list_one_item(self):
         """
         The test validating API does return single client dictionary and
         with the expected key(s) structure.
         """
         client_id_to_test = self.example_expected_valid_result["clientNumber"]
-        result = self.fc_api.find_by_client_number(client_id_to_test)
+        result = self.fc_api.search(ForestClientIntegrationSearchParmsSchema(forest_client_numbers=[client_id_to_test]))
         assert len(result) == 1
         assert isinstance(result[0], dict)
         result_fc_dict = result[0]

@@ -6,7 +6,8 @@ from api.app.crud.validator.forest_client_validator import (
     get_forest_client_status)
 from api.app.integration.forest_client_integration import \
     ForestClientIntegrationService
-from mock import patch
+from api.app.schemas.forest_client_integration import \
+    ForestClientIntegrationSearchParmsSchema
 from testspg.constants import (FC_NUMBER_EXISTS_ACTIVE_00000001,
                                FC_NUMBER_EXISTS_DEACTIVATED,
                                FC_NUMBER_EXISTS_DECEASED,
@@ -75,7 +76,7 @@ def test_forest_client_number_exists(
     mock_forest_client_integration_service,
     forest_client_integration_service,
 ):
-    mock_forest_client_integration_service.find_by_client_number.return_value = (
+    mock_forest_client_integration_service.search.return_value = (
         __to_mock_forest_client_return(
             client_id_to_test,
             expcted_result["api_client_status_code"],
@@ -84,7 +85,9 @@ def test_forest_client_number_exists(
 
     # find forest client number
     forest_client_search_return = (
-        forest_client_integration_service.find_by_client_number(client_id_to_test)
+        forest_client_integration_service.search(ForestClientIntegrationSearchParmsSchema(
+            forest_client_numbers=[client_id_to_test]
+        ))
     )
     # test forest_client_number_exists return true
     assert (
@@ -126,7 +129,7 @@ def test_forest_client_active(
     mock_forest_client_integration_service,
     forest_client_integration_service,
 ):
-    mock_forest_client_integration_service.find_by_client_number.return_value = (
+    mock_forest_client_integration_service.search.return_value = (
         __to_mock_forest_client_return(
             client_id_to_test,
             expcted_result["api_client_status_code"],
@@ -135,7 +138,9 @@ def test_forest_client_active(
 
     # find forest client number
     forest_client_search_return = (
-        forest_client_integration_service.find_by_client_number(client_id_to_test)
+        forest_client_integration_service.search(ForestClientIntegrationSearchParmsSchema(
+            forest_client_numbers=[client_id_to_test]
+        ))
     )
 
     assert (
@@ -162,7 +167,7 @@ def test_get_forest_client_status(
     mock_forest_client_integration_service,
     forest_client_integration_service,
 ):
-    mock_forest_client_integration_service.find_by_client_number.return_value = (
+    mock_forest_client_integration_service.search.return_value = (
         __to_mock_forest_client_return(
             client_id_to_test,
             expcted_result["api_client_status_code"],
@@ -171,7 +176,9 @@ def test_get_forest_client_status(
 
     # find forest client number
     forest_client_search_return = (
-        forest_client_integration_service.find_by_client_number(client_id_to_test)
+        forest_client_integration_service.search(ForestClientIntegrationSearchParmsSchema(
+            forest_client_numbers=[client_id_to_test]
+        ))
     )
 
     # test get_forest_client_status return forest client information
