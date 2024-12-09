@@ -2,7 +2,6 @@
 
 import logging
 
-import pytest
 from api.app.integration.forest_client_integration import \
     ForestClientIntegrationService
 from api.app.schemas.forest_client_integration import \
@@ -36,35 +35,11 @@ class TestForestClientServiceClass(object):
         assert self.fc_api.API_TOKEN is not None
         assert self.fc_api.headers["X-API-KEY"] == self.fc_api.API_TOKEN
 
-    @pytest.mark.parametrize("client_id_to_test, expcted_result", [
-        ("0001011", []),  # less than 8 digits.
-        ("99999999", []),  # 8 digits - client not exist.
-        ("000001011", [])  # more than 8 digits.
-    ])
-    def test_search__client_number_not_exists_no_result(self, client_id_to_test, expcted_result):
-        assert self.fc_api.search(
-            ForestClientIntegrationSearchParmsSchema(forest_client_numbers=[client_id_to_test])
-        ) == expcted_result
-
-    def test_search__client_number_exists_returns_list_one_item(self):
-        """
-        The test validating API does return single client dictionary and
-        with the expected key(s) structure.
-        """
-        client_id_to_test = self.example_expected_valid_result["clientNumber"]
-        result = self.fc_api.search(ForestClientIntegrationSearchParmsSchema(forest_client_numbers=[client_id_to_test]))
-        assert len(result) == 1
-        assert isinstance(result[0], dict)
-        result_fc_dict = result[0]
-        assert all(key in self.example_expected_valid_result.keys() for key in result_fc_dict.keys())
-
-    # --- test on "search"
-
     def test_search_not_8_digits_noresult(self):
         """
         Test on not exact 8 digits: []
         """
-        not_8_digit_forest_client_numbers=["99999999", "88888888", "00000000"]
+        not_8_digit_forest_client_numbers=["8", "0001011", "000001011"]
         search_param = ForestClientIntegrationSearchParmsSchema(
             forest_client_numbers=not_8_digit_forest_client_numbers
         )
@@ -131,6 +106,7 @@ class TestForestClientServiceClass(object):
         self.__verify_fc_common_search_results(search_results, exist_forest_client_numbers)
 
     def __verify_fc_common_search_results(self, search_results, expect_exist_fc_number):
+        assert isinstance(search_results[0], dict)
         assert all(key in self.example_expected_valid_result.keys() for key in search_results[0].keys())
         result_set = {x["clientNumber"] for x in search_results}  # fc api structure confirmation.
         assert result_set == set(expect_exist_fc_number)  # set of unique fc numbers are the same.
