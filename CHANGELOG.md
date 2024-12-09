@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.28.1](https://github.com/bcgov/nr-forests-access-management/compare/v1.28.0...v1.28.1) (2024-12-06)
+
+
+### Bug Fixes
+
+* [#1689](https://github.com/bcgov/nr-forests-access-management/issues/1689) Fam production only - GET fam application role assignments server error ([#1690](https://github.com/bcgov/nr-forests-access-management/issues/1690)) ([0c2997f](https://github.com/bcgov/nr-forests-access-management/commit/0c2997f14185fe20f93892df6dc3e595d76aa1ce))
+
 ## [1.28.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.27.1...v1.28.0) (2024-12-05)
 
 
