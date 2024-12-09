@@ -3,6 +3,7 @@ from http import HTTPStatus
 from typing import List
 
 from api.app import constants as famConstants
+from api.app.decorators.forest_client_dec import post_sync_forest_clients_dec
 from api.app.integration.forest_client_integration import \
     ForestClientIntegrationService
 from api.app.integration.gc_notify import GCNotifyEmailService
@@ -39,6 +40,7 @@ class AccessControlPrivilegeService:
         self.permission_audit_service = PermissionAuditService(db)
         self.access_control_privilege_repository = AccessControlPrivilegeRepository(db)
 
+    @post_sync_forest_clients_dec
     def get_paged_delegated_admin_assignment_by_application_id(
         self, application_id: int, page_params: DelegatedAdminPageParamsSchema
     ) -> PagedResultsSchema[FamAccessControlPrivilegeGetResponse]:
