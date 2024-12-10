@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import InputText from "primevue/inputtext";
 import Button from "primevue/button";
 import AddIcon from "@carbon/icons-vue/es/add/16";
@@ -7,12 +7,16 @@ import SearchIcon from "@carbon/icons-vue/es/search/16";
 
 const props = defineProps<{
     filter: string;
+    inputPlaceholder: string;
     btnLabel?: string;
     btnOnClick?: Function;
-    inputPlaceholder: string;
+    errorMessage?: string | null;
 }>();
 
-const emit = defineEmits(["change"]);
+const emit = defineEmits(["change", "blur"]);
+
+// Track the previous value of the filter
+const previousFilter = ref(props.filter);
 
 const computedFilter = computed({
     get() {
@@ -22,6 +26,14 @@ const computedFilter = computed({
         emit("change", newValue);
     },
 });
+
+const handleBlur = () => {
+    const isChanged = props.filter !== previousFilter.value;
+    if (isChanged) {
+        previousFilter.value = props.filter;
+    }
+    emit("blur", props.filter, isChanged);
+};
 </script>
 
 <template>
@@ -42,6 +54,8 @@ const computedFilter = computed({
                 :placeholder="inputPlaceholder"
                 v-model="computedFilter"
                 :value="filter"
+                @blur="handleBlur"
+                @keydown.enter.prevent="handleBlur"
             />
         </span>
     </div>

@@ -7,16 +7,25 @@ import {
     type FamAccessControlPrivilegeGetResponse,
     type FamAppAdminGetResponse,
 } from "fam-admin-mgmt-api/model";
-import type { FamApplicationUserRoleAssignmentGetSchema } from "fam-app-acsctl-api/model";
+import {
+    SortOrderEnum,
+    type FamApplicationUserRoleAssignmentGetSchema,
+} from "fam-app-acsctl-api/model";
 import { FilterMatchMode } from "primevue/api";
 import Column from "primevue/column";
 import ConfirmDialog from "primevue/confirmdialog";
-import DataTable from "primevue/datatable";
+import DataTable, {
+    type DataTablePageEvent,
+    type DataTableSortEvent,
+} from "primevue/datatable";
 import { useConfirm } from "primevue/useconfirm";
-import { nextTick, ref } from "vue";
+import { computed, nextTick, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
-import { getOrganizationName } from "@/components/ManagePermissionsTable/utils";
+import {
+    getOrganizationName,
+    sortFieldToEnum,
+} from "@/components/ManagePermissionsTable/utils";
 import TableSkeleton from "@/components/Skeletons/TableSkeleton.vue";
 import TableHeaderTitle from "@/components/Table/TableHeaderTitle.vue";
 import TableToolbar from "@/components/Table/TableToolbar.vue";
@@ -24,6 +33,7 @@ import Chip from "@/components/UI/Chip.vue";
 import ErrorText from "@/components/UI/ErrorText.vue";
 import {
     DEFAULT_ROW_PER_PAGE,
+    MINIMUM_SEARCH_STR_LEN,
     TABLE_CURRENT_PAGE_REPORT_TEMPLATE,
     TABLE_PAGINATOR_TEMPLATE,
     TABLE_ROWS_PER_PAGE,
@@ -36,9 +46,12 @@ import {
 import { selectedApp } from "@/store/ApplicationState";
 import { ManagePermissionsTableEnum } from "@/types/ManagePermissionsTypes";
 import type { PermissionNotificationType } from "@/types/NotificationTypes";
+import type { PaginationType } from "@/types/PaginationTypes";
+import Spinner from "@/components/UI/Spinner.vue";
 import { formatAxiosError } from "@/utils/ApiUtils";
 import { utcToLocalDate } from "@/utils/DateUtils";
 import { formatUserNameAndId } from "@/utils/UserUtils";
+import { scrollToRef } from "@/utils/WindowUtils";
 import {
     NewAppAdminQueryParamKey,
     NewDelegatedAddminQueryParamKey,
@@ -58,6 +71,7 @@ import {
     getTableHeaderTitle,
     NEW_ACCESS_STYLE_IN_TABLE,
     type ConfirmTextType,
+    defaultBackendPagination,
 } from "./utils";
 
 const router = useRouter();
@@ -84,6 +98,8 @@ const props = defineProps<{
     addNotifications: (newNotifications: PermissionNotificationType[]) => void;
 }>();
 
+const isAppAdminTable = props.tableType === ManagePermissionsTableEnum.AppAdmin;
+
 // Fam App Admins data query, this query has no pagination and create date
 const appAdminQuery = useQuery({
     queryKey: ["application_admins"],
@@ -109,30 +125,47 @@ const appAdminQuery = useQuery({
     },
 });
 
+const backendPagination = ref<PaginationType>(
+    structuredClone(defaultBackendPagination)
+);
+
+/**
+ * Indicates whether the backend pagination data is being fetched based on user input.
+ *
+ * This flag disables table interactions (such as sorting and pagination) while maintaining
+ * the table's settings.
+ * A skeleton loader is not used in this case, as the focus is on disabling interactions
+ * instead of displaying loading placeholders.
+ */
+const isFetching = ref<boolean>(false);
+
 // App users data query
 const appUserQuery = useQuery({
-    queryKey: ["fam_applications", props.appId, "user_role_assignment"],
+    queryKey: [
+        "fam-applications",
+        props.appId,
+        "user-role-assignment",
+        {
+            pageNumber: backendPagination.value.pageNumber,
+            pageSize: backendPagination.value.pageSize,
+            search: backendPagination.value.search,
+            sortOrder: backendPagination.value.sortOrder,
+            sortBy: backendPagination.value.sortBy,
+        },
+    ],
     queryFn: () =>
         AppActlApiService.applicationsApi
-            .getFamApplicationUserRoleAssignment(props.appId, null, 100000)
-            .then((res) => res.data.results),
+            .getFamApplicationUserRoleAssignment(
+                props.appId,
+                backendPagination.value.pageNumber,
+                backendPagination.value.pageSize,
+                backendPagination.value.search,
+                backendPagination.value.sortOrder,
+                backendPagination.value.sortBy
+            )
+            .then((res) => res.data),
     refetchOnMount: "always",
     enabled: props.tableType === ManagePermissionsTableEnum.AppUser,
-    select: (data) => {
-        const updatedData = data.map((item) => ({
-            ...item,
-            create_date: utcToLocalDate(item.create_date),
-        }));
-
-        return [
-            ...updatedData.filter((item) =>
-                newAppUserIds.includes(item.user_role_xref_id)
-            ),
-            ...updatedData.filter(
-                (item) => !newAppUserIds.includes(item.user_role_xref_id)
-            ),
-        ];
-    },
 });
 
 // Delegated admin data query
@@ -142,53 +175,47 @@ const delegatedAdminQuery = useQuery({
         AdminMgmtApiService.delegatedAdminApi
             .getAccessControlPrivilegesByApplicationId(
                 props.appId,
-                null,
-                100000
+                backendPagination.value.pageNumber,
+                backendPagination.value.pageSize
             )
             .then((res) => res.data.results),
     refetchOnMount: "always",
     enabled: props.tableType === ManagePermissionsTableEnum.DelegatedAdmin,
-    select: (data) => {
-        // Convert date to human friendly format for display and sorting
-        const updatedData = data.map((item) => ({
-            ...item,
-            create_date: utcToLocalDate(item.create_date),
-        }));
-
-        return [
-            ...updatedData.filter((item) =>
-                newDelegatedAdminIds.includes(item.access_control_privilege_id)
-            ),
-            ...updatedData.filter(
-                (item) =>
-                    !newDelegatedAdminIds.includes(
-                        item.access_control_privilege_id
-                    )
-            ),
-        ];
-    },
 });
 
 const tableFilter = ref({
     global: { value: "", matchMode: FilterMatchMode.CONTAINS },
 });
 
-const handleSearchChange = (newValue: string) => {
-    tableFilter.value.global.value = newValue;
+const handleSearchChange = (searchValue: string) => {
+    tableFilter.value.global.value = searchValue;
 };
 
-const getTableRows = () => {
+const getTotalRecords = (): number => {
+    switch (props.tableType) {
+        case ManagePermissionsTableEnum.AppAdmin:
+            return appAdminQuery.data.value?.length ?? 0;
+        case ManagePermissionsTableEnum.AppUser:
+            return appUserQuery.data.value?.meta.total ?? 0;
+        case ManagePermissionsTableEnum.DelegatedAdmin:
+            return delegatedAdminQuery.data.value?.length ?? 0;
+        default:
+            return 0;
+    }
+};
+
+const getTableRows = computed(() => {
     switch (props.tableType) {
         case ManagePermissionsTableEnum.AppAdmin:
             return appAdminQuery.data.value ?? [];
         case ManagePermissionsTableEnum.AppUser:
-            return appUserQuery.data.value ?? [];
+            return appUserQuery.data.value?.results ?? [];
         case ManagePermissionsTableEnum.DelegatedAdmin:
             return delegatedAdminQuery.data.value ?? [];
         default:
             return [];
     }
-};
+});
 
 // Get the query loading status
 const isQueryLoading = (): boolean => {
@@ -236,7 +263,6 @@ const getQueryErrorValue = () => {
             ? `Failed to fetch data. ${formatAxiosError(error)}`
             : "Failed to fetch data.";
     }
-
     return undefined;
 };
 
@@ -249,10 +275,6 @@ const navigateToUserDetails = (userId: string) => {
         },
     });
 };
-
-const confirm = useConfirm();
-
-const confirmTextProps = ref<ConfirmTextType>();
 
 const deleteAppUserRoleMutation = useMutation({
     mutationFn: (appUser: FamApplicationUserRoleAssignmentGetSchema) =>
@@ -337,6 +359,10 @@ const deleteFamPermissionMutation = useMutation({
     },
     onSettled: () => appAdminQuery.refetch(),
 });
+
+const confirm = useConfirm();
+
+const confirmTextProps = ref<ConfirmTextType>();
 
 const setConfirmTextProps = (
     userName: string,
@@ -453,10 +479,87 @@ const highlightNewUserAccessRow = (
             return undefined;
     }
 };
+
+/*
+ * Below are lazy loading logic for backend paginated results
+ */
+const tableRef = ref<HTMLElement | null>(null);
+
+const handlePageChange = (event: DataTablePageEvent): void => {
+    if (props.tableType === ManagePermissionsTableEnum.AppUser) {
+        isFetching.value = true;
+        const pageNumToRequest = event.page + 1; // Convert to 1-based index
+        const pageSizeToRequest = event.rows;
+        backendPagination.value.pageNumber = pageNumToRequest;
+        backendPagination.value.pageSize = pageSizeToRequest;
+        appUserQuery.refetch().finally(() => (isFetching.value = false));
+    } else {
+        console.log("PrimeVue default pagination used:", event);
+        // Do nothing, let PrimeVue handle the default pagination logic
+    }
+    scrollToRef(tableRef);
+};
+
+const handleSort = (event: DataTableSortEvent): void => {
+    if (isAppAdminTable) {
+        return;
+    }
+    const { sortField, sortOrder } = event;
+    if (props.tableType === ManagePermissionsTableEnum.AppUser) {
+        isFetching.value = true;
+        if (sortOrder === 0) {
+            backendPagination.value.sortOrder = null;
+            backendPagination.value.sortBy = null;
+        } else {
+            backendPagination.value.sortOrder =
+                sortOrder === 1 ? SortOrderEnum.Asc : SortOrderEnum.Desc;
+            backendPagination.value.sortBy = sortFieldToEnum(sortField);
+        }
+        appUserQuery.refetch().finally(() => (isFetching.value = false));
+    }
+};
+
+const showFilterError = ref<boolean>(false);
+
+const firstRow = ref(0);
+
+watch(firstRow, () => {
+    console.log(firstRow.value);
+});
+
+/**
+ * Reset paginator to start from the first page
+ */
+const resetPageNumber = () => {
+    firstRow.value = 0;
+};
+
+const handleFilter = (searchValue: string, isChanged: boolean) => {
+    if (!isAppAdminTable && isChanged) {
+        showFilterError.value = false;
+        let strToSearch: string | null = searchValue;
+
+        if (searchValue.length === 0) {
+            strToSearch = null;
+        } else if (searchValue.length < MINIMUM_SEARCH_STR_LEN) {
+            showFilterError.value = true;
+            return;
+        }
+        isFetching.value = true;
+        backendPagination.value.search = strToSearch;
+        backendPagination.value.pageNumber = 1;
+        if (props.tableType === ManagePermissionsTableEnum.AppUser) {
+            appUserQuery.refetch().finally(() => {
+                resetPageNumber();
+                isFetching.value = false;
+            });
+        }
+    }
+};
 </script>
 
 <template>
-    <div class="fam-table">
+    <div class="fam-table" ref="tableRef">
         <ConfirmDialog group="deleteAppPermission" v-if="confirmTextProps">
             <template #message>
                 <ConfirmDialogText
@@ -471,11 +574,15 @@ const highlightNewUserAccessRow = (
             :title="getTableHeaderTitle(appName, tableType)"
             :description="getTableHeaderDescription(appName, tableType)"
         />
-
+        <ErrorText
+            v-if="showFilterError"
+            :errorMsg="`Keyword must have at least ${MINIMUM_SEARCH_STR_LEN} characters`"
+        />
         <TableToolbar
             :filter="tableFilter['global'].value"
             input-placeholder="Search by keyword"
             @change="handleSearchChange"
+            @blur="handleFilter"
         />
 
         <TableSkeleton
@@ -489,8 +596,10 @@ const highlightNewUserAccessRow = (
         />
         <DataTable
             v-else
-            :value="getTableRows()"
-            :total-records="getTableRows().length"
+            :lazy="!isAppAdminTable"
+            :value="getTableRows"
+            :total-records="getTotalRecords()"
+            v-model:first="firstRow"
             removableSort
             stripedRows
             v-model:filters="tableFilter"
@@ -502,8 +611,13 @@ const highlightNewUserAccessRow = (
             :paginatorTemplate="TABLE_PAGINATOR_TEMPLATE"
             :currentPageReportTemplate="TABLE_CURRENT_PAGE_REPORT_TEMPLATE"
             :rowStyle="highlightNewUserAccessRow"
+            @page="handlePageChange"
+            @sort="handleSort"
+            :loading="isFetching"
         >
             <template #empty> No user found. </template>
+
+            <template #loading><Spinner /></template>
 
             <Column header="User Name" field="user.user_name" sortable>
                 <template #body="{ data }">
@@ -540,21 +654,21 @@ const highlightNewUserAccessRow = (
             <Column header="Email" field="user.email" sortable />
 
             <Column
-                v-if="tableType === ManagePermissionsTableEnum.AppAdmin"
+                v-if="isAppAdminTable"
                 header="Application"
                 field="application.application_description"
                 sortable
             />
 
             <Column
-                v-if="tableType === ManagePermissionsTableEnum.AppAdmin"
+                v-if="isAppAdminTable"
                 header="Environment"
                 field="application.app_environment"
                 sortable
             />
 
             <Column
-                v-if="tableType !== ManagePermissionsTableEnum.AppAdmin"
+                v-if="!isAppAdminTable"
                 :field="
                     tableType === ManagePermissionsTableEnum.AppUser
                         ? 'role.forest_client.forest_client_number'
@@ -580,35 +694,34 @@ const highlightNewUserAccessRow = (
                         : 'Role'
                 "
                 field="roleDisplay"
-                :sortable="tableType !== ManagePermissionsTableEnum.AppAdmin"
+                :sortable="!isAppAdminTable"
                 sort-field="role.display_name"
             >
                 <template #body="{ data }">
                     <Chip
                         :label="
-                            tableType === ManagePermissionsTableEnum.AppAdmin
-                                ? 'Admin'
-                                : data.role.display_name
+                            isAppAdminTable ? 'Admin' : data.role.display_name
                         "
                     />
                 </template>
             </Column>
 
             <Column
-                v-if="tableType !== ManagePermissionsTableEnum.AppAdmin"
+                v-if="!isAppAdminTable"
                 header="Added On"
                 field="create_date"
                 sortable
-            />
+            >
+                <template #body="{ data }">
+                    {{ utcToLocalDate(data.create_date) }}
+                </template>
+            </Column>
 
             <Column header="Action">
                 <template #body="{ data }">
                     <div class="nowrap-cell">
                         <button
-                            v-if="
-                                tableType !==
-                                ManagePermissionsTableEnum.AppAdmin
-                            "
+                            v-if="!isAppAdminTable"
                             title="User permission history"
                             class="btn btn-icon"
                             @click="navigateToUserDetails(data.user_id)"
