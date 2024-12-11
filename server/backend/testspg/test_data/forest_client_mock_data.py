@@ -15,7 +15,7 @@ from api.app.schemas.fam_user_type import FamUserTypeSchema
 
 # --- mock data for test_forest_client_dec.py
 
-class TestAppUserRoleResultDictKeys(str, Enum):
+class TestFcDecoratorFnResultConditions(str, Enum):
     NO_RESULT = "no_result"
     NO_FC_IN_RESULTS = "no_fc_results"
     WITH_FC_IN_RESULTS = "with_fc_results",
@@ -26,8 +26,8 @@ Mock data for `get_application_role_assignments()` return in PagedResultsSchema.
 Use 'TestAppUserRoleResultDictKeys' enum to identify different set of data.
 """
 APP_USER_ROLE_GET_RESULTS_NO_PAGE_META: dict[str, List[FamApplicationUserRoleAssignmentGetSchema]] = {
-    TestAppUserRoleResultDictKeys.NO_RESULT: [],
-    TestAppUserRoleResultDictKeys.NO_FC_IN_RESULTS: [
+    TestFcDecoratorFnResultConditions.NO_RESULT: [],
+    TestFcDecoratorFnResultConditions.NO_FC_IN_RESULTS: [
         FamApplicationUserRoleAssignmentGetSchema(user_role_xref_id=900, user_id=900, role_id=900,
             user=FamUserInfoSchema(user_name="tu_1", user_type_relation=FamUserTypeSchema(user_type_code=UserType.BCEID, description="dummy_desc")),
             role=FamRoleWithClientSchema(role_id=900, role_name="r1", role_type_code=RoleType.ROLE_TYPE_CONCRETE, role_purpose="Test dummy role",
@@ -46,7 +46,7 @@ APP_USER_ROLE_GET_RESULTS_NO_PAGE_META: dict[str, List[FamApplicationUserRoleAss
             ),
             create_date=datetime.datetime(2024, 11, 1, 19, 44, 47)),
     ],
-    TestAppUserRoleResultDictKeys.WITH_FC_IN_RESULTS: [
+    TestFcDecoratorFnResultConditions.WITH_FC_IN_RESULTS: [
         FamApplicationUserRoleAssignmentGetSchema(user_role_xref_id=902, user_id=903, role_id=990,
             user=FamUserInfoSchema(user_name="tu_1", user_type_relation=FamUserTypeSchema(user_type_code=UserType.BCEID, description="dummy_desc")),
             role=FamRoleWithClientSchema(role_id=990, role_name="r2_00001011", role_type_code=RoleType.ROLE_TYPE_CONCRETE, role_purpose="Test dummy role",
@@ -77,7 +77,7 @@ APP_USER_ROLE_GET_RESULTS_NO_PAGE_META: dict[str, List[FamApplicationUserRoleAss
             ),
             create_date=datetime.datetime(2024, 11, 1, 19, 44, 47)) # no FC
     ],
-    TestAppUserRoleResultDictKeys.WITH_FC_NOT_ACTIVE_RESULT: [
+    TestFcDecoratorFnResultConditions.WITH_FC_NOT_ACTIVE_RESULT: [
        FamApplicationUserRoleAssignmentGetSchema(user_role_xref_id=904, user_id=904, role_id=992,
             user=FamUserInfoSchema(user_name="tu_1", user_type_relation=FamUserTypeSchema(user_type_code=UserType.BCEID, description="dummy_desc")),
             role=FamRoleWithClientSchema(role_id=992, role_name="r2_12345678", role_type_code=RoleType.ROLE_TYPE_CONCRETE, role_purpose="Test dummy role",
