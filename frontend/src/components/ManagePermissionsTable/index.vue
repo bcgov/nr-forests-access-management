@@ -99,6 +99,9 @@ const props = defineProps<{
 }>();
 
 const isAppAdminTable = props.tableType === ManagePermissionsTableEnum.AppAdmin;
+const isAppUserTable = props.tableType === ManagePermissionsTableEnum.AppUser;
+const isDelegatedTable =
+    props.tableType === ManagePermissionsTableEnum.DelegatedAdmin;
 
 // Fam App Admins data query, this query has no pagination and create date
 const appAdminQuery = useQuery({
@@ -108,9 +111,9 @@ const appAdminQuery = useQuery({
             .getApplicationAdmins()
             .then((res) => res.data),
     refetchOnMount: "always",
-    enabled: props.tableType === ManagePermissionsTableEnum.AppAdmin,
+    enabled: isAppAdminTable,
     select: (data) => {
-        // Move matching IDs to the start of the array
+        // Sort then move matching IDs to the start of the array
         const sortedByUserName = data.sort((a, b) =>
             a.user.user_name.localeCompare(b.user.user_name)
         );
@@ -165,22 +168,35 @@ const appUserQuery = useQuery({
             )
             .then((res) => res.data),
     refetchOnMount: "always",
-    enabled: props.tableType === ManagePermissionsTableEnum.AppUser,
+    enabled: isAppUserTable,
 });
 
 // Delegated admin data query
 const delegatedAdminQuery = useQuery({
-    queryKey: ["access_control_privileges", { application_id: props.appId }],
+    queryKey: [
+        "access-control-privileges",
+        {
+            application_id: props.appId,
+            pageNumber: backendPagination.value.pageNumber,
+            pageSize: backendPagination.value.pageSize,
+            search: backendPagination.value.search,
+            sortOrder: backendPagination.value.sortOrder,
+            sortBy: backendPagination.value.sortBy,
+        },
+    ],
     queryFn: () =>
         AdminMgmtApiService.delegatedAdminApi
             .getAccessControlPrivilegesByApplicationId(
                 props.appId,
                 backendPagination.value.pageNumber,
-                backendPagination.value.pageSize
+                backendPagination.value.pageSize,
+                backendPagination.value.search,
+                backendPagination.value.sortOrder,
+                backendPagination.value.sortBy
             )
-            .then((res) => res.data.results),
+            .then((res) => res.data),
     refetchOnMount: "always",
-    enabled: props.tableType === ManagePermissionsTableEnum.DelegatedAdmin,
+    enabled: isDelegatedTable,
 });
 
 const tableFilter = ref({
@@ -198,7 +214,7 @@ const getTotalRecords = (): number => {
         case ManagePermissionsTableEnum.AppUser:
             return appUserQuery.data.value?.meta.total ?? 0;
         case ManagePermissionsTableEnum.DelegatedAdmin:
-            return delegatedAdminQuery.data.value?.length ?? 0;
+            return delegatedAdminQuery.data.value?.meta.total ?? 0;
         default:
             return 0;
     }
@@ -211,7 +227,7 @@ const getTableRows = computed(() => {
         case ManagePermissionsTableEnum.AppUser:
             return appUserQuery.data.value?.results ?? [];
         case ManagePermissionsTableEnum.DelegatedAdmin:
-            return delegatedAdminQuery.data.value ?? [];
+            return delegatedAdminQuery.data.value?.results ?? [];
         default:
             return [];
     }
@@ -408,7 +424,7 @@ const handleDelete = (
         privilegeObject.user.last_name
     );
 
-    if (props.tableType === ManagePermissionsTableEnum.AppUser) {
+    if (isAppUserTable) {
         const appUser =
             privilegeObject as FamApplicationUserRoleAssignmentGetSchema;
         setConfirmTextProps(
@@ -421,7 +437,7 @@ const handleDelete = (
         );
     }
 
-    if (props.tableType === ManagePermissionsTableEnum.DelegatedAdmin) {
+    if (isDelegatedTable) {
         const delegatedAdmin =
             privilegeObject as FamAccessControlPrivilegeGetResponse;
         setConfirmTextProps(
@@ -434,7 +450,7 @@ const handleDelete = (
         );
     }
 
-    if (props.tableType === ManagePermissionsTableEnum.AppAdmin) {
+    if (isAppAdminTable) {
         const famAdmin = privilegeObject as FamAppAdminGetResponse;
         setConfirmTextProps(userName, "Admin", props.appName);
         showConfirmDialog("Remove Access", () =>
@@ -486,16 +502,20 @@ const highlightNewUserAccessRow = (
 const tableRef = ref<HTMLElement | null>(null);
 
 const handlePageChange = (event: DataTablePageEvent): void => {
-    if (props.tableType === ManagePermissionsTableEnum.AppUser) {
-        isFetching.value = true;
-        const pageNumToRequest = event.page + 1; // Convert to 1-based index
-        const pageSizeToRequest = event.rows;
-        backendPagination.value.pageNumber = pageNumToRequest;
-        backendPagination.value.pageSize = pageSizeToRequest;
+    if (isAppAdminTable) {
+        return;
+    }
+
+    isFetching.value = true;
+    const pageNumToRequest = event.page + 1; // Convert to 1-based index
+    const pageSizeToRequest = event.rows;
+    backendPagination.value.pageNumber = pageNumToRequest;
+    backendPagination.value.pageSize = pageSizeToRequest;
+
+    if (isAppUserTable) {
         appUserQuery.refetch().finally(() => (isFetching.value = false));
-    } else {
-        console.log("PrimeVue default pagination used:", event);
-        // Do nothing, let PrimeVue handle the default pagination logic
+    } else if (isDelegatedTable) {
+        delegatedAdminQuery.refetch().finally(() => (isFetching.value = false));
     }
     scrollToRef(tableRef);
 };
@@ -505,27 +525,27 @@ const handleSort = (event: DataTableSortEvent): void => {
         return;
     }
     const { sortField, sortOrder } = event;
-    if (props.tableType === ManagePermissionsTableEnum.AppUser) {
-        isFetching.value = true;
-        if (sortOrder === 0) {
-            backendPagination.value.sortOrder = null;
-            backendPagination.value.sortBy = null;
-        } else {
-            backendPagination.value.sortOrder =
-                sortOrder === 1 ? SortOrderEnum.Asc : SortOrderEnum.Desc;
-            backendPagination.value.sortBy = sortFieldToEnum(sortField);
-        }
+    isFetching.value = true;
+
+    if (sortOrder === 0) {
+        backendPagination.value.sortOrder = null;
+        backendPagination.value.sortBy = null;
+    } else {
+        backendPagination.value.sortOrder =
+            sortOrder === 1 ? SortOrderEnum.Asc : SortOrderEnum.Desc;
+        backendPagination.value.sortBy = sortFieldToEnum(sortField);
+    }
+
+    if (isAppUserTable) {
         appUserQuery.refetch().finally(() => (isFetching.value = false));
+    } else if (isDelegatedTable) {
+        delegatedAdminQuery.refetch().finally(() => (isFetching.value = false));
     }
 };
 
 const showFilterError = ref<boolean>(false);
 
 const firstRow = ref(0);
-
-watch(firstRow, () => {
-    console.log(firstRow.value);
-});
 
 /**
  * Reset paginator to start from the first page
@@ -548,8 +568,13 @@ const handleFilter = (searchValue: string, isChanged: boolean) => {
         isFetching.value = true;
         backendPagination.value.search = strToSearch;
         backendPagination.value.pageNumber = 1;
-        if (props.tableType === ManagePermissionsTableEnum.AppUser) {
+        if (isAppUserTable) {
             appUserQuery.refetch().finally(() => {
+                resetPageNumber();
+                isFetching.value = false;
+            });
+        } else if (isDelegatedTable) {
+            delegatedAdminQuery.refetch().finally(() => {
                 resetPageNumber();
                 isFetching.value = false;
             });
@@ -669,30 +694,18 @@ const handleFilter = (searchValue: string, isChanged: boolean) => {
 
             <Column
                 v-if="!isAppAdminTable"
-                :field="
-                    tableType === ManagePermissionsTableEnum.AppUser
-                        ? 'role.forest_client.forest_client_number'
-                        : 'role.client_number.forest_client_number'
-                "
-                :sort-field="
-                    tableType === ManagePermissionsTableEnum.AppUser
-                        ? 'role.forest_client.forest_client_number'
-                        : 'role.client_number.forest_client_number'
-                "
+                field="role.forest_client.forest_client_number"
+                sort-field="role.forest_client.forest_client_number"
                 header="Organization"
                 sortable
             >
                 <template #body="{ data }">
-                    {{ getOrganizationName(tableType, data) }}
+                    {{ getOrganizationName(data) }}
                 </template>
             </Column>
 
             <Column
-                :header="
-                    tableType === ManagePermissionsTableEnum.DelegatedAdmin
-                        ? 'Role Enabled To Assign'
-                        : 'Role'
-                "
+                :header="isAppUserTable ? 'Role' : 'Role Enabled To Assign'"
                 field="roleDisplay"
                 :sortable="!isAppAdminTable"
                 sort-field="role.display_name"
