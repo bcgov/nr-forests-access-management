@@ -3,11 +3,14 @@ from http import HTTPStatus
 from typing import List
 
 from api.app import constants as famConstants
+from api.app.decorators.forest_client_dec import post_sync_forest_clients_dec
 from api.app.integration.forest_client_integration import \
     ForestClientIntegrationService
 from api.app.integration.gc_notify import GCNotifyEmailService
 from api.app.repositories.access_control_privilege_repository import \
     AccessControlPrivilegeRepository
+from api.app.schemas.forest_client_integration import \
+    ForestClientIntegrationSearchParmsSchema
 from api.app.schemas.pagination import (DelegatedAdminPageParamsSchema,
                                         PagedResultsSchema)
 from api.app.schemas.schemas import (FamAccessControlPrivilegeCreateDto,
@@ -37,6 +40,7 @@ class AccessControlPrivilegeService:
         self.permission_audit_service = PermissionAuditService(db)
         self.access_control_privilege_repository = AccessControlPrivilegeRepository(db)
 
+    @post_sync_forest_clients_dec
     def get_paged_delegated_admin_assignment_by_application_id(
         self, application_id: int, page_params: DelegatedAdminPageParamsSchema
     ) -> PagedResultsSchema[FamAccessControlPrivilegeGetResponse]:
@@ -141,8 +145,8 @@ class AccessControlPrivilegeService:
             )
             for forest_client_number in request.forest_client_numbers:
                 # validate the forest client number
-                forest_client_search_return = forest_client_integration_service.find_by_client_number(
-                    forest_client_number
+                forest_client_search_return = forest_client_integration_service.search(
+                    ForestClientIntegrationSearchParmsSchema(forest_client_numbers=[forest_client_number])
                 )
                 if not forest_client_number_exists(forest_client_search_return):
                     error_msg = (

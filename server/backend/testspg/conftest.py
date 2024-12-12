@@ -264,7 +264,7 @@ def create_test_user_role_assignment(
     test_client_fixture: starlette.testclient.TestClient, token, request_body
 ):
     response = test_client_fixture.post(
-        f"{apiPrefix}/user_role_assignment",
+        f"{apiPrefix}/user-role-assignment",
         json=request_body,
         headers=jwt_utils.headers(token),
     )

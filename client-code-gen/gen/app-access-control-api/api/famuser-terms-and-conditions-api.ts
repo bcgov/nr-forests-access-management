@@ -34,7 +34,7 @@ export const FAMUserTermsAndConditionsApiAxiosParamCreator = function (configura
          * @throws {RequiredError}
          */
         createUserTermsAndConditions: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/user_terms_conditions`;
+            const localVarPath = `/user-terms-conditions`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -68,7 +68,7 @@ export const FAMUserTermsAndConditionsApiAxiosParamCreator = function (configura
          * @throws {RequiredError}
          */
         validateUserRequiresAcceptTermsAndConditions: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/user_terms_conditions/user:validate`;
+            const localVarPath = `/user-terms-conditions/user:validate`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;

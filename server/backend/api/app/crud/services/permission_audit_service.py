@@ -15,6 +15,8 @@ from api.app.repositories.permission_audit_repository import \
     PermissionAuditRepository
 from api.app.schemas.fam_user_role_assignment_create_response import \
     FamUserRoleAssignmentCreateRes
+from api.app.schemas.forest_client_integration import \
+    ForestClientIntegrationSearchParmsSchema
 from api.app.schemas.permission_audit_history import \
     PermissionAuditHistoryCreateSchema
 from api.app.schemas.privilege_change_performer import \
@@ -142,8 +144,8 @@ class PermissionAuditService:
             forest_client_number = revoked_permission_role.forest_client_relation.forest_client_number
             api_instance_env = crud_utils.use_api_instance_by_app(revoked_permission_role.application)
             forest_client_integration_service = ForestClientIntegrationService(api_instance_env)
-            fc_search_result = forest_client_integration_service.find_by_client_number(
-                forest_client_number
+            fc_search_result = forest_client_integration_service.search(
+                ForestClientIntegrationSearchParmsSchema(forest_client_numbers=[forest_client_number])
             )
             # Forest Client search is an exact search.
             if len(fc_search_result) == 1:
