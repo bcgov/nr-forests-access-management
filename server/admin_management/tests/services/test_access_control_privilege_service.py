@@ -3,8 +3,7 @@ from http import HTTPStatus
 
 import pytest
 from api.app.constants import (DEFAULT_PAGE_SIZE, MIN_PAGE,
-                               DelegatedAdminSortByEnum, SortOrderEnum,
-                               UserType)
+                               DelegatedAdminSortByEnum, SortOrderEnum)
 from api.app.models.model import FamRole
 from api.app.repositories.access_control_privilege_repository import \
     AccessControlPrivilegeRepository
@@ -372,25 +371,23 @@ def test_create_access_control_privilege_many_active_and_inactive_forest_client(
     ],
 )
 def test_get_paged_delegated_admin_assignment_on_pagination(
-    mocker, db_pg_session: Session, load_fom_dev_delegated_admin_role_test_data,
+    mocker, load_fom_dev_delegated_admin_role_test_data,
     access_control_privilege_service: AccessControlPrivilegeService,
     new_idir_requester,
     test_page_params: DelegatedAdminPageParamsSchema, expected_condition
 ):
-    session = db_pg_session
-    dummy_test_requester = new_idir_requester
-
     repository_get_paginated_results_fn_spy = mocker.spy(
         AccessControlPrivilegeRepository, 'get_paged_delegated_admins_assignment_by_application_id'
     )
 
     # Important! the `.__wrapped__` contains the original function (without decorated) so tests can use it.
+    # This will prevent post forest client api calls from decorator and can focus on testing function itself.
     # See note at 'forest_client_dec.py'
     original_delegated_admin_assignments_fn = (
         access_control_privilege_service.get_paged_delegated_admin_assignment_by_application_id.__wrapped__
     )
     paged_results = original_delegated_admin_assignments_fn(
-        db=session, application_id=TEST_APPLICATION_ID_FOM_DEV, requester=dummy_test_requester, page_params=test_page_params
+        access_control_privilege_service, application_id=TEST_APPLICATION_ID_FOM_DEV, page_params=test_page_params
     )
 
     assert repository_get_paginated_results_fn_spy.call_count == 1
