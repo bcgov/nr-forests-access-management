@@ -20,31 +20,31 @@ import { AppEnv } from './app-env';
 /**
  * 
  * @export
- * @interface FamApplicationDto
+ * @interface FamApplicationGrantDto
  */
-export interface FamApplicationDto {
+export interface FamApplicationGrantDto {
     /**
      * 
      * @type {number}
-     * @memberof FamApplicationDto
+     * @memberof FamApplicationGrantDto
      */
     'id': number;
     /**
      * 
      * @type {string}
-     * @memberof FamApplicationDto
+     * @memberof FamApplicationGrantDto
      */
     'name': string;
     /**
      * 
      * @type {string}
-     * @memberof FamApplicationDto
+     * @memberof FamApplicationGrantDto
      */
     'description'?: string | null;
     /**
      * 
      * @type {AppEnv}
-     * @memberof FamApplicationDto
+     * @memberof FamApplicationGrantDto
      */
     'env'?: AppEnv | null;
 }

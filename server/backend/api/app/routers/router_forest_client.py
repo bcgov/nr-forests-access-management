@@ -6,6 +6,8 @@ from api.app.integration.forest_client_integration import \
     ForestClientIntegrationService
 from api.app.routers.router_utils import get_api_instance_env
 from api.app.schemas import FamForestClientSchema
+from api.app.schemas.forest_client_integration import \
+    ForestClientIntegrationSearchParmsSchema
 from fastapi import APIRouter, Depends, Query
 
 LOGGER = logging.getLogger(__name__)
@@ -28,7 +30,8 @@ def search(
         f"Searching Forest Clients with parameter client_number: {client_number}"
     )
     fc_api = ForestClientIntegrationService(api_instance_env)
-    fc_json_list = fc_api.find_by_client_number(client_number)  # json object List
+    fc_search_params = ForestClientIntegrationSearchParmsSchema(forest_client_numbers=[client_number])
+    fc_json_list = fc_api.search(fc_search_params)  # json object List
     forest_clients = list(map(__map_api_results, fc_json_list))
     LOGGER.debug(f"Returning {len(forest_clients)} result.")
     return forest_clients

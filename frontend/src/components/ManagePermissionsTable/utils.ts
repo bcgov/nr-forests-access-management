@@ -9,7 +9,12 @@ import {
     type FamAccessControlPrivilegeGetResponse,
     type FamAppAdminGetResponse,
 } from "fam-admin-mgmt-api/model";
-import type { FamApplicationUserRoleAssignmentGetSchema } from "fam-app-acsctl-api/model";
+import {
+    SortOrderEnum,
+    UserRoleSortByEnum,
+    type FamApplicationUserRoleAssignmentGetSchema,
+} from "fam-app-acsctl-api/model";
+import type { PaginationType } from "@/types/PaginationTypes";
 
 export type ConfirmTextType = {
     role: string;
@@ -260,29 +265,50 @@ export const NEW_ACCESS_STYLE_IN_TABLE = {
 
 /**
  * DataTable 'Organization' column display expression.
- * @param {ManagePermissionsTableEnum} tableType - ManagePermissionsTable table types.
  * @param {FamApplicationUserRoleAssignmentGetSchema | FamAccessControlPrivilegeGetResponse} data - provided
  *        datatable data to extract and format forest client information for the 'Organization' column. Only
  *        user table and delegated admin table have this column.
  */
 export const getOrganizationName = (
-    tableType: ManagePermissionsTableEnum,
     data:
         | FamApplicationUserRoleAssignmentGetSchema
         | FamAccessControlPrivilegeGetResponse
 ) => {
-    const forestClientData = data.role.forest_client;
-    if (tableType === ManagePermissionsTableEnum.AppUser) {
-        // Display formatted forest client display name.
-        return forestClientData
-            ? formatForestClientDisplayName(
-                  forestClientData.forest_client_number,
-                  forestClientData.client_name
-              )
-            : "";
-    } else {
-        // For delegated admin data.
-        // TODO: No client name available from backend yet, implement soon. Only display client number. # noqa NOSONAR
-        return forestClientData?.forest_client_number;
+    const { forest_client } = data.role;
+    return formatForestClientDisplayName(
+        forest_client?.forest_client_number,
+        forest_client?.client_name
+    );
+};
+
+/**
+ * Default configuration for backend pagination.
+ */
+export const defaultBackendPagination: PaginationType = {
+    pageNumber: 1,
+    pageSize: 50,
+    search: null,
+    sortOrder: SortOrderEnum.Desc,
+    sortBy: UserRoleSortByEnum.CreateDate,
+};
+
+export const sortFieldToEnum = (
+    sortField: string | ((item: any) => string) | undefined
+): UserRoleSortByEnum | null => {
+    switch (sortField) {
+        case "user.user_name":
+            return UserRoleSortByEnum.UserName;
+        case "user.user_type.description":
+            return UserRoleSortByEnum.UserTypeCode;
+        case "user.first_name":
+            return UserRoleSortByEnum.FullName;
+        case "role.forest_client.forest_client_number":
+            return UserRoleSortByEnum.ForestClientNumber;
+        case "role.display_name":
+            return UserRoleSortByEnum.RoleDisplayName;
+        case "create_date":
+            return UserRoleSortByEnum.CreateDate;
+        default:
+            return null;
     }
 };

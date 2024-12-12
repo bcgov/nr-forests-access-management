@@ -41,7 +41,7 @@ class AdminRoleAuthGroup(str, Enum):
     FAM data model does not explicitly have these role group of admins.
     However, business rules do differentiate purpose of admins as:
         (FAM_ADMIN, [APP]_ADMIN, DELEGATED_ADMIN)
-    # Referencing to FAM confluence for design:
+    - Referencing to FAM confluence for design:
       https://apps.nrs.gov.bc.ca/int/confluence/display/FSAST1/Delegated+Access+Administration+Design (Auth Function)
     """
 
@@ -118,6 +118,9 @@ MIN_PAGE_SIZE = 10
 MAX_PAGE_SIZE = 100000
 SEARCH_FIELD_MIN_LENGTH = 3
 SEARCH_FIELD_MAX_LENGTH = 30
+
+DEFAULT_FC_API_SEARCH_PAGE = 0  # FC api is 0 index
+DEFAULT_FC_API_SEARCH_PAGE_SIZE = 50
 
 # ------- Error/Exception Code Constant -------
 

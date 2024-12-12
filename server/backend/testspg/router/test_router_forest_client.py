@@ -8,18 +8,16 @@ from api.app.constants import FamForestClientStatusType
 from api.app.main import apiPrefix
 from api.app.schemas import FamForestClientSchema
 from fastapi.testclient import TestClient
-from testspg.constants import (
-    FC_NUMBER_EXISTS_ACTIVE_00000001,
-    FC_NUMBER_EXISTS_DEACTIVATED,
-    FC_NUMBER_EXISTS_DECEASED,
-    FC_NUMBER_EXISTS_RECEIVERSHIP,
-    FC_NUMBER_EXISTS_SUSPENDED,
-    FOM_DEV_APPLICATION_ID,
-)
+from testspg.constants import (FC_NUMBER_EXISTS_ACTIVE_00000001,
+                               FC_NUMBER_EXISTS_DEACTIVATED,
+                               FC_NUMBER_EXISTS_DECEASED,
+                               FC_NUMBER_EXISTS_RECEIVERSHIP,
+                               FC_NUMBER_EXISTS_SUSPENDED,
+                               FOM_DEV_APPLICATION_ID)
 
 LOGGER = logging.getLogger(__name__)
 dummy_test_application_id_search_param = FOM_DEV_APPLICATION_ID
-endPoint_search = f"{apiPrefix}/forest_clients/search?application_id={dummy_test_application_id_search_param}"
+endPoint_search = f"{apiPrefix}/forest-clients/search?application_id={dummy_test_application_id_search_param}"
 
 
 @pytest.mark.parametrize(

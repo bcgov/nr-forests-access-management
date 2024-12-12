@@ -4,21 +4,21 @@ import {
     isAbstractRoleSelected,
     type AppPermissionFormType,
 } from "@/views/AddAppPermission/utils";
-import { RoleType, type FamRoleDto } from "fam-admin-mgmt-api/model";
+import { RoleType, type FamRoleGrantDto } from "fam-admin-mgmt-api/model";
 import Column from "primevue/column";
+import ConfirmDialog from "primevue/confirmdialog";
 import DataTable from "primevue/datatable";
 import RadioButton from "primevue/radiobutton";
-import { ErrorMessage, Field, useField } from "vee-validate";
-import { computed, inject, ref, type Ref } from "vue";
-import ForestClientSection from "./ForestClientSection.vue";
-import Label from "../UI/Label.vue";
-import ConfirmDialog from "primevue/confirmdialog";
 import { useConfirm } from "primevue/useconfirm";
+import { ErrorMessage, Field } from "vee-validate";
+import { computed, inject, ref, type Ref } from "vue";
+import Label from "../UI/Label.vue";
 import DelegatedAdminSection from "./DelegatedAdminSection.vue";
+import ForestClientSection from "./ForestClientSection.vue";
 
 const props = defineProps<{
     appId: number;
-    roleOptions: FamRoleDto[];
+    roleOptions: FamRoleGrantDto[];
     roleFieldId: string;
     forestClientsFieldId: string;
     /**
@@ -38,12 +38,12 @@ const confirm = useConfirm();
 /**
  * An intermediate value to accommodate the fake delegated admin role.
  */
-const selectedRole = ref<FamRoleDto | null>(formData.value.role);
+const selectedRole = ref<FamRoleGrantDto | null>(formData.value.role);
 
 /**
  * A fake d-admin row data for display purpose in the role table.
  */
-const delegatedAdminRow: FamRoleDto = {
+const delegatedAdminRow: FamRoleGrantDto = {
     id: -999,
     name: "delegated_admin",
     display_name: "Delegated admin",
@@ -54,7 +54,7 @@ const delegatedAdminRow: FamRoleDto = {
 };
 
 // Rows with or without the custom row for delegated admin
-const rows = computed<FamRoleDto[]>(() => {
+const rows = computed<FamRoleGrantDto[]>(() => {
     if (!props.isDelegatedAdminOnly) {
         return [...props.roleOptions, delegatedAdminRow];
     }
@@ -64,7 +64,7 @@ const rows = computed<FamRoleDto[]>(() => {
 /**
  * Sets the role selectedRole then formData accordingly.
  */
-const setRoleAndClearClients = (role: FamRoleDto) => {
+const setRoleAndClearClients = (role: FamRoleGrantDto) => {
     if (role.id === delegatedAdminRow.id) {
         selectedRole.value = role;
         formData.value.role = null;
@@ -81,7 +81,7 @@ const setRoleAndClearClients = (role: FamRoleDto) => {
     formData.value.forestClientInput.errorMsg = "";
 };
 
-const handleRoleSelect = (role: FamRoleDto) => {
+const handleRoleSelect = (role: FamRoleGrantDto) => {
     if (formData.value.forestClients.length) {
         confirm.require({
             group: "changeRole",

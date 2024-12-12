@@ -18,7 +18,7 @@ get_user_role_assignment_endpoint = (
 )
 # the search forest client number endpoint requires requester be the app admin or delegated admin of at least one app
 search_forest_client_endpoint = (
-    f"{apiPrefix}/forest_clients/search?client_number={FC_NUMBER_EXISTS_ACTIVE_00000001}"
+    f"{apiPrefix}/forest-clients/search?client_number={FC_NUMBER_EXISTS_ACTIVE_00000001}"
 )
 
 

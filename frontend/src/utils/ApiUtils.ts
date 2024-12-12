@@ -2,7 +2,7 @@ import type { AxiosError } from "axios";
 import {
     AdminRoleAuthGroup,
     type AdminUserAccessResponse,
-    type FamApplicationDto,
+    type FamApplicationGrantDto,
 } from "fam-admin-mgmt-api/model";
 
 /**
@@ -34,11 +34,11 @@ export const formatAxiosError = (err: AxiosError): string => {
  * - Only adds applications with `auth_key === "FAM_ADMIN"` if `id === 1`.
  *
  * @param {AdminUserAccessResponse} data - The response containing user access information.
- * @returns {FamApplicationDto[]} An array of unique FamApplicationDto objects.
+ * @returns {FamApplicationGrantDto[]} An array of unique FamApplicationGrantDto objects.
  */
 export const getUniqueApplications = (
     data?: AdminUserAccessResponse
-): FamApplicationDto[] => {
+): FamApplicationGrantDto[] => {
     if (!data) {
         return [];
     }
@@ -71,12 +71,12 @@ export const getUniqueApplications = (
  *
  * @param {number} appId - The ID of the application to find.
  * @param {AdminUserAccessResponse} [data] - The response containing user access information.
- * @returns {FamApplicationDto | undefined} The application with the matching ID, or undefined if not found.
+ * @returns {FamApplicationGrantDto | undefined} The application with the matching ID, or undefined if not found.
  */
 export const getApplicationById = (
     appId: number,
     data?: AdminUserAccessResponse
-): FamApplicationDto | undefined => {
+): FamApplicationGrantDto | undefined => {
     if (!data) {
         return;
     }

@@ -1,4 +1,10 @@
-import { array, mixed, object } from "yup";
+import type { TextInputType } from "@/types/InputTypes";
+import {
+    RoleType,
+    type FamAccessControlPrivilegeCreateRequest,
+    type FamGrantDetailDto,
+    type FamRoleGrantDto,
+} from "fam-admin-mgmt-api/model";
 import {
     UserType,
     type FamForestClientSchema,
@@ -6,13 +12,7 @@ import {
     type IdimProxyBceidInfoSchema,
     type IdimProxyIdirInfoSchema,
 } from "fam-app-acsctl-api/model";
-import {
-    RoleType,
-    type FamAccessControlPrivilegeCreateRequest,
-    type FamGrantDetailDto,
-    type FamRoleDto,
-} from "fam-admin-mgmt-api/model";
-import type { TextInputType } from "@/types/InputTypes";
+import { array, mixed, object } from "yup";
 
 export const AddAppUserPermissionSuccessQuerykey = "app-admin-mutation-success";
 export const AddAppUserPermissionErrorQuerykey = "app-admin-mutation-error";
@@ -28,7 +28,7 @@ export type AppPermissionFormType = {
     domain: UserType;
     user: IdimProxyIdirInfoSchema | IdimProxyBceidInfoSchema | null;
     forestClients: FamForestClientSchema[];
-    role: FamRoleDto | null;
+    role: FamRoleGrantDto | null;
     sendUserEmail: boolean;
     forestClientInput: TextInputType & {
         /**
@@ -84,7 +84,7 @@ export const validateAppPermissionForm = (isAbstractRoleSelected: boolean) => {
             .test("is-user-found", "A valid user ID is required", (value) => {
                 return value?.found === true;
             }),
-        role: mixed<FamRoleDto>().required("Please select a role"),
+        role: mixed<FamRoleGrantDto>().required("Please select a role"),
         forestClients: array()
             .of(
                 mixed<FamForestClientSchema>()

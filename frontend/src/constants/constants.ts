@@ -1,4 +1,4 @@
-export const PLACE_HOLDER = "--";
+export const PLACE_HOLDER = "—";
 
 export const DEFAULT_SKELETON_BORDER_RADIUS = "1rem";
 
@@ -16,4 +16,6 @@ export const TABLE_PAGINATOR_TEMPLATE =
 export const TABLE_CURRENT_PAGE_REPORT_TEMPLATE =
     "{first} - {last} of {totalRecords} items";
 
-export const TABLE_ROWS_PER_PAGE = [5, 10, 15, 20, 50, 100];
+export const TABLE_ROWS_PER_PAGE = [10, 15, 20, 50, 100];
+
+export const MINIMUM_SEARCH_STR_LEN = 3;

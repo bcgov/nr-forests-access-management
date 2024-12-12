@@ -1,3 +1,5 @@
+import { PLACE_HOLDER } from "../constants/constants";
+
 /**
  * Formats the forest client display name by combining the client name and client ID.
  * If only the client name is provided, it returns the client name.
@@ -22,7 +24,7 @@ export const formatForestClientDisplayName = (
     }
 
     if (!clientId && !clientName) {
-        return 'Forest Client Data Not Available';
+        return PLACE_HOLDER;
     }
 
     return `${clientName} (${clientId})`;

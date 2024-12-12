@@ -1,5 +1,4 @@
 import logging
-import urllib
 from http import HTTPStatus
 from typing import List
 
@@ -43,25 +42,6 @@ class ForestClientIntegrationService():
         # See Python: https://requests.readthedocs.io/en/latest/user/advanced/
         self.session = requests.Session()
         self.session.headers.update(self.headers)
-
-    def find_by_client_number(self, p_client_number: str):
-        """
-        Find Forest Client(s) information based on p_client_number search query field.
-
-        :param p_client_number: Forest Client Number string (8 digits).
-                                Note! Current Forest Client API can only do exact match.
-                                '/api/clients/findByClientNumber/{clientNumber}'
-        :return: Search result as List for a Forest Client information object.
-                 Current Forest Client API returns exact one result or http status
-                 other than 200 with message content. The intent for FAM search is for
-                 wild card search and Forest Client API could be capable of doing that
-                 in next version.
-        """
-        url = f"{self.api_clients_url}/findByClientNumber/{urllib.parse.quote_plus(p_client_number)}"
-        LOGGER.debug(f"ForestClientService find_by_client_number() - url: {url}")
-
-        find_result = self.__do_request(url=url)
-        return [find_result] if find_result else []
 
     def search(self, search_params: ForestClientIntegrationSearchParmsSchema):
         """
