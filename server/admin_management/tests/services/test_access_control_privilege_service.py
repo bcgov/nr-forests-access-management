@@ -2,8 +2,14 @@ import logging
 from http import HTTPStatus
 
 import pytest
+from api.app.constants import (DEFAULT_PAGE_SIZE, MIN_PAGE,
+                               DelegatedAdminSortByEnum, SortOrderEnum,
+                               UserType)
 from api.app.models.model import FamRole
+from api.app.repositories.access_control_privilege_repository import \
+    AccessControlPrivilegeRepository
 from api.app.schemas import schemas
+from api.app.schemas.pagination import DelegatedAdminPageParamsSchema
 from api.app.services.access_control_privilege_service import \
     AccessControlPrivilegeService
 from api.app.services.forest_client_service import ForestClientService
@@ -15,12 +21,13 @@ from sqlalchemy.orm import Session
 from tests.conftest import to_mocked_target_user
 from tests.constants import (
     TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST,
-    TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST_CONCRETE, TEST_CREATOR,
-    TEST_FOM_DEV_REVIEWER_ROLE_ID, TEST_FOM_DEV_SUBMITTER_ROLE_ID,
-    TEST_FOM_SUBMITTER_ROLE_NAME, TEST_FOREST_CLIENT_NUMBER,
-    TEST_FOREST_CLIENT_NUMBER_TWO, TEST_INACTIVE_FOREST_CLIENT_NUMBER,
-    TEST_INVALID_USER_TYPE, TEST_NON_EXIST_FOREST_CLIENT_NUMBER,
-    TEST_NOT_EXIST_ROLE_ID, TEST_USER_ID)
+    TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST_CONCRETE,
+    TEST_APPLICATION_ID_FOM_DEV, TEST_CREATOR, TEST_FOM_DEV_REVIEWER_ROLE_ID,
+    TEST_FOM_DEV_SUBMITTER_ROLE_ID, TEST_FOM_SUBMITTER_ROLE_NAME,
+    TEST_FOREST_CLIENT_NUMBER, TEST_FOREST_CLIENT_NUMBER_TWO,
+    TEST_INACTIVE_FOREST_CLIENT_NUMBER, TEST_INVALID_USER_TYPE,
+    TEST_NON_EXIST_FOREST_CLIENT_NUMBER, TEST_NOT_EXIST_ROLE_ID, TEST_USER_ID)
+from tests.utils import contains_any_insensitive, is_sorted_with
 
 LOGGER = logging.getLogger(__name__)
 
@@ -339,3 +346,94 @@ def test_create_access_control_privilege_many_active_and_inactive_forest_client(
         )
         != -1
     )
+
+
+@pytest.mark.parametrize(
+    "test_page_params, expected_condition",
+    [
+        (DelegatedAdminPageParamsSchema(page=MIN_PAGE, size=DEFAULT_PAGE_SIZE, search=None, sort_by=None, sort_order=None), # default
+        {"found": True, "within_range": True}),
+        (DelegatedAdminPageParamsSchema(page=MIN_PAGE, size=DEFAULT_PAGE_SIZE, search="NOT_EXISTS", sort_by=None, sort_order=None), # no result found
+        {"found": False, "within_range": True}),
+        (DelegatedAdminPageParamsSchema(page=1000000, size=100, search=None, sort_by=None, sort_order=None), # page out of range
+        {"found": True, "within_range": False}),
+        (DelegatedAdminPageParamsSchema(page=3, size=10, search=None, sort_by=None, sort_order=None),
+        {"found": True, "within_range": True}),
+        (DelegatedAdminPageParamsSchema(page=MIN_PAGE, size=10, search=None, sort_by=DelegatedAdminSortByEnum.USER_NAME, sort_order=SortOrderEnum.ASC),
+        {"found": True, "within_range": True, "sort_by_result_schema_attr": "user.user_name"}),
+        (DelegatedAdminPageParamsSchema(page=MIN_PAGE, size=10, search=None, sort_by=DelegatedAdminSortByEnum.ROLE_DISPLAY_NAME, sort_order=SortOrderEnum.DESC),
+        {"found": True, "within_range": True, "sort_by_result_schema_attr": "role.display_name"}),
+        (DelegatedAdminPageParamsSchema(page=MIN_PAGE, size=10, search="IDIR", sort_by=DelegatedAdminSortByEnum.USER_NAME, sort_order=SortOrderEnum.DESC),
+        {"found": True, "within_range": True, "sort_by_result_schema_attr": "user.user_name"}),
+        (DelegatedAdminPageParamsSchema(page=MIN_PAGE, size=100, search="submitter", sort_by=DelegatedAdminSortByEnum.FOREST_CLIENT_NUMBER, sort_order=SortOrderEnum.DESC),
+        {"found": True, "within_range": True, "sort_by_result_schema_attr": "role.forest_client.forest_client_number"}),
+        (DelegatedAdminPageParamsSchema(page=MIN_PAGE, size=10, search="not_fund", sort_by=DelegatedAdminSortByEnum.EMAIL, sort_order=SortOrderEnum.ASC),
+        {"found": False, "within_range": True, "sort_by_result_schema_attr": "user.email"}),
+    ],
+)
+def test_get_paged_delegated_admin_assignment_on_pagination(
+    mocker, db_pg_session: Session, load_fom_dev_delegated_admin_role_test_data,
+    access_control_privilege_service: AccessControlPrivilegeService,
+    new_idir_requester,
+    test_page_params: DelegatedAdminPageParamsSchema, expected_condition
+):
+    session = db_pg_session
+    dummy_test_requester = new_idir_requester
+
+    repository_get_paginated_results_fn_spy = mocker.spy(
+        AccessControlPrivilegeRepository, 'get_paged_delegated_admins_assignment_by_application_id'
+    )
+
+    # Important! the `.__wrapped__` contains the original function (without decorated) so tests can use it.
+    # See note at 'forest_client_dec.py'
+    original_delegated_admin_assignments_fn = (
+        access_control_privilege_service.get_paged_delegated_admin_assignment_by_application_id.__wrapped__
+    )
+    paged_results = original_delegated_admin_assignments_fn(
+        db=session, application_id=TEST_APPLICATION_ID_FOM_DEV, requester=dummy_test_requester, page_params=test_page_params
+    )
+
+    assert repository_get_paginated_results_fn_spy.call_count == 1
+    assert paged_results is not None
+    assert paged_results == repository_get_paginated_results_fn_spy.spy_return
+    result_data = paged_results.results
+    meta = paged_results.meta
+    assert result_data is not None
+    assert meta.page_number == test_page_params.page
+    assert meta.page_size == test_page_params.size
+    if not expected_condition["within_range"]:
+        assert result_data == []
+
+    if not expected_condition["found"]:
+        assert meta.total == 0
+        assert result_data == []
+    else:
+        assert meta.total > 0
+
+    # verify sorting
+    if test_page_params.sort_by:
+        sort_order = test_page_params.sort_order
+        sort_by_result_schema_attr = expected_condition["sort_by_result_schema_attr"]
+        assert all(
+            is_sorted_with(result_data[i], result_data[i+1], sort_by_result_schema_attr, sort_order)
+            for i in range(len(result_data) - 1)
+        )
+
+    # verify filtering
+    if test_page_params.search:
+        # verify filtering: checks all of 'result_data' item has at least one attribute value
+        # contains filtering keyword.
+        search_attributes = [
+            "create_date",
+            "user.user_name",
+            "user.user_type_relation.user_type_code",
+            "user.email",
+            "user.first_name",
+            "user.last_name",
+            "role.display_name",
+            "role.forest_client.forest_client_number"
+        ]
+        assert all(
+            contains_any_insensitive(result_data[i], search_attributes, test_page_params.search)
+            for i in range(len(result_data) - 1)
+        )
