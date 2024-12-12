@@ -15,10 +15,10 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { FamApplicationDto } from './fam-application-dto';
+import { FamApplicationGrantDto } from './fam-application-grant-dto';
 // May contain unused imports in some cases
 // @ts-ignore
-import { FamRoleDto } from './fam-role-dto';
+import { FamRoleGrantDto } from './fam-role-grant-dto';
 
 /**
  * 
@@ -28,15 +28,15 @@ import { FamRoleDto } from './fam-role-dto';
 export interface FamGrantDetailDto {
     /**
      * 
-     * @type {FamApplicationDto}
+     * @type {FamApplicationGrantDto}
      * @memberof FamGrantDetailDto
      */
-    'application': FamApplicationDto;
+    'application': FamApplicationGrantDto;
     /**
      * 
-     * @type {Array<FamRoleDto>}
+     * @type {Array<FamRoleGrantDto>}
      * @memberof FamGrantDetailDto
      */
-    'roles'?: Array<FamRoleDto> | null;
+    'roles'?: Array<FamRoleGrantDto> | null;
 }
 

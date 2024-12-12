@@ -40,7 +40,7 @@ from testspg.constants import (ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID,
                                FOM_TEST_APPLICATION_ID)
 
 LOGGER = logging.getLogger(__name__)
-endPoint = f"{apiPrefix}/user_role_assignment"
+endPoint = f"{apiPrefix}/user-role-assignment"
 
 ERROR_DUPLICATE_USER_ROLE = "already assigned to user"
 

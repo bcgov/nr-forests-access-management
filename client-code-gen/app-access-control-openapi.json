@@ -225,7 +225,7 @@
                 }
             }
         },
-        "/user_role_assignment": {
+        "/user-role-assignment": {
             "post": {
                 "tags": ["FAM User Role Assignment"],
                 "summary": "Create User Role Assignment Many",
@@ -270,7 +270,7 @@
                 ]
             }
         },
-        "/user_role_assignment/{user_role_xref_id}": {
+        "/user-role-assignment/{user_role_xref_id}": {
             "delete": {
                 "tags": ["FAM User Role Assignment"],
                 "summary": "Delete User Role Assignment",
@@ -309,7 +309,7 @@
                 }
             }
         },
-        "/forest_clients/search": {
+        "/forest-clients/search": {
             "get": {
                 "tags": ["FAM Forest Clients"],
                 "summary": "Search",
@@ -370,7 +370,7 @@
                 }
             }
         },
-        "/identity_search/idir": {
+        "/identity-search/idir": {
             "get": {
                 "tags": ["IDIR/BCeID Proxy"],
                 "summary": "Idir Search",
@@ -425,7 +425,7 @@
                 }
             }
         },
-        "/identity_search/bceid": {
+        "/identity-search/bceid": {
             "get": {
                 "tags": ["IDIR/BCeID Proxy"],
                 "summary": "Bceid Search",
@@ -480,7 +480,7 @@
                 }
             }
         },
-        "/user_terms_conditions/user:validate": {
+        "/user-terms-conditions/user:validate": {
             "post": {
                 "tags": ["FAM User Terms and Conditions"],
                 "summary": "Validate User Requires Accept Terms And Conditions",
@@ -505,7 +505,7 @@
                 ]
             }
         },
-        "/user_terms_conditions": {
+        "/user-terms-conditions": {
             "post": {
                 "tags": ["FAM User Terms and Conditions"],
                 "summary": "Create User Terms And Conditions",

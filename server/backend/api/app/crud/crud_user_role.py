@@ -20,6 +20,8 @@ from api.app.schemas import (FamApplicationUserRoleAssignmentGetSchema,
                              GCNotifyGrantAccessEmailParamSchema,
                              TargetUserSchema)
 from api.app.schemas.fam_forest_client import FamForestClientSchema
+from api.app.schemas.forest_client_integration import \
+    ForestClientIntegrationSearchParmsSchema
 from api.app.schemas.requester import RequesterSchema
 from api.app.utils.utils import raise_http_exception
 from sqlalchemy.orm import Session
@@ -110,8 +112,8 @@ def create_user_role_assignment_many(
         for forest_client_number in request.forest_client_numbers:
             # validate the forest client number
             forest_client_search_return = (
-                forest_client_integration_service.find_by_client_number(
-                    forest_client_number
+                forest_client_integration_service.search(
+                    ForestClientIntegrationSearchParmsSchema(forest_client_numbers=[forest_client_number])
                 )
             )
 

@@ -46,7 +46,7 @@ export const IDIRBCeIDProxyApiAxiosParamCreator = function (configuration?: Conf
             assertParamExists('bceidSearch', 'userId', userId)
             // verify required parameter 'applicationId' is not null or undefined
             assertParamExists('bceidSearch', 'applicationId', applicationId)
-            const localVarPath = `/identity_search/bceid`;
+            const localVarPath = `/identity-search/bceid`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -94,7 +94,7 @@ export const IDIRBCeIDProxyApiAxiosParamCreator = function (configuration?: Conf
             assertParamExists('idirSearch', 'userId', userId)
             // verify required parameter 'applicationId' is not null or undefined
             assertParamExists('idirSearch', 'applicationId', applicationId)
-            const localVarPath = `/identity_search/idir`;
+            const localVarPath = `/identity-search/idir`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;

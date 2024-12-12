@@ -1,10 +1,10 @@
-import { type FamApplicationDto } from "fam-admin-mgmt-api/model";
+import { type FamApplicationGrantDto } from "fam-admin-mgmt-api/model";
 import { ref } from "vue";
 
-export const selectedApp = ref<FamApplicationDto>();
+export const selectedApp = ref<FamApplicationGrantDto>();
 
 // Optional: Helper function to update selectedApp
-export const setSelectedApp = (app: FamApplicationDto) => {
+export const setSelectedApp = (app: FamApplicationGrantDto) => {
     selectedApp.value = app;
 };
 

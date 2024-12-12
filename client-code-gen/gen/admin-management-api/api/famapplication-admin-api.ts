@@ -43,7 +43,7 @@ export const FAMApplicationAdminApiAxiosParamCreator = function (configuration?:
         createApplicationAdmin: async (famAppAdminCreateRequest: FamAppAdminCreateRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'famAppAdminCreateRequest' is not null or undefined
             assertParamExists('createApplicationAdmin', 'famAppAdminCreateRequest', famAppAdminCreateRequest)
-            const localVarPath = `/application_admins`;
+            const localVarPath = `/application-admins`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -83,7 +83,7 @@ export const FAMApplicationAdminApiAxiosParamCreator = function (configuration?:
         deleteApplicationAdmin: async (applicationAdminId: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'applicationAdminId' is not null or undefined
             assertParamExists('deleteApplicationAdmin', 'applicationAdminId', applicationAdminId)
-            const localVarPath = `/application_admins/{application_admin_id}`
+            const localVarPath = `/application-admins/{application_admin_id}`
                 .replace(`{${"application_admin_id"}}`, encodeURIComponent(String(applicationAdminId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -118,7 +118,7 @@ export const FAMApplicationAdminApiAxiosParamCreator = function (configuration?:
          * @throws {RequiredError}
          */
         getApplicationAdmins: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/application_admins`;
+            const localVarPath = `/application-admins`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;

@@ -76,7 +76,7 @@ app.include_router(
 )
 app.include_router(
     router_application_admin.router,
-    prefix=apiPrefix + "/application_admins",
+    prefix=apiPrefix + "/application-admins",
     tags=["FAM Application Admin"],
 )
 app.include_router(

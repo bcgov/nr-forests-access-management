@@ -3,7 +3,7 @@ import {
     type AppEnv,
     type FamAuthGrantDto,
     type FamGrantDetailDto,
-    type FamRoleDto,
+    type FamRoleGrantDto,
 } from "fam-admin-mgmt-api/model";
 
 type MyPermissionsRowType = {
@@ -47,7 +47,7 @@ const getDelegatedAdminPermission = (
 ): MyPermissionsRowType[] => {
     const permissions: MyPermissionsRowType[] = [];
     access.grants.forEach((grant: FamGrantDetailDto) => {
-        grant.roles?.forEach((role: FamRoleDto) => {
+        grant.roles?.forEach((role: FamRoleGrantDto) => {
             const roleDescription = "Delegated Admin, " + role.display_name;
             if (!role.forest_clients) {
                 permissions.push({

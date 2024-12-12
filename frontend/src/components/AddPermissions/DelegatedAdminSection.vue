@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { inject, type Ref } from "vue";
 import { APP_PERMISSION_FORM_KEY } from "@/constants/InjectionKeys";
 import {
     isAbstractRoleSelected,
     type AppPermissionFormType,
 } from "@/views/AddAppPermission/utils";
+import type { FamRoleGrantDto } from "fam-admin-mgmt-api/model";
+import type { DropdownChangeEvent } from "primevue/dropdown";
+import { inject, type Ref } from "vue";
+import Dropdown from "../UI/Dropdown.vue";
 import NotificationMessage from "../UI/NotificationMessage.vue";
 import SubsectionTitle from "../UI/SubsectionTitle.vue";
-import type { FamRoleDto } from "fam-admin-mgmt-api/model";
-import Dropdown from "../UI/Dropdown.vue";
-import type { DropdownChangeEvent } from "primevue/dropdown";
 import ForestClientSection from "./ForestClientSection.vue";
 
 const formData = inject<Ref<AppPermissionFormType>>(APP_PERMISSION_FORM_KEY);
@@ -19,13 +19,13 @@ if (!formData) {
 }
 
 const props = defineProps<{
-    roleOptions: FamRoleDto[];
+    roleOptions: FamRoleGrantDto[];
     appId: number;
     forestClientsFieldId: string;
 }>();
 
 const onDropdownChange = (event: DropdownChangeEvent) => {
-    formData.value.role = event.value as FamRoleDto;
+    formData.value.role = event.value as FamRoleGrantDto;
 };
 </script>
 <template>

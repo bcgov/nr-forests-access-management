@@ -1,5 +1,6 @@
 .gitignore
 .npmignore
+.openapi-generator-ignore
 README.md
 api.ts
 api/admin-user-accesses-api.ts
@@ -23,12 +24,12 @@ model/fam-access-control-privilege-response.ts
 model/fam-app-admin-create-request.ts
 model/fam-app-admin-get-response.ts
 model/fam-application-base.ts
-model/fam-application-dto.ts
+model/fam-application-grant-dto.ts
 model/fam-auth-grant-dto.ts
 model/fam-forest-client-base.ts
 model/fam-grant-detail-dto.ts
 model/fam-role-base.ts
-model/fam-role-dto.ts
+model/fam-role-grant-dto.ts
 model/fam-role-with-client-dto.ts
 model/fam-user-info-dto.ts
 model/fam-user-type-dto.ts

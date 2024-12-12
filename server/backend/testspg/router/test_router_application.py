@@ -100,7 +100,7 @@ def test_get_fam_application_user_role_assignment_concrete_role(
     # create
     token = jwt_utils.create_jwt_token(test_rsa_key, ACCESS_ROLES_FOM_DEV_ONLY)
     response = test_client_fixture.post(
-        f"{apiPrefix}/user_role_assignment",
+        f"{apiPrefix}/user-role-assignment",
         json=ACCESS_GRANT_FOM_DEV_CR_IDIR,
         headers=jwt_utils.headers(token),
     )
@@ -135,7 +135,7 @@ def test_get_fam_application_user_role_assignment_abstract_role(
     # create
     token = jwt_utils.create_jwt_token(test_rsa_key, ACCESS_ROLES_FOM_DEV_ONLY)
     response = test_client_fixture.post(
-        f"{apiPrefix}/user_role_assignment",
+        f"{apiPrefix}/user-role-assignment",
         json=ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID,
         headers=jwt_utils.headers(token),
     )
