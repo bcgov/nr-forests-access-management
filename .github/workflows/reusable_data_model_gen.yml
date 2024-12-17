@@ -10,7 +10,7 @@ jobs:
     outputs:
       user: ${{ steps.data.outputs.user }}
       pass: ${{ steps.data.outputs.pass }}
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     timeout-minutes: 1
     steps:
       - name: Generate random username and password
@@ -24,7 +24,7 @@ jobs:
 
   schemaspy:
     name: Generate Documentation
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     needs: [vars]
     services:
       postgres:

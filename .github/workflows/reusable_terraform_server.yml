@@ -189,6 +189,7 @@ jobs:
               env:
                   licenceplate: ${{ secrets.licenceplate }}
                   target_env: ${{ inputs.environment_name }}
+
               run: |
                   # Run terraform
                   terragrunt run-all ${{ inputs.tf_subcommand }} --terragrunt-non-interactive
