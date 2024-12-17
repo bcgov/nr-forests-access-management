@@ -2,16 +2,18 @@
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import Checkbox from "primevue/checkbox";
+import RadioButton from "primevue/radiobutton";
 import { AdminMgmtApiService } from "@/services/ApiServiceFactory";
 import { useQuery } from "@tanstack/vue-query";
 import { Field, useField } from "vee-validate";
-import { computed, inject, type Ref } from "vue";
+import { computed, inject, watch, type Ref } from "vue";
 import { APP_PERMISSION_FORM_KEY } from "@/constants/InjectionKeys";
 import type { AppPermissionFormType } from "@/views/AddAppPermission/utils";
 import Label from "../UI/Label.vue";
 import SubsectionTitle from "../UI/SubsectionTitle.vue";
 import { getForestClientsUnderApp } from "@/utils/AuthUtils";
 import type { FamForestClientBase } from "fam-admin-mgmt-api/model";
+import ErrorText from "../UI/ErrorText.vue";
 
 const formData = inject<Ref<AppPermissionFormType>>(APP_PERMISSION_FORM_KEY);
 
@@ -23,6 +25,8 @@ const props = defineProps<{
     appId: number;
     fieldId: string;
 }>();
+
+const { validate: validateForestClients } = useField(props.fieldId);
 
 const adminUserAccessQuery = useQuery({
     queryKey: ["admin-user-access"],
@@ -39,7 +43,15 @@ const availableForestClients = computed<FamForestClientBase[]>(() => {
     return data ?? [];
 });
 
-const { setErrors: setForestClientsError } = useField(props.fieldId);
+watch(
+    availableForestClients,
+    () => {
+        if (availableForestClients.value.length === 1) {
+            formData.value.forestClients = availableForestClients.value;
+        }
+    },
+    { immediate: true }
+);
 
 const isForestClientSelected = (client: FamForestClientBase) =>
     formData.value.forestClients.some(
@@ -59,6 +71,8 @@ const toggleForestClient = (client: FamForestClientBase) => {
         // Add client if not selected
         formData.value.forestClients.push(client);
     }
+    // Validate again to remove resolved error if there is any
+    validateForestClients();
 };
 </script>
 
@@ -68,17 +82,36 @@ const toggleForestClient = (client: FamForestClientBase) => {
             title="Restrict access by organizations"
             subtitle="Select one or more organizations for this to access"
         />
-        <Label label-text="Organizations" required />
+
         <Field
             :name="props.fieldId"
             v-slot="{ errorMessage }"
             v-model="formData.forestClients"
         >
+            <Label label-text="Organizations" required />
+
+            <ErrorText
+                v-if="errorMessage"
+                show-icon
+                :error-msg="errorMessage"
+            />
+
             <!-- Table section -->
             <DataTable class="fam-table" :value="availableForestClients">
                 <template #empty>No organization available</template>
 
-                <Column header="">
+                <Column v-if="availableForestClients.length === 1" header="">
+                    <template #body="{ data }">
+                        <RadioButton
+                            class="fam-checkbox"
+                            :value="data"
+                            v-model="formData.forestClients[0]"
+                            readonly
+                        />
+                    </template>
+                </Column>
+
+                <Column v-else header="">
                     <template #body="{ data }">
                         <Checkbox
                             class="fam-checkbox"
@@ -99,6 +132,12 @@ const toggleForestClient = (client: FamForestClientBase) => {
 
 <style lang="scss">
 .foresnt-client-select-table-container {
+    .error-text-container {
+        padding: 0;
+        height: fit-content;
+        margin-bottom: 0.5rem;
+    }
+
     .subsection-title-container {
         margin: 1.5rem 0;
     }

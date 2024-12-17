@@ -149,7 +149,8 @@ const handleRoleSelect = (role: FamRoleGrantDto) => {
                         <ForestClientSelectTable
                             v-if="
                                 isDelegatedAdminOnly &&
-                                isAbstractRoleSelected(formData)
+                                isAbstractRoleSelected(formData) &&
+                                formData.role?.id === data.id
                             "
                             :app-id="props.appId"
                             :field-id="props.forestClientsFieldId"

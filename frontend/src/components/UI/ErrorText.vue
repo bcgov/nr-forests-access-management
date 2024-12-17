@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ErrorOutline from "@carbon/icons-vue/es/error--outline/16";
+import WarnOutline from "@carbon/icons-vue/es/warning--filled/16";
 
 defineProps<{
     showIcon?: boolean;
@@ -8,7 +8,7 @@ defineProps<{
 </script>
 <template>
     <div class="error-text-container">
-        <ErrorOutline v-if="showIcon" />
+        <WarnOutline v-if="showIcon" />
         <p v-if="errorMsg">{{ errorMsg }}</p>
     </div>
 </template>
@@ -20,12 +20,12 @@ defineProps<{
 
     p {
         margin: 0;
-        color: var(--support-error);
+        color: var(--text-error);
     }
 
     svg {
         margin-right: 0.5rem;
-        stroke: var(--support-error);
+        fill: var(--support-error);
     }
 }
 </style>
