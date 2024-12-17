@@ -2,6 +2,7 @@ import {
     AdminRoleAuthGroup,
     type AdminUserAccessResponse,
     type FamAuthGrantDto,
+    type FamForestClientBase,
 } from "fam-admin-mgmt-api/model";
 
 /**
@@ -54,4 +55,46 @@ export const isUserDelegatedAdminOnly = (
     );
 
     return !isAppAdmin && isDelegatedAdmin;
+};
+
+/**
+ * Retrieves the list of forest clients associated with a specific application
+ * for which the user is a delegated admin.
+ *
+ * @param {number} appId - The ID of the application to retrieve forest clients for.
+ * @param {AdminUserAccessResponse} [userAccess] - The response containing user access information.
+ * @returns {FamForestClientBase[]} An array of forest clients if the user is a delegated admin
+ * for the specified application; returns an empty array if the user does not have delegated admin access
+ * or if the userAccess data is invalid.
+ *
+ */
+export const getForestClientsUnderApp = (
+    appId: number,
+    userAccess?: AdminUserAccessResponse
+): FamForestClientBase[] | null => {
+    if (
+        !userAccess ||
+        !isSelectedAppAuthorized(
+            AdminRoleAuthGroup.DelegatedAdmin,
+            appId,
+            userAccess
+        )
+    ) {
+        return [];
+    }
+
+    const forestClients: FamForestClientBase[] =
+        userAccess.access
+            .find(
+                (grantDto) =>
+                    grantDto.auth_key === AdminRoleAuthGroup.DelegatedAdmin
+            )
+            ?.grants.find(
+                (grantDetailDto) => grantDetailDto.application.id === appId
+            )
+            ?.roles?.flatMap(
+                (roleGrantDto) => roleGrantDto.forest_clients ?? []
+            ) || [];
+
+    return forestClients;
 };

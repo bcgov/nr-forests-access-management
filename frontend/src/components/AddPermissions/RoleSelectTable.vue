@@ -14,7 +14,8 @@ import { ErrorMessage, Field } from "vee-validate";
 import { computed, inject, ref, type Ref } from "vue";
 import Label from "../UI/Label.vue";
 import DelegatedAdminSection from "./DelegatedAdminSection.vue";
-import ForestClientSection from "./ForestClientSection.vue";
+import ForestClientAddTable from "./ForestClientAddTable.vue";
+import ForestClientSelectTable from "./ForestClientSelectTable.vue";
 
 const props = defineProps<{
     appId: number;
@@ -145,9 +146,17 @@ const handleRoleSelect = (role: FamRoleGrantDto) => {
                 <Column field="roleDescription" header="Description">
                     <template #body="{ data }">
                         <span>{{ data.description }}</span>
-
-                        <ForestClientSection
+                        <ForestClientSelectTable
                             v-if="
+                                isDelegatedAdminOnly &&
+                                isAbstractRoleSelected(formData)
+                            "
+                            :app-id="props.appId"
+                            :field-id="props.forestClientsFieldId"
+                        />
+
+                        <ForestClientAddTable
+                            v-else-if="
                                 selectedRole?.id !== delegatedAdminRow.id &&
                                 isAbstractRoleSelected(formData) &&
                                 formData.role?.id === data.id

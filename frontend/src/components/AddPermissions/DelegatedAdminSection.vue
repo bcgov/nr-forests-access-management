@@ -10,7 +10,7 @@ import { inject, type Ref } from "vue";
 import Dropdown from "../UI/Dropdown.vue";
 import NotificationMessage from "../UI/NotificationMessage.vue";
 import SubsectionTitle from "../UI/SubsectionTitle.vue";
-import ForestClientSection from "./ForestClientSection.vue";
+import ForestClientSection from "./ForestClientAddTable.vue";
 
 const formData = inject<Ref<AppPermissionFormType>>(APP_PERMISSION_FORM_KEY);
 
