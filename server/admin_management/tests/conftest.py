@@ -1,5 +1,6 @@
 import logging
 import os
+import random
 import sys
 from typing import List, Optional, Union
 
@@ -9,7 +10,7 @@ from Crypto.PublicKey import RSA
 from fastapi.testclient import TestClient
 from mock import patch
 from mock_alchemy.mocking import UnifiedAlchemyMagicMock
-from sqlalchemy import create_engine
+from sqlalchemy import Select, create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
@@ -20,8 +21,9 @@ from api.app.constants import AppEnv, RoleType, UserType
 from api.app.integration.forest_client_integration import \
     ForestClientIntegrationService
 from api.app.main import app
-from api.app.models.model import (FamAccessControlPrivilege,
-                                  FamApplicationAdmin, FamUser)
+from api.app.models.model import (FamAccessControlPrivilege, FamApplication,
+                                  FamApplicationAdmin, FamForestClient,
+                                  FamRole, FamUser)
 from api.app.repositories.access_control_privilege_repository import \
     AccessControlPrivilegeRepository
 from api.app.repositories.application_admin_repository import \
@@ -48,7 +50,7 @@ from tests.constants import (TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST,
                              TEST_FOM_DEV_SUBMITTER_ROLE_ID,
                              TEST_FOM_TEST_REVIEWER_ROLE_ID,
                              TEST_FOM_TEST_SUBMITTER_ROLE_ID,
-                             TEST_NEW_IDIR_USER)
+                             TEST_NEW_IDIR_USER, TEST_USER_BUSINESS_GUID_BCEID)
 
 LOGGER = logging.getLogger(__name__)
 # the folder contains test docker-compose.yml, ours in the root directory
@@ -408,3 +410,108 @@ def forest_client_integration_service():
 @pytest.fixture(scope="function")
 def permission_audit_service(db_pg_session: Session):
     return PermissionAuditService(db_pg_session)
+
+
+
+@pytest.fixture(scope="function")
+def load_test_users(db_pg_session: Session):
+    """
+    This seeds fix amount of users into test db session. It might be only suitable
+    for some test cases that need to prepare and test on some amount of users.
+    At the end of the test function, user records will be rollback by db_pg_session.
+
+    return: array of FamUser model contains 20 IDIR users and 125 BCEID users.
+    """
+    session = db_pg_session
+    length_of_string = 4
+    sample_str = "ABCDEFGH"
+
+    idir_users = []
+    for i in range(20):
+        random_string = ''.join(random.choices(sample_str, k = length_of_string))
+        idir_users.append(
+            FamUser(
+                user_type_code=UserType.IDIR, user_name=f"TEST_USER_IDIR_{i}", create_user=TEST_CREATOR,
+                first_name=f"First_Name_{i}", last_name=f"Last_Name_{i}", email=f"email_{i}_{random_string}@fam.test.com"
+            )
+        )
+
+    bceid_users = []
+    for i in range(125):
+        random_string = ''.join(random.choices(sample_str, k = length_of_string))
+        bceid_users.append(
+            FamUser(
+                user_type_code=UserType.BCEID, user_name=f"TEST_USER_BCEID_{i}", create_user=TEST_CREATOR,
+                first_name=f"First_Name_{i}", last_name=f"Last_Name_{i}", email=f"email_{i}_{random_string}@fam.test.com",
+                business_guid=f"{TEST_USER_BUSINESS_GUID_BCEID if i % 5 == 0 else TEST_USER_BUSINESS_GUID_BCEID}"
+            )
+        )
+    users = idir_users + bceid_users
+    session.add_all(users)
+    session.flush()
+    return {"idir_users": idir_users, "bceid_users": bceid_users}
+
+
+@pytest.fixture(scope="function")
+def load_fom_dev_delegated_admin_role_test_data(db_pg_session: Session, load_test_users):
+    # app_fam.fam_access_control_privilege table
+    session = db_pg_session
+
+    # get existing db FOM_DEV submitter/reviewer roles
+    fom_dev_reviewer_role: FamRole = session.scalars(
+        Select(FamRole).join(FamRole.application)
+        .where(FamRole.role_name == "FOM_REVIEWER", FamApplication.application_name == "FOM_DEV")
+    ).one()
+    fom_dev_submitter_role: FamRole = session.scalars(
+        Select(FamRole).join(FamRole.application)
+        .where(FamRole.role_name == "FOM_SUBMITTER", FamApplication.application_name == "FOM_DEV")
+    ).one()
+
+    # -- add test delegated admin role assignments
+    idir_test_users = load_test_users["idir_users"]
+    test_reviewer_user_roles = [
+        FamAccessControlPrivilege(
+            user=user,
+            role=fom_dev_reviewer_role,
+            create_user=TEST_CREATOR
+        ) for user in idir_test_users  # assign IDIR users: reviewer role
+    ]
+    session.add_all(test_reviewer_user_roles)
+
+    # create some temporary testing forest client number (do not use them to validate)
+    test_forest_clients = [
+        FamForestClient(forest_client_number="99009901", create_user=TEST_CREATOR),
+        FamForestClient(forest_client_number="99009902", create_user=TEST_CREATOR),
+        FamForestClient(forest_client_number="99009903", create_user=TEST_CREATOR),
+        FamForestClient(forest_client_number="99009904", create_user=TEST_CREATOR),
+        FamForestClient(forest_client_number="99009905", create_user=TEST_CREATOR),
+    ]
+    session.add_all(test_forest_clients)
+
+    # create some submitter roles associated with the above forest client numbers
+    test_submiter_roles_with_client_number = [
+        FamRole(role_name=f"test_submitter_{fc.forest_client_number}",
+                role_purpose=f"Submitter role for test application scoped with forest client {fc.forest_client_number}",
+                display_name="Submitter",
+                application=fom_dev_submitter_role.application,
+                forest_client_relation=fc,
+                parent_role=fom_dev_submitter_role,
+                create_user=TEST_CREATOR,
+                role_type_code=RoleType.ROLE_TYPE_CONCRETE
+        )
+        for fc in test_forest_clients
+    ]
+    session.add_all(test_submiter_roles_with_client_number)
+
+    bceid_test_users: List[FamUser] = load_test_users["bceid_users"]
+    test_submitter_user_roles = [
+        FamAccessControlPrivilege(
+            user=user,
+            role=test_submiter_roles_with_client_number[user.user_id % len(test_submiter_roles_with_client_number)],
+            create_user=TEST_CREATOR
+        ) for user in bceid_test_users  # assign BCeID users: submitter role
+    ]
+    session.add_all(test_submitter_user_roles)
+
+    session.flush()
+    return {"reviewers": test_reviewer_user_roles, "submitters": test_submitter_user_roles}

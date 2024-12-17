@@ -1,13 +1,16 @@
 import logging
 from http import HTTPStatus
 
+import pytest
 import starlette.testclient
 import tests.jwt_utils as jwt_utils
+from api.app.constants import DelegatedAdminSortByEnum, SortOrderEnum
 from api.app.jwt_validation import ERROR_PERMISSION_REQUIRED
 from api.app.main import apiPrefix
 from api.app.routers.router_guards import (
     ERROR_INVALID_ACCESS_CONTROL_PRIVILEGE_ID, ERROR_INVALID_APPLICATION_ID,
-    ERROR_INVALID_ROLE_ID)
+    ERROR_INVALID_ROLE_ID, authorize_by_app_id)
+from api.app.schemas.pagination import DelegatedAdminPageParamsSchema
 from api.app.services.permission_audit_service import PermissionAuditService
 from tests.constants import (INVALID_APPLICATION_ID,
                              TEST_ACCESS_CONTROL_PRIVILEGE_CREATE_REQUEST,
@@ -20,10 +23,23 @@ from tests.constants import (INVALID_APPLICATION_ID,
                              TEST_NOT_EXIST_APPLICATION_ID,
                              TEST_NOT_EXIST_ROLE_ID,
                              TEST_USER_BUSINESS_GUID_BCEID)
+from tests.test_data.access_control_privilege_data import \
+    APP_DELEGATED_ADMIN_PAGED_RESULT_4_RECORDS
 
 LOGGER = logging.getLogger(__name__)
 endPoint = f"{apiPrefix}/access-control-privileges"
 
+@pytest.fixture(scope="function")
+def get_access_control_privileges_by_application_id_dependencies_override(test_client_fixture):
+    """
+    Helper fixture for unit testing to override dependencies
+    for endpoint 'get_access_control_privileges_by_application_id'
+    """
+    app = test_client_fixture.app
+    app.dependency_overrides[authorize_by_app_id] = lambda: None
+    yield test_client_fixture
+
+# --- tests below ---
 
 def test_create_access_control_privilege_many(
     test_client_fixture: starlette.testclient.TestClient,
@@ -288,4 +304,77 @@ def test_delete_access_control_privilege(
     assert (
         str(response.json()["detail"]).find(ERROR_INVALID_ACCESS_CONTROL_PRIVILEGE_ID)
         != -1
+    )
+
+
+@pytest.mark.parametrize(
+    "invalid_page_params",
+    [
+        {"pageNumber":0, "pageSize": 10},
+        {"pageNumber":1, "pageSize": 10000000},
+        {"pageNumber":"invalid"},
+        {"pageSize":"invalid"},
+        {"sortBy": "invalid_column", "sortOrder": "asc"},
+        {"sortBy": "user_name", "sortOrder": "invalid_sort_order"},
+        {"search":"long_search_string_exceeds_maximum_search_length"},
+    ]
+)
+def test_get_access_control_privileges_by_application_id__pagining_with_invalid_page_params(
+    mocker, test_client_fixture,
+    get_access_control_privileges_by_application_id_dependencies_override,
+    test_rsa_key, invalid_page_params
+):
+    mocker.patch(
+        "api.app.routers.router_access_control_privilege.AccessControlPrivilegeService.get_paged_delegated_admin_assignment_by_application_id",
+        return_value=[],
+    )
+    token = jwt_utils.create_jwt_token(test_rsa_key)
+    response = test_client_fixture.get(
+        f"{endPoint}?application_id={TEST_APPLICATION_ID_FOM_DEV}",
+        headers=jwt_utils.headers(token),
+        params=invalid_page_params
+    )
+
+    assert response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
+
+
+def test_get_access_control_privileges_by_application_id__pagining_with_valid_page_params_result_success(
+    mocker, test_client_fixture,
+    get_access_control_privileges_by_application_id_dependencies_override,
+    test_rsa_key
+):
+    mocker.patch(
+        "api.app.routers.router_access_control_privilege.AccessControlPrivilegeService.get_paged_delegated_admin_assignment_by_application_id",
+        return_value=APP_DELEGATED_ADMIN_PAGED_RESULT_4_RECORDS,
+    )
+    token = jwt_utils.create_jwt_token(test_rsa_key)
+    response = test_client_fixture.get(
+        f"{endPoint}?application_id={TEST_APPLICATION_ID_FOM_DEV}", headers=jwt_utils.headers(token),
+        params={"pageNumber":1, "pageSize": 10}  # valid page_params
+    )
+    assert response.status_code == HTTPStatus.OK
+
+def test_get_access_control_privileges_by_application_id__no_params_in_request_then_use_defaults_result_success(
+    mocker,
+    test_client_fixture,
+    get_access_control_privileges_by_application_id_dependencies_override,
+    test_rsa_key
+):
+    service_fn_mock = mocker.patch(
+        "api.app.routers.router_access_control_privilege.AccessControlPrivilegeService.get_paged_delegated_admin_assignment_by_application_id",
+        return_value=APP_DELEGATED_ADMIN_PAGED_RESULT_4_RECORDS,
+    )
+
+    token = jwt_utils.create_jwt_token(test_rsa_key)
+    response = test_client_fixture.get(
+        f"{endPoint}?application_id={TEST_APPLICATION_ID_FOM_DEV}", headers=jwt_utils.headers(token)
+    )
+
+    assert response.status_code == HTTPStatus.OK
+    assert service_fn_mock.call_count == 1
+    # validate defaults are provided to the service call when no request param is in the request.
+    assert service_fn_mock.call_args.args[1] == DelegatedAdminPageParamsSchema(
+        page=1, size=50, search=None,
+        sort_order=SortOrderEnum.DESC,
+        sort_by=DelegatedAdminSortByEnum.CREATE_DATE
     )
