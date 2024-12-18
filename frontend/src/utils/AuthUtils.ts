@@ -1,7 +1,6 @@
 import {
     AdminRoleAuthGroup,
     type AdminUserAccessResponse,
-    type FamAuthGrantDto,
     type FamForestClientBase,
 } from "fam-admin-mgmt-api/model";
 
