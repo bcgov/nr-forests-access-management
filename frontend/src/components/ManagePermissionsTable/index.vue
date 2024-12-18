@@ -729,9 +729,9 @@ const handleFilter = (searchValue: string, isChanged: boolean) => {
                 </template>
             </Column>
 
-            <Column header="Action">
+            <Column header="Action" class="action-col">
                 <template #body="{ data }">
-                    <div class="nowrap-cell">
+                    <div class="nowrap-cell action-button-group">
                         <button
                             v-if="!isAppAdminTable"
                             title="User permission history"
@@ -769,6 +769,23 @@ const handleFilter = (searchValue: string, isChanged: boolean) => {
         flex-direction: row;
         align-items: center;
         gap: 0.25rem;
+    }
+
+    tr > td.action-col {
+        padding: 0 1rem 0 1rem;
+
+        .action-button-group {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-around;
+            align-items: center;
+            width: 100%;
+            .btn-icon {
+                padding: 0.5rem;
+                display: flex;
+                flex-direction: column;
+            }
+        }
     }
 }
 </style>

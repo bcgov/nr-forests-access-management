@@ -140,7 +140,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <div class="foresnt-client-section-container">
+    <div class="foresnt-client-add-table-container">
         <SubsectionTitle
             title="Restrict access by organizations"
             subtitle="Add one or more organizations for this user to have access to"
@@ -237,7 +237,7 @@ onUnmounted(() => {
 </template>
 
 <style lang="scss">
-.foresnt-client-section-container {
+.foresnt-client-add-table-container {
     .subsection-title-container {
         margin: 1.5rem 0;
     }
