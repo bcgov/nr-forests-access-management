@@ -33,6 +33,9 @@ jobs:
             - name: Checkout
               uses: actions/checkout@v4
 
+            - name: HashiCorp - Setup Terraform
+              uses: hashicorp/setup-terraform@v3.1.2
+
             - name: Build Frontend
               working-directory: frontend
               run: |

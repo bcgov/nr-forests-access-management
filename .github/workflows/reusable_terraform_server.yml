@@ -181,11 +181,15 @@ jobs:
                   fam_update_user_info_api_key = "${{ secrets.fam_update_user_info_api_key }}"
                   EOF
 
+            - name: HashiCorp - Setup Terraform
+              uses: hashicorp/setup-terraform@v3.1.2
+
             - name: Terragrunt ${{ inputs.tf_subcommand }}
               working-directory: ${{ env.TG_SRC_PATH }}/${{ inputs.environment_name }}
               env:
                   licenceplate: ${{ secrets.licenceplate }}
                   target_env: ${{ inputs.environment_name }}
+
               run: |
                   # Run terraform
                   terragrunt run-all ${{ inputs.tf_subcommand }} --terragrunt-non-interactive
