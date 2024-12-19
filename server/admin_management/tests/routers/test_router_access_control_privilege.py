@@ -349,8 +349,8 @@ def test_get_access_control_privileges_by_application_id__pagining_with_valid_pa
     )
     token = jwt_utils.create_jwt_token(test_rsa_key)
     response = test_client_fixture.get(
-        f"{endPoint}?application_id={TEST_APPLICATION_ID_FOM_DEV}", headers=jwt_utils.headers(token),
-        params={"pageNumber":1, "pageSize": 10}  # valid page_params
+        f"{endPoint}", headers=jwt_utils.headers(token),
+        params={"application_id": TEST_APPLICATION_ID_FOM_DEV,"pageNumber":1, "pageSize": 10}  # valid page_params
     )
     print("ttessttt: \n", response.json())
     assert response.status_code == HTTPStatus.OK
