@@ -352,6 +352,7 @@ def test_get_access_control_privileges_by_application_id__pagining_with_valid_pa
         f"{endPoint}?application_id={TEST_APPLICATION_ID_FOM_DEV}", headers=jwt_utils.headers(token),
         params={"pageNumber":1, "pageSize": 10}  # valid page_params
     )
+    print("ttessttt: \n", response.json())
     assert response.status_code == HTTPStatus.OK
 
 def test_get_access_control_privileges_by_application_id__no_params_in_request_then_use_defaults_result_success(
