@@ -10,4 +10,4 @@ pydantic_core==2.27.1
 email-validator==2.2.0
 requests==2.32.3
 cryptography==43.0.3
-pyjwt==2.10.1
+pyjwt==2.8.0
