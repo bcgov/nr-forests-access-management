@@ -1,6 +1,7 @@
 import { ManagePermissionsTableEnum } from "@/types/ManagePermissionsTypes";
 import type { PermissionNotificationType } from "@/types/NotificationTypes";
 import { Severity } from "@/types/NotificationTypes";
+import type { PaginationType } from "@/types/PaginationTypes";
 import { formatAxiosError } from "@/utils/ApiUtils";
 import { formatForestClientDisplayName } from "@/utils/ForestClientUtils";
 import { formatUserNameAndId } from "@/utils/UserUtils";
@@ -14,7 +15,6 @@ import {
     UserRoleSortByEnum,
     type FamApplicationUserRoleAssignmentGetSchema,
 } from "fam-app-acsctl-api/model";
-import type { PaginationType } from "@/types/PaginationTypes";
 
 export type ConfirmTextType = {
     role: string;
@@ -302,6 +302,8 @@ export const sortFieldToEnum = (
             return UserRoleSortByEnum.UserTypeCode;
         case "user.first_name":
             return UserRoleSortByEnum.FullName;
+        case "user.email":
+            return UserRoleSortByEnum.Email;
         case "role.forest_client.forest_client_number":
             return UserRoleSortByEnum.ForestClientNumber;
         case "role.display_name":
