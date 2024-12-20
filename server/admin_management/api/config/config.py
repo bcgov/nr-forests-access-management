@@ -57,7 +57,6 @@ def get_db_string():
     else:
         db_conn_string = get_local_dev_db_string()
 
-    LOGGER.debug(f"Database connection url: {db_conn_string}")
     return db_conn_string
 
 
