@@ -21,7 +21,7 @@
         "@carbon/themes": "^11.43.0",
         "@carbon/type": "^11.31.0",
         "@tanstack/vue-query": "^5.56.2",
-        "aws-amplify": "^5.3.21",
+        "aws-amplify": "^5.3.27",
         "axios": "1.7.9",
         "bootstrap": "^5.3.3",
         "fam-admin-mgmt-api": "file:../client-code-gen/gen/admin-management-api",
