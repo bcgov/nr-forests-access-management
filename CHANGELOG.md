@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.29.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.28.1...v1.29.0) (2024-12-20)
+
+
+### Features
+
+* [#1636](https://github.com/bcgov/nr-forests-access-management/issues/1636) integrate pagination on the users table ([#1693](https://github.com/bcgov/nr-forests-access-management/issues/1693)) ([f23cdcd](https://github.com/bcgov/nr-forests-access-management/commit/f23cdcd1b923b880492444321a415dc4f583b8e2))
+* [#1639](https://github.com/bcgov/nr-forests-access-management/issues/1639) Forest Client Search integration with delegated admin endpoint forest client name update ([#1694](https://github.com/bcgov/nr-forests-access-management/issues/1694)) ([fcc7635](https://github.com/bcgov/nr-forests-access-management/commit/fcc7635aa599febe6f2fa98f6735fa3ae872f143))
+* [#1655](https://github.com/bcgov/nr-forests-access-management/issues/1655) restrict client selection when d admins assign roles ([#1701](https://github.com/bcgov/nr-forests-access-management/issues/1701)) ([15983a7](https://github.com/bcgov/nr-forests-access-management/commit/15983a79016f0beaed5418e21c253663a0c8681f))
+
+
+### Bug Fixes
+
+* [#1711](https://github.com/bcgov/nr-forests-access-management/issues/1711) clear-text logging of sensitive information ([#1712](https://github.com/bcgov/nr-forests-access-management/issues/1712)) ([2890ec7](https://github.com/bcgov/nr-forests-access-management/commit/2890ec72ccfb152e4254b44198b411123fb4eb7a))
+* Add email for "soryBy" param in request. ([#1714](https://github.com/bcgov/nr-forests-access-management/issues/1714)) ([6aca894](https://github.com/bcgov/nr-forests-access-management/commit/6aca89483dffdc5791f4f02464713e310191c601))
+* **deps:** update all non-major dependencies ([#1116](https://github.com/bcgov/nr-forests-access-management/issues/1116)) ([575d45d](https://github.com/bcgov/nr-forests-access-management/commit/575d45d1d5348d786c77c7fe6f04ed60a945f91f))
+
 ## [1.28.1](https://github.com/bcgov/nr-forests-access-management/compare/v1.28.0...v1.28.1) (2024-12-06)
 
 
