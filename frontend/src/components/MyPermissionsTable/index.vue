@@ -18,6 +18,7 @@ import {
     TABLE_ROWS_PER_PAGE,
 } from "@/constants/constants";
 import { getPermissionTableData } from "./utils";
+import { formatForestClientDisplayName } from "@/utils/ForestClientUtils";
 
 const myPermissiosFilters = ref({
     global: { value: "", matchMode: FilterMatchMode.CONTAINS },
@@ -29,7 +30,7 @@ const myPermissiosFilters = ref({
         value: null,
         matchMode: FilterMatchMode.CONTAINS,
     },
-    clientId: {
+    forestClient: {
         value: null,
         matchMode: FilterMatchMode.CONTAINS,
     },
@@ -56,7 +57,7 @@ const adminUserAccessQuery = useQuery({
 const headers: string[] = [
     "Application",
     "Environment",
-    "Client Number",
+    "Organization",
     "Role",
 ];
 </script>
@@ -64,7 +65,7 @@ const headers: string[] = [
 <template>
     <div class="my-permissions-table-container">
         <TableToolbar
-            input-placeholder="search by application, environment, client numbers, company name, role, status, and more"
+            input-placeholder="search by application, environment, organization, role, status, and more"
             @change="myPermissionsSearchChange"
             :filter="myPermissiosFilters['global'].value"
         />
@@ -91,27 +92,30 @@ const headers: string[] = [
             :rows="DEFAULT_ROW_PER_PAGE"
             :rowsPerPageOptions="TABLE_ROWS_PER_PAGE"
             filterDisplay="menu"
-            :globalFilterFields="['application', 'env', 'role', 'clientId']"
+            :globalFilterFields="['application', 'env', 'role', 'forestClient']"
             :paginatorTemplate="TABLE_PAGINATOR_TEMPLATE"
             :currentPageReportTemplate="TABLE_CURRENT_PAGE_REPORT_TEMPLATE"
             stripedRows
             removableSort
         >
             <template #empty> You have no accesses in FAM. </template>
-            <Column :header="headers[0]" field="application" sortable>
-                <template #body="{ data }">
-                    <span>
-                        {{ data.application }}
-                    </span>
-                </template>
-            </Column>
+
+            <Column :header="headers[0]" field="application" sortable> </Column>
+
             <Column field="env" :header="headers[1]" sortable></Column>
-            <Column field="clientId" :header="headers[2]" sortable> </Column>
-            <Column :header="headers[3]" field="role" sortable>
+
+            <Column field="forestClient" :header="headers[2]" sortable>
                 <template #body="{ data }">
-                    {{ data.role }}
+                    {{
+                        formatForestClientDisplayName(
+                            data.forestClient?.split(" ")[0],
+                            data.forestClient?.split(" ").slice(1).join(" ")
+                        )
+                    }}
                 </template>
             </Column>
+
+            <Column field="role" :header="headers[3]" sortable />
         </DataTable>
     </div>
 </template>

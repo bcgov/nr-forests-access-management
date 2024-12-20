@@ -10,7 +10,7 @@ type MyPermissionsRowType = {
     application: string | null | undefined;
     env: AppEnv | null | undefined;
     role: string;
-    clientId?: number;
+    forestClient?: string;
 };
 
 const getFamAdminPermission = (
@@ -56,11 +56,11 @@ const getDelegatedAdminPermission = (
                     role: roleDescription,
                 });
             } else {
-                role.forest_clients.forEach((clientId: any) => {
+                role.forest_clients.forEach((forestClient) => {
                     permissions.push({
                         application: grant.application.description,
                         env: grant.application.env,
-                        clientId: clientId,
+                        forestClient: `${forestClient.forest_client_number} ${forestClient.client_name}`,
                         role: roleDescription,
                     });
                 });
