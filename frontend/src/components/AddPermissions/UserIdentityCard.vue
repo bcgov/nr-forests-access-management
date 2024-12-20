@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import Card from "primevue/card";
 import CheckMarkFilledIcon from "@carbon/icons-vue/es/checkmark--filled/16";
 import type { IdimProxyBceidInfoSchema } from "fam-app-acsctl-api";
+import Card from "primevue/card";
 
 import CardColumn from "@/components/CardColumn/index.vue";
 import { formatUserNameAndId } from "@/utils/UserUtils";
@@ -47,7 +47,7 @@ const props = defineProps<{
                                 props.userIdentity.email
                             "
                             :id="`user-card-email-${props.userIdentity.userId}`"
-                            label="email"
+                            label="Email"
                             :description="props.userIdentity.email"
                             class="col-auto"
                         />
