@@ -28,8 +28,6 @@ const props = withDefaults(defineProps<CheckboxProps>(), {
 </template>
 
 <style lang="scss" scoped>
-@import "@/assets/styles/base.scss";
-
 .fam-checkbox {
     .p-checkbox {
         margin-right: 0.5rem;
@@ -40,7 +38,7 @@ const props = withDefaults(defineProps<CheckboxProps>(), {
     label {
         font-size: 0.875rem;
         font-weight: 600;
-        color: $light-text-secondary;
+        color: var(--text-secondary);
         margin-bottom: 0;
         cursor: pointer;
     }

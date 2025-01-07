@@ -1,4 +1,7 @@
 @use "sass:map";
+
+@use "./primevue-components-overrides.scss";
+
 @use "@bcgov-nr/nr-theme/design-tokens/light-theme.scss" as light;
 @use "@bcgov-nr/nr-theme/design-tokens/dark-theme.scss" as dark;
 

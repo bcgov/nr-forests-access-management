@@ -29,8 +29,6 @@ const route = useRoute();
 </template>
 
 <style lang="scss" scoped>
-@import "@/assets/styles/base.scss";
-
 .title {
     @include type.type-style("heading-05");
     color: var(--text-primary);

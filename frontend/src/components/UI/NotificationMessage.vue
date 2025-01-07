@@ -94,17 +94,17 @@ const displayMessage = computed(() => {
 }
 
 .custom-message-text {
-    color: $light-text-primary;
+    color: var(--text-primary);
 }
 
 .btn-see-all {
     background-color: transparent;
     border: none;
-    color: $light-link-primary;
+    color: var(--link-primar);
     padding: 0;
 }
 
 .btn-see-all:hover {
-    color: $light-link-primary-hover;
+    color: var(--link-primary-hover);
 }
 </style>

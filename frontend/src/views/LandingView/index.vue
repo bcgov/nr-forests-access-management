@@ -13,7 +13,7 @@ const auth = useAuth();
 <template>
     <div class="full-width">
         <div class="row landing-grid">
-            <div class="col-sm-6 col-md-7 col-lg-7">
+            <div class="col-sm-6 col-md-7 col-lg-7 landing-content-left">
                 <img :src="logo" alt="BCGov Logo" width="160" class="logo" />
                 <h1 id="landing-title" class="landing-title">Welcome to FAM</h1>
                 <h2 id="landing-subtitle" class="landing-subtitle">
@@ -71,7 +71,11 @@ const auth = useAuth();
 </template>
 
 <style scoped lang="scss">
-@import "@bcgov-nr/nr-theme/style-sheets/landing-page-components-overrides.scss";
+@import "../../assets/styles/landing-page-components-overrides.scss";
+.landing-content-left {
+    padding-left: 2.5rem;
+}
+
 .landing-img {
     width: 100%;
 }
