@@ -274,8 +274,6 @@ label {
         map.get(lightTheme.$light-theme, "border-strong-01");
     border-radius: 0.25rem 0.25rem 0 0;
     background: map.get(lightTheme.$light-theme, "field-01");
-    width: 38rem !important;
-    // height: 3rem !important;
 }
 .#{variables.$primevue-prefix}-dropdown
     .#{variables.$primevue-prefix}-dropdown-label {
@@ -494,7 +492,6 @@ label {
     @extend %body-compact-01;
     background: map.get(lightTheme.$light-theme, "layer-accent-hover-01");
     height: 3rem;
-    padding: 0 1rem;
     font-weight: 700;
 
     text-align: left;
@@ -507,7 +504,6 @@ label {
         @extend %body-compact-01;
         height: 3rem;
         text-align: left;
-        padding: 0 1rem;
         border: none;
     }
 }

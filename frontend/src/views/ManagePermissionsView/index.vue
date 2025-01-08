@@ -277,34 +277,43 @@ onUnmounted(() => {
             title="Manage permissions"
             subtitle="Manage users and add permissions for the selected application"
         />
-        <div class="dropdown-and-button-container">
-            <Dropdown
-                id="application-selector-dropdown-id"
-                class="application-dropdown"
-                name="application-selector-dropdown"
-                label-text="Application:"
-                :value="selectedApp"
-                @change="handleApplicatoinChange"
-                :options="
-                    getUniqueApplications(adminUserAccessQuery.data.value)
-                "
-                option-label="description"
-                placeholder="Choose an application to manage permissions"
-                :is-fetching="adminUserAccessQuery.isLoading.value"
-                :is-error="adminUserAccessQuery.isError.value"
-                :error-msg="
-                    isAxiosError(adminUserAccessQuery.error.value)
-                        ? formatAxiosError(adminUserAccessQuery.error.value)
-                        : 'Failed to fetch data.'
-                "
-            />
-            <Button
-                v-if="selectedApp"
-                outlined
-                label="Add permission"
-                :icon="AddIcon"
-                @click="handleAddButton"
-            />
+        <div class="row dropdown-and-button-container">
+            <!-- Dropdown -->
+            <div class="col-lg-5 col-md-8 col-12 mb-3 mb-md-0">
+                <Dropdown
+                    id="application-selector-dropdown-id"
+                    class="application-dropdown"
+                    name="application-selector-dropdown"
+                    label-text="Application:"
+                    :value="selectedApp"
+                    @change="handleApplicatoinChange"
+                    :options="
+                        getUniqueApplications(adminUserAccessQuery.data.value)
+                    "
+                    option-label="description"
+                    placeholder="Choose an application to manage permissions"
+                    :is-fetching="adminUserAccessQuery.isLoading.value"
+                    :is-error="adminUserAccessQuery.isError.value"
+                    :error-msg="
+                        isAxiosError(adminUserAccessQuery.error.value)
+                            ? formatAxiosError(adminUserAccessQuery.error.value)
+                            : 'Failed to fetch data.'
+                    "
+                />
+            </div>
+
+            <!-- Button -->
+            <div
+                class="col-lg-3 col-md-3 col-12 d-flex justify-content-md-start justify-content-center"
+            >
+                <Button
+                    v-if="selectedApp"
+                    outlined
+                    label="Add permission"
+                    :icon="AddIcon"
+                    @click="handleAddButton"
+                />
+            </div>
         </div>
 
         <div class="content-container">
@@ -345,6 +354,10 @@ onUnmounted(() => {
 
 <style lang="scss">
 .manage-permission-view {
+    .application-dropdown {
+        width: 100%;
+    }
+
     .dropdown-and-button-container {
         width: 100%;
         margin-top: 2.5rem;
@@ -354,7 +367,7 @@ onUnmounted(() => {
         align-items: end;
 
         .fam-button {
-            width: 14rem;
+            width: 100%;
             height: 3rem;
         }
     }
