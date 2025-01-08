@@ -80,6 +80,7 @@ input[type="number"] {
     bottom: 0;
     padding: 1.06rem 1rem 0 1rem;
     overflow-y: auto;
+    overflow-x: hidden;
     top: 3rem;
 }
 
@@ -163,6 +164,10 @@ input[type="number"] {
         border: 0.0625rem solid colors.$blue-65;
         background-color: colors.$blue-65;
     }
+}
+
+.p-datatable-thead {
+    height: 2rem;
 }
 
 // Media queries
