@@ -12,7 +12,7 @@ const props = defineProps<{
 </script>
 
 <template>
-    <div class="custom-card-container user-id-card">
+    <div class="user-id-card">
         <Card>
             <template #header>
                 <CheckMarkFilledIcon />
@@ -69,13 +69,34 @@ const props = defineProps<{
 </template>
 
 <style lang="scss">
-@import "@/assets/styles/card.scss";
 .user-id-card {
     margin-top: 2rem;
 
-    svg {
-        width: 1rem;
-        height: 1rem;
+    .p-card {
+        .p-card-header {
+            display: flex;
+            padding: 1.5rem;
+            align-items: center;
+
+            svg {
+                width: 1rem;
+                height: 1rem;
+                color: var(--support-success);
+                margin-bottom: 0.1rem;
+            }
+
+            p {
+                @include type.type-style("heading-compact-01");
+                margin: 0;
+                padding: 0 0 0 1rem;
+                margin-bottom: 0;
+                color: var(--text-primary);
+            }
+        }
+
+        .custom-carbon-icon-misuse {
+            fill: var(--support-error);
+        }
     }
 }
 </style>
