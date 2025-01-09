@@ -491,11 +491,19 @@ label {
     > th {
     @extend %body-compact-01;
     background: map.get(lightTheme.$light-theme, "layer-accent-hover-01");
-    height: 3rem;
+
     font-weight: 700;
 
     text-align: left;
     border: none;
+
+    .p-column-header-content {
+        min-height: 1.625rem;
+    }
+
+    .p-column-header-content > span {
+        padding: 0 1rem 0 0;
+    }
 }
 
 .#{variables.$primevue-prefix}-datatable
