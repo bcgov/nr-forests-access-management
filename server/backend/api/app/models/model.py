@@ -44,7 +44,7 @@ class FamApplication(Base):
     create_date = Column(
         TIMESTAMP(timezone=True, precision=6),
         nullable=False,
-        default=datetime.datetime.now(datetime.UTC),
+        default=func.utcnow(),
         comment="The date and time the record was created.",
     )
     update_user = Column(
@@ -54,7 +54,7 @@ class FamApplication(Base):
     )
     update_date = Column(
         TIMESTAMP(timezone=True, precision=6),
-        onupdate=datetime.datetime.now(datetime.UTC),
+        onupdate=func.utcnow(),
         comment="The date and time the record was created or last updated.",
     )
 
@@ -129,7 +129,7 @@ class FamForestClient(Base):
     create_date = Column(
         TIMESTAMP(timezone=True, precision=6),
         nullable=False,
-        default=datetime.datetime.now(datetime.UTC),
+        default=func.utcnow(),
         comment="The date and time the record was created.",
     )
     update_user = Column(
@@ -138,7 +138,7 @@ class FamForestClient(Base):
     )
     update_date = Column(
         TIMESTAMP(timezone=True, precision=6),
-        onupdate=datetime.datetime.now(datetime.UTC),
+        onupdate=func.utcnow(),
         comment="The date and time the record was created or last updated.",
     )
 
@@ -162,7 +162,7 @@ class FamUserType(Base):
     effective_date = Column(
         TIMESTAMP(timezone=True, precision=6),
         nullable=False,
-        default=datetime.datetime.now(datetime.UTC),
+        default=func.utcnow(),
         comment="The date and time the code was effective.",
     )
 
@@ -175,7 +175,7 @@ class FamUserType(Base):
 
     update_date = Column(
         TIMESTAMP(timezone=True, precision=6),
-        onupdate=datetime.datetime.now(datetime.UTC),
+        onupdate=func.utcnow(),
         comment="The date and time the record was created or last updated.",
     )
 
@@ -242,7 +242,7 @@ class FamAccessControlPrivilege(Base):
     create_date = Column(
         TIMESTAMP(timezone=True, precision=6),
         nullable=False,
-        default=datetime.datetime.now(datetime.UTC),
+        default=func.utcnow(),
         comment="The date and time the record was created.",
     )
     update_user = Column(
@@ -251,7 +251,7 @@ class FamAccessControlPrivilege(Base):
     )
     update_date = Column(
         TIMESTAMP(timezone=True, precision=6),
-        onupdate=datetime.datetime.now(datetime.UTC),
+        onupdate=func.utcnow(),
         comment="The date and time the record was created or last updated.",
     )
     role = relationship(
@@ -317,7 +317,7 @@ class FamUserTermsConditions(Base):
     create_date = Column(
         TIMESTAMP(timezone=True, precision=6),
         nullable=False,
-        default=datetime.datetime.now(datetime.UTC),
+        default=func.utcnow(),
         comment="The date and time the record was created.",
     )
     update_user = Column(
@@ -326,7 +326,7 @@ class FamUserTermsConditions(Base):
     )
     update_date = Column(
         TIMESTAMP(timezone=True, precision=6),
-        default=datetime.datetime.now(datetime.UTC),
+        default=func.utcnow(),
         comment="The date and time the record was created or last updated.",
     )
 
@@ -364,7 +364,7 @@ class FamUser(Base):
     create_date = Column(
         TIMESTAMP(timezone=True, precision=6),
         nullable=False,
-        default=datetime.datetime.now(datetime.UTC),
+        default=func.utcnow(),
         comment="The date and time the record was created.",
     )
     user_guid = Column(String(32))
@@ -381,7 +381,7 @@ class FamUser(Base):
     )
     update_date = Column(
         TIMESTAMP(timezone=True, precision=6),
-        onupdate=datetime.datetime.now(datetime.UTC),
+        onupdate=func.utcnow(),
         comment="The date and time the record was created or last updated.",
     )
 
@@ -477,7 +477,7 @@ class FamApplicationClient(Base):
     create_date = Column(
         TIMESTAMP(timezone=True, precision=6),
         nullable=False,
-        server_default=text("LOCALTIMESTAMP"),
+        server_default=func.utcnow(),
         comment="The date and time the record was created.",
     )
     application_id = Column(
@@ -494,7 +494,7 @@ class FamApplicationClient(Base):
         # String(9), server_default=text("LOCALTIMESTAMP"), comment="ZIP code."
         TIMESTAMP(timezone=True, precision=6),
         nullable=False,
-        server_default=text("LOCALTIMESTAMP"),
+        server_default=func.utcnow(),
         comment="The date and time the record was created.",
     )
     application = relationship(
@@ -519,7 +519,7 @@ class FamRoleType(Base):
     effective_date = Column(
         TIMESTAMP(timezone=True, precision=6),
         nullable=False,
-        default=datetime.datetime.now(datetime.UTC),
+        default=func.utcnow(),
         comment="The date and time the code was effective.",
     )
 
@@ -532,7 +532,7 @@ class FamRoleType(Base):
 
     update_date = Column(
         TIMESTAMP(timezone=True, precision=6),
-        onupdate=datetime.datetime.now(datetime.UTC),
+        onupdate=func.utcnow(),
         comment="The date and time the record was created or last updated.",
     )
 
@@ -587,7 +587,7 @@ class FamRole(Base):
     create_date = Column(
         TIMESTAMP(timezone=True, precision=6),
         nullable=False,
-        default=datetime.datetime.now(datetime.UTC),
+        default=func.utcnow(),
         comment="The date and time the record was created.",
     )
     parent_role_id = Column(
@@ -603,7 +603,7 @@ class FamRole(Base):
     )
     update_date = Column(
         TIMESTAMP(timezone=True, precision=6),
-        onupdate=datetime.datetime.now(datetime.UTC),
+        onupdate=func.utcnow(),
         comment="The date and time the record was created or last updated.",
     )
     role_type_code = Column(
@@ -750,7 +750,7 @@ class FamAppEnvironment(Base):
     effective_date = Column(
         TIMESTAMP(timezone=True, precision=6),
         nullable=False,
-        default=datetime.datetime.now(datetime.UTC),
+        default=func.utcnow(),
         server_default=func.now(),
         comment="The date and time the code was effective.",
     )
@@ -764,7 +764,7 @@ class FamAppEnvironment(Base):
 
     update_date = Column(
         TIMESTAMP(timezone=True, precision=6),
-        onupdate=datetime.datetime.now(datetime.UTC),
+        onupdate=func.utcnow(),
         comment="The date and time the record was created or last updated.",
     )
 
@@ -825,7 +825,7 @@ class FamPrivilegeChangeAudit(Base):
         BigInteger, ForeignKey("app_fam.fam_user.user_id"), nullable=False
     )
     create_date: Mapped[datetime.datetime] = mapped_column(
-        TIMESTAMP, server_default=func.now(), nullable=False
+        TIMESTAMP, server_default=func.utcnow(), nullable=False
     )
     create_user: Mapped[str] = mapped_column(String, nullable=False)
     privilege_change_type_code: Mapped[str] = mapped_column(
