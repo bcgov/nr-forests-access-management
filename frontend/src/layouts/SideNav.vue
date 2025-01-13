@@ -108,7 +108,8 @@ const isMenuItemHighlighted = (
         position: fixed;
         padding: 1rem 0;
         width: 100%;
-        height: calc(100vh - 3.125rem);
+        height: calc(100vh - 3.125rem - env(safe-area-inset-bottom));
+        padding-bottom: calc(1rem + env(safe-area-inset-bottom));
         left: 0;
         overflow: hidden auto;
 
@@ -201,6 +202,16 @@ const isMenuItemHighlighted = (
     @media (min-width: 768px) {
         .sidenav {
             width: 100%;
+        }
+    }
+}
+
+@media (max-width: 768px) and (hover: none) and (pointer: coarse) {
+    @supports (-webkit-touch-callout: none) {
+        .fam-sidenav .sidenav {
+            height: calc(
+                100vh - 3.125rem - (env(safe-area-inset-bottom, 0) + 4rem)
+            );
         }
     }
 }
