@@ -15,8 +15,6 @@ import SearchLocateIcon from "@carbon/icons-vue/es/search--locate/32";
 </template>
 
 <style lang="scss" scoped>
-@import "@/assets/styles/base.scss";
-
 .no-app-selected {
     text-align: center;
     display: flex;
@@ -42,11 +40,11 @@ import SearchLocateIcon from "@carbon/icons-vue/es/search--locate/32";
 
 .no-app-selected-text {
     font-size: 0.875rem;
-    color: $light-text-secondary;
+    color: var(--text-secondary);
     margin-bottom: 0 !important;
 }
 
 .placeholder-icon {
-    color: $light-background-brand;
+    color: var(--background-brand);
 }
 </style>

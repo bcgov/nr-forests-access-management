@@ -7,6 +7,7 @@
         "install-admin-management-api-client": "cd ../client-code-gen/gen/admin-management-api && npm ci",
         "install-frontend": "(npm run -s install-app-access-control-api-client & npm run -s install-admin-management-api-client) && npm ci",
         "dev": "vite",
+        "dev-host": "vite --host",
         "build": "run-p type-check build-only",
         "preview": "vite preview --port 5173",
         "build-only": "vite build",

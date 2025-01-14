@@ -64,19 +64,15 @@ watch(termsAndConditionQuery.status, () => {
         <TermsAndConditions />
         <Header title="FAM" subtitle="Forests Access Management" />
         <SideNav v-if="termsAndConditionQuery.data.value === false" />
-        <div class="main">
-            <main>
-                <div class="terms-and-condition-spinner-container">
-                    <Spinner
-                        v-if="termsAndConditionQuery.isLoading.value"
-                        loading-text="Page loading"
-                    />
-                </div>
-                <router-view
-                    v-if="termsAndConditionQuery.data.value === false"
+        <main class="main">
+            <div class="terms-and-condition-spinner-container">
+                <Spinner
+                    v-if="termsAndConditionQuery.isLoading.value"
+                    loading-text="Page loading"
                 />
-            </main>
-        </div>
+            </div>
+            <router-view v-if="termsAndConditionQuery.data.value === false" />
+        </main>
     </div>
 </template>
 <style lang="scss">

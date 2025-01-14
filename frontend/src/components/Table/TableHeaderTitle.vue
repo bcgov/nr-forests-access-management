@@ -17,7 +17,7 @@ defineProps<{
 </template>
 <style lang="scss" scoped>
 .table-title-container {
-    height: 5.375rem;
+    min-height: 5.375rem;
     padding: 1rem 1rem 1.5rem 1rem;
     h3 {
         @include type.type-style("heading-03");

@@ -47,6 +47,7 @@ const props = defineProps<{
             class="fam-dropdown"
             :model-value="props.value"
             :disabled="props.disabled"
+            :value="props.value"
         />
         <ErrorText v-if="props.isError" :error-msg="errorMsg" show-icon />
     </div>

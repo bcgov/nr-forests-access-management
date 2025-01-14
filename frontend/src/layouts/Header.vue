@@ -69,8 +69,6 @@ const navigateToMain = () => router.push("/");
 </template>
 
 <style lang="scss" scoped>
-@import "@/assets/styles/base.scss";
-
 li {
     list-style: none;
 }
@@ -91,18 +89,18 @@ li {
 }
 
 .header {
-    @extend %heading-compact-01;
+    @include type.type-style("heading-compact-01");
     position: fixed;
 
     font-size: 1rem;
 
-    height: $header-height;
-    width: $header-width;
-    background: $light-background-brand;
+    height: 100;
+    width: 100vw;
+    background: var(--background-brand);
 
     padding: 0;
     z-index: 10;
-    color: $text-on-color;
+    color: var(--text-on-color);
     .header-title {
         cursor: pointer;
         margin: 0 auto 0 0;
