@@ -206,6 +206,7 @@ const isMenuItemHighlighted = (
     }
 }
 
+// For iOS Safari, the address bar is at the bottom and could block elements without this
 @media (max-width: 768px) and (hover: none) and (pointer: coarse) {
     @supports (-webkit-touch-callout: none) {
         .fam-sidenav .sidenav {
