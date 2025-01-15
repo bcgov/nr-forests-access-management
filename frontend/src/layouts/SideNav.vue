@@ -19,20 +19,11 @@ const adminUserAccessQuery = useQuery({
         AdminMgmtApiService.adminUserAccessesApi
             .adminUserAccessPrivilege()
             .then((res) => res.data),
-    // select: (data) => {
-    //     const accessList = data.access.map((grantDto) => grantDto.auth_key);
-
-    //     const famAdminIndex = accessList.indexOf(AdminRoleAuthGroup.FamAdmin);
-    //     if (famAdminIndex !== -1) {
-    //         const famAdmin = accessList.splice(famAdminIndex, 1)[0];
-    //         accessList.unshift(famAdmin);
-    //     }
-    // },
 });
 
 /**
  * Determines if a user is an app admin for at least one application,
- * @returns a path to the relevant pdf file.
+ * @returns {string} a path to the relevant pdf file.
  */
 const pathToPdfGuide = computed(() => {
     if (!adminUserAccessQuery.data.value) {
