@@ -1,3 +1,4 @@
+// Import dependencies
 @use "sass:map";
 @use "@bcgov-nr/nr-theme/design-tokens/type-family.scss" as typeFamily;
 @use "@carbon/type" as type;
@@ -6,18 +7,89 @@
 // Import all of Bootstrap's CSS
 @import "~bootstrap/scss/bootstrap";
 
-@import "base";
-
+// Root styles
 :root {
     --font-family: map.get(typeFamily.$type-family, "sans");
     --primevue-striped-row-color: rgba(0, 0, 0, 0.05);
 }
 
+// Global styles
 body {
+    padding: 0;
+    margin: 0;
     font-family: map.get(typeFamily.$type-family, "sans");
 }
 
-/* ----------------- form input styles --------------------------- */
+p {
+    margin: 0;
+}
+
+// Utility classes
+.bold {
+    font-weight: bold;
+}
+
+.no-padding {
+    padding: 0;
+}
+
+// PrimeVue component styles
+.p-component,
+.p-inputtext {
+    font-family: inherit;
+}
+
+.p-sidebar-header {
+    display: none;
+}
+
+.p-tooltip-text {
+    @include type.type-style("body-compact-01");
+}
+
+// Helper text and validation
+.helper-text {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.invalid {
+    font-size: 0.875em;
+    color: var(--text-error);
+    display: flex;
+    align-items: center;
+}
+
+// Input styles
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+// Layout styles
+.main {
+    position: absolute;
+    display: block;
+    height: calc(100vh - 3rem);
+    width: 100vw;
+    bottom: 0;
+    padding: 1.06rem 1rem 0 1rem;
+    overflow-y: auto;
+    overflow-x: hidden;
+    top: 3rem;
+}
+
+.page-body {
+    margin-top: 1.5rem;
+    width: 100%;
+}
+
+// Form container styles
 .input-with-verify-button {
     padding: 0;
     width: 100%;
@@ -31,8 +103,7 @@ body {
 
 .button-stack {
     padding: 0;
-    margin-top: 2.5rem;
-    margin-bottom: 2.5rem;
+    margin: 2.5rem 0;
     gap: 1rem;
     width: 100%;
     display: inline-grid;
@@ -43,44 +114,15 @@ body {
     }
 }
 
-p {
-    margin: 0;
-}
-
-// when screen width < 390px
-@media (max-width: 390px) {
-    .input-with-verify-button {
-        display: block;
-    }
-}
-
-// when screen width > 1024px
-@media (min-width: 1024px) {
-    .button-stack {
-        justify-content: start;
-        grid-template-columns: auto auto;
-        width: 38rem;
-
-        Button {
-            width: 15rem;
-            gap: 2rem;
-            white-space: nowrap;
-        }
-    }
-    .p-dialog {
-        max-width: 40rem;
-    }
-}
-
+// Table styles
 .fam-table {
+    background: var(--layer-02, #fff);
+    border-radius: 0.25rem;
+    border: 0.0625rem solid var(--border-subtle-00);
+
     p {
         margin: 0;
     }
-
-    background: var(--layer-02, #fff);
-
-    border-radius: 0.25rem;
-    border: 0.0625rem solid var(--border-subtle-00);
 
     .p-datatable-thead {
         .p-column-title {
@@ -96,20 +138,22 @@ p {
         background: var(--layer-accent-01);
     }
 
-    .p-datatable-tbody > tr > td {
-        padding: 1rem;
-    }
-
     .p-datatable-tbody {
         @include type.type-style("body-01");
         color: var(--text-primary);
+
+        > tr > td {
+            padding: 1rem;
+        }
     }
 }
 
+// Error styles
 .error-icon {
     fill: var(--support-error);
 }
 
+// Dialog styles
 .confirm-dialog-with-blue-button {
     .p-confirm-dialog-accept {
         border: 0.0625rem solid colors.$blue-60;
@@ -122,6 +166,47 @@ p {
     }
 }
 
-.p-tooltip-text {
-    @include type.type-style("body-compact-01");
+// Media queries
+@media (min-width: 768px) {
+    .main {
+        padding: 2.5rem 2.5rem 0 2.5rem;
+        width: 100vw;
+    }
+
+    .form-container {
+        width: 38rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .main {
+        left: 16rem;
+        width: calc(100vw - 16rem);
+    }
+
+    .page-body {
+        width: 100%;
+    }
+
+    .button-stack {
+        justify-content: start;
+        grid-template-columns: auto auto;
+        width: 38rem;
+
+        Button {
+            width: 15rem;
+            gap: 2rem;
+            white-space: nowrap;
+        }
+    }
+
+    .p-dialog {
+        max-width: 40rem;
+    }
+}
+
+@media (max-width: 390px) {
+    .input-with-verify-button {
+        display: block;
+    }
 }

@@ -159,8 +159,6 @@ const adminUserAccessQuery = useQuery({
 </template>
 
 <style lang="scss" scoped>
-@import "@/assets/styles/base.scss";
-
 .profile-container {
     background-color: #fff;
     border-left: 0.0625rem solid #dfdfe1;
@@ -205,8 +203,8 @@ const adminUserAccessQuery = useQuery({
         margin-right: 2rem;
         margin-top: 0.5rem;
         flex-shrink: 0;
-        background: $light-background-brand;
-        color: $dark-text-primary;
+        background: var(--background-brand);
+        color: var(--text-on-color);
     }
 
     .profile-info {
@@ -242,7 +240,7 @@ const adminUserAccessQuery = useQuery({
 .profile-sidebar-btn:enabled:hover,
 .profile-sidebar-btn:enabled:active,
 .profile-sidebar-btn:enabled:focus {
-    background-color: $light-border-subtle-00;
+    background-color: var(--border-subtle-00);
     box-shadow: none;
     outline: none;
 }
