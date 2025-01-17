@@ -1,20 +1,16 @@
 import logging
 
-from api.app.schemas import FamUserSchema, TargetUserSchema
 import pytest
 from api.app.constants import CURRENT_TERMS_AND_CONDITIONS_VERSION, UserType
 from api.app.crud import crud_user
 from api.app.models.model import FamUserTermsConditions
+from api.app.schemas import FamUserSchema, TargetUserSchema
 from sqlalchemy import insert
 from sqlalchemy.orm import Session
-from testspg.constants import (
-    TEST_CREATOR,
-    TEST_NEW_BCEID_USER,
-    TEST_NEW_USER,
-    TEST_NOT_EXIST_USER_TYPE,
-    USER_NAME_BCEID_LOAD_3_TEST,
-    USER_NAME_BCEID_LOAD_3_TEST_CHILD_1,
-)
+from testspg.constants import (TEST_CREATOR, TEST_NEW_BCEID_USER,
+                               TEST_NEW_USER, TEST_NOT_EXIST_USER_TYPE,
+                               USER_NAME_BCEID_LOAD_3_TEST,
+                               USER_NAME_BCEID_LOAD_3_TEST_CHILD_1)
 
 LOGGER = logging.getLogger(__name__)
 NEW_USERNAME = "NEW_USERNAME"
@@ -140,7 +136,7 @@ def test_update(db_pg_session: Session):
     assert created_user.create_user == TEST_NEW_USER.get("create_user")
     assert created_user.business_guid is None
     assert created_user.update_user is None
-    assert created_user.update_date is None
+    assert created_user.update_date is not None
 
     different_requester = "OTHER_TESTER"
     # update same user on "business_guid" from None to some value.
