@@ -147,6 +147,7 @@ class FamApplication(Base):
     )
     update_date = Column(
         TIMESTAMP(timezone=True, precision=6),
+        nullable=False,
         server_default=func.now(),
         onupdate=func.now(),
         comment="The date and time the record was created or last updated.",
@@ -234,6 +235,7 @@ class FamRole(Base):
     )
     update_date = Column(
         TIMESTAMP(timezone=True, precision=6),
+        nullable=False,
         server_default=func.now(),
         onupdate=func.now(),
         comment="The date and time the record was created or last updated.",
@@ -356,6 +358,7 @@ class FamApplicationAdmin(Base):
     )
     update_date = Column(
         TIMESTAMP(timezone=True, precision=6),
+        nullable=False,
         server_default=func.now(),
         onupdate=func.now(),
         comment="The date and time the record was created or last updated.",
@@ -430,6 +433,7 @@ class FamAccessControlPrivilege(Base):
     )
     update_date = Column(
         TIMESTAMP(timezone=True, precision=6),
+        nullable=False,
         server_default=func.now(),
         onupdate=func.now(),
         comment="The date and time the record was created or last updated.",
@@ -493,6 +497,7 @@ class FamForestClient(Base):
     )
     update_date = Column(
         TIMESTAMP(timezone=True, precision=6),
+        nullable=False,
         server_default=func.now(),
         onupdate=func.now(),
         comment="The date and time the record was created or last updated.",
@@ -531,6 +536,7 @@ class FamUserType(Base):
 
     update_date = Column(
         TIMESTAMP(timezone=True, precision=6),
+        nullable=False,
         server_default=func.now(),
         onupdate=func.now(),
         comment="The date and time the record was created or last updated.",
@@ -643,6 +649,7 @@ class FamRoleType(Base):
 
     update_date = Column(
         TIMESTAMP(timezone=True, precision=6),
+        nullable=False,
         server_default=func.now(),
         onupdate=func.now(),
         comment="The date and time the record was created or last updated.",
@@ -691,6 +698,7 @@ class FamAppEnvironment(Base):
 
     update_date = Column(
         TIMESTAMP(timezone=True, precision=6),
+        nullable=False,
         server_default=func.now(),
         onupdate=func.now(),
         comment="The date and time the record was created or last updated.",
@@ -717,7 +725,7 @@ class FamPrivilegeChangeType(Base):
     )
     expiry_date: Mapped[Optional[datetime.datetime]] = mapped_column(TIMESTAMP)
     update_date: Mapped[Optional[datetime.datetime]] = mapped_column(
-        TIMESTAMP, server_default=func.now(), onupdate=func.now()
+        TIMESTAMP, nullable=False, server_default=func.now(), onupdate=func.now()
     )
 
     privilege_change_audits: Mapped[list["FamPrivilegeChangeAudit"]] = relationship(
