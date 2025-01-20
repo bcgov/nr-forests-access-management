@@ -1,12 +1,45 @@
 <script setup lang="ts">
-import { useRouter, type RouteRecordName } from "vue-router";
-import { sideNavState } from "@/store/SideNavState";
-import EmailIcon from "@carbon/icons-vue/es/email/16";
-import Sidebar from "primevue/sidebar";
-import { sideNavItems } from "@/constants/SideNavConfig";
 import Label from "@/components/UI/Label.vue";
+import { sideNavItems } from "@/constants/SideNavConfig";
+import { AdminMgmtApiService } from "@/services/ApiServiceFactory";
+import { sideNavState } from "@/store/SideNavState";
+import AlignBoxIcon from "@carbon/icons-vue/es/align-box--top-center/16";
+import EmailIcon from "@carbon/icons-vue/es/email/16";
+import { useQuery } from "@tanstack/vue-query";
+import { AdminRoleAuthGroup } from "fam-admin-mgmt-api/model";
+import Sidebar from "primevue/sidebar";
+import { computed } from "vue";
+import { useRouter, type RouteRecordName } from "vue-router";
 
 const router = useRouter();
+
+const adminUserAccessQuery = useQuery({
+    queryKey: ["admin-user-access"],
+    queryFn: () =>
+        AdminMgmtApiService.adminUserAccessesApi
+            .adminUserAccessPrivilege()
+            .then((res) => res.data),
+});
+
+/**
+ * Determines if a user is an app admin for at least one application,
+ * @returns {string} a path to the relevant pdf file.
+ */
+const pathToPdfGuide = computed(() => {
+    if (!adminUserAccessQuery.data.value) {
+        return "";
+    }
+
+    const accessList = adminUserAccessQuery.data.value.access.map(
+        (grantDto) => grantDto.auth_key
+    );
+
+    if (accessList.indexOf(AdminRoleAuthGroup.AppAdmin) > -1)
+        return "/files/FAM_app-admin-instructions.pdf";
+
+    if (accessList.indexOf(AdminRoleAuthGroup.DelegatedAdmin) > -1)
+        return "/files/FAM_delegated-admin-instructions.pdf";
+});
 
 const getRoutePathByName = (routeName: RouteRecordName): string | undefined => {
     const route = router.getRoutes().find((r) => r.name === routeName);
@@ -93,6 +126,15 @@ const isMenuItemHighlighted = (
                 </ul>
                 <ul>
                     <Label label-text="Support" />
+                    <li v-if="pathToPdfGuide" class="sub-menu-item">
+                        <AlignBoxIcon />
+                        <a
+                            :href="pathToPdfGuide"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            >How-to guide</a
+                        >
+                    </li>
                     <li class="sub-menu-item">
                         <EmailIcon />
                         <a href="mailto:heartwood@gov.bc.ca">Contact us</a>
