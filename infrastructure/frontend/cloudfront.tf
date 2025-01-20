@@ -117,5 +117,5 @@ resource "aws_s3_bucket_object" "site_files" {
   source = "${local.src_dir}/${each.value}"
   etag = filemd5("${local.src_dir}/${each.value}")
 
-  content_type = lookup(local.content_type_map, regex("\\.(?P<extension>[A-Za-z0-9]+)$", each.value).extension, "application/octet-stream")
+  content_type = lookup(local.content_type_map, regex("\\.(?P<extension>[A-Za-z0-9_]+)$", each.value).extension, "application/octet-stream")
 }
