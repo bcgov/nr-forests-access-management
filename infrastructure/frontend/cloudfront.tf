@@ -100,10 +100,11 @@ locals {
     css  = "text/css",
     pdf  = "application/pdf"
   }
+  ignore_files = [".terragrunt-source-manifest","assets/.terragrunt-source-manifest","files/.terragrunt-source-manifest"]
   files_raw = fileset(local.src_dir, "**")
   files = toset([
     for jsFile in local.files_raw:
-      jsFile if jsFile != ".terragrunt-source-manifest" && jsFile != "assets/.terragrunt-source-manifest"
+      jsFile if !contains(ignore_files, jsFile)
   ])
 }
 
