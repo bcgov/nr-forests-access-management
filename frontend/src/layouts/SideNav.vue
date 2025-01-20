@@ -1,15 +1,15 @@
 <script setup lang="ts">
+import Label from "@/components/UI/Label.vue";
+import { sideNavItems } from "@/constants/SideNavConfig";
+import { AdminMgmtApiService } from "@/services/ApiServiceFactory";
+import { sideNavState } from "@/store/SideNavState";
+import AlignBoxIcon from "@carbon/icons-vue/es/align-box--top-center/16";
+import EmailIcon from "@carbon/icons-vue/es/email/16";
 import { useQuery } from "@tanstack/vue-query";
 import { AdminRoleAuthGroup } from "fam-admin-mgmt-api/model";
-import { useRouter, type RouteRecordName } from "vue-router";
-import { sideNavState } from "@/store/SideNavState";
-import EmailIcon from "@carbon/icons-vue/es/email/16";
-import AlignBoxIcon from "@carbon/icons-vue/es/align-box--top-center/16";
 import Sidebar from "primevue/sidebar";
-import { sideNavItems } from "@/constants/SideNavConfig";
-import Label from "@/components/UI/Label.vue";
-import { AdminMgmtApiService } from "@/services/ApiServiceFactory";
 import { computed } from "vue";
+import { useRouter, type RouteRecordName } from "vue-router";
 
 const router = useRouter();
 
@@ -34,14 +34,11 @@ const pathToPdfGuide = computed(() => {
         (grantDto) => grantDto.auth_key
     );
 
-    const famAdminIndex = accessList.indexOf(AdminRoleAuthGroup.FamAdmin);
-
-    const isUserAdminOnly = famAdminIndex > -1;
-
-    if (isUserAdminOnly) {
+    if (accessList.indexOf(AdminRoleAuthGroup.AppAdmin) > -1)
         return "/files/FAM_app-admin-instructions.pdf";
-    }
-    return "/files/FAM_delegated-admin-instructions.pdf";
+
+    if (accessList.indexOf(AdminRoleAuthGroup.DelegatedAdmin) > -1)
+        return "/files/FAM_delegated-admin-instructions.pdf";
 });
 
 const getRoutePathByName = (routeName: RouteRecordName): string | undefined => {
@@ -129,7 +126,7 @@ const isMenuItemHighlighted = (
                 </ul>
                 <ul>
                     <Label label-text="Support" />
-                    <li class="sub-menu-item">
+                    <li v-if="pathToPdfGuide" class="sub-menu-item">
                         <AlignBoxIcon />
                         <a
                             :href="pathToPdfGuide"
