@@ -104,7 +104,7 @@ locals {
   files_raw = fileset(local.src_dir, "**")
   files = toset([
     for jsFile in local.files_raw:
-      jsFile if !contains(ignore_files, jsFile)
+      jsFile if !contains(local.ignore_files, jsFile)
   ])
 }
 
