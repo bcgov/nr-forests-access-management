@@ -97,7 +97,8 @@ locals {
     svg  = "image/svg+xml",
     ttf  = "font/ttf",
     txt  = "text/txt",
-    css  = "text/css"
+    css  = "text/css",
+    pdf  = "application/pdf"
   }
   files_raw = fileset(local.src_dir, "**")
   files = toset([
