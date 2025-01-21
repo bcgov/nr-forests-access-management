@@ -97,12 +97,14 @@ locals {
     svg  = "image/svg+xml",
     ttf  = "font/ttf",
     txt  = "text/txt",
-    css  = "text/css"
+    css  = "text/css",
+    pdf  = "application/pdf"
   }
+  ignore_files = [".terragrunt-source-manifest","assets/.terragrunt-source-manifest","files/.terragrunt-source-manifest"]
   files_raw = fileset(local.src_dir, "**")
   files = toset([
     for jsFile in local.files_raw:
-      jsFile if jsFile != ".terragrunt-source-manifest" && jsFile != "assets/.terragrunt-source-manifest"
+      jsFile if !contains(local.ignore_files, jsFile)
   ])
 }
 
@@ -116,5 +118,5 @@ resource "aws_s3_bucket_object" "site_files" {
   source = "${local.src_dir}/${each.value}"
   etag = filemd5("${local.src_dir}/${each.value}")
 
-  content_type = lookup(local.content_type_map, regex("\\.(?P<extension>[A-Za-z0-9]+)$", each.value).extension, "application/octet-stream")
+  content_type = lookup(local.content_type_map, regex("\\.(?P<extension>[A-Za-z0-9_]+)$", each.value).extension, "application/octet-stream")
 }
