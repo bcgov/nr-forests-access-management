@@ -34,7 +34,7 @@ const userQuery = useQuery({
             }}
         </template>
         <template #content v-else>
-            <div class="row">
+            <div class="row gy-4">
                 <CardColumn
                     :class="DEFAULT_COL_SIZE"
                     id="user-name"

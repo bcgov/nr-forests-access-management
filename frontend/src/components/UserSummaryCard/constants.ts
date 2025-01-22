@@ -1,1 +1,1 @@
-export const DEFAULT_COL_SIZE = "col-sm-12 col-md-4 col-lg-1";
+export const DEFAULT_COL_SIZE = "col-12 col-md-6 col-lg-4 col-xl-2";
