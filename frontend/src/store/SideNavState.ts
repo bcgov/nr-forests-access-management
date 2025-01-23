@@ -1,10 +1,14 @@
-import { shallowReactive } from "vue";
 import { profileSidebarState } from "@/store/ProfileSidebarState";
+import { isDesktop, isSmallScreen } from "@/store/screenSizeState";
+import { shallowReactive } from "vue";
 
 export const sideNavState = shallowReactive({
-    isVisible: window.innerWidth >= 1024,
+    isVisible: isDesktop(),
     toggleVisible() {
-        this.isVisible = !this.isVisible;
-        profileSidebarState.isVisible = false;
+        // Only toggle the side nav if the screen is small
+        if (isSmallScreen()) {
+            this.isVisible = !this.isVisible;
+            profileSidebarState.isVisible = false;
+        }
     },
 });

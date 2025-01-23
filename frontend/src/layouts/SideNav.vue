@@ -75,6 +75,11 @@ const isMenuItemHighlighted = (
         subRoutePaths.some((path) => path && currentRoutePath.startsWith(path))
     );
 };
+
+const navigateOnClick = (routeName: RouteRecordName) => {
+    router.push({ name: routeName });
+    sideNavState.toggleVisible();
+};
 </script>
 <template>
     <Sidebar class="fam-sidenav" v-model:visible="sideNavState.isVisible">
@@ -90,11 +95,7 @@ const isMenuItemHighlighted = (
                                 ),
                                 'sidenav-disabled': item.disabled,
                             }"
-                            @click="
-                                item.disabled
-                                    ? () => {}
-                                    : router.push({ name: item.routeName })
-                            "
+                            @click="navigateOnClick(item.routeName)"
                         >
                             <component v-if="item.icon" :is="item.icon" />
                             <p>
@@ -112,13 +113,7 @@ const isMenuItemHighlighted = (
                                     'sidenav-disabled': subMenuItem.disabled,
                                 },
                             ]"
-                            @click="
-                                subMenuItem.disabled
-                                    ? () => {}
-                                    : router.push({
-                                          name: subMenuItem.routeName,
-                                      })
-                            "
+                            @click="navigateOnClick(subMenuItem.routeName)"
                         >
                             <span>{{ subMenuItem.name }}</span>
                         </li>
@@ -126,7 +121,11 @@ const isMenuItemHighlighted = (
                 </ul>
                 <ul>
                     <Label label-text="Support" />
-                    <li v-if="pathToPdfGuide" class="sub-menu-item">
+                    <li
+                        v-if="pathToPdfGuide"
+                        @click="sideNavState.toggleVisible()"
+                        class="sub-menu-item"
+                    >
                         <AlignBoxIcon />
                         <a
                             :href="pathToPdfGuide"
@@ -135,7 +134,10 @@ const isMenuItemHighlighted = (
                             >How-to guide</a
                         >
                     </li>
-                    <li class="sub-menu-item">
+                    <li
+                        @click="sideNavState.toggleVisible()"
+                        class="sub-menu-item"
+                    >
                         <EmailIcon />
                         <a href="mailto:heartwood@gov.bc.ca">Contact us</a>
                     </li>
