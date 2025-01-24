@@ -62,7 +62,7 @@ class GCNotifyEmailService:
                     Ther current version of T&C file is : "2024-06-04-.FAM.terms.of.use.approved.by.WK.BB.pdf".
                     A copy is deposited under frontend's /public folder so it can be public accessible with a
                     url friendly file name "2024-06-04-fam-terms-conditions.pdf".
-                    Contact Olga or Kajo for the latest copy.
+                    Contact Olga or Kajol for the latest copy.
                     If there is version update, developers need to be aware the changes needs to be on both
                     frontend and the backend (frontend has a component with word-by-word coded for T&C)
             """
@@ -117,5 +117,5 @@ class GCNotifyEmailService:
     def __to_terms_conditions_comply_text(self):
             frontend_url = config.get_env_var("ALLOW_ORIGIN") if config.is_on_aws() else "https://fam-dev.nrs.gov.bc.ca"  # default to dev.
             tc_filename = "2024-06-04-fam-terms-conditions.pdf"
-            txt = f"As a delegated admin, you are required to comply with our [terms and conditions]({frontend_url}/{tc_filename})."
+            txt = f"As a delegated admin, you are required to comply with our [terms and conditions]({frontend_url}/files/{tc_filename})."
             return txt
