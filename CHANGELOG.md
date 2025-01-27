@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.30.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.29.0...v1.30.0) (2025-01-24)
+
+
+### Features
+
+* [#1697](https://github.com/bcgov/nr-forests-access-management/issues/1697) add user manuals to support section ([#1719](https://github.com/bcgov/nr-forests-access-management/issues/1719)) ([20fbbcf](https://github.com/bcgov/nr-forests-access-management/commit/20fbbcf3fbaccb18096ec8f252515cef86e1edde))
+
+
+### Bug Fixes
+
+* [#1656](https://github.com/bcgov/nr-forests-access-management/issues/1656) responsiveness with grid system ([#1717](https://github.com/bcgov/nr-forests-access-management/issues/1717)) ([8362908](https://github.com/bcgov/nr-forests-access-management/commit/8362908c76c3282d7f6b7de37ef870f6cdec4377))
+* [#1732](https://github.com/bcgov/nr-forests-access-management/issues/1732) Frontend responsiveness adjustment ([#1736](https://github.com/bcgov/nr-forests-access-management/issues/1736)) ([c4e509e](https://github.com/bcgov/nr-forests-access-management/commit/c4e509e338af563d1403d16ce474dc52fd0b4874))
+* [#1737](https://github.com/bcgov/nr-forests-access-management/issues/1737) AWS RDS postgresql engine version minor patch upgrade ([#1738](https://github.com/bcgov/nr-forests-access-management/issues/1738)) ([959687e](https://github.com/bcgov/nr-forests-access-management/commit/959687efa4650b60902ad1f167931ae18b813edf))
+* Cloudfront tf deployment error ([#1731](https://github.com/bcgov/nr-forests-access-management/issues/1731)) ([87d39c5](https://github.com/bcgov/nr-forests-access-management/commit/87d39c51a193d3df6a124e0038ccf089d1c728aa))
+
 ## [1.29.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.28.1...v1.29.0) (2024-12-20)
 
 ### Features
