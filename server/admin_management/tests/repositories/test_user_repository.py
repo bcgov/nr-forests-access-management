@@ -1,16 +1,12 @@
 import logging
+
 import pytest
-from sqlalchemy.exc import IntegrityError
-
-from api.app.repositories.user_repository import UserRepository
-from tests.constants import (
-    TEST_NEW_BCEID_USER,
-    TEST_NEW_IDIR_USER,
-    TEST_NON_EXISTS_COGNITO_USER_ID,
-    ERROR_VOLIATE_UNIQUE_CONSTRAINT,
-)
 import tests.jwt_utils as jwt_utils
-
+from api.app.repositories.user_repository import UserRepository
+from sqlalchemy.exc import IntegrityError
+from tests.constants import (ERROR_VOLIATE_UNIQUE_CONSTRAINT,
+                             TEST_NEW_BCEID_USER, TEST_NEW_IDIR_USER,
+                             TEST_NON_EXISTS_COGNITO_USER_ID)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -109,7 +105,7 @@ def test_update(user_repo: UserRepository):
     assert new_user.create_user == TEST_NEW_BCEID_USER.create_user
     assert new_user.business_guid is None
     assert new_user.update_user is None
-    assert new_user.update_date is None
+    assert new_user.update_date is not None
 
     different_requester = "OTHER_TESTER"
     # update same user on "business_guid" from None to some value.
