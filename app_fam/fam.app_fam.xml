@@ -16,9 +16,9 @@
             <parent column="role_id" foreignKey="reffam_access_control_privilege_role" implied="false" onDeleteCascade="false" schema="app_fam" table="fam_role"/>
          </column>
          <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="create_user" nullable="false" remarks="The user or proxy account that created the record." size="100" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="CURRENT_DATE" digits="6" id="4" name="create_date" nullable="false" remarks="The date and time the record was created." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="4" name="create_date" nullable="false" remarks="The date and time the record was created." size="35" type="timestamptz" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="update_user" nullable="true" remarks="The user or proxy account that created or last updated the record." size="100" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="CURRENT_DATE" digits="6" id="6" name="update_date" nullable="true" remarks="The date and time the record was created or last updated." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="6" name="update_date" nullable="false" remarks="The date and time the record was created or last updated." size="35" type="timestamptz" typeCode="93"/>
          <primaryKey column="access_control_privilege_id" sequenceNumberInPK="1"/>
          <index name="fam_access_control_privilege_pk" unique="true">
             <column ascending="true" name="access_control_privilege_id"/>
@@ -39,9 +39,9 @@
             <child column="app_environment" foreignKey="reffam_app_env" implied="false" onDeleteCascade="false" schema="app_fam" table="fam_application"/>
          </column>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="description" nullable="true" remarks="Description of what the app_environmentrepresents." size="100" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="now()" digits="6" id="2" name="effective_date" nullable="false" remarks="The date and time the record was effective." size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="2" name="effective_date" nullable="false" remarks="The date and time the record was effective." size="35" type="timestamptz" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="3" name="expiry_date" nullable="true" remarks="The date and time the record expired." size="35" type="timestamptz" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="6" id="4" name="update_date" nullable="true" remarks="The date and time the record was created or last updated." size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="4" name="update_date" nullable="false" remarks="The date and time the record was created or last updated." size="35" type="timestamptz" typeCode="93"/>
          <primaryKey column="app_environment" sequenceNumberInPK="1"/>
          <index name="fam_app_environment_pk" unique="true">
             <column ascending="true" name="app_environment"/>
@@ -60,7 +60,7 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="create_user" nullable="false" remarks="The user or proxy account that created the record." size="100" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="4" name="create_date" nullable="false" remarks="The date and time the record was created." size="35" type="timestamptz" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="update_user" nullable="true" remarks="The user or proxy account that created or last updated the record." size="100" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="6" name="update_date" nullable="true" remarks="The date and time the record was created or last updated." size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="6" name="update_date" nullable="false" remarks="The date and time the record was created or last updated." size="35" type="timestamptz" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="app_environment" nullable="true" remarks="Identifies which environment the application is for; DEV, TEST, PROD etc." size="4" type="varchar" typeCode="12">
             <parent column="app_environment" foreignKey="reffam_app_env" implied="false" onDeleteCascade="false" schema="app_fam" table="fam_app_environment"/>
          </column>
@@ -72,7 +72,7 @@
             <column ascending="true" name="application_name"/>
          </index>
       </table>
-      <table name="fam_application_admin" remarks="Application Admin is a cross-reference object that allows for the identification of who are the administrators(User) for an Application, as well as which Applications the User can administer." schema="app_fam" type="TABLE">
+      <table name="fam_application_admin" numRows="10" remarks="Application Admin is a cross-reference object that allows for the identification of who are the administrators(User) for an Application, as well as which Applications the User can administer." schema="app_fam" type="TABLE">
          <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="application_admin_id" nullable="false" remarks="Automatically generated key used to identify the uniqueness of a User administers the Application." size="19" type="int8" typeCode="-5"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="user_id" nullable="false" remarks="Unique ID to reference and identify the user within FAM system." size="19" type="int8" typeCode="-5">
             <parent column="user_id" foreignKey="reffam_application_admin_user" implied="false" onDeleteCascade="false" schema="app_fam" table="fam_user"/>
@@ -81,9 +81,9 @@
             <parent column="application_id" foreignKey="reffam_application_admin_application" implied="false" onDeleteCascade="false" schema="app_fam" table="fam_application"/>
          </column>
          <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="create_user" nullable="false" remarks="The user or proxy account that created the record." size="100" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="CURRENT_DATE" digits="6" id="4" name="create_date" nullable="false" remarks="The date and time the record was created." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="4" name="create_date" nullable="false" remarks="The date and time the record was created." size="35" type="timestamptz" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="update_user" nullable="true" remarks="The user or proxy account that created or last updated the record." size="100" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="CURRENT_DATE" digits="6" id="6" name="update_date" nullable="true" remarks="The date and time the record was created or last updated." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="6" name="update_date" nullable="false" remarks="The date and time the record was created or last updated." size="35" type="timestamptz" typeCode="93"/>
          <primaryKey column="application_admin_id" sequenceNumberInPK="1"/>
          <index name="fam_app_admin_pk" unique="true">
             <column ascending="true" name="application_admin_id"/>
@@ -128,7 +128,7 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="create_user" nullable="false" remarks="The user or proxy account that created the record." size="100" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="3" name="create_date" nullable="false" remarks="The date and time the record was created." size="35" type="timestamptz" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="update_user" nullable="true" remarks="The user or proxy account that created or last updated the record." size="100" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="5" name="update_date" nullable="true" remarks="The date and time the record was created or last updated." size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="5" name="update_date" nullable="false" remarks="The date and time the record was created or last updated." size="35" type="timestamptz" typeCode="93"/>
          <primaryKey column="application_id" sequenceNumberInPK="1"/>
          <primaryKey column="group_id" sequenceNumberInPK="2"/>
          <index name="fam_app_grp_xref" unique="true">
@@ -150,7 +150,7 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="create_user" nullable="false" remarks="The user or proxy account that created the record." size="100" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="2" name="create_date" nullable="false" remarks="The date and time the record was created." size="35" type="timestamptz" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="update_user" nullable="true" remarks="The user or proxy account that created or last updated the record." size="100" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="4" name="update_date" nullable="true" remarks="The date and time the record was created or last updated." size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="4" name="update_date" nullable="false" remarks="The date and time the record was created or last updated." size="35" type="timestamptz" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="forest_client_number" nullable="false" remarks="Id number as String from external Forest Client source(api/table) that identifies the Forest Client." size="2147483647" type="varchar" typeCode="12"/>
          <primaryKey column="client_number_id" sequenceNumberInPK="1"/>
          <index name="fam_for_cli_pk" unique="true">
@@ -181,7 +181,7 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user" nullable="false" remarks="The user or proxy account that created the record." size="100" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="6" name="create_date" nullable="false" remarks="The date and time the record was created." size="35" type="timestamptz" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user" nullable="true" remarks="The user or proxy account that created or last updated the record." size="100" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="8" name="update_date" nullable="true" remarks="The date and time the record was created or last updated." size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="8" name="update_date" nullable="false" remarks="The date and time the record was created or last updated." size="35" type="timestamptz" typeCode="93"/>
          <primaryKey column="group_id" sequenceNumberInPK="1"/>
          <index name="fam_grp_pk" unique="true">
             <column ascending="true" name="group_id"/>
@@ -206,7 +206,7 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="create_user" nullable="false" remarks="The user or proxy account that created the record." size="100" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="3" name="create_date" nullable="false" remarks="The date and time the record was created." size="35" type="timestamptz" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="update_user" nullable="true" remarks="The user or proxy account that created or last updated the record." size="100" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="5" name="update_date" nullable="true" remarks="The date and time the record was created or last updated." size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="5" name="update_date" nullable="false" remarks="The date and time the record was created or last updated." size="35" type="timestamptz" typeCode="93"/>
          <primaryKey column="group_id" sequenceNumberInPK="1"/>
          <primaryKey column="role_id" sequenceNumberInPK="2"/>
          <index name="fam_grp_rle_pk" unique="true">
@@ -250,14 +250,14 @@
             <column ascending="true" name="change_target_user_id"/>
          </index>
       </table>
-      <table name="fam_privilege_change_type" remarks="Table containing types of privilege changes such as Grant, Revoke, or Update access." schema="app_fam" type="TABLE">
+      <table name="fam_privilege_change_type" numRows="3" remarks="Table containing types of privilege changes such as Grant, Revoke, or Update access." schema="app_fam" type="TABLE">
          <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="privilege_change_type_code" nullable="false" remarks="Primary key that identifies the type of privilege change (Grant, Revoke, or Update access)." size="10" type="varchar" typeCode="12">
             <child column="privilege_change_type_code" foreignKey="fk_privilege_change_type" implied="false" onDeleteCascade="false" schema="app_fam" table="fam_privilege_change_audit"/>
          </column>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="description" nullable="false" remarks="Description of the privilege change type." size="100" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="now()" digits="6" id="2" name="effective_date" nullable="false" remarks="Date when the privilege change becomes effective." size="29" type="timestamp" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="6" id="3" name="expiry_date" nullable="true" remarks="Date when the privilege change expires or is no longer valid." size="29" type="timestamp" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="6" id="4" name="update_date" nullable="true" remarks="Date when the record was last updated." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="2" name="effective_date" nullable="false" remarks="Date when the privilege change becomes effective." size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="3" name="expiry_date" nullable="true" remarks="Date when the privilege change expires or is no longer valid." size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="4" name="update_date" nullable="false" remarks="Date when the record was last updated." size="35" type="timestamptz" typeCode="93"/>
          <primaryKey column="privilege_change_type_code" sequenceNumberInPK="1"/>
          <index name="fam_privilege_change_type_pkey" unique="true">
             <column ascending="true" name="privilege_change_type_code"/>
@@ -284,7 +284,7 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="create_user" nullable="false" remarks="The user or proxy account that created the record." size="100" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="7" name="create_date" nullable="false" remarks="The date and time the record was created." size="35" type="timestamptz" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="update_user" nullable="true" remarks="The user or proxy account that created or last updated the record." size="100" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="9" name="update_date" nullable="true" remarks="The date and time the record was created or last updated." size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="9" name="update_date" nullable="false" remarks="The date and time the record was created or last updated." size="35" type="timestamptz" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="role_type_code" nullable="false" remarks="Identifies if the role is an abstract or concrete role. Users should only be assigned to roles where role_type=concrete" size="2" type="varchar" typeCode="12">
             <parent column="role_type_code" foreignKey="reffam_role_type" implied="false" onDeleteCascade="false" schema="app_fam" table="fam_role_type"/>
          </column>
@@ -314,7 +314,7 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="description" nullable="true" remarks="Description of what the role_type_code represents" size="100" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="2" name="effective_date" nullable="false" remarks="The date and time the code was effective." size="35" type="timestamptz" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="3" name="expiry_date" nullable="true" remarks="The date and time the code expired." size="35" type="timestamptz" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="6" id="4" name="update_date" nullable="true" remarks="The date and time the record was created or last updated." size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="4" name="update_date" nullable="false" remarks="The date and time the record was created or last updated." size="35" type="timestamptz" typeCode="93"/>
          <primaryKey column="role_type_code" sequenceNumberInPK="1"/>
          <index name="fam_role_type_code_pk" unique="true">
             <column ascending="true" name="role_type_code"/>
@@ -336,7 +336,7 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="create_user" nullable="false" remarks="The user or proxy account that created the record." size="100" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="5" name="create_date" nullable="false" remarks="The date and time the record was created." size="35" type="timestamptz" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="update_user" nullable="true" remarks="The user or proxy account that created or last updated the record." size="100" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="7" name="update_date" nullable="true" remarks="The date and time the record was created or last updated." size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="7" name="update_date" nullable="false" remarks="The date and time the record was created or last updated." size="35" type="timestamptz" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="user_type_code" nullable="false" remarks="Identifies which type of the user it belongs to; IDIR, BCeID etc." size="2" type="varchar" typeCode="12">
             <parent column="user_type_code" foreignKey="reffam_user_type" implied="false" onDeleteCascade="false" schema="app_fam" table="fam_user_type_code"/>
          </column>
@@ -363,7 +363,7 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="create_user" nullable="false" remarks="The user or proxy account that created the record." size="100" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="3" name="create_date" nullable="false" remarks="The date and time the record was created." size="35" type="timestamptz" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="update_user" nullable="true" remarks="The user or proxy account that created or last updated the record." size="100" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="5" name="update_date" nullable="true" remarks="The date and time the record was created or last updated." size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="5" name="update_date" nullable="false" remarks="The date and time the record was created or last updated." size="35" type="timestamptz" typeCode="93"/>
          <primaryKey column="user_id" sequenceNumberInPK="1"/>
          <primaryKey column="group_id" sequenceNumberInPK="2"/>
          <index name="fam_usr_rle_pk_1" unique="true">
@@ -387,7 +387,7 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="create_user" nullable="false" remarks="The user or proxy account that created the record." size="100" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="3" name="create_date" nullable="false" remarks="The date and time the record was created." size="35" type="timestamptz" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="update_user" nullable="true" remarks="The user or proxy account that created or last updated the record." size="100" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="5" name="update_date" nullable="true" remarks="The date and time the record was created or last updated." size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="5" name="update_date" nullable="false" remarks="The date and time the record was created or last updated." size="35" type="timestamptz" typeCode="93"/>
          <column autoUpdated="true" defaultValue="null" digits="0" id="6" name="user_role_xref_id" nullable="false" remarks="Automatically generated key used to identify the uniqueness of a FamUserRoleXref within the FAM Application" size="19" type="int8" typeCode="-5"/>
          <primaryKey column="user_role_xref_id" sequenceNumberInPK="1"/>
          <index name="fam_usr_rle_pk" unique="true">
@@ -411,9 +411,9 @@
          </column>
          <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="version" nullable="false" remarks="Number to identity the version of the terms and conditions the user accepted." size="30" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="create_user" nullable="false" remarks="The user or proxy account that created the record." size="100" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="CURRENT_DATE" digits="6" id="4" name="create_date" nullable="false" remarks="The date and time the record was created." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="4" name="create_date" nullable="false" remarks="The date and time the record was created." size="35" type="timestamptz" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="update_user" nullable="true" remarks="The user or proxy account that created or last updated the record." size="100" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="CURRENT_DATE" digits="6" id="6" name="update_date" nullable="true" remarks="The date and time the record was created or last updated." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="6" name="update_date" nullable="false" remarks="The date and time the record was created or last updated." size="35" type="timestamptz" typeCode="93"/>
          <primaryKey column="user_terms_conditions_id" sequenceNumberInPK="1"/>
          <index name="fam_user_terms_conditions_pk" unique="true">
             <column ascending="true" name="user_terms_conditions_id"/>
@@ -433,7 +433,7 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="description" nullable="true" remarks="Description of what the user_type_code represents." size="100" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="2" name="effective_date" nullable="false" remarks="The date and time the code was effective." size="35" type="timestamptz" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="3" name="expiry_date" nullable="true" remarks="The date and time the code expired." size="35" type="timestamptz" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="6" id="4" name="update_date" nullable="true" remarks="The date and time the record was created or last updated." size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="4" name="update_date" nullable="false" remarks="The date and time the record was created or last updated." size="35" type="timestamptz" typeCode="93"/>
          <primaryKey column="user_type_code" sequenceNumberInPK="1"/>
          <index name="fam_user_type_code_pk" unique="true">
             <column ascending="true" name="user_type_code"/>
