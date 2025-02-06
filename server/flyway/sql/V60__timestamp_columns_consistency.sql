@@ -64,6 +64,10 @@ ALTER TABLE app_fam.fam_application_admin
 
 
 -- >> -- Table: fam_application_group_xref -- << --
+-- Update existing NULL values
+UPDATE app_fam.fam_application_group_xref
+    SET update_date = create_date WHERE update_date IS NULL;
+
 -- Set NOT NULL constraint
 ALTER TABLE app_fam.fam_application_group_xref
     ALTER COLUMN update_date SET NOT NULL;
@@ -80,12 +84,21 @@ ALTER TABLE app_fam.fam_forest_client
 
 
 --  >> -- Table: fam_group -- <<--
+-- Update existing NULL values
+UPDATE app_fam.fam_group
+    SET update_date = create_date WHERE update_date IS NULL;
+
 -- Set NOT NULL constraint
 ALTER TABLE app_fam.fam_group
     ALTER COLUMN update_date SET NOT NULL;
 
 
 -- >> -- Table: fam_group_role_xref -- << --
+-- Update existing NULL values
+UPDATE app_fam.fam_group_role_xref
+    SET update_date = create_date WHERE update_date IS NULL;
+
+-- Set NOT NULL constraint
 ALTER TABLE app_fam.fam_group_role_xref
     ALTER COLUMN update_date SET NOT NULL;
 
@@ -113,6 +126,11 @@ ALTER TABLE app_fam.fam_privilege_change_type
 
 
 -- >> -- Table: fam_role -- << --
+
+-- Update existing NULL values (update_date with create_date if null)
+UPDATE app_fam.fam_role
+    SET update_date = create_date WHERE update_date IS NULL;
+
 -- Set NOT NULL constraint
 ALTER TABLE app_fam.fam_role
     ALTER COLUMN update_date SET NOT NULL;
@@ -141,6 +159,10 @@ ALTER TABLE app_fam.fam_user
 
 
 -- >> -- Table: fam_user_group_xref -- << --
+-- Update existing NULL values
+UPDATE app_fam.fam_user_group_xref
+    SET update_date = create_date WHERE update_date IS NULL;
+
 -- Set NOT NULL constraint
 ALTER TABLE app_fam.fam_user_group_xref
     ALTER COLUMN update_date SET DEFAULT CURRENT_TIMESTAMP,
