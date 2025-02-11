@@ -117,5 +117,5 @@ class GCNotifyEmailService:
     def __to_terms_conditions_comply_text(self):
             frontend_url = config.get_env_var("ALLOW_ORIGIN") if config.is_on_aws() else "https://fam-dev.nrs.gov.bc.ca"  # default to dev.
             tc_filename = "2024-06-04-fam-terms-conditions.pdf"
-            txt = f"As a delegated admin, you are required to comply with our [terms and conditions]({frontend_url}/files/{tc_filename})."
+            txt = f"As a delegated admin, you are required to comply with our [terms and conditions]({frontend_url}/{tc_filename})."
             return txt
