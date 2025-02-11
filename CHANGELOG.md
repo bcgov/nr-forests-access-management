@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.31.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.30.0...v1.31.0) (2025-02-11)
+
+
+### Features
+
+* [#1746](https://github.com/bcgov/nr-forests-access-management/issues/1746) add fam link to delegated admin notification ([#1748](https://github.com/bcgov/nr-forests-access-management/issues/1748)) ([8fbf9b8](https://github.com/bcgov/nr-forests-access-management/commit/8fbf9b8685239ca39e349ab371173ac1dc5e6ca8))
+
+
+### Bug Fixes
+
+* [#1647](https://github.com/bcgov/nr-forests-access-management/issues/1647) Backend timestamp columns consistency and update_dates adjustment ([#1722](https://github.com/bcgov/nr-forests-access-management/issues/1722)) ([3187049](https://github.com/bcgov/nr-forests-access-management/commit/31870493cda74b9c1025e750326667972fcae224))
+* [#1647](https://github.com/bcgov/nr-forests-access-management/issues/1647) Fix migration for backend timestamp columns consistency ([#1744](https://github.com/bcgov/nr-forests-access-management/issues/1744)) ([a381da1](https://github.com/bcgov/nr-forests-access-management/commit/a381da16cdef59d39e9ada9407e04bfaa8ea9ba8))
+
 ## [1.30.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.29.0...v1.30.0) (2025-01-24)
 
 
