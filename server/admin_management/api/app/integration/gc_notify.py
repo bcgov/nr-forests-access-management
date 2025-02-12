@@ -95,9 +95,9 @@ class GCNotifyEmailService:
 
     def __to_contact_message(self, params: GCNotifyGrantDelegatedAdminEmailParam):
         return (
-            f"Please contact your administrator {params.application_team_contact_email} if you have any questions."
+            f"Please contact your administrator {params.application_team_contact_email} if you have any question."
             if params.application_team_contact_email is not None
-            else "If you have any questions, please contact your administrator."
+            else "If you have any question, please contact your administrator."
         )
 
     def __to_application_role_granted_text(self, params: GCNotifyGrantDelegatedAdminEmailParam):
