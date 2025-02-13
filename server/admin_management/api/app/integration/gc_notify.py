@@ -95,14 +95,14 @@ class GCNotifyEmailService:
 
     def __to_contact_message(self, params: GCNotifyGrantDelegatedAdminEmailParam):
         return (
-            f"Please contact your administrator {params.application_team_contact_email} if you have any questions."
+            f"Please contact your administrator {params.application_team_contact_email} if you have any question."
             if params.application_team_contact_email is not None
-            else "Please contact your administrator if you have any questions."
+            else "If you have any question, please contact your administrator."
         )
 
     def __to_application_role_granted_text(self, params: GCNotifyGrantDelegatedAdminEmailParam):
-        granted_app_role_no_org_txt = f"With this role you can grant a **{params.role_display_name}** for users."
-        granted_app_role_with_org_txt = f"With this role you can grant a **{params.role_display_name}** for users within the following organizations:"
+        granted_app_role_no_org_txt = f"Grant **{params.role_display_name}** role to users."
+        granted_app_role_with_org_txt = f"Grant **{params.role_display_name}** role to users in:"
         return granted_app_role_no_org_txt if params.organization_list is None else granted_app_role_with_org_txt
 
     def __to_organization_list_text(self, params: GCNotifyGrantDelegatedAdminEmailParam):
@@ -110,12 +110,12 @@ class GCNotifyEmailService:
         if (org_list is None):
             return ""
 
-        # below is formatted to: "* bold[client_name] (Client number: 111)[new line]* bold(client_name) (Client number: 222)"
-        org_formatted_list_str = "\n".join([f"* **{item.client_name}** (Client number: {item.forest_client_number})" for item in org_list])
+        # below is formatted to: "* bold[client_name] (Client number: 111)[new line]* bold(client_name) (Forest Client: 222)"
+        org_formatted_list_str = "\n".join([f"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#x0095; **{item.client_name}** (Forest Client: {item.forest_client_number})" for item in org_list])
         return org_formatted_list_str
 
     def __to_terms_conditions_comply_text(self):
             frontend_url = config.get_env_var("ALLOW_ORIGIN") if config.is_on_aws() else "https://fam-dev.nrs.gov.bc.ca"  # default to dev.
             tc_filename = "2024-06-04-fam-terms-conditions.pdf"
-            txt = f"As a delegated admin, you are required to comply with our [terms and conditions]({frontend_url}/{tc_filename})."
+            txt = f"As a Delegated Administrator, you must comply with our [terms and conditions]({frontend_url}/{tc_filename})."
             return txt
