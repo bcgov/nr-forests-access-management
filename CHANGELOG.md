@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.31.1](https://github.com/bcgov/nr-forests-access-management/compare/v1.31.0...v1.31.1) (2025-02-13)
+
+
+### Bug Fixes
+
+* [#1746](https://github.com/bcgov/nr-forests-access-management/issues/1746) Adjust parameters for email template adjustment. ([#1750](https://github.com/bcgov/nr-forests-access-management/issues/1750)) ([14003d8](https://github.com/bcgov/nr-forests-access-management/commit/14003d8c826307eb1a76146d5d53b386f67ba3da))
+
 ## [1.31.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.30.0...v1.31.0) (2025-02-11)
 
 
