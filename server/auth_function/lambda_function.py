@@ -188,7 +188,7 @@ def populate_user_if_necessary(db_connection, event) -> None:
         VALUES( {user_type_code}, {user_guid}, {cognito_user_id}, {user_name}, {business_guid},
         CURRENT_USER, CURRENT_DATE, CURRENT_USER, CURRENT_DATE)
         ON CONFLICT (user_type_code, user_guid) DO
-        UPDATE SET user_name = {user_name},  cognito_user_id = {cognito_user_id}, business_guid = {business_guid};"""
+        UPDATE SET user_name = {user_name},  cognito_user_id = {cognito_user_id}, update_user = CURRENT_USER, update_date = CURRENT_DATE;"""
 
     sql_query = sql.SQL(raw_query).format(
         user_type_code=sql.Literal(user_type_code),
