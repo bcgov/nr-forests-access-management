@@ -301,11 +301,11 @@ def update_user_info_from_idim_source(
 
     for user in fam_users:
         log_currernt_user = {
-            'user_id':{user.user_id}, 'user_type': {user.user_type_code}, 'user_name': {user.user_name}, 'email': {user.email}
+            'user_id':user.user_id, 'user_name': user.user_name, 'user_type': user.user_type_code, 'user_guid': user.user_guid, 'email': user.email
         }
         try:
             LOGGER.debug(
-                f"Updating information for user: {user.user_name}, type: {user.user_type_code}, guid: {user.user_guid}, user_id: 'user_id':{user.user_id}"
+                f"Updating information for user: {log_currernt_user}"
             )
             search_result = None
             properties_to_update = {}
@@ -380,7 +380,7 @@ def update_user_info_from_idim_source(
                 LOGGER.debug(f"Updating information for user {user.user_name} is done")
                 updated_user = get_user(db=db, user_id=user.user_id)
                 log_currernt_user = {
-                    'user_id':{updated_user.user_id}, 'user_type': {updated_user.user_type_code}, 'user_name': {updated_user.user_name}, 'email': {updated_user.email}
+                    'user_id':updated_user.user_id, 'user_name': updated_user.user_name, 'user_type': updated_user.user_type_code, 'user_guid': updated_user.user_guid, 'email': updated_user.email
                 }
                 success_user_update_list.append(log_currernt_user)
             else:
