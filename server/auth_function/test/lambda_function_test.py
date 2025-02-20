@@ -158,14 +158,12 @@ def test_update_user_if_already_exists(
             user_type_code = {} and
             user_guid = {} and
             cognito_user_id = {} and
-            user_name = {} and
-            business_guid = {};"""
+            user_name = {};"""
         query = sql.SQL(raw_query).format(
             sql.Literal(test_idp_type_code),
             sql.Literal(test_idp_user_id),
             sql.Literal(test_cognito_user_id),
-            sql.Literal(test_idp_username),
-            sql.Literal(test_idp_business_guid),
+            sql.Literal(test_idp_username)
         )
 
         cursor.execute(query)
