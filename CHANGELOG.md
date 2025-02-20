@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.31.2](https://github.com/bcgov/nr-forests-access-management/compare/v1.31.1...v1.31.2) (2025-02-20)
+
+
+### Bug Fixes
+
+* [#1754](https://github.com/bcgov/nr-forests-access-management/issues/1754) Missing business_guid ([#1755](https://github.com/bcgov/nr-forests-access-management/issues/1755)) ([7bf8d1f](https://github.com/bcgov/nr-forests-access-management/commit/7bf8d1f5ee4fadf43504cb06a9be065c3ac5c61d))
+* [#1754](https://github.com/bcgov/nr-forests-access-management/issues/1754) User info update endpoint minor adjustment ([#1756](https://github.com/bcgov/nr-forests-access-management/issues/1756)) ([64646f0](https://github.com/bcgov/nr-forests-access-management/commit/64646f07cf12ada3e0ab6c53cf07175c35abeab8))
+
 ## [1.31.1](https://github.com/bcgov/nr-forests-access-management/compare/v1.31.0...v1.31.1) (2025-02-13)
 
 
