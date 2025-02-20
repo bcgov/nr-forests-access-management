@@ -1,19 +1,16 @@
 import logging
-from sqlalchemy.orm import Session, joinedload
-from sqlalchemy import select
+from datetime import datetime
 
-from api.app.constants import UserType, ApiInstanceEnv, IdimSearchUserParamType
-from api.app.models import model as models
+from api.app.constants import ApiInstanceEnv, IdimSearchUserParamType, UserType
 from api.app.crud import crud_utils
 from api.app.integration.idim_proxy import IdimProxyService
+from api.app.models import model as models
+from api.app.schemas import (FamUserSchema, FamUserUpdateResponseSchema,
+                             IdimProxyBceidSearchParamSchema,
+                             IdimProxySearchParamSchema, TargetUserSchema)
 from api.config import config
-from api.app.schemas import (
-    FamUserSchema,
-    TargetUserSchema,
-    FamUserUpdateResponseSchema,
-    IdimProxySearchParamSchema,
-    IdimProxyBceidSearchParamSchema,
-)
+from sqlalchemy import select
+from sqlalchemy.orm import Session, joinedload
 
 LOGGER = logging.getLogger(__name__)
 
@@ -268,6 +265,7 @@ def update_user_info_from_idim_source(
     update the user information to match the record in IDIM web service,
     only for IDIR and Business BCeID users, ignore bc service card users
     """
+    run_on = datetime.now()
     # get a requester from the database
     requester = get_user_by_domain_and_name(
         db, UserType.IDIR, config.get_requester_name_for_update_user_info()
@@ -296,19 +294,18 @@ def update_user_info_from_idim_source(
             f"Updating information for users on page {page}, there are {per_page} users on each page"
         )
 
-    success_user_list = []
-    failed_user_list = []
-    ignored_user_list = (
-        []
-    )  # we ignore for bcsc users, cause IDIM does not provide bcsc users information
-    mismatch_user_list = (
-        []
-    )  # for the users whose user_guid record does not match the user_guid from IDIM
+    success_user_update_list = []
+    failed_user_update_list = []
+    ignored_user_update_list = [] # we ignore for bcsc users; IDIM does not provide bcsc users information
+    mismatch_user_update_list = [] # for the users whose user_guid record does not match the user_guid from IDIM
 
     for user in fam_users:
+        log_currernt_user = {
+            'user_id':{user.user_id}, 'user_type': {user.user_type_code}, 'user_name': {user.user_name}, 'email': {user.email}
+        }
         try:
             LOGGER.debug(
-                f"Updating information for user: {user.user_name}, type: {user.user_type_code}, guid: {user.user_guid}"
+                f"Updating information for user: {user.user_name}, type: {user.user_type_code}, guid: {user.user_guid}, user_id: 'user_id':{user.user_id}"
             )
             search_result = None
             properties_to_update = {}
@@ -319,28 +316,9 @@ def update_user_info_from_idim_source(
                     IdimProxySearchParamSchema(**{"userId": user.user_name})
                 )
 
-                if not user.user_guid:
-                    # if user has no user_guid in our database, add it
-                    properties_to_update = {
-                        models.FamUser.user_guid: search_result.get("guid"),
-                    }
-
-                elif (
-                    search_result
-                    and search_result.get("found")
-                    and user.user_guid != search_result.get("guid")
-                ):
-                    # if found user's user_guid does not match our record
-                    # which is the edge case that could cause by the username change, ignore this situation
-                    # only IDIR user has this edge case, because IDIM does not support search IDIR by user_guid
-                    mismatch_user_list.append(user.user_id)
-                    LOGGER.debug(
-                        f"Updating information for user {user.user_name} is ignored because the user_guid does not match"
-                    )
-                    continue
-
             elif user.user_type_code == UserType.BCEID:
                 if user.user_guid:
+                    # IDIM recommends searching by user_guid.
                     # if found business bceid user by user_guid, update username if necessary
                     search_result = idim_proxy_service.search_business_bceid(
                         IdimProxyBceidSearchParamSchema(
@@ -369,7 +347,7 @@ def update_user_info_from_idim_source(
                     }
             else:
                 # ignore bc service card users
-                ignored_user_list.append(user.user_id)
+                ignored_user_update_list.append(log_currernt_user)
                 LOGGER.debug(
                     f"Updating information for user {user.user_name} is ignored because we only focus on IDIR and Business BCeID"
                 )
@@ -377,8 +355,19 @@ def update_user_info_from_idim_source(
 
             # Update various target_user fields from idim search if exists
             if search_result and search_result.get("found"):
+                if (user.user_guid and user.user_guid != search_result.get("guid")):
+                    # if found user's user_guid does not match our record
+                    # which is the edge case that could cause by the username change, ignore this situation
+                    # only IDIR user has this edge case, because IDIM does not support search IDIR by user_guid
+                    mismatch_user_update_list.append(log_currernt_user)
+                    LOGGER.debug(
+                        f"Updating information for user {user.user_name} is ignored because the user_guid does not match"
+                    )
+                    continue
+
                 properties_to_update = {
                     **properties_to_update,
+                    models.FamUser.user_guid: search_result.get("guid"),
                     models.FamUser.first_name: search_result.get("firstName"),
                     models.FamUser.last_name: search_result.get("lastName"),
                     models.FamUser.email: search_result.get("email"),
@@ -389,25 +378,32 @@ def update_user_info_from_idim_source(
                     db, user.user_id, properties_to_update, requester.cognito_user_id
                 )
                 LOGGER.debug(f"Updating information for user {user.user_name} is done")
-                success_user_list.append(user.user_id)
+                updated_user = get_user(db=db, user_id=user.user_id)
+                log_currernt_user = {
+                    'user_id':{updated_user.user_id}, 'user_type': {updated_user.user_type_code}, 'user_name': {updated_user.user_name}, 'email': {updated_user.email}
+                }
+                success_user_update_list.append(log_currernt_user)
             else:
                 LOGGER.debug(
                     f"Cannot find user {user.user_name} {user.user_guid} with user type {user.user_type_code}"
                 )
-                failed_user_list.append(user.user_id)
+                failed_user_update_list.append(log_currernt_user)
 
         except Exception as e:
             LOGGER.debug(f"Failed to update user info: {e}")
-            failed_user_list.append(user.user_id)
+            failed_user_update_list.append(log_currernt_user)
 
+    end = datetime.now()
     return FamUserUpdateResponseSchema(
         **{
             "total_db_users_count": total_db_users_count,
             "current_page": page,
             "users_count_on_page": len(fam_users),
-            "success_user_id_list": success_user_list,
-            "failed_user_id_list": failed_user_list,
-            "ignored_user_id_list": ignored_user_list,
-            "mismatch_user_list": mismatch_user_list,
+            "success_user_update_list": success_user_update_list,
+            "failed_user_update_list": failed_user_update_list,
+            "ignored_user_update_list": ignored_user_update_list,
+            "mismatch_user_update_list": mismatch_user_update_list,
+            "run_on": run_on,
+            "elapsed": f"{(end - run_on).total_seconds()}s",
         }
     )
