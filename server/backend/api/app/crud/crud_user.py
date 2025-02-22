@@ -8,6 +8,7 @@ from api.app.models import model as models
 from api.app.schemas import (FamUserSchema, FamUserUpdateResponseSchema,
                              IdimProxyBceidSearchParamSchema,
                              IdimProxySearchParamSchema, TargetUserSchema)
+from api.app.schemas.requester import RequesterSchema
 from api.config import config
 from sqlalchemy import select
 from sqlalchemy.orm import Session, joinedload
@@ -258,7 +259,7 @@ def fetch_initial_requester_info(db: Session, cognito_user_id: str):
 
 
 def update_user_info_from_idim_source(
-    db: Session, use_pagination: bool, page: int, per_page: int
+    db: Session, use_pagination: bool, page: int, per_page: int, requester: RequesterSchema,
 ) -> FamUserUpdateResponseSchema:
     """
     Go through each user record in the database,
@@ -266,10 +267,6 @@ def update_user_info_from_idim_source(
     only for IDIR and Business BCeID users, ignore bc service card users
     """
     run_on = datetime.now()
-    # get a requester from the database
-    requester = get_user_by_domain_and_name(
-        db, UserType.IDIR, config.get_requester_name_for_update_user_info()
-    )
 
     # setup IDIM web service
     api_instance_env = (
