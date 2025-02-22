@@ -194,4 +194,4 @@ def get_api_key_for_update_user_info():
     return os.environ.get("FAM_UPDATE_USER_INFO_API_KEY")
 
 def get_requester_name_for_update_user_info():
-    return os.environ.get("FAM_UPDATE_USER_INFO_REQUESTER_NAME") or 'CMENG'
+    return os.environ.get("FAM_UPDATE_USER_INFO_REQUESTER_NAME")
