@@ -9,7 +9,6 @@ from api.app.schemas import (FamUserSchema, FamUserUpdateResponseSchema,
                              IdimProxyBceidSearchParamSchema,
                              IdimProxySearchParamSchema, TargetUserSchema)
 from api.app.schemas.requester import RequesterSchema
-from api.config import config
 from sqlalchemy import select
 from sqlalchemy.orm import Session, joinedload
 
@@ -259,21 +258,27 @@ def fetch_initial_requester_info(db: Session, cognito_user_id: str):
 
 
 def update_user_info_from_idim_source(
-    db: Session, use_pagination: bool, page: int, per_page: int, requester: RequesterSchema,
+    db: Session, requester: RequesterSchema,
+    use_pagination: bool, page: int, per_page: int,
+    use_env: ApiInstanceEnv
 ) -> FamUserUpdateResponseSchema:
     """
     Go through each user record in the database,
     update the user information to match the record in IDIM web service,
-    only for IDIR and Business BCeID users, ignore bc service card users
+    only for IDIR and Business BCeID users, ignore bc service card users.
+
+    Note: FAM database (PROD) contains users from IDIM TEST and PROD instances to
+          support applications in DEV/TEST/PROD. So, `use_env` can be used to
+          swiching on updating users by IDIM TEST or PROD instance ONLY on FAM AWS PROD environment.
+          For lower environments and local, use_env will be always pointing to TEST instance.
+
+          However, the only attribute from user table indicating the user's IDP instance
+          is the `cognito_user_id` (e.g., 'dev-bceidbusiness_1b02e...', 'test-bceidbusiness_4552281...',
+          'prod-idir_0192880...); and dev-, test- users all share IDIM TEST instance for search.
+          If the user happens to have no `cognito_user_id`, it is most likely the user being granted first
+          but not yet logged in to the application. In this case, the user will be ignored for updating.
     """
     run_on = datetime.now()
-
-    # setup IDIM web service
-    api_instance_env = (
-        ApiInstanceEnv.PROD if crud_utils.is_on_aws_prod() else ApiInstanceEnv.TEST
-    )
-    idim_proxy_service = IdimProxyService(requester, api_instance_env)
-
     # grab fam users from user table
     fam_users = get_users(db)
     total_db_users_count = len(fam_users)
@@ -293,62 +298,27 @@ def update_user_info_from_idim_source(
 
     success_user_update_list = []
     failed_user_update_list = []
-    ignored_user_update_list = [] # we ignore for bcsc users; IDIM does not provide bcsc users information
+    ignored_user_update_list = [] # see ignore conditions on __ignore_current_user_update
     mismatch_user_update_list = [] # for the users whose user_guid record does not match the user_guid from IDIM
+    idim_proxy_service = crud_utils.get_idim_proxy_service(requester, use_env)
+    idim_instance_env = idim_proxy_service.api_instance_env # this is true instance for execution (param 'use_env' may be overriden).
+    LOGGER.debug(f"Use IDIM proxy instance: {idim_instance_env} for user search.")
 
     for user in fam_users:
         log_currernt_user = {
-            'user_id':user.user_id, 'user_name': user.user_name, 'user_type': user.user_type_code, 'user_guid': user.user_guid, 'email': user.email
+            'user_id':user.user_id, 'user_name': user.user_name, 'user_type': user.user_type_code,
+            'user_guid': user.user_guid, 'email': user.email
         }
+        LOGGER.debug(
+            f"Current user to be updated: {log_currernt_user}"
+        )
+
+        if (__ignore_current_user_update(user, idim_instance_env)):
+            ignored_user_update_list.append(log_currernt_user)
+            continue
+
         try:
-            LOGGER.debug(
-                f"Updating information for user: {log_currernt_user}"
-            )
-            search_result = None
-            properties_to_update = {}
-
-            if user.user_type_code == UserType.IDIR:
-                # IDIM web service doesn't support search IDIR by user_guid, so we search by userID
-                search_result = idim_proxy_service.search_idir(
-                    IdimProxySearchParamSchema(**{"userId": user.user_name})
-                )
-
-            elif user.user_type_code == UserType.BCEID:
-                if user.user_guid:
-                    # IDIM recommends searching by user_guid.
-                    # if found business bceid user by user_guid, update username if necessary
-                    search_result = idim_proxy_service.search_business_bceid(
-                        IdimProxyBceidSearchParamSchema(
-                            **{
-                                "searchUserBy": IdimSearchUserParamType.USER_GUID,
-                                "searchValue": user.user_guid,
-                            }
-                        )
-                    )
-                    properties_to_update = {
-                        models.FamUser.user_name: search_result.get("userId"),
-                    }
-
-                else:
-                    # if user has no user_guid in our database, find by user_name and add user_guid to database
-                    search_result = idim_proxy_service.search_business_bceid(
-                        IdimProxyBceidSearchParamSchema(
-                            **{
-                                "searchUserBy": IdimSearchUserParamType.USER_ID,
-                                "searchValue": user.user_name,
-                            }
-                        )
-                    )
-                    properties_to_update = {
-                        models.FamUser.user_guid: search_result.get("guid"),
-                    }
-            else:
-                # ignore bc service card users
-                ignored_user_update_list.append(log_currernt_user)
-                LOGGER.debug(
-                    f"Updating information for user {user.user_name} is ignored because we only focus on IDIR and Business BCeID"
-                )
-                continue
+            search_result = search_user(idim_proxy_service, user)
 
             # Update various target_user fields from idim search if exists
             if search_result and search_result.get("found"):
@@ -358,31 +328,33 @@ def update_user_info_from_idim_source(
                     # only IDIR user has this edge case, because IDIM does not support search IDIR by user_guid
                     mismatch_user_update_list.append(log_currernt_user)
                     LOGGER.debug(
-                        f"Updating information for user {user.user_name} is ignored because the user_guid does not match"
+                        f"Updating information for user {user.user_name} ({user.user_guid}) is ignored because the user_guid does not match"
                     )
                     continue
 
                 properties_to_update = {
-                    **properties_to_update,
-                    models.FamUser.user_guid: search_result.get("guid"),
+                    models.FamUser.user_name: search_result.get("userId"), # (update username if necessary)
+                    models.FamUser.user_guid: search_result.get("guid"), # (update user_guid if necessary)
                     models.FamUser.first_name: search_result.get("firstName"),
                     models.FamUser.last_name: search_result.get("lastName"),
                     models.FamUser.email: search_result.get("email"),
-                    models.FamUser.business_guid: search_result.get("businessGuid"),
+                    models.FamUser.business_guid: search_result.get("businessGuid"), # (update user_guid if necessary)
                 }
 
                 update(
                     db, user.user_id, properties_to_update, requester.cognito_user_id
                 )
-                LOGGER.debug(f"Updating information for user {user.user_name} is done")
+                LOGGER.debug(f"Updating information for user {user.user_name} ({user.user_guid}) is done")
+
                 updated_user = get_user(db=db, user_id=user.user_id)
                 log_currernt_user = {
-                    'user_id':updated_user.user_id, 'user_name': updated_user.user_name, 'user_type': updated_user.user_type_code, 'user_guid': updated_user.user_guid, 'email': updated_user.email
+                    'user_id':updated_user.user_id, 'user_name': updated_user.user_name, 'user_type': updated_user.user_type_code,
+                    'user_guid': updated_user.user_guid, 'email': updated_user.email
                 }
                 success_user_update_list.append(log_currernt_user)
             else:
                 LOGGER.debug(
-                    f"Cannot find user {user.user_name} {user.user_guid} with user type {user.user_type_code}"
+                    f"Cannot find user {user.user_name} ({user.user_guid}) with user type {user.user_type_code}"
                 )
                 failed_user_update_list.append(log_currernt_user)
 
@@ -396,11 +368,79 @@ def update_user_info_from_idim_source(
             "total_db_users_count": total_db_users_count,
             "current_page": page,
             "users_count_on_page": len(fam_users),
+            "run_on": run_on,
+            "elapsed": f"{(end - run_on).total_seconds()}s",
+            "update_for_env": idim_instance_env,
             "success_user_update_list": success_user_update_list,
             "failed_user_update_list": failed_user_update_list,
             "ignored_user_update_list": ignored_user_update_list,
-            "mismatch_user_update_list": mismatch_user_update_list,
-            "run_on": run_on,
-            "elapsed": f"{(end - run_on).total_seconds()}s",
+            "mismatch_user_update_list": mismatch_user_update_list
         }
     )
+
+
+def search_user(idim_proxy_service: IdimProxyService, user: models.FamUser):
+    """
+    Search user from IDIM proxy service based on user type: IDIR/BCEID.
+    :param idim_proxy_service: IDIM proxy service, the service instance maybe TEST or PROD
+        Calling function needs to pass the right context.
+    :param user: FAM user
+    :return: search result
+    """
+    search_result = None
+    if user.user_type_code == UserType.IDIR:
+        # IDIM web service doesn't support search IDIR by user_guid, so we search by userID
+        search_result = idim_proxy_service.search_idir(
+            IdimProxySearchParamSchema(**{"userId": user.user_name})
+        )
+
+    elif user.user_type_code == UserType.BCEID:
+        if user.user_guid:
+            # IDIM recommends searching by user_guid.
+            search_result = idim_proxy_service.search_business_bceid(
+                IdimProxyBceidSearchParamSchema(
+                    **{
+                        "searchUserBy": IdimSearchUserParamType.USER_GUID,
+                        "searchValue": user.user_guid,
+                    }
+                )
+            )
+        else:
+            # if user has no user_guid in our database, find by user_name.
+            search_result = idim_proxy_service.search_business_bceid(
+                IdimProxyBceidSearchParamSchema(
+                    **{
+                        "searchUserBy": IdimSearchUserParamType.USER_ID,
+                        "searchValue": user.user_name,
+                    }
+                )
+            )
+    return search_result
+
+
+def __ignore_current_user_update(user: models.FamUser, idim_instance_env: ApiInstanceEnv) -> bool:
+    """
+    Determine if the current user update should be ignored.
+    # Ignore conditions:
+    # - BCSC users; IDIM does not provide bcsc users information
+    # - users with empty `cognito_user_id` or
+    # - users not from designated IDP instance based on `cognito_user_id`.
+    """
+    reason = None
+    if (user.user_type_code != UserType.IDIR and user.user_type_code != UserType.BCEID):
+        reason = "BCSC user is ignored"
+    elif not user.cognito_user_id:
+        reason = "User has no cognito_user_id"
+    elif (idim_instance_env == ApiInstanceEnv.PROD and not user.cognito_user_id.startswith("prod-")):
+        reason = "User is not from PROD IDP(IDIM) instance (cognito_user_id: prod-)"
+    elif (idim_instance_env == ApiInstanceEnv.TEST and not (
+        user.cognito_user_id.startswith("test-") or user.cognito_user_id.startswith("dev-")
+    )):
+        reason = "User is not from TEST IDP(IDIM) instance (cognito_user_id: test- or dev-)"
+
+    if reason:
+        LOGGER.debug(
+            f"Updating information for user {user.user_name} ({user.user_guid}) is ignored because {reason}."
+        )
+        return True
+    return False

@@ -36,6 +36,7 @@ class IdimProxyService:
         api_instance_env: ApiInstanceEnv = ApiInstanceEnv.TEST,
     ):
         self.requester = requester
+        self.api_instance_env = api_instance_env
         # by default use test idim proxy url if not specify the api instance enviornment
         self.api_idim_proxy_url = (
             f"{config.get_idim_proxy_api_baseurl(api_instance_env)}/api/idim-webservice"

@@ -2,6 +2,7 @@ import logging
 from http import HTTPStatus
 
 from api.app import database
+from api.app.constants import ApiInstanceEnv
 from api.app.crud import crud_user
 from api.app.routers.router_guards import (get_current_requester,
                                            internal_only_action,
@@ -28,6 +29,7 @@ def update_user_information_from_idim_source(
     page: int = 1,
     per_page: int = 100,
     use_pagination: bool = False,
+    use_env: ApiInstanceEnv = ApiInstanceEnv.PROD,
     db: Session = Depends(database.get_db),
     requester: RequesterSchema = Depends(get_current_requester)
 ):
@@ -37,7 +39,7 @@ def update_user_information_from_idim_source(
     LOGGER.debug("Updating database user information")
 
     response = crud_user.update_user_info_from_idim_source(
-        db, use_pagination, page, per_page, requester
+        db, requester, use_pagination, page, per_page, use_env
     )
 
     LOGGER.debug("Updating database user information is done")

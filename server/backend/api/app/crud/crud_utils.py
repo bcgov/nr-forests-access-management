@@ -7,8 +7,9 @@ from api.app.constants import (APPLICATION_FAM,
                                ERROR_CODE_INVALID_APPLICATION_ID,
                                ApiInstanceEnv, AppEnv, AwsTargetEnv)
 from api.app.crud import crud_application
+from api.app.integration.idim_proxy import IdimProxyService
 from api.app.models import model as models
-from api.app.schemas.fam_application import FamApplicationSchema
+from api.app.schemas.requester import RequesterSchema
 from api.app.utils.utils import raise_http_exception
 from sqlalchemy import func
 from sqlalchemy.inspection import inspect
@@ -132,3 +133,18 @@ def use_api_instance_by_app(application: models.FamApplication) -> ApiInstanceEn
 
     LOGGER.info(f"Use api instance environment -- {api_instance_env}")
     return api_instance_env
+
+
+def get_idim_proxy_service(requester: RequesterSchema, use_env: ApiInstanceEnv):
+    """
+    Obtain IDIM web service.
+    Search IDIM PROD instance only when on AWS PROD environment and 'use_env' is set to PROD.
+    All other cases use TEST instance.
+    """
+    api_instance_env = (
+        ApiInstanceEnv.PROD if (is_on_aws_prod() and use_env is ApiInstanceEnv.PROD)
+        else ApiInstanceEnv.TEST
+    )
+    LOGGER.debug(f"Use IDIM API instance environment: {api_instance_env}")
+    idim_proxy_service = IdimProxyService(requester, api_instance_env)
+    return idim_proxy_service
