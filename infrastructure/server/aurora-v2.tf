@@ -41,7 +41,7 @@ resource "aws_db_subnet_group" "famdb_subnet_group" {
 
 data "aws_rds_engine_version" "postgresql" {
   engine  = "aurora-postgresql"
-  version = "16.8"
+  version = "16.6"
 }
 
 module "aurora_postgresql_v2" {
