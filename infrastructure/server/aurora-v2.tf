@@ -94,20 +94,30 @@ module "aurora_postgresql_v2" {
 }
 
 resource "aws_db_parameter_group" "famdb_postgresql" {
-  name        = "${var.famdb_cluster_name}-parameter-group"
+  # name        = "${var.famdb_cluster_name}-parameter-group"
+  name_prefix = "${var.famdb_cluster_name}-parameter-group"
   family      = "aurora-postgresql16"
   description = "${var.famdb_cluster_name}-parameter-group"
   tags = {
     managed-by = "terraform"
   }
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_rds_cluster_parameter_group" "famdb_postgresql" {
-  name        = "${var.famdb_cluster_name}-cluster-parameter-group"
+  # name        = "${var.famdb_cluster_name}-cluster-parameter-group"
+  name_prefix = "${var.famdb_cluster_name}-cluster-parameter-group"
   family      = "aurora-postgresql16"
   description = "${var.famdb_cluster_name}-cluster-parameter-group"
   tags = {
     managed-by = "terraform"
+  }
+
+  lifecycle {
+    create_before_destroy = true
   }
 }
 
