@@ -1,5 +1,6 @@
 import csv
 import logging
+from datetime import datetime
 from enum import Enum
 from io import StringIO
 from typing import List
@@ -111,6 +112,19 @@ async def get_application_user_by_id(    user_id: int,
 
 
 async def __app_user_roles_csv_file_streamer(data: List[FamApplicationUserRoleAssignmentGetSchema]):
+    """
+    This is a private help function to stream the user role assignment data to a CSV file for use in
+    router `export_application_user_roles()`.
+    Note: in this case, using 'yield' to stream the data to reduce memory usage.
+    """
+    # Add initial line in memory for output
+    application_name = f"Application: {data[0].role.application.application_description}" + "\n" if data else None
+    output = StringIO(application_name)
+    yield output.getvalue()
+    output.seek(0)
+    output.truncate(0)
+
+    # CSV header fields line
     class CSVFields(str, Enum):
         USER_NAME = "User Name"
         DOMAIN = "Domain"
@@ -122,7 +136,6 @@ async def __app_user_roles_csv_file_streamer(data: List[FamApplicationUserRoleAs
         ADDED_ON = "Added On"
 
     fieldnames = [field.value for field in CSVFields]
-    output = StringIO()
     writer = csv.DictWriter(output, fieldnames=fieldnames)
     writer.fieldnames = fieldnames
     writer.writeheader()
@@ -130,6 +143,7 @@ async def __app_user_roles_csv_file_streamer(data: List[FamApplicationUserRoleAs
     output.seek(0)
     output.truncate(0)
 
+    # CSV content lines
     for result in data:
         forest_client_number = f"'{result.role.forest_client.forest_client_number}'" if result.role.forest_client else None
         created_on = result.create_date.strftime("%Y-%m-%d")
@@ -146,3 +160,7 @@ async def __app_user_roles_csv_file_streamer(data: List[FamApplicationUserRoleAs
         yield output.getvalue()
         output.seek(0)
         output.truncate(0)
+
+    output.close()
+    # Last line for streaming to file.
+    yield b'Downloaded on: ' + str(datetime.now().strftime("%Y-%m-%d")).encode()
