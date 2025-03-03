@@ -78,7 +78,7 @@ module "aurora_postgresql_v2" {
 
   serverlessv2_scaling_configuration = {
     min_capacity = 0.5
-    max_capacity = 1
+    max_capacity = 4
   }
 
   instance_class = "db.serverless"
