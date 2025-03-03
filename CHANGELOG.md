@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.31.3](https://github.com/bcgov/nr-forests-access-management/compare/v1.31.2...v1.31.3) (2025-03-03)
+
+
+### Bug Fixes
+
+* [#1740](https://github.com/bcgov/nr-forests-access-management/issues/1740) AWS RDS postgresql engine major version upgrade ([#1760](https://github.com/bcgov/nr-forests-access-management/issues/1760)) ([ac1b3c9](https://github.com/bcgov/nr-forests-access-management/commit/ac1b3c941fc6f37e5f9a669d6106c706b854e13a))
+* [#1740](https://github.com/bcgov/nr-forests-access-management/issues/1740)Add allow_major_version_upgrade to resolve terraform failure. ([#1762](https://github.com/bcgov/nr-forests-access-management/issues/1762)) ([e879490](https://github.com/bcgov/nr-forests-access-management/commit/e879490984d53fc73c64590cbbfddcd554fb27b1))
+
 ## [1.31.2](https://github.com/bcgov/nr-forests-access-management/compare/v1.31.1...v1.31.2) (2025-02-20)
 
 
