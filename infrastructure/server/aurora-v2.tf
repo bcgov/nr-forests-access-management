@@ -71,6 +71,7 @@ module "aurora_postgresql_v2" {
   apply_immediately   = true
   skip_final_snapshot = true
   auto_minor_version_upgrade = false
+  allow_major_version_upgrade = true
 
   db_parameter_group_name         = aws_db_parameter_group.famdb_postgresql.id
   db_cluster_parameter_group_name = aws_rds_cluster_parameter_group.famdb_postgresql.id
