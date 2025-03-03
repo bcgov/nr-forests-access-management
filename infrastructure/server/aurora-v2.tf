@@ -71,13 +71,14 @@ module "aurora_postgresql_v2" {
   apply_immediately   = true
   skip_final_snapshot = true
   auto_minor_version_upgrade = false
+  allow_major_version_upgrade = true
 
   db_parameter_group_name         = aws_db_parameter_group.famdb_postgresql.id
   db_cluster_parameter_group_name = aws_rds_cluster_parameter_group.famdb_postgresql.id
 
   serverlessv2_scaling_configuration = {
     min_capacity = 0.5
-    max_capacity = 1
+    max_capacity = 4
   }
 
   instance_class = "db.serverless"
