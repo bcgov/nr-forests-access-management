@@ -40,27 +40,39 @@ export interface FamUserUpdateResponseSchema {
     'users_count_on_page': number;
     /**
      * 
-     * @type {Array<number>}
+     * @type {string}
      * @memberof FamUserUpdateResponseSchema
      */
-    'success_user_id_list': Array<number>;
+    'run_on': string;
     /**
      * 
-     * @type {Array<number>}
+     * @type {string}
      * @memberof FamUserUpdateResponseSchema
      */
-    'failed_user_id_list': Array<number>;
+    'elapsed': string;
     /**
      * 
-     * @type {Array<number>}
+     * @type {Array<object>}
      * @memberof FamUserUpdateResponseSchema
      */
-    'ignored_user_id_list': Array<number>;
+    'success_user_update_list': Array<object>;
     /**
      * 
-     * @type {Array<number>}
+     * @type {Array<object>}
      * @memberof FamUserUpdateResponseSchema
      */
-    'mismatch_user_list': Array<number>;
+    'failed_user_update_list': Array<object>;
+    /**
+     * 
+     * @type {Array<object>}
+     * @memberof FamUserUpdateResponseSchema
+     */
+    'ignored_user_update_list': Array<object>;
+    /**
+     * 
+     * @type {Array<object>}
+     * @memberof FamUserUpdateResponseSchema
+     */
+    'mismatch_user_update_list': Array<object>;
 }
 

@@ -160,6 +160,50 @@
                 }
             }
         },
+        "/fam-applications/{application_id}/user-role-assignment/export": {
+            "get": {
+                "tags": ["FAM Applications"],
+                "summary": "Retrieve User Information by User ID under an application",
+                "description": "Export users/roles assignment records associated with an application as csv data",
+                "operationId": "export_application_user_roles",
+                "security": [
+                    {
+                        "6jfveou69mgford233or30hmta": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "application_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "title": "Application Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/fam-applications/{application_id}/users/{user_id}": {
             "get": {
                 "tags": ["FAM Applications"],
@@ -1141,11 +1185,7 @@
             "FamUserRoleAssignmentRes": {
                 "properties": {
                     "email_sending_status": {
-                        "allOf": [
-                            {
-                                "$ref": "#/components/schemas/EmailSendingStatus"
-                            }
-                        ],
+                        "$ref": "#/components/schemas/EmailSendingStatus",
                         "default": "NOT_REQUIRED"
                     },
                     "assignments_detail": {
@@ -1189,33 +1229,42 @@
                         "type": "integer",
                         "title": "Users Count On Page"
                     },
-                    "success_user_id_list": {
-                        "items": {
-                            "type": "integer"
-                        },
-                        "type": "array",
-                        "title": "Success User Id List"
+                    "run_on": {
+                        "type": "string",
+                        "format": "date-time",
+                        "title": "Run On"
                     },
-                    "failed_user_id_list": {
-                        "items": {
-                            "type": "integer"
-                        },
-                        "type": "array",
-                        "title": "Failed User Id List"
+                    "elapsed": {
+                        "type": "string",
+                        "title": "Elapsed"
                     },
-                    "ignored_user_id_list": {
+                    "success_user_update_list": {
                         "items": {
-                            "type": "integer"
+                            "type": "object"
                         },
                         "type": "array",
-                        "title": "Ignored User Id List"
+                        "title": "Success User Update List"
                     },
-                    "mismatch_user_list": {
+                    "failed_user_update_list": {
                         "items": {
-                            "type": "integer"
+                            "type": "object"
                         },
                         "type": "array",
-                        "title": "Mismatch User List"
+                        "title": "Failed User Update List"
+                    },
+                    "ignored_user_update_list": {
+                        "items": {
+                            "type": "object"
+                        },
+                        "type": "array",
+                        "title": "Ignored User Update List"
+                    },
+                    "mismatch_user_update_list": {
+                        "items": {
+                            "type": "object"
+                        },
+                        "type": "array",
+                        "title": "Mismatch User Update List"
                     }
                 },
                 "type": "object",
@@ -1223,10 +1272,12 @@
                     "total_db_users_count",
                     "current_page",
                     "users_count_on_page",
-                    "success_user_id_list",
-                    "failed_user_id_list",
-                    "ignored_user_id_list",
-                    "mismatch_user_list"
+                    "run_on",
+                    "elapsed",
+                    "success_user_update_list",
+                    "failed_user_update_list",
+                    "ignored_user_update_list",
+                    "mismatch_user_update_list"
                 ],
                 "title": "FamUserUpdateResponseSchema"
             },
