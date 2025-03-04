@@ -220,12 +220,15 @@ const getTotalRecords = (): number => {
     }
 };
 
+const hasUserRoleRecords = ref<boolean>(false);
 const getTableRows = computed(() => {
     switch (props.tableType) {
         case ManagePermissionsTableEnum.AppAdmin:
             return appAdminQuery.data.value ?? [];
         case ManagePermissionsTableEnum.AppUser:
-            return appUserQuery.data.value?.results ?? [];
+            const records = appUserQuery.data.value?.results ?? [];
+            hasUserRoleRecords.value = records.length > 0 ? true : false;
+            return records;
         case ManagePermissionsTableEnum.DelegatedAdmin:
             return delegatedAdminQuery.data.value?.results ?? [];
         default:
@@ -611,6 +614,7 @@ const handleFilter = (searchValue: string, isChanged: boolean) => {
                 @blur="handleFilter"
             />
             <Button
+                :disabled="!hasUserRoleRecords"
                 v-if="isAppUserTable"
                 outlined
                 label="Download table as CSV file&nbsp;&nbsp;"
