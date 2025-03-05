@@ -56,7 +56,7 @@ def get_fam_application_user_role_assignment(
         Depends(authorize_by_app_id),
         Depends(enforce_bceid_terms_conditions_guard),
     ],
-    summary="Retrieve User Information by User ID under an application",
+    summary="Export User roles Information by application ID",
 )
 def export_application_user_roles(
     application_id: int,
@@ -67,7 +67,7 @@ def export_application_user_roles(
     Export users/roles assignment records associated with an application as csv data
     """
     LOGGER.debug(
-        f"Loading application role assigments for application_id: {application_id}"
+        f"Export users/roles assignment records associated with application_id: {application_id}"
     )
     results: List[FamApplicationUserRoleAssignmentGetSchema] = crud_application.get_application_role_assignments_no_paging(
         db=db, application_id=application_id, requester=requester

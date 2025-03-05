@@ -586,7 +586,7 @@ const handleFilter = (searchValue: string, isChanged: boolean) => {
     }
 };
 
-const isDataExporting = ref<boolean>(false);
+const isDataExporting = ref<boolean>(false); // loading indicator for downloading CSV
 const downloadAppUsersTableData = () => {
     exportToCsv(props.appId, props.appName, (appId: number) => {
         isDataExporting.value = true;
