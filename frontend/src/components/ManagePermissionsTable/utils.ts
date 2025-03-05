@@ -318,7 +318,7 @@ export const sortFieldToEnum = (
 export const exportToCsv = async (
     appId: number,
     appName: string,
-    fetchCsvData: (appId: number) => Promise<string>
+    fetchCsvData: (appId: number) => Promise<string> | void
 ) => {
     const csvData = await fetchCsvData(appId);
     if (csvData) {

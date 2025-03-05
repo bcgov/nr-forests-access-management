@@ -586,15 +586,20 @@ const handleFilter = (searchValue: string, isChanged: boolean) => {
     }
 };
 
+const isDataExporting = ref<boolean>(false);
 const downloadAppUsersTableData = () => {
-    exportToCsv(props.appId, props.appName, async (appId: number) => {
-        isFetching.value = true;
-        const response =
-            await AppActlApiService.applicationsApi.exportApplicationUserRoles(
-                appId
-            );
-        isFetching.value = false;
-        return response.data;
+    exportToCsv(props.appId, props.appName, (appId: number) => {
+        isDataExporting.value = true;
+        return AppActlApiService.applicationsApi
+            .exportApplicationUserRoles(appId)
+            .then((response) => {
+                isDataExporting.value = false;
+                return response.data;
+            })
+            .catch((error) => {
+                isDataExporting.value = false;
+                throw new Error("Failed to download the CSV file.");
+            });
     });
 };
 </script>
@@ -630,7 +635,7 @@ const downloadAppUsersTableData = () => {
                 :disabled="!hasUserRoleRecords"
                 v-if="isAppUserTable"
                 @click="downloadAppUsersTableData"
-                :isLoading="isFetching"
+                :isLoading="isDataExporting"
                 outlined
                 label="Download table as CSV file&nbsp;&nbsp;"
                 :icon="DownloadIcon"

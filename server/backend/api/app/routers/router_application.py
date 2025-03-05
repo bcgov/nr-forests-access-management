@@ -117,9 +117,11 @@ async def __app_user_roles_csv_file_streamer(data: List[FamApplicationUserRoleAs
     router `export_application_user_roles()`.
     Note: in this case, using 'yield' to stream the data to reduce memory usage.
     """
-    # Add initial line in memory for output
-    application_name = f"Application: {data[0].role.application.application_description}" + "\n" if data else None
-    output = StringIO(application_name)
+    # Add initial lines in memory for output
+    initial_lines = f"Downloaded on: {datetime.now().strftime('%Y-%m-%d')}\n"
+    if data:
+        initial_lines += f"Application: {data[0].role.application.application_description}\n"
+    output = StringIO(initial_lines)
     yield output.getvalue()
     output.seek(0)
     output.truncate(0)
@@ -162,5 +164,3 @@ async def __app_user_roles_csv_file_streamer(data: List[FamApplicationUserRoleAs
         output.truncate(0)
 
     output.close()
-    # Last line for streaming to file.
-    yield b'Downloaded on: ' + str(datetime.now().strftime("%Y-%m-%d")).encode()
