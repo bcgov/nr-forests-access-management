@@ -133,6 +133,8 @@ resource "aws_cognito_user_pool" "fam_user_pool" {
   }
 
   schema {
+    # custom:id_token is added due to troubleshooting user pool user attributes issue.
+    # This does not need to be mapped to IDP/APP Client attributes mapping.
     attribute_data_type      = "String"
     developer_only_attribute = "false"
     mutable                  = "true"
@@ -146,6 +148,8 @@ resource "aws_cognito_user_pool" "fam_user_pool" {
   }
 
   schema {
+    # custom:access_token is added due to troubleshooting user pool user attributes issue.
+    # This does not need to be mapped to IDP/APP Client attributes mapping.
     attribute_data_type      = "String"
     developer_only_attribute = "false"
     mutable                  = "true"
