@@ -23,6 +23,7 @@ import { computed, nextTick, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import {
+    exportToCsv,
     getOrganizationName,
     sortFieldToEnum,
 } from "@/components/ManagePermissionsTable/utils";
@@ -584,6 +585,18 @@ const handleFilter = (searchValue: string, isChanged: boolean) => {
         }
     }
 };
+
+const downloadAppUsersTableData = () => {
+    exportToCsv(props.appId, props.appName, async (appId: number) => {
+        isFetching.value = true;
+        const response =
+            await AppActlApiService.applicationsApi.exportApplicationUserRoles(
+                appId
+            );
+        isFetching.value = false;
+        return response.data;
+    });
+};
 </script>
 
 <template>
@@ -616,6 +629,8 @@ const handleFilter = (searchValue: string, isChanged: boolean) => {
             <Button
                 :disabled="!hasUserRoleRecords"
                 v-if="isAppUserTable"
+                @click="downloadAppUsersTableData"
+                :isLoading="isFetching"
                 outlined
                 label="Download table as CSV file&nbsp;&nbsp;"
                 :icon="DownloadIcon"
