@@ -6,50 +6,50 @@
 #
 ---
 services:
-  fam-database:
-    image: postgres:14.1-alpine
-    mem_limit: 128m
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=fam
-      - POSTGRES_HOST_AUTH_METHOD=password
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
-      timeout: 5s
-      retries: 6
-    networks:
-      - fam
+    fam-database:
+        image: postgres:16.6-alpine
+        mem_limit: 128m
+        environment:
+            - POSTGRES_USER=postgres
+            - POSTGRES_PASSWORD=postgres
+            - POSTGRES_DB=fam
+            - POSTGRES_HOST_AUTH_METHOD=password
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U postgres"]
+            interval: 5s
+            timeout: 5s
+            retries: 6
+        networks:
+            - fam
 
-  fam-flyway:
-    build:
-      context: server/flyway
-      dockerfile: Dockerfile
-    environment:
-      - FLYWAY_USER=postgres
-      - FLYWAY_PASSWORD=postgres
-      - FLYWAY_BASELINE_ON_MIGRATE=true
-      - FLYWAY_PLACEHOLDERS_api_db_username=fam_proxy_api
-      - FLYWAY_PLACEHOLDERS_api_db_password=test
-      - FLYWAY_PLACEHOLDERS_admin_management_api_db_user=fam_admin_management_api
-      - FLYWAY_PLACEHOLDERS_admin_management_api_db_password=test
-      - FLYWAY_PLACEHOLDERS_client_id_fom_public="nolongerinuse1"
-      - FLYWAY_PLACEHOLDERS_client_id_fom_ministry="nolongerinuse2"
-      - FLYWAY_PLACEHOLDERS_client_id_fam_console=26tltjjfe7ktm4bte7av998d78
-      - FLYWAY_PLACEHOLDERS_client_id_dev_fom_oidc_client=1a8pkq0psq0daj5e6ir3ppcjkj
-      - FLYWAY_PLACEHOLDERS_client_id_test_fom_oidc_client=7b6eki43nahus9ca0lhjs6m568
-      - FLYWAY_PLACEHOLDERS_client_id_prod_fom_oidc_client=1rhdfiek5ntmk2kg39d6e31p46
-      - FLYWAY_PLACEHOLDERS_client_id_dev_spar_oidc_client=xxqiHFmwG8j1cVAz7NgtknaZOt
-      - FLYWAY_PLACEHOLDERS_client_id_test_spar_oidc_client=dm5Xkmomnq0gbwBiXiN5LgAna2
-      - FLYWAY_PLACEHOLDERS_client_id_prod_spar_oidc_client=KdnD2eGS3Zcx494p04yMFhDwSf
-      - FLYWAY_PLACEHOLDERS_client_id_dev_forest_client_oidc_client=xxqiHFmwG8j1cVAz7NgtknaZOg
-      - FLYWAY_PLACEHOLDERS_client_id_test_forest_client_oidc_client=dm5Xkmomnq0gbwBiXiN5LgAnah
-      - FLYWAY_PLACEHOLDERS_client_id_prod_forest_client_oidc_client=KdnD2eGS3Zcx494p04yMFhDwSe
-      - FLYWAY_PLACEHOLDERS_client_id_dev_silva_oidc_client=xxqiHFmwG8j1cVAz7NgtknaZO5
-      - FLYWAY_PLACEHOLDERS_client_id_test_silva_oidc_client=dm5Xkmomnq0gbwBiXiN5LgAna5
-      - FLYWAY_PLACEHOLDERS_client_id_prod_silva_oidc_client=KdnD2eGS3Zcx494p04yMFhDwS5
-      - FLYWAY_PLACEHOLDERS_auth_lambda_db_user=fam_auth_lambda
-      - FLYWAY_PLACEHOLDERS_auth_lambda_db_password=test
-    networks:
-      - fam
+    fam-flyway:
+        build:
+            context: server/flyway
+            dockerfile: Dockerfile
+        environment:
+            - FLYWAY_USER=postgres
+            - FLYWAY_PASSWORD=postgres
+            - FLYWAY_BASELINE_ON_MIGRATE=true
+            - FLYWAY_PLACEHOLDERS_api_db_username=fam_proxy_api
+            - FLYWAY_PLACEHOLDERS_api_db_password=test
+            - FLYWAY_PLACEHOLDERS_admin_management_api_db_user=fam_admin_management_api
+            - FLYWAY_PLACEHOLDERS_admin_management_api_db_password=test
+            - FLYWAY_PLACEHOLDERS_client_id_fom_public="nolongerinuse1"
+            - FLYWAY_PLACEHOLDERS_client_id_fom_ministry="nolongerinuse2"
+            - FLYWAY_PLACEHOLDERS_client_id_fam_console=26tltjjfe7ktm4bte7av998d78
+            - FLYWAY_PLACEHOLDERS_client_id_dev_fom_oidc_client=1a8pkq0psq0daj5e6ir3ppcjkj
+            - FLYWAY_PLACEHOLDERS_client_id_test_fom_oidc_client=7b6eki43nahus9ca0lhjs6m568
+            - FLYWAY_PLACEHOLDERS_client_id_prod_fom_oidc_client=1rhdfiek5ntmk2kg39d6e31p46
+            - FLYWAY_PLACEHOLDERS_client_id_dev_spar_oidc_client=xxqiHFmwG8j1cVAz7NgtknaZOt
+            - FLYWAY_PLACEHOLDERS_client_id_test_spar_oidc_client=dm5Xkmomnq0gbwBiXiN5LgAna2
+            - FLYWAY_PLACEHOLDERS_client_id_prod_spar_oidc_client=KdnD2eGS3Zcx494p04yMFhDwSf
+            - FLYWAY_PLACEHOLDERS_client_id_dev_forest_client_oidc_client=xxqiHFmwG8j1cVAz7NgtknaZOg
+            - FLYWAY_PLACEHOLDERS_client_id_test_forest_client_oidc_client=dm5Xkmomnq0gbwBiXiN5LgAnah
+            - FLYWAY_PLACEHOLDERS_client_id_prod_forest_client_oidc_client=KdnD2eGS3Zcx494p04yMFhDwSe
+            - FLYWAY_PLACEHOLDERS_client_id_dev_silva_oidc_client=xxqiHFmwG8j1cVAz7NgtknaZO5
+            - FLYWAY_PLACEHOLDERS_client_id_test_silva_oidc_client=dm5Xkmomnq0gbwBiXiN5LgAna5
+            - FLYWAY_PLACEHOLDERS_client_id_prod_silva_oidc_client=KdnD2eGS3Zcx494p04yMFhDwS5
+            - FLYWAY_PLACEHOLDERS_auth_lambda_db_user=fam_auth_lambda
+            - FLYWAY_PLACEHOLDERS_auth_lambda_db_password=test
+        networks:
+            - fam
