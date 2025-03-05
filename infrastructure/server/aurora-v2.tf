@@ -41,7 +41,7 @@ resource "aws_db_subnet_group" "famdb_subnet_group" {
 
 data "aws_rds_engine_version" "postgresql" {
   engine  = "aurora-postgresql"
-  version = "16.6"
+  version = "13.18"
 }
 
 module "aurora_postgresql_v2" {
@@ -71,14 +71,13 @@ module "aurora_postgresql_v2" {
   apply_immediately   = true
   skip_final_snapshot = true
   auto_minor_version_upgrade = false
-  allow_major_version_upgrade = true
 
-  db_parameter_group_name         = aws_db_parameter_group.famdb_postgresql.id
-  db_cluster_parameter_group_name = aws_rds_cluster_parameter_group.famdb_postgresql.id
+  db_parameter_group_name         = aws_db_parameter_group.famdb_postgresql13.id
+  db_cluster_parameter_group_name = aws_rds_cluster_parameter_group.famdb_postgresql13.id
 
   serverlessv2_scaling_configuration = {
     min_capacity = 0.5
-    max_capacity = 4
+    max_capacity = 1
   }
 
   instance_class = "db.serverless"
@@ -94,29 +93,21 @@ module "aurora_postgresql_v2" {
   enabled_cloudwatch_logs_exports = ["postgresql"]
 }
 
-resource "aws_db_parameter_group" "famdb_postgresql" {
-  name_prefix = "${var.famdb_cluster_name}-parameter-group"
-  family      = "aurora-postgresql16"
+resource "aws_db_parameter_group" "famdb_postgresql13" {
+  name        = "${var.famdb_cluster_name}-parameter-group"
+  family      = "aurora-postgresql13"
   description = "${var.famdb_cluster_name}-parameter-group"
   tags = {
     managed-by = "terraform"
   }
-
-  lifecycle {
-    create_before_destroy = true
-  }
 }
 
-resource "aws_rds_cluster_parameter_group" "famdb_postgresql" {
-  name_prefix = "${var.famdb_cluster_name}-cluster-parameter-group"
-  family      = "aurora-postgresql16"
+resource "aws_rds_cluster_parameter_group" "famdb_postgresql13" {
+  name        = "${var.famdb_cluster_name}-cluster-parameter-group"
+  family      = "aurora-postgresql13"
   description = "${var.famdb_cluster_name}-cluster-parameter-group"
   tags = {
     managed-by = "terraform"
-  }
-
-  lifecycle {
-    create_before_destroy = true
   }
 }
 
