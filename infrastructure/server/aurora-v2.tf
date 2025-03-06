@@ -73,8 +73,11 @@ module "aurora_postgresql_v2" {
   auto_minor_version_upgrade = false
   allow_major_version_upgrade = true
 
+  # 1.
   # db_parameter_group_name         = null
-  # db_cluster_parameter_group_name = default.aurora-postgresql16
+
+  # 2.
+  db_cluster_parameter_group_name = aws_rds_cluster_parameter_group.famdb_postgresql16.id
 
   serverlessv2_scaling_configuration = {
     min_capacity = 0.5
@@ -94,6 +97,21 @@ module "aurora_postgresql_v2" {
   enabled_cloudwatch_logs_exports = ["postgresql"]
 }
 
+# 2.
+resource "aws_rds_cluster_parameter_group" "famdb_postgresql16" {
+  name        = "${var.famdb_cluster_name}-cluster-parameter-group-v16"
+  family      = "aurora-postgresql16"
+  description = "${var.famdb_cluster_name}-cluster-parameter-group-v16"
+  tags = {
+    managed-by = "terraform"
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+# 1.
 # resource "aws_db_parameter_group" "famdb_postgresql13" {
 #   name        = "${var.famdb_cluster_name}-parameter-group"
 #   family      = "aurora-postgresql13"
