@@ -79,6 +79,9 @@ module "aurora_postgresql_v2" {
   # 2.
   db_cluster_parameter_group_name = aws_rds_cluster_parameter_group.famdb_postgresql16.id
 
+  # 4.
+  db_parameter_group_name = aws_db_parameter_group.famdb_postgresql16.id
+
   serverlessv2_scaling_configuration = {
     min_capacity = 0.5
     max_capacity = 4
@@ -110,6 +113,25 @@ resource "aws_rds_cluster_parameter_group" "famdb_postgresql16" {
     create_before_destroy = true
   }
 }
+
+# 4.
+resource "aws_db_parameter_group" "famdb_postgresql16" {
+  name        = "${var.famdb_cluster_name}-parameter-group-v16"
+  family      = "aurora-postgresql16"
+  description = "${var.famdb_cluster_name}-parameter-group-v16"
+
+  tags = {
+    managed-by = "terraform"
+  }
+
+  # add this in case of failure
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+
+
 
 # 3. enable still for 13 as failure showing in Terraform.
 resource "aws_db_parameter_group" "famdb_postgresql13" {
