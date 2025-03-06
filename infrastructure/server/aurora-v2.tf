@@ -73,8 +73,8 @@ module "aurora_postgresql_v2" {
   auto_minor_version_upgrade = false
   allow_major_version_upgrade = true
 
-  db_parameter_group_name         = null
-  db_cluster_parameter_group_name = default.aurora-postgresql16
+  # db_parameter_group_name         = null
+  # db_cluster_parameter_group_name = default.aurora-postgresql16
 
   serverlessv2_scaling_configuration = {
     min_capacity = 0.5
