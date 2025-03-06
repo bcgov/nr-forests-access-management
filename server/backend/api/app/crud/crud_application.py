@@ -92,6 +92,56 @@ def get_application_role_assignments(
         f"Querying for user role assignments on app id: {application_id} by requester: {requester} "
     )
 
+    query_user_roles_by_app_privilege = __query_user_roles_by_app_privilege(
+        db, requester, application_id
+    )
+
+    paginated_service = PaginateService(
+        db, query_user_roles_by_app_privilege,
+        __build_filter_criteria(page_params),
+        USER_ROLE_SORT_BY_MAPPED_COLUMN,
+        page_params
+    )
+    qresult = paginated_service.get_paginated_results(FamApplicationUserRoleAssignmentGetSchema)
+    LOGGER.debug(
+        f"Querying for user role assignment completed with # of results = {len(qresult.results)}"
+    )
+    return qresult
+
+def get_application_role_assignments_no_paging(
+    db: Session, application_id: int, requester: RequesterSchema
+) -> list[FamApplicationUserRoleAssignmentGetSchema]:
+    """
+    The function is almost the same as 'get_application_role_assignments'; but it will query the
+    user role assignments for a given application with full result no pagination.
+    Note, it does not apply 'post_sync_forest_clients_dec' decorator for 'forest client name'
+    external api sync.
+
+    :param requester: the user who perform this request/action.
+    :param application_id: the application id to retrieve the role assignments for.
+    """
+    query_user_roles_by_app_permission = __query_user_roles_by_app_privilege(
+        db, requester, application_id
+    )
+
+    qresults = db.scalars(query_user_roles_by_app_permission).all()
+    results = [FamApplicationUserRoleAssignmentGetSchema.model_validate(result) for result in qresults]
+    return results
+
+def __query_user_roles_by_app_privilege(db: Session, requester: RequesterSchema, application_id: int) -> select:
+    """
+    The 'select query' construct for user role assignments for a given application
+    based on the requester's privilege.
+    :param requester: the user who perform this request/action.
+    :param application_id: the application id to retrieve the role assignments for.
+    :return: the query construct for user role assignments for a given application. Depending on
+             the user's privilege, the query will be filtered accordingly.
+
+            APP_ADMIN: will see all user role assignments for the application.
+            DELEGATED_ADMIN: will see user role assignments for the application based on the roles
+                privilege they have been granted. For BCeID delegated admin: will further be restricted
+                to see only user role assignments for user within the same business organization.
+    """
     # base query - users assigned to the application. This could be the case
     #              for [APP]_ADMIN.
     q = (
@@ -136,15 +186,4 @@ def get_application_role_assignments(
                 func.upper(models.FamUser.business_guid)
                 == requester.business_guid.upper(),
             )
-
-    paginated_service = PaginateService(
-        db, q,
-        __build_filter_criteria(page_params),
-        USER_ROLE_SORT_BY_MAPPED_COLUMN,
-        page_params
-    )
-    qresult = paginated_service.get_paginated_results(FamApplicationUserRoleAssignmentGetSchema)
-    LOGGER.debug(
-        f"Querying for user role assignment completed with # of results = {len(qresult.results)}"
-    )
-    return qresult
+    return q

@@ -1,4 +1,9 @@
+import csv
 import logging
+from datetime import datetime
+from enum import Enum
+from io import StringIO
+from typing import List
 
 from api.app import database
 from api.app.crud import crud_application, crud_user
@@ -10,6 +15,7 @@ from api.app.schemas import (FamApplicationUserRoleAssignmentGetSchema,
 from api.app.schemas.pagination import (PagedResultsSchema,
                                         UserRolePageParamsSchema)
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 
 LOGGER = logging.getLogger(__name__)
@@ -32,7 +38,6 @@ def get_fam_application_user_role_assignment(
     page_params: UserRolePageParamsSchema = Depends(),
 ):
     """
-
     Gets paged users/roles assignment records associated with an application.
     """
     LOGGER.debug(
@@ -41,7 +46,37 @@ def get_fam_application_user_role_assignment(
     paged_results = crud_application.get_application_role_assignments(
         db=db, application_id=application_id, requester=requester, page_params=page_params
     )
+
     return paged_results
+
+
+@router.get(
+    "/{application_id}/user-role-assignment/export",
+    dependencies=[
+        Depends(authorize_by_app_id),
+        Depends(enforce_bceid_terms_conditions_guard),
+    ],
+    summary="Export User roles Information by application ID",
+)
+def export_application_user_roles(
+    application_id: int,
+    db: Session = Depends(database.get_db),
+    requester: RequesterSchema = Depends(get_current_requester),
+):
+    """
+    Export users/roles assignment records associated with an application as csv data
+    """
+    LOGGER.debug(
+        f"Export users/roles assignment records associated with application_id: {application_id}"
+    )
+    results: List[FamApplicationUserRoleAssignmentGetSchema] = crud_application.get_application_role_assignments_no_paging(
+        db=db, application_id=application_id, requester=requester
+    )
+
+    filename = f"application_{results[0].role.application.application_name}_user_roles.csv" if results else "user_roles.csv"
+    return StreamingResponse(__app_user_roles_csv_file_streamer(results), media_type="text/csv", headers={
+        "Content-Disposition": f"attachment; filename={filename}"
+    })
 
 
 @router.get(
@@ -74,3 +109,58 @@ async def get_application_user_by_id(    user_id: int,
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return user
+
+
+async def __app_user_roles_csv_file_streamer(data: List[FamApplicationUserRoleAssignmentGetSchema]):
+    """
+    This is a private help function to stream the user role assignment data to a CSV file for use in
+    router `export_application_user_roles()`.
+    Note: in this case, using 'yield' to stream the data to reduce memory usage.
+    """
+    # Add initial lines in memory for output
+    initial_lines = f"Downloaded on: {datetime.now().strftime('%Y-%m-%d')}\n"
+    if data:
+        initial_lines += f"Application: {data[0].role.application.application_description}\n"
+    output = StringIO(initial_lines)
+    yield output.getvalue()
+    output.seek(0)
+    output.truncate(0)
+
+    # CSV header fields line
+    class CSVFields(str, Enum):
+        USER_NAME = "User Name"
+        DOMAIN = "Domain"
+        FIRST_NAME = "First Name"
+        LAST_NAME = "Last Name"
+        EMAIL = "Email"
+        FOREST_CLIENT_ID = "Forest Client ID"
+        ROLE_DISPLAY_NAME = "Role"
+        ADDED_ON = "Added On"
+
+    fieldnames = [field.value for field in CSVFields]
+    writer = csv.DictWriter(output, fieldnames=fieldnames)
+    writer.fieldnames = fieldnames
+    writer.writeheader()
+    yield output.getvalue()
+    output.seek(0)
+    output.truncate(0)
+
+    # CSV content lines
+    for result in data:
+        forest_client_number = f"'{result.role.forest_client.forest_client_number}'" if result.role.forest_client else None
+        created_on = result.create_date.strftime("%Y-%m-%d")
+        writer.writerow({
+            CSVFields.USER_NAME: result.user.user_name,
+            CSVFields.DOMAIN: result.user.user_type_relation.description,
+            CSVFields.FIRST_NAME: result.user.first_name,
+            CSVFields.LAST_NAME: result.user.last_name,
+            CSVFields.EMAIL: result.user.email,
+            CSVFields.FOREST_CLIENT_ID: forest_client_number,
+            CSVFields.ROLE_DISPLAY_NAME: result.role.display_name,
+            CSVFields.ADDED_ON: created_on
+        })
+        yield output.getvalue()
+        output.seek(0)
+        output.truncate(0)
+
+    output.close()

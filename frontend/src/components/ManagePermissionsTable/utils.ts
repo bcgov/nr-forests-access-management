@@ -314,3 +314,20 @@ export const sortFieldToEnum = (
             return null;
     }
 };
+
+export const exportToCsv = async (
+    appId: number,
+    appName: string,
+    fetchCsvData: (appId: number) => Promise<string> | void // callback function to fetch csv data
+) => {
+    const csvData = await fetchCsvData(appId);
+    if (csvData) {
+        const csvContent = `data:text/csv;charset=utf-8,${csvData}`;
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", `${appName}_user_roles.csv`);
+        document.body.appendChild(link);
+        link.click();
+    }
+};

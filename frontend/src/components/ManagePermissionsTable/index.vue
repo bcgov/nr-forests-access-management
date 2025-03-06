@@ -19,10 +19,11 @@ import DataTable, {
     type DataTableSortEvent,
 } from "primevue/datatable";
 import { useConfirm } from "primevue/useconfirm";
-import { computed, nextTick, ref, watch } from "vue";
+import { computed, nextTick, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import {
+    exportToCsv,
     getOrganizationName,
     sortFieldToEnum,
 } from "@/components/ManagePermissionsTable/utils";
@@ -31,6 +32,7 @@ import TableHeaderTitle from "@/components/Table/TableHeaderTitle.vue";
 import TableToolbar from "@/components/Table/TableToolbar.vue";
 import Chip from "@/components/UI/Chip.vue";
 import ErrorText from "@/components/UI/ErrorText.vue";
+import Spinner from "@/components/UI/Spinner.vue";
 import {
     DEFAULT_ROW_PER_PAGE,
     MINIMUM_SEARCH_STR_LEN,
@@ -47,7 +49,6 @@ import { selectedApp } from "@/store/ApplicationState";
 import { ManagePermissionsTableEnum } from "@/types/ManagePermissionsTypes";
 import type { PermissionNotificationType } from "@/types/NotificationTypes";
 import type { PaginationType } from "@/types/PaginationTypes";
-import Spinner from "@/components/UI/Spinner.vue";
 import { formatAxiosError } from "@/utils/ApiUtils";
 import { utcToLocalDate } from "@/utils/DateUtils";
 import { formatUserNameAndId } from "@/utils/UserUtils";
@@ -57,10 +58,12 @@ import {
     NewDelegatedAddminQueryParamKey,
 } from "@/views/AddAppPermission/utils";
 import { NewFamAdminQueryParamKey } from "@/views/AddFamPermission/utils";
+import DownloadIcon from "@carbon/icons-vue/es/download/16";
 import ConfirmDialogText from "./ConfirmDialogText.vue";
 import NewUserTag from "./NewUserTag.vue";
 import {
     createNotification,
+    defaultBackendPagination,
     deleteAppUserRoleNotificationContext,
     deleteDelegatedAdminNotificationContext,
     deleteFamPermissionNotificationContext,
@@ -70,7 +73,6 @@ import {
     getTableHeaderTitle,
     NEW_ACCESS_STYLE_IN_TABLE,
     type ConfirmTextType,
-    defaultBackendPagination,
 } from "./utils";
 
 const router = useRouter();
@@ -219,12 +221,15 @@ const getTotalRecords = (): number => {
     }
 };
 
+const hasUserRoleRecords = ref<boolean>(false);
 const getTableRows = computed(() => {
     switch (props.tableType) {
         case ManagePermissionsTableEnum.AppAdmin:
             return appAdminQuery.data.value ?? [];
         case ManagePermissionsTableEnum.AppUser:
-            return appUserQuery.data.value?.results ?? [];
+            const records = appUserQuery.data.value?.results ?? [];
+            hasUserRoleRecords.value = records.length > 0 ? true : false;
+            return records;
         case ManagePermissionsTableEnum.DelegatedAdmin:
             return delegatedAdminQuery.data.value?.results ?? [];
         default:
@@ -580,6 +585,23 @@ const handleFilter = (searchValue: string, isChanged: boolean) => {
         }
     }
 };
+
+const isDataExporting = ref<boolean>(false); // loading indicator for downloading CSV
+const downloadAppUsersTableData = () => {
+    exportToCsv(props.appId, props.appName, (appId: number) => {
+        isDataExporting.value = true;
+        return AppActlApiService.applicationsApi
+            .exportApplicationUserRoles(appId)
+            .then((response) => {
+                isDataExporting.value = false;
+                return response.data;
+            })
+            .catch((error) => {
+                isDataExporting.value = false;
+                throw new Error("Failed to download the CSV file.");
+            });
+    });
+};
 </script>
 
 <template>
@@ -602,12 +624,24 @@ const handleFilter = (searchValue: string, isChanged: boolean) => {
             v-if="showFilterError"
             :errorMsg="`Keyword must have at least ${MINIMUM_SEARCH_STR_LEN} characters`"
         />
-        <TableToolbar
-            :filter="tableFilter['global'].value"
-            input-placeholder="Search by keyword"
-            @change="handleSearchChange"
-            @blur="handleFilter"
-        />
+        <div class="table-toolbar-container">
+            <TableToolbar
+                :filter="tableFilter['global'].value"
+                input-placeholder="Search by keyword"
+                @change="handleSearchChange"
+                @blur="handleFilter"
+            />
+            <Button
+                :disabled="!hasUserRoleRecords"
+                v-if="isAppUserTable"
+                @click="downloadAppUsersTableData"
+                :isLoading="isDataExporting"
+                outlined
+                label="Download table as CSV file&nbsp;&nbsp;"
+                :icon="DownloadIcon"
+                aria-label="Download table as CSV file"
+            />
+        </div>
 
         <TableSkeleton
             v-if="isQueryLoading()"
@@ -785,6 +819,26 @@ const handleFilter = (searchValue: string, isChanged: boolean) => {
                 display: flex;
                 flex-direction: column;
             }
+        }
+    }
+
+    .table-toolbar-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 6.1vh;
+        > * {
+            flex: 1 1 0;
+            height: 100%;
+        }
+        :first-child {
+            flex: 5 1 0;
+        }
+        button {
+            border-radius: 0;
+            border-width: 1px;
+            border-style: solid;
+            border-color: #dfdfe1;
         }
     }
 }
