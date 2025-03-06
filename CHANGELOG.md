@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.32.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.31.2...v1.32.0) (2025-03-06)
+
+
+### Features
+
+* [#1741](https://github.com/bcgov/nr-forests-access-management/issues/1741) Ability to export fam user tables ([#1767](https://github.com/bcgov/nr-forests-access-management/issues/1767)) ([edfd6d8](https://github.com/bcgov/nr-forests-access-management/commit/edfd6d8464f1acae3f675d14731bd94464f58ce8))
+
+
+### Bug Fixes
+
+* [#1740](https://github.com/bcgov/nr-forests-access-management/issues/1740) AWS RDS postgresql engine major version upgrade ([#1760](https://github.com/bcgov/nr-forests-access-management/issues/1760)) ([ac1b3c9](https://github.com/bcgov/nr-forests-access-management/commit/ac1b3c941fc6f37e5f9a669d6106c706b854e13a))
+* [#1740](https://github.com/bcgov/nr-forests-access-management/issues/1740)Add allow_major_version_upgrade to resolve terraform failure. ([#1762](https://github.com/bcgov/nr-forests-access-management/issues/1762)) ([e879490](https://github.com/bcgov/nr-forests-access-management/commit/e879490984d53fc73c64590cbbfddcd554fb27b1))
+* Add Cognito User Pool custom id and access tokens attributes ([#1766](https://github.com/bcgov/nr-forests-access-management/issues/1766)) ([1889b19](https://github.com/bcgov/nr-forests-access-management/commit/1889b1960668c5a69f508e6c1b9a39bef6bd0e79))
+* Rever rds postgres major version back to initial 13.18 due to still t… ([#1765](https://github.com/bcgov/nr-forests-access-management/issues/1765)) ([2e9ce51](https://github.com/bcgov/nr-forests-access-management/commit/2e9ce514f76ba75a017623d7721a107051865057))
+
 ## [1.31.2](https://github.com/bcgov/nr-forests-access-management/compare/v1.31.1...v1.31.2) (2025-02-20)
 
 
