@@ -41,7 +41,7 @@ resource "aws_db_subnet_group" "famdb_subnet_group" {
 
 data "aws_rds_engine_version" "postgresql" {
   engine  = "aurora-postgresql"
-  version = "13.18"
+  version = "16.6"
 }
 
 module "aurora_postgresql_v2" {
@@ -71,13 +71,14 @@ module "aurora_postgresql_v2" {
   apply_immediately   = true
   skip_final_snapshot = true
   auto_minor_version_upgrade = false
+  allow_major_version_upgrade = true
 
-  db_parameter_group_name         = aws_db_parameter_group.famdb_postgresql13.id
-  db_cluster_parameter_group_name = aws_rds_cluster_parameter_group.famdb_postgresql13.id
+  db_parameter_group_name         = null
+  db_cluster_parameter_group_name = default.aurora-postgresql16
 
   serverlessv2_scaling_configuration = {
     min_capacity = 0.5
-    max_capacity = 1
+    max_capacity = 4
   }
 
   instance_class = "db.serverless"
