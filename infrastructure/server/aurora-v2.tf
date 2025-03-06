@@ -111,6 +111,35 @@ resource "aws_rds_cluster_parameter_group" "famdb_postgresql16" {
   }
 }
 
+# 3. enable still for 13 as failure showing in Terraform.
+resource "aws_db_parameter_group" "famdb_postgresql13" {
+  name        = "${var.famdb_cluster_name}-parameter-group"
+  family      = "aurora-postgresql13"
+  description = "${var.famdb_cluster_name}-parameter-group"
+  tags = {
+    managed-by = "terraform"
+  }
+
+  # add this in case of failure
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_rds_cluster_parameter_group" "famdb_postgresql13" {
+  name        = "${var.famdb_cluster_name}-cluster-parameter-group"
+  family      = "aurora-postgresql13"
+  description = "${var.famdb_cluster_name}-cluster-parameter-group"
+  tags = {
+    managed-by = "terraform"
+  }
+
+  # add this in case of failure
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
 # 1.
 # resource "aws_db_parameter_group" "famdb_postgresql13" {
 #   name        = "${var.famdb_cluster_name}-parameter-group"
