@@ -73,16 +73,7 @@ module "aurora_postgresql_v2" {
   auto_minor_version_upgrade = false
   allow_major_version_upgrade = true
 
-  # 1.
-  # db_parameter_group_name         = null
-
-  # 2.
   db_cluster_parameter_group_name = aws_rds_cluster_parameter_group.famdb_postgresql16.id
-
-  # 4. 7. (comment out)
-  # db_parameter_group_name = aws_db_parameter_group.famdb_postgresql16.id
-
-  # 6.
   db_cluster_db_instance_parameter_group_name = aws_db_parameter_group.famdb_postgresql16.id
 
   serverlessv2_scaling_configuration = {
@@ -103,7 +94,6 @@ module "aurora_postgresql_v2" {
   enabled_cloudwatch_logs_exports = ["postgresql"]
 }
 
-# 2.
 resource "aws_rds_cluster_parameter_group" "famdb_postgresql16" {
   name        = "${var.famdb_cluster_name}-cluster-parameter-group-v16"
   family      = "aurora-postgresql16"
@@ -117,7 +107,6 @@ resource "aws_rds_cluster_parameter_group" "famdb_postgresql16" {
   }
 }
 
-# 4.
 resource "aws_db_parameter_group" "famdb_postgresql16" {
   name        = "${var.famdb_cluster_name}-parameter-group-v16"
   family      = "aurora-postgresql16"
@@ -133,10 +122,6 @@ resource "aws_db_parameter_group" "famdb_postgresql16" {
   }
 }
 
-
-
-
-# 3. enable still for 13 as failure showing in Terraform.
 resource "aws_db_parameter_group" "famdb_postgresql13" {
   name        = "${var.famdb_cluster_name}-parameter-group"
   family      = "aurora-postgresql13"
@@ -145,7 +130,6 @@ resource "aws_db_parameter_group" "famdb_postgresql13" {
     managed-by = "terraform"
   }
 
-  # add this in case of failure
   lifecycle {
     create_before_destroy = true
   }
@@ -159,30 +143,10 @@ resource "aws_rds_cluster_parameter_group" "famdb_postgresql13" {
     managed-by = "terraform"
   }
 
-  # add this in case of failure
   lifecycle {
     create_before_destroy = true
   }
 }
-
-# 1.
-# resource "aws_db_parameter_group" "famdb_postgresql13" {
-#   name        = "${var.famdb_cluster_name}-parameter-group"
-#   family      = "aurora-postgresql13"
-#   description = "${var.famdb_cluster_name}-parameter-group"
-#   tags = {
-#     managed-by = "terraform"
-#   }
-# }
-
-# resource "aws_rds_cluster_parameter_group" "famdb_postgresql13" {
-#   name        = "${var.famdb_cluster_name}-cluster-parameter-group"
-#   family      = "aurora-postgresql13"
-#   description = "${var.famdb_cluster_name}-cluster-parameter-group"
-#   tags = {
-#     managed-by = "terraform"
-#   }
-# }
 
 resource "random_pet" "master_creds_secret_name" {
   prefix = "famdb-master-creds"
