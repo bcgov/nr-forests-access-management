@@ -79,8 +79,11 @@ module "aurora_postgresql_v2" {
   # 2.
   db_cluster_parameter_group_name = aws_rds_cluster_parameter_group.famdb_postgresql16.id
 
-  # 4. #5 (comment out)
-  # db_parameter_group_name = aws_db_parameter_group.famdb_postgresql16.id
+  # 4.
+  db_parameter_group_name = aws_db_parameter_group.famdb_postgresql16.id
+
+  # 6.
+  db_cluster_db_instance_parameter_group_name = aws_db_parameter_group.famdb_postgresql16.id
 
   serverlessv2_scaling_configuration = {
     min_capacity = 0.5
