@@ -79,8 +79,8 @@ module "aurora_postgresql_v2" {
   # 2.
   db_cluster_parameter_group_name = aws_rds_cluster_parameter_group.famdb_postgresql16.id
 
-  # 4.
-  db_parameter_group_name = aws_db_parameter_group.famdb_postgresql16.id
+  # 4. 7. (comment out)
+  # db_parameter_group_name = aws_db_parameter_group.famdb_postgresql16.id
 
   # 6.
   db_cluster_db_instance_parameter_group_name = aws_db_parameter_group.famdb_postgresql16.id
@@ -92,13 +92,8 @@ module "aurora_postgresql_v2" {
 
   instance_class = "db.serverless"
   instances = {
-    one = {
-      # 5.
-      db_parameter_group_name = "default.aurora-postgresql16"
-    }
-    two = {
-      db_parameter_group_name = "default.aurora-postgresql16"
-    }
+    one = {}
+    two = {}
   }
 
   tags = {
