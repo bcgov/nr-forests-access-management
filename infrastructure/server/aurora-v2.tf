@@ -122,31 +122,31 @@ resource "aws_db_parameter_group" "famdb_postgresql16" {
   }
 }
 
-resource "aws_db_parameter_group" "famdb_postgresql13" {
-  name        = "${var.famdb_cluster_name}-parameter-group"
-  family      = "aurora-postgresql13"
-  description = "${var.famdb_cluster_name}-parameter-group"
-  tags = {
-    managed-by = "terraform"
-  }
+# resource "aws_db_parameter_group" "famdb_postgresql13" {
+#   name        = "${var.famdb_cluster_name}-parameter-group"
+#   family      = "aurora-postgresql13"
+#   description = "${var.famdb_cluster_name}-parameter-group"
+#   tags = {
+#     managed-by = "terraform"
+#   }
 
-  lifecycle {
-    create_before_destroy = true
-  }
-}
+#   lifecycle {
+#     create_before_destroy = true
+#   }
+# }
 
-resource "aws_rds_cluster_parameter_group" "famdb_postgresql13" {
-  name        = "${var.famdb_cluster_name}-cluster-parameter-group"
-  family      = "aurora-postgresql13"
-  description = "${var.famdb_cluster_name}-cluster-parameter-group"
-  tags = {
-    managed-by = "terraform"
-  }
+# resource "aws_rds_cluster_parameter_group" "famdb_postgresql13" {
+#   name        = "${var.famdb_cluster_name}-cluster-parameter-group"
+#   family      = "aurora-postgresql13"
+#   description = "${var.famdb_cluster_name}-cluster-parameter-group"
+#   tags = {
+#     managed-by = "terraform"
+#   }
 
-  lifecycle {
-    create_before_destroy = true
-  }
-}
+#   lifecycle {
+#     create_before_destroy = true
+#   }
+# }
 
 resource "random_pet" "master_creds_secret_name" {
   prefix = "famdb-master-creds"
