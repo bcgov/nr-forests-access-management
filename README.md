@@ -13,11 +13,3 @@ Built with AWS.
 [FAM Onboarding Guide](../../wiki/FAM-Onboarding)
 
 [RAM Onboarding Ops Guide](../../wiki/FAM-Onboarding-Ops-Guide)
-
-[FAM Onboarding Guide](../wiki/FAM-Onboarding)
-
-[RAM Onboarding Ops Guide](../wiki/FAM-Onboarding-Ops-Guide)
-
-[FAM Onboarding Guide](wiki/FAM-Onboarding)
-
-[RAM Onboarding Ops Guide](wiki/FAM-Onboarding-Ops-Guide)
