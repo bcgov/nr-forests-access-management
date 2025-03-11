@@ -10,7 +10,7 @@ pytest-emoji==0.2.0
 
 # used to reverse engineer database after flyway migrations, not part of
 # deployment so putting as a dev dependency
-sqlacodegen==3.0.0rc5
+sqlacodegen==3.0.0
 
 python-dotenv==1.0.1
 
