@@ -18,9 +18,12 @@ const config = {
         domain: `${env?.fam_cognito_domain.value}.auth.ca-central-1.amazoncognito.com`,
         scope: ['openid'],
         redirectSignIn: `${env?.front_end_redirect_base_url.value}/authCallback`, // For some reason, vue nested path (/cognito/callback) does not work yet.
-        redirectSignOut: `${env?.frontend_logout_chain_url.value}${env?.front_end_redirect_base_url.value}&client_id=${env?.fam_console_web_client_id.value}`,
+        redirectSignOut: `${env?.frontend_logout_chain_url.value}${env?.front_end_redirect_base_url.value}&client_id=fsa-cognito-idir-dev-4088`,
         responseType: 'code',
     },
     federationTarget: 'COGNITO_USER_POOLS',
 };
+
+console.log(`redirectSignout ${env?.frontend_logout_chain_url.value}${env?.front_end_redirect_base_url.value}&client_id=fsa-cognito-idir-dev-4088`);
+
 export default config;
