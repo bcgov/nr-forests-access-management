@@ -23,4 +23,7 @@ const config = {
     },
     federationTarget: 'COGNITO_USER_POOLS',
 };
+
+console.log(`redirectSignout ${env?.frontend_logout_chain_url.value}${env?.front_end_redirect_base_url.value}&client_id=fsa-cognito-idir-dev-4088`);
+
 export default config;
