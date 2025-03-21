@@ -24,14 +24,12 @@ jobs:
                   POSTGRES_USER: postgres
                   POSTGRES_PASSWORD: postgres
                   POSTGRES_PORT: ${{ vars.LOCAL_POSTGRES_PORT }}
-                  POSTGRES_PORT_TESTCONTAINER: ${{ vars.LOCAL_POSTGRES_PORT_TESTCONTAINER }}
+                  POSTGRES_PORT_TESTCONTAINER: 5433
                   FC_API_TOKEN_TEST: ${{ secrets.FOREST_CLIENT_API_API_KEY_TEST }}
               run: |
                   cd server/auth_function
                   pip install -r requirements.txt -r requirements-dev.txt
                   pip install pytest-cov
-                  export POSTGRES_PORT_TESTCONTAINER="${{ env.POSTGRES_PORT_TESTCONTAINER }}"
-                  export POSTGRES_PORT="${{ env.POSTGRES_PORT }}"
                   pytest --cov=. --cov-branch --cov-report=xml \
                     -v --md=report.md --emoji
 
