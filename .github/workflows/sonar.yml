@@ -24,7 +24,7 @@ jobs:
                   POSTGRES_USER: postgres
                   POSTGRES_PASSWORD: postgres
                   POSTGRES_PORT: ${{ vars.LOCAL_POSTGRES_PORT }}
-                  POSTGRES_PORT_TESTCONTAINER: 5433
+                  POSTGRES_PORT_TESTCONTAINER: ${{ vars.LOCAL_POSTGRES_PORT_TESTCONTAINER }}
                   FC_API_TOKEN_TEST: ${{ secrets.FOREST_CLIENT_API_API_KEY_TEST }}
               run: |
                   cd server/auth_function
