@@ -1,39 +1,38 @@
 # Note, the compose service name and container_name for "fam-database" and "fam-flyway" are named differently
 # than the main application docker-compose so that when testcontainer is up it does not delete previous running main container.
 ---
-
 services:
-  fam-database-testcontainer:
-    extends:
-      file: docker-base-services.yml
-      service: fam-database
-    container_name: fam-postgres-testcontainer
-    environment:
-      - PGPORT=${POSTGRES_PORT_TESTCONTAINER}  # the easiest way to change postgres db default port from '5432' to PGPORT.
-    ports:
-      - "${POSTGRES_PORT_TESTCONTAINER}:${POSTGRES_PORT_TESTCONTAINER}"  # use host-port: POSTGRES_PORT_TESTCONTAINER ='5433' for testcontainer db instance than '5432' for main db.
+    fam-database-testcontainer:
+        extends:
+            file: docker-base-services.yml
+            service: fam-database
+        container_name: fam-postgres-testcontainer
+        environment:
+            - POSTGRES_PORT=${POSTGRES_PORT_TESTCONTAINER} # the easiest way to change postgres db default port from '5432' to PGPORT.
+        ports:
+            - "${POSTGRES_PORT_TESTCONTAINER}:${POSTGRES_PORT_TESTCONTAINER}" # use host-port: POSTGRES_PORT_TESTCONTAINER ='5433' for testcontainer db instance than '5432' for main db.
 
-  fam-flyway-testcontainer:
-    extends:
-      file: docker-base-services.yml
-      service: fam-flyway
-    environment:
-      # note: this environment is separated out from docker-base-services.yml for testcontainer to avoid
-      # colliding with main app db instance.
-      - FLYWAY_URL=jdbc:postgresql://fam-postgres-testcontainer:${POSTGRES_PORT_TESTCONTAINER}/fam
-    depends_on:
-      fam-database-testcontainer:
-        condition: service_healthy
+    fam-flyway-testcontainer:
+        extends:
+            file: docker-base-services.yml
+            service: fam-flyway
+        environment:
+            # note: this environment is separated out from docker-base-services.yml for testcontainer to avoid
+            # colliding with main app db instance.
+            - FLYWAY_URL=jdbc:postgresql://fam-postgres-testcontainer:${POSTGRES_PORT_TESTCONTAINER}/fam
+        depends_on:
+            fam-database-testcontainer:
+                condition: service_healthy
 
-  fam-test-nginx:
-    image: nginx:latest
-    container_name: fam-test-nginx
-    ports:
-      - "8181:80"
-    depends_on:
-      fam-flyway-testcontainer:
-        condition: service_completed_successfully
+    fam-test-nginx:
+        image: nginx:latest
+        container_name: fam-test-nginx
+        ports:
+            - "8181:80"
+        depends_on:
+            fam-flyway-testcontainer:
+                condition: service_completed_successfully
 
 networks:
-  fam:
-    driver: bridge
+    fam:
+        driver: bridge
