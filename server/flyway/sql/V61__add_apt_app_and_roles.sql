@@ -81,7 +81,7 @@ WITH role_definitions AS (
         ),
         (
           'WEB_REPORTS',
-          'POPULATE_FORM access for web reports service',
+          'Provides the POPULATE_FORM access to web reports service',
           'C'
         )
     ) AS r(role_name, role_purpose, role_type_code)
