@@ -60,33 +60,6 @@ SELECT
 FROM
   ins;
 
--- Insert access admin roles into FAM app
-INSERT INTO
-  app_fam.fam_role (
-    role_name,
-    role_purpose,
-    application_id,
-    role_type_code,
-    create_user,
-    create_date
-  )
-SELECT
-  t.app_abbreviation || '_' || t.env_code || '_ACCESS_ADMIN',
-  'Provides the privilege to assign or unassign all roles for ' || t.app_abbreviation || ' (' || t.env_code || ')',
-  (
-    SELECT
-      application_id
-    FROM
-      app_fam.fam_application
-    WHERE
-      application_name = 'FAM'
-  ),
-  'C',
-  CURRENT_USER,
-  CURRENT_DATE
-FROM
-  temp_combined_apps t;
-
 -- Define shared roles
 WITH role_definitions AS (
   SELECT
