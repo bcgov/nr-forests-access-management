@@ -30,6 +30,8 @@ jobs:
                   cd server/auth_function
                   pip install -r requirements.txt -r requirements-dev.txt
                   pip install pytest-cov
+                  export POSTGRES_PORT_TESTCONTAINER="${{ env.POSTGRES_PORT_TESTCONTAINER }}"
+                  export POSTGRES_PORT="${{ env.POSTGRES_PORT }}"
                   pytest --cov=. --cov-branch --cov-report=xml \
                     -v --md=report.md --emoji
 
