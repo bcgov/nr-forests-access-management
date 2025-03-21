@@ -112,8 +112,9 @@ WITH role_definitions AS (
           'C'
         )
     ) AS r(role_name, role_purpose, role_type_code)
-) -- Insert shared roles for all inserted apps
+)
 INSERT INTO
+  -- Insert shared roles for all inserted apps
   app_fam.fam_role (
     role_name,
     role_purpose,
