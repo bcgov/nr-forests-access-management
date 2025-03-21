@@ -51,5 +51,8 @@ services:
             - FLYWAY_PLACEHOLDERS_client_id_prod_silva_oidc_client=KdnD2eGS3Zcx494p04yMFhDwS5
             - FLYWAY_PLACEHOLDERS_auth_lambda_db_user=fam_auth_lambda
             - FLYWAY_PLACEHOLDERS_auth_lambda_db_password=test
+            - FLYWAY_PLACEHOLDERS_client_id_dev_apt_oidc_client=Tz6oJkY3d1qVZmFLEr8BucxGf9
+            - FLYWAY_PLACEHOLDERS_client_id_test_apt_oidc_client=bV4Nm7CdQXy1a2UTzg9JhEPksw
+            - FLYWAY_PLACEHOLDERS_client_id_prod_apt_oidc_client=gR0qA8vXKMj5bnc6tT2YDL3rWz
         networks:
             - fam
