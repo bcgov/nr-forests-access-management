@@ -1,4 +1,6 @@
--- Create temp table for base app metadata
+-- Drop and create temp table for base app metadata
+DROP TABLE IF EXISTS temp_app;
+
 CREATE TEMP TABLE temp_app (
   app_abbreviation TEXT,
   app_description TEXT
@@ -10,7 +12,9 @@ INSERT INTO
 VALUES
   ('APT', 'Apportionment');
 
--- Create temp table for environment-specific entries
+-- Drop and create temp table for environment-specific entries
+DROP TABLE IF EXISTS temp_envs;
+
 CREATE TEMP TABLE temp_envs (env_code TEXT, client_id TEXT);
 
 -- Update this for different environments
@@ -21,7 +25,9 @@ VALUES
   ('TEST', '${client_id_test_apt_oidc_client}'),
   ('PROD', '${client_id_prod_apt_oidc_client}');
 
--- Create combined app+env view
+-- Drop and create combined app+env view
+DROP TABLE IF EXISTS temp_combined_apps;
+
 CREATE TEMP TABLE temp_combined_apps AS
 SELECT
   app.app_abbreviation,
@@ -34,7 +40,9 @@ FROM
   temp_app app
   CROSS JOIN temp_envs env;
 
--- Insert into fam_application and create inserted_apps from RETURNING result
+-- Drop and create inserted_apps from RETURNING result
+DROP TABLE IF EXISTS inserted_apps;
+
 CREATE TEMP TABLE inserted_apps AS WITH ins AS (
   INSERT INTO
     app_fam.fam_application (
