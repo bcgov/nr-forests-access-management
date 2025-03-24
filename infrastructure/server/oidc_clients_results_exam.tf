@@ -45,11 +45,13 @@ resource "aws_cognito_user_pool_client" "test_results_exam_oidc_client" {
   allowed_oauth_scopes                          = ["openid", "profile", "email"]
   callback_urls                                 = [
     var.oidc_sso_playground_url,
+    "http://localhost:3000/dashboard",
     "https://nr-results-exam-test-frontend.apps.silver.devops.gov.bc.ca/dashboard"
   ]
   logout_urls                                   = [
     var.oidc_sso_playground_url,
-    "${var.cognito_app_client_logout_chain_url.test}https://nr-results-exam-test-frontend.apps.silver.devops.gov.bc.ca/",
+    "${var.cognito_app_client_logout_chain_url.test}http://localhost:3000/",
+    "${var.cognito_app_client_logout_chain_url.test}https://nr-results-exam-test-frontend.apps.silver.devops.gov.bc.ca/"
   ]
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
