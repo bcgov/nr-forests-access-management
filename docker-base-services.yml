@@ -54,5 +54,8 @@ services:
             - FLYWAY_PLACEHOLDERS_client_id_dev_apt_oidc_client=Tz6oJkY3d1qVZmFLEr8BucxGf9
             - FLYWAY_PLACEHOLDERS_client_id_test_apt_oidc_client=bV4Nm7CdQXy1a2UTzg9JhEPksw
             - FLYWAY_PLACEHOLDERS_client_id_prod_apt_oidc_client=gR0qA8vXKMj5bnc6tT2YDL3rWz
+            - FLYWAY_PLACEHOLDERS_client_id_dev_results_exam_oidc_client=Kp9tLwXfZ2eVq7MJyR3HcAbDn4
+            - FLYWAY_PLACEHOLDERS_client_id_test_results_exam_oidc_client=Zw3NhEYkLmX1r0Vq8Tp5BsUad7
+            - FLYWAY_PLACEHOLDERS_client_id_prod_results_exam_oidc_client=Xa7BvQJdT9mz6PgCyW4LtKHue2
         networks:
             - fam

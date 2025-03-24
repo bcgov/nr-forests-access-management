@@ -264,7 +264,10 @@ data "aws_lambda_invocation" "invoke_flyway_migration" {
           "client_id_prod_silva_oidc_client" : "${aws_cognito_user_pool_client.prod_silva_oidc_client.id}",
           "client_id_dev_apt_oidc_client" : "${aws_cognito_user_pool_client.dev_apt_oidc_client.id}",
           "client_id_test_apt_oidc_client" : "${aws_cognito_user_pool_client.test_apt_oidc_client.id}",
-          "client_id_prod_apt_oidc_client" : "${aws_cognito_user_pool_client.prod_apt_oidc_client.id}"
+          "client_id_prod_apt_oidc_client" : "${aws_cognito_user_pool_client.prod_apt_oidc_client.id}",
+          "client_id_dev_results_exam_oidc_client" : "${aws_cognito_user_pool_client.dev_results_exam_oidc_client.id}",
+          "client_id_test_results_exam_oidc_client" : "${aws_cognito_user_pool_client.test_results_exam_oidc_client.id}",
+          "client_id_prod_results_exam_oidc_client" : "${aws_cognito_user_pool_client.prod_results_exam_oidc_client.id}"
         },
         "target": "latest"
     },
