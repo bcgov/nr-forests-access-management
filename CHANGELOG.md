@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.33.1](https://github.com/bcgov/nr-forests-access-management/compare/v1.33.0...v1.33.1) (2025-03-26)
+
+
+### Bug Fixes
+
+* apps not showing for fam admins ([#1788](https://github.com/bcgov/nr-forests-access-management/issues/1788)) ([a484a5d](https://github.com/bcgov/nr-forests-access-management/commit/a484a5dc921d3ca42543f7ea3ce624e9b85a254e))
+
 ## [1.33.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.32.0...v1.33.0) (2025-03-26)
 
 
