@@ -75,21 +75,14 @@ WITH role_definitions AS (
   FROM
     (
       VALUES
-        ('VIEW', 'View only access to application', 'C'),
-        ('UPDATE', 'Write access to application', 'C'),
         (
-          'REPORT',
-          'Download and generate batch APT reports',
+          'VIEWER',
+          'Users have view-only access to content.',
           'C'
         ),
         (
-          'USER',
-          'Provides the POPULATE_FORM action access to the user',
-          'C'
-        ),
-        (
-          'WEB_REPORTS',
-          'Provides the POPULATE_FORM access to web reports service',
+          'EDITOR',
+          'Users can view and make edits to content.',
           'C'
         )
     ) AS r(role_name, role_purpose, role_type_code)
