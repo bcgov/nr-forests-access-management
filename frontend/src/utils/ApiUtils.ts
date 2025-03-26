@@ -64,6 +64,28 @@ export const getUniqueApplications = (
 };
 
 /**
+ * Extracts a list of applications that a FAM admin is authorized to grant app admin access for.
+ *
+ * This function looks for the FAM admin role (`AdminRoleAuthGroup.FamAdmin`) in the provided
+ * access response and returns the list of applications associated with the grants assigned
+ * to that role.
+ *
+ * @param {AdminUserAccessResponse} [data] - The access response object containing role-based grants.
+ * @returns {FamApplicationGrantDto[]} An array of applications that the FAM admin can grant access to.
+ */
+export const getFamAdminApplications = (
+    data?: AdminUserAccessResponse
+): FamApplicationGrantDto[] => {
+    if (!data) {
+        return [];
+    }
+
+    return data.access
+        .find((famAccess) => famAccess.auth_key === AdminRoleAuthGroup.FamAdmin)?.grants
+        .map((grantDetail) => grantDetail.application) ?? []
+};
+
+/**
  * Retrieves a unique application by its ID from the AdminUserAccessResponse.
  *
  * - Filters applications using `getUniqueApplications` to ensure no duplicates.
