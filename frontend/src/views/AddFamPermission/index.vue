@@ -11,7 +11,7 @@ import { ManagePermissionsRoute } from "@/router/routes";
 import PageTitle from "@/components/UI/PageTitle.vue";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 import { AdminMgmtApiService } from "@/services/ApiServiceFactory";
-import { formatAxiosError, getUniqueApplications } from "@/utils/ApiUtils";
+import { formatAxiosError, getFamAdminApplications } from "@/utils/ApiUtils";
 import {
     UserType,
     type FamAppAdminCreateRequest,
@@ -47,7 +47,7 @@ const applicationListQuery = useQuery({
         AdminMgmtApiService.adminUserAccessesApi
             .adminUserAccessPrivilege()
             .then((res) => res.data),
-    select: (data) => getUniqueApplications(data),
+    select: (data) => getFamAdminApplications(data),
 });
 
 const formData = ref<FamPermissionFormType>(getDefaultFormData());
@@ -58,7 +58,7 @@ const handleUserVerification = (user: IdimProxyIdirInfoSchema) => {
     }
 };
 
-const handleApplicatoinChange = (e: DropdownChangeEvent) => {
+const handleApplicationChange = (e: DropdownChangeEvent) => {
     if (formData.value) {
         formData.value.application = e.value;
     }
@@ -165,7 +165,7 @@ const onSubmit = () => {
                                 name="application-dropdown"
                                 :value="formData.application"
                                 :options="applicationListQuery.data.value"
-                                @change="handleApplicatoinChange"
+                                @change="handleApplicationChange"
                                 option-label="description"
                                 placeholder="Choose an application"
                                 :is-fetching="

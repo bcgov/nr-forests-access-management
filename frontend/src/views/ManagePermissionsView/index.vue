@@ -78,7 +78,7 @@ const addFamPermissionErrorData = queryClient.getQueryData<string>([
     AddFamPermissionErrorQueryKey,
 ]);
 
-const handleApplicatoinChange = (e: DropdownChangeEvent) => {
+const handleApplicationChange = (e: DropdownChangeEvent) => {
     setSelectedApp(e.value);
     router.replace({ query: { appId: e.value.id } });
     clearNotifications();
@@ -286,7 +286,7 @@ onUnmounted(() => {
                     name="application-selector-dropdown"
                     label-text="Application:"
                     :value="selectedApp"
-                    @change="handleApplicatoinChange"
+                    @change="handleApplicationChange"
                     :options="
                         getUniqueApplications(adminUserAccessQuery.data.value)
                     "

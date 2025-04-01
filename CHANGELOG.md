@@ -1,5 +1,32 @@
 # Changelog
 
+## [1.33.1](https://github.com/bcgov/nr-forests-access-management/compare/v1.33.0...v1.33.1) (2025-03-26)
+
+
+### Bug Fixes
+
+* apps not showing for fam admins ([#1788](https://github.com/bcgov/nr-forests-access-management/issues/1788)) ([a484a5d](https://github.com/bcgov/nr-forests-access-management/commit/a484a5dc921d3ca42543f7ea3ce624e9b85a254e))
+
+## [1.33.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.32.0...v1.33.0) (2025-03-26)
+
+
+### Features
+
+* [#1773](https://github.com/bcgov/nr-forests-access-management/issues/1773) Change redirect_uri to post_logout_redirect_uri ([#1774](https://github.com/bcgov/nr-forests-access-management/issues/1774)) ([b6bd89c](https://github.com/bcgov/nr-forests-access-management/commit/b6bd89c55bedfae1ce61b46742b19953afe09675))
+* [#1783](https://github.com/bcgov/nr-forests-access-management/issues/1783) apt chefs request ([#1786](https://github.com/bcgov/nr-forests-access-management/issues/1786)) ([c808293](https://github.com/bcgov/nr-forests-access-management/commit/c808293e7783b536c70deeabe40c1556d02386ea))
+* [#1784](https://github.com/bcgov/nr-forests-access-management/issues/1784) results exam chefs request ([#1787](https://github.com/bcgov/nr-forests-access-management/issues/1787)) ([1e23195](https://github.com/bcgov/nr-forests-access-management/commit/1e231959377c31688ee6a64f50e383bd6dcc1cf7))
+
+
+### Bug Fixes
+
+* [#1773](https://github.com/bcgov/nr-forests-access-management/issues/1773) keycloak logout ([#1779](https://github.com/bcgov/nr-forests-access-management/issues/1779)) ([5e4ba43](https://github.com/bcgov/nr-forests-access-management/commit/5e4ba43a4b1a40f3589d6ea40a2ec698f41974e3))
+* [#1773](https://github.com/bcgov/nr-forests-access-management/issues/1773) keycloak logout ([#1780](https://github.com/bcgov/nr-forests-access-management/issues/1780)) ([bf595d4](https://github.com/bcgov/nr-forests-access-management/commit/bf595d4f208fa7228d6760d3ef3726c01e2b0dfe))
+* [#1773](https://github.com/bcgov/nr-forests-access-management/issues/1773) keycloak logout ([#1781](https://github.com/bcgov/nr-forests-access-management/issues/1781)) ([f42bd11](https://github.com/bcgov/nr-forests-access-management/commit/f42bd116e9c4790671c8285c54c77252d93e2d3f))
+* [#1773](https://github.com/bcgov/nr-forests-access-management/issues/1773) keycloak logout ([#1782](https://github.com/bcgov/nr-forests-access-management/issues/1782)) ([df879b9](https://github.com/bcgov/nr-forests-access-management/commit/df879b9af7cd6c93575b2bc3cf667bbe1fa1663e))
+* [#1773](https://github.com/bcgov/nr-forests-access-management/issues/1773) Revert all experimental changes for keycloak upgrade logout redirect. ([#1785](https://github.com/bcgov/nr-forests-access-management/issues/1785)) ([14e2bfb](https://github.com/bcgov/nr-forests-access-management/commit/14e2bfb9d474d000f38b7451e8f9e8ac06c9e908))
+* update ci infra workflow ([#1778](https://github.com/bcgov/nr-forests-access-management/issues/1778)) ([0352ac2](https://github.com/bcgov/nr-forests-access-management/commit/0352ac2aa3ee68a5cca724f4f6a67ce8d5877d5a))
+* use python 3.12 ([#1775](https://github.com/bcgov/nr-forests-access-management/issues/1775)) ([c14b150](https://github.com/bcgov/nr-forests-access-management/commit/c14b1508eaefc426fd1bf6de07e4477cd6eb7973))
+
 ## [1.32.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.31.2...v1.32.0) (2025-03-06)
 
 

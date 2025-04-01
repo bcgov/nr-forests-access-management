@@ -2,17 +2,6 @@ name: Continuous Integration Infrastructure
 
 on:
   workflow_dispatch:
-
-  push:
-    branches:
-      - "main"
-    paths:
-      - "terraform/**"
-      - "terraform-frontend/**"
-      - "infrastructure/**"
-      - ".github/workflows/reusable_terraform_server.yml"
-      - ".github/workflows/pr_open_terraform_ci.yml"
-
   pull_request:
     branches:
       - "main"
@@ -23,8 +12,11 @@ on:
       - ".github/workflows/reusable_terraform_server.yml"
       - ".github/workflows/pr_open_terraform_ci.yml"
 
-# When use GHA OIDC provider and for action to create the JWT, it is required to have the id-token: write permission
-# permission can be added at job level or workflow level. Ref: https://github.com/aws-actions/configure-aws-credentials#OIDC
+concurrency:
+  group: deploy-dev-global # Prevents this workflow from running if another deployment or CI workflow with the same group is in progress
+
+# When using GHA OIDC provider and for action to create the JWT, it is required to have the id-token: write permission
+# Permission can be added at job level or workflow level. Ref: https://github.com/aws-actions/configure-aws-credentials#OIDC
 permissions:
   id-token: write # This is required for requesting the JWT
   contents: read # This is required for actions/checkout
@@ -37,7 +29,7 @@ jobs:
       tf_subcommand: plan
       execute_flyway: false
     secrets:
-      licenceplate: ${{ secrets.LICENCEPLATE}}
+      licenceplate: ${{ secrets.LICENCEPLATE }}
       dev_oidc_idir_idp_client_secret: "${{ secrets.DEV_OIDC_IDIR_IDP_CLIENT_SECRET }}"
       test_oidc_idir_idp_client_secret: "${{ secrets.TEST_OIDC_IDIR_IDP_CLIENT_SECRET }}"
       prod_oidc_idir_idp_client_secret: "${{ secrets.PROD_OIDC_IDIR_IDP_CLIENT_SECRET }}"
@@ -59,24 +51,24 @@ jobs:
       environment_name: dev
       tf_subcommand: plan
     secrets:
-      licenceplate: ${{ secrets.LICENCEPLATE}}
+      licenceplate: ${{ secrets.LICENCEPLATE }}
 
   backend-terraform-plan-destroy:
     needs: frontend-terraform-plan
     uses: ./.github/workflows/reusable_terraform_server.yml
     with:
       environment_name: dev
-      # This command can detect issues with the terraform destory: graph -verbose -draw-cycles -type=plan-destroy
-      # Only need for the backend because we don't destroy the frontend.
+      # This command can detect issues with the terraform destroy: graph -verbose -draw-cycles -type=plan-destroy
+      # Only needed for the backend because we don't destroy the frontend.
       tf_subcommand: plan -destroy
       execute_flyway: false
     secrets:
-      licenceplate: ${{ secrets.LICENCEPLATE}}
+      licenceplate: ${{ secrets.LICENCEPLATE }}
       dev_oidc_idir_idp_client_secret: "${{ secrets.DEV_OIDC_IDIR_IDP_CLIENT_SECRET }}"
-      test_oidc_bceid_business_idp_client_secret: "${{ secrets.TEST_OIDC_IDIR_IDP_CLIENT_SECRET }}"
+      test_oidc_idir_idp_client_secret: "${{ secrets.TEST_OIDC_IDIR_IDP_CLIENT_SECRET }}"
       prod_oidc_idir_idp_client_secret: "${{ secrets.PROD_OIDC_IDIR_IDP_CLIENT_SECRET }}"
       dev_oidc_bceid_business_idp_client_secret: "${{ secrets.DEV_OIDC_BCEID_BUSINESS_IDP_CLIENT_SECRET }}"
-      test_oidc_idir_idp_client_secret: "${{ secrets.TEST_OIDC_BCEID_BUSINESS_IDP_CLIENT_SECRET }}"
+      test_oidc_bceid_business_idp_client_secret: "${{ secrets.TEST_OIDC_BCEID_BUSINESS_IDP_CLIENT_SECRET }}"
       prod_oidc_bceid_business_idp_client_secret: "${{ secrets.PROD_OIDC_BCEID_BUSINESS_IDP_CLIENT_SECRET }}"
       forest_client_api_api_key_test: "${{ secrets.FOREST_CLIENT_API_API_KEY_TEST }}"
       dev_oidc_bcsc_idp_client_secret: "${{ secrets.DEV_OIDC_BCSC_IDP_CLIENT_SECRET }}"
