@@ -202,8 +202,8 @@ jobs:
                   target_env: ${{ inputs.environment_name }}
               run: |
                   # Wait for 1 minute
-                    echo "Waiting for 1.5 minute before running the smoke test..."
-                    sleep 90
+                    echo "Waiting for 1 minute before running the smoke test..."
+                    sleep 60
 
                   # Run smoke test
                     if [[ "apply" == "${{ inputs.tf_subcommand }}" ]]
