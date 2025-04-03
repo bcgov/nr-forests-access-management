@@ -262,7 +262,11 @@ variable "fam_console_idp_name_bceid" {
 variable "minimum_oidc_attribute_list" {
   description = "Required fields for FAM clients to be able to read and write"
   type        = list(string)
-  default     = ["custom:idp_name", "custom:idp_user_id", "custom:idp_username"]
+  default     = [
+    "custom:idp_name", "custom:idp_user_id", "custom:idp_username",
+    "custom:idp_business_id", "custom:idp_display_name", "email",
+    "given_name", "family_name"
+  ]
 }
 
 variable "maximum_oidc_attribute_read_list" {
