@@ -1,3 +1,7 @@
+import {
+    AdminMgmtApiService,
+    AppActlApiService,
+} from "@/services/ApiServiceFactory";
 import { ManagePermissionsTableEnum } from "@/types/ManagePermissionsTypes";
 import type { PermissionNotificationType } from "@/types/NotificationTypes";
 import { Severity } from "@/types/NotificationTypes";
@@ -315,18 +319,40 @@ export const sortFieldToEnum = (
     }
 };
 
+export const exportDataTableApiCall = (
+    appId: number,
+    tableType: ManagePermissionsTableEnum
+) => {
+    switch (tableType) {
+        case ManagePermissionsTableEnum.AppUser:
+            return AppActlApiService.applicationsApi.exportApplicationUserRoles(
+                appId
+            );
+        case ManagePermissionsTableEnum.DelegatedAdmin:
+            return AdminMgmtApiService.delegatedAdminApi.exportAccessControlPrivilegesByApplicationId(
+                appId
+            );
+        case ManagePermissionsTableEnum.AppAdmin:
+            return AdminMgmtApiService.applicationAdminApi.exportApplicationAdmins();
+    }
+};
+
 export const exportToCsv = async (
     appId: number,
     appName: string,
-    fetchCsvData: (appId: number) => Promise<string> | void // callback function to fetch csv data
+    tableType: ManagePermissionsTableEnum,
+    fetchCsvData: (
+        appId: number,
+        tableType: ManagePermissionsTableEnum
+    ) => Promise<{ filename: any; data: any }> | void // callback function to fetch csv data
 ) => {
-    const csvData = await fetchCsvData(appId);
+    const csvData = await fetchCsvData(appId, tableType);
     if (csvData) {
-        const csvContent = `data:text/csv;charset=utf-8,${csvData}`;
+        const csvContent = `data:text/csv;charset=utf-8,${csvData.data}`;
         const encodedUri = encodeURI(csvContent);
         const link = document.createElement("a");
         link.setAttribute("href", encodedUri);
-        link.setAttribute("download", `${appName}_user_roles.csv`);
+        link.setAttribute("download", `${csvData.filename}`);
         document.body.appendChild(link);
         link.click();
     }

@@ -23,6 +23,7 @@ import { computed, nextTick, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import {
+    exportDataTableApiCall,
     exportToCsv,
     getOrganizationName,
     sortFieldToEnum,
@@ -588,19 +589,27 @@ const handleFilter = (searchValue: string, isChanged: boolean) => {
 
 const isDataExporting = ref<boolean>(false); // loading indicator for downloading CSV
 const downloadAppUsersTableData = () => {
-    exportToCsv(props.appId, props.appName, (appId: number) => {
-        isDataExporting.value = true;
-        return AppActlApiService.applicationsApi
-            .exportApplicationUserRoles(appId)
-            .then((response) => {
+    exportToCsv(
+        props.appId,
+        props.appName,
+        props.tableType,
+        async (appId: number, tableType: ManagePermissionsTableEnum) => {
+            isDataExporting.value = true;
+            try {
+                const response = await exportDataTableApiCall(appId, tableType);
                 isDataExporting.value = false;
-                return response.data;
-            })
-            .catch((error) => {
+                return {
+                    filename: response.headers["content-disposition"]
+                        .split("=")[1]
+                        .trim(),
+                    data: response.data,
+                };
+            } catch (error) {
                 isDataExporting.value = false;
                 throw new Error("Failed to download the CSV file.");
-            });
-    });
+            }
+        }
+    );
 };
 </script>
 
@@ -632,8 +641,7 @@ const downloadAppUsersTableData = () => {
                 @blur="handleFilter"
             />
             <Button
-                :disabled="!hasUserRoleRecords"
-                v-if="isAppUserTable"
+                :disabled="getTotalRecords() === 0"
                 @click="downloadAppUsersTableData"
                 :isLoading="isDataExporting"
                 outlined

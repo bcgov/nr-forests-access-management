@@ -58,6 +58,7 @@ async def export_application_admins(
     results: List[schemas.FamAppAdminGetResponse] = application_admin_service.get_application_admins()
     filename = f"FAM_app_admins-{datetime.now().strftime('%Y-%m-%d')}.csv"
     return StreamingResponse(__export_appplication_admin_csv_file(results), media_type="text/csv", headers={
+        "Access-Control-Expose-Headers":"Content-Disposition",
         "Content-Disposition": f"attachment; filename={filename}"
     })
 

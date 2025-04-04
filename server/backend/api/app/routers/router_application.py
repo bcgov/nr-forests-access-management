@@ -75,6 +75,7 @@ def export_application_user_roles(
 
     filename = f"application_{results[0].role.application.application_name}_user_roles.csv" if results else "user_roles.csv"
     return StreamingResponse(__app_user_roles_csv_file_streamer(results), media_type="text/csv", headers={
+        "Access-Control-Expose-Headers":"Content-Disposition",
         "Content-Disposition": f"attachment; filename={filename}"
     })
 

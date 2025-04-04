@@ -162,7 +162,9 @@ def export_access_control_privileges_by_application_id(
     )
 
     filename = f"application_{results[0].role.application.application_name}_delegated_admin_roles-{datetime.now().strftime('%Y-%m-%d')}.csv" if results else "user_roles.csv"
-    return StreamingResponse(__export_delegated_admin_csv_file(results), media_type="text/csv", headers={
+    return StreamingResponse(__export_delegated_admin_csv_file(results), media_type="text/csv",
+    headers={
+        "Access-Control-Expose-Headers":"Content-Disposition",
         "Content-Disposition": f"attachment; filename={filename}"
     })
 
