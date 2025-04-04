@@ -1,4 +1,8 @@
+import csv
 import logging
+from datetime import datetime
+from enum import Enum
+from io import StringIO
 from typing import List
 
 from api.app import jwt_validation
@@ -23,6 +27,7 @@ from api.app.services.user_service import UserService
 from api.app.utils.audit_util import (AuditEventLog, AuditEventOutcome,
                                       AuditEventType)
 from fastapi import APIRouter, Depends, Request, Response
+from fastapi.responses import StreamingResponse
 
 LOGGER = logging.getLogger(__name__)
 
@@ -137,6 +142,33 @@ def get_access_control_privileges_by_application_id(
         application_id, page_params
     )
 
+@router.get(
+    "/export",
+    dependencies=[Depends(authorize_by_app_id)],
+    summary="Export delegated ddmin roles information by application ID",
+)
+def export_access_control_privileges_by_application_id(
+    application_id: int,
+    access_control_privilege_service: AccessControlPrivilegeService = Depends(
+        access_control_privilege_service_instance
+    )
+):
+    """
+    Export delegated admin assignment records associated with an application as csv data
+    """
+    LOGGER.debug(
+        f"Export delegated admin assignment records associated with application_id: {application_id}"
+    )
+    results: List[FamAccessControlPrivilegeGetResponse] = (
+        access_control_privilege_service.get_delegated_admin_assignment_by_application_id_no_paging(
+        application_id)
+    )
+
+    filename = f"application_{results[0].role.application.application_name}_delegated_admin_roles-{datetime.now().strftime('%Y-%m-%d')}.csv" if results else "user_roles.csv"
+    return StreamingResponse(__app_delegated_admin_csv_file_streamer(results), media_type="text/csv", headers={
+        "Content-Disposition": f"attachment; filename={filename}"
+    })
+
 
 @router.delete(
     "/{access_control_privilege_id}",
@@ -190,3 +222,57 @@ def delete_access_control_privilege(
 
     finally:
         audit_event_log.log_event()
+
+
+async def __app_delegated_admin_csv_file_streamer(data: List[FamAccessControlPrivilegeGetResponse]):
+    """
+    This is a private help function to stream the delegated assignments data to a CSV file.
+    Note: in this case, using 'yield' to stream the data to reduce memory usage.
+    """
+    # Add initial lines in memory for output
+    initial_lines = f"Downloaded on: {datetime.now().strftime('%Y-%m-%d')}\n"
+    if data:
+        initial_lines += f"Application: {data[0].role.application.application_description}\n"
+    output = StringIO(initial_lines)
+    yield output.getvalue()
+    output.seek(0)
+    output.truncate(0)
+
+    # CSV header fields line
+    class CSVFields(str, Enum):
+        USER_NAME = "User Name"
+        DOMAIN = "Domain"
+        FIRST_NAME = "First Name"
+        LAST_NAME = "Last Name"
+        EMAIL = "Email"
+        FOREST_CLIENT_ID = "Forest Client ID"
+        ROLE_ENABLE_TO_ASSIGN = "Role Enable To Assign"
+        ADDED_ON = "Added On"
+
+    fieldnames = [field.value for field in CSVFields]
+    writer = csv.DictWriter(output, fieldnames=fieldnames)
+    writer.fieldnames = fieldnames
+    writer.writeheader()
+    yield output.getvalue()
+    output.seek(0)
+    output.truncate(0)
+
+    # CSV content lines
+    for result in data:
+        forest_client_number = f"'{result.role.forest_client.forest_client_number}'" if result.role.forest_client else None
+        created_on = result.create_date.strftime("%Y-%m-%d")
+        writer.writerow({
+            CSVFields.USER_NAME: result.user.user_name,
+            CSVFields.DOMAIN: result.user.user_type_relation.description,
+            CSVFields.FIRST_NAME: result.user.first_name,
+            CSVFields.LAST_NAME: result.user.last_name,
+            CSVFields.EMAIL: result.user.email,
+            CSVFields.FOREST_CLIENT_ID: forest_client_number,
+            CSVFields.ROLE_ENABLE_TO_ASSIGN: result.role.display_name,
+            CSVFields.ADDED_ON: created_on
+        })
+        yield output.getvalue()
+        output.seek(0)
+        output.truncate(0)
+
+    output.close()

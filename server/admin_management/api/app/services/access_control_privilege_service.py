@@ -61,6 +61,29 @@ class AccessControlPrivilegeService:
             application_id=application_id, page_params=page_params
         )
 
+    def get_delegated_admin_assignment_by_application_id_no_paging(
+        self, application_id: int
+    ) -> List[FamAccessControlPrivilegeGetResponse]:
+        """
+        The function is almost the same as 'get_paged_delegated_admin_assignment_by_application_id';
+        but it will query the delegated admin assignments for a given application with full result no pagination.
+        Note, it does not apply 'post_sync_forest_clients_dec' decorator for 'forest client name'
+        external api sync.
+        Arguments:
+            application_id (int): The application's id, to find out the delegated admins
+        Returns:
+            PagedResultsSchema[FamAccessControlPrivilegeGetResponse]: results containing
+            list of delegated admins assigned to this application.
+        """
+        delegated_admins = []
+        qr = self.access_control_privilege_repository.get_delegated_admins_assignment_by_application_id(
+            application_id=application_id
+        )
+        # convert to schema objects
+        for result in qr:
+            delegated_admins.append(FamAccessControlPrivilegeGetResponse.model_validate(result))
+        return delegated_admins
+
     def get_acp_by_user_id_and_role_id(self, user_id: int, role_id: int):
         return self.access_control_privilege_repository.get_acp_by_user_id_and_role_id(
             user_id, role_id

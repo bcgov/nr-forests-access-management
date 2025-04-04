@@ -56,7 +56,7 @@ def get_fam_application_user_role_assignment(
         Depends(authorize_by_app_id),
         Depends(enforce_bceid_terms_conditions_guard),
     ],
-    summary="Export User roles Information by application ID",
+    summary="Export user roles information by application ID",
 )
 def export_application_user_roles(
     application_id: int,

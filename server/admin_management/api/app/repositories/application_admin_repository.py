@@ -1,9 +1,8 @@
 import logging
 from typing import List
 
-from api.app.constants import UserType
 from api.app.models.model import FamApplication, FamApplicationAdmin, FamUser
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 LOGGER = logging.getLogger(__name__)
 
