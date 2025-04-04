@@ -1,8 +1,5 @@
-import csv
 import logging
 from datetime import datetime
-from enum import Enum
-from io import StringIO
 from typing import List
 
 from api.app import jwt_validation
@@ -12,8 +9,8 @@ from api.app.routers.router_guards import (
     enforce_self_grant_guard, get_current_requester, get_verified_target_user,
     validate_param_access_control_privilege_id)
 from api.app.routers.router_utils import (
-    access_control_privilege_service_instance, role_service_instance,
-    user_service_instance)
+    access_control_privilege_service_instance, csv_file_data_streamer,
+    role_service_instance, user_service_instance)
 from api.app.schemas.pagination import (DelegatedAdminPageParamsSchema,
                                         PagedResultsSchema)
 from api.app.schemas.schemas import (FamAccessControlPrivilegeCreateRequest,
@@ -165,7 +162,7 @@ def export_access_control_privileges_by_application_id(
     )
 
     filename = f"application_{results[0].role.application.application_name}_delegated_admin_roles-{datetime.now().strftime('%Y-%m-%d')}.csv" if results else "user_roles.csv"
-    return StreamingResponse(__app_delegated_admin_csv_file_streamer(results), media_type="text/csv", headers={
+    return StreamingResponse(__export_delegated_admin_csv_file(results), media_type="text/csv", headers={
         "Content-Disposition": f"attachment; filename={filename}"
     })
 
@@ -224,55 +221,20 @@ def delete_access_control_privilege(
         audit_event_log.log_event()
 
 
-async def __app_delegated_admin_csv_file_streamer(data: List[FamAccessControlPrivilegeGetResponse]):
+def __export_delegated_admin_csv_file(data: List[FamAccessControlPrivilegeGetResponse]):
     """
-    This is a private help function to stream the delegated assignments data to a CSV file.
-    Note: in this case, using 'yield' to stream the data to reduce memory usage.
+    This is a private helper function to export the delegated assignments data to a CSV file.
     """
-    # Add initial lines in memory for output
-    initial_lines = f"Downloaded on: {datetime.now().strftime('%Y-%m-%d')}\n"
-    if data:
-        initial_lines += f"Application: {data[0].role.application.application_description}\n"
-    output = StringIO(initial_lines)
-    yield output.getvalue()
-    output.seek(0)
-    output.truncate(0)
-
-    # CSV header fields line
-    class CSVFields(str, Enum):
-        USER_NAME = "User Name"
-        DOMAIN = "Domain"
-        FIRST_NAME = "First Name"
-        LAST_NAME = "Last Name"
-        EMAIL = "Email"
-        FOREST_CLIENT_ID = "Forest Client ID"
-        ROLE_ENABLE_TO_ASSIGN = "Role Enable To Assign"
-        ADDED_ON = "Added On"
-
-    fieldnames = [field.value for field in CSVFields]
-    writer = csv.DictWriter(output, fieldnames=fieldnames)
-    writer.fieldnames = fieldnames
-    writer.writeheader()
-    yield output.getvalue()
-    output.seek(0)
-    output.truncate(0)
-
-    # CSV content lines
-    for result in data:
-        forest_client_number = f"'{result.role.forest_client.forest_client_number}'" if result.role.forest_client else None
-        created_on = result.create_date.strftime("%Y-%m-%d")
-        writer.writerow({
-            CSVFields.USER_NAME: result.user.user_name,
-            CSVFields.DOMAIN: result.user.user_type_relation.description,
-            CSVFields.FIRST_NAME: result.user.first_name,
-            CSVFields.LAST_NAME: result.user.last_name,
-            CSVFields.EMAIL: result.user.email,
-            CSVFields.FOREST_CLIENT_ID: forest_client_number,
-            CSVFields.ROLE_ENABLE_TO_ASSIGN: result.role.display_name,
-            CSVFields.ADDED_ON: created_on
-        })
-        yield output.getvalue()
-        output.seek(0)
-        output.truncate(0)
-
-    output.close()
+    ini_title_line = f"Application: {data[0].role.application.application_description}"
+    csv_rows = [
+        {
+            "User Name": item.user.user_name,
+            "Domain": item.user.user_type_relation.description,
+            "First Name": item.user.first_name,
+            "Last Name": item.user.last_name,
+            "Email": item.user.email,
+            "Forest Client ID": f"'{item.role.forest_client.forest_client_number}'" if item.role.forest_client else None,
+            "Role Enable To Assign": item.role.display_name,
+            "Added On": item.create_date.strftime("%Y-%m-%d")
+        } for item in data]
+    return csv_file_data_streamer(ini_title_line=ini_title_line, data=csv_rows)

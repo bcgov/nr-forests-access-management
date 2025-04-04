@@ -1,8 +1,5 @@
-import csv
 import logging
 from datetime import datetime
-from enum import Enum
-from io import StringIO
 from typing import List
 
 from api.app import database, jwt_validation
@@ -16,6 +13,7 @@ from api.app.routers.router_guards import (authorize_by_fam_admin,
                                            validate_param_user_type)
 from api.app.routers.router_utils import (application_admin_service_instance,
                                           application_service_instance,
+                                          csv_file_data_streamer,
                                           user_service_instance)
 from api.app.schemas import schemas
 from api.app.schemas.schemas import Requester, TargetUser
@@ -58,9 +56,8 @@ async def export_application_admins(
     ),
 ):
     results: List[schemas.FamAppAdminGetResponse] = application_admin_service.get_application_admins()
-    LOGGER.info(f"admins: {results[0].application}")
     filename = f"FAM_app_admins-{datetime.now().strftime('%Y-%m-%d')}.csv"
-    return StreamingResponse(__appplication_admin_csv_file_streamer(results), media_type="text/csv", headers={
+    return StreamingResponse(__export_appplication_admin_csv_file(results), media_type="text/csv", headers={
         "Content-Disposition": f"attachment; filename={filename}"
     })
 
@@ -179,54 +176,20 @@ def delete_application_admin(
         audit_event_log.log_event()
 
 
-async def __appplication_admin_csv_file_streamer(data: List[schemas.FamAppAdminGetResponse]):
+def __export_appplication_admin_csv_file(data: List[schemas.FamAppAdminGetResponse]):
     """
-    This is a private help function to stream the application admin assignments data to a CSV file.
-    Note: in this case, using 'yield' to stream the data to reduce memory usage.
+    This is a private helper function to export the application admin assignments data to a CSV file.
     """
-    # Add initial lines in memory for output
-    initial_lines = f"Downloaded on: {datetime.now().strftime('%Y-%m-%d')}\n"
-    if data:
-        initial_lines += f"FAM Application Admin\n"
-    output = StringIO(initial_lines)
-    yield output.getvalue()
-    output.seek(0)
-    output.truncate(0)
-
-    # CSV header fields line
-    class CSVFields(str, Enum):
-        USER_NAME = "User Name"
-        DOMAIN = "Domain"
-        FIRST_NAME = "First Name"
-        LAST_NAME = "Last Name"
-        EMAIL = "Email"
-        APPLICATION = "Application"
-        ENVIRONMENT = "Environment"
-        ROLE_ENABLE_TO_ASSIGN = "Role Enable To Assign"
-
-    fieldnames = [field.value for field in CSVFields]
-    writer = csv.DictWriter(output, fieldnames=fieldnames)
-    writer.fieldnames = fieldnames
-    writer.writeheader()
-    yield output.getvalue()
-    output.seek(0)
-    output.truncate(0)
-
-    # CSV content lines
-    for result in data:
-        application = f"'{result.application.application_description}'"
-        writer.writerow({
-            CSVFields.USER_NAME: result.user.user_name,
-            CSVFields.DOMAIN: result.user.user_type_relation.description,
-            CSVFields.FIRST_NAME: result.user.first_name,
-            CSVFields.LAST_NAME: result.user.last_name,
-            CSVFields.EMAIL: result.user.email,
-            CSVFields.APPLICATION: application,
-            CSVFields.ENVIRONMENT: result.application.app_environment,
-            CSVFields.ROLE_ENABLE_TO_ASSIGN: "Admin"
-        })
-        yield output.getvalue()
-        output.seek(0)
-        output.truncate(0)
-
-    output.close()
+    ini_title_line = "FAM Application Admin"
+    csv_rows = [
+        {
+            "User Name": item.user.user_name,
+            "Domain": item.user.user_type_relation.description,
+            "First Name": item.user.first_name,
+            "Last Name": item.user.last_name,
+            "Email": item.user.email,
+            "Application": f"'{item.application.application_description}'",
+            "Environment": item.application.app_environment,
+            "Role Enable To Assign": "Admin"
+        } for item in data]
+    return csv_file_data_streamer(ini_title_line=ini_title_line, data=csv_rows)
