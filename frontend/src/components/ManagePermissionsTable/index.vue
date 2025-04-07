@@ -837,21 +837,24 @@ const downloadManagePermissionsCSVData = () => {
 
     .table-toolbar-container {
         display: flex;
+        flex-wrap: wrap;
         justify-content: space-between;
         align-items: center;
-        height: 6.1vh;
         > * {
             flex: 1 1 0;
             height: 100%;
         }
         :first-child {
-            flex: 5 1 0;
+            flex: 5 1 35ch;
         }
         button {
             border-radius: 0;
             border-width: 1px;
             border-style: solid;
             border-color: #dfdfe1;
+            .button-content {
+                margin-bottom: 3px;
+            }
         }
     }
 }
