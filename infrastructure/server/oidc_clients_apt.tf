@@ -5,8 +5,8 @@ resource "aws_cognito_user_pool_client" "dev_apt_oidc_client" {
   allowed_oauth_scopes                          = ["openid", "profile", "email"]
   callback_urls                                 = [
     var.oidc_sso_playground_url,
-    "http://localhost:8080/",
-    "https://dlvrapps.nrs.gov.bc.ca/int/apt2"
+    "http://localhost:8080/apt2/callback",
+    "https://dlvrapps.nrs.gov.bc.ca/int/apt2/callback"
   ]
   logout_urls                                   = [
     var.oidc_sso_playground_url,
@@ -42,8 +42,8 @@ resource "aws_cognito_user_pool_client" "test_apt_oidc_client" {
   allowed_oauth_scopes                          = ["openid", "profile", "email"]
   callback_urls                                 = [
       var.oidc_sso_playground_url,
-      "http://localhost:8080/",
-      "https://testapps.nrs.gov.bc.ca/int/apt2"
+      "http://localhost:8080/apt2/callback",
+      "https://testapps.nrs.gov.bc.ca/int/apt2/callback"
     ]
   logout_urls                                   = [
       var.oidc_sso_playground_url,
@@ -79,7 +79,7 @@ resource "aws_cognito_user_pool_client" "prod_apt_oidc_client" {
   allowed_oauth_scopes                          = ["openid", "profile", "email"]
   callback_urls                                 = [
     var.oidc_sso_playground_url,
-    "https://apps.nrs.gov.bc.ca/int/apt2"
+    "https://apps.nrs.gov.bc.ca/int/apt2/callback"
   ]
   logout_urls                                   = [
     var.oidc_sso_playground_url,
