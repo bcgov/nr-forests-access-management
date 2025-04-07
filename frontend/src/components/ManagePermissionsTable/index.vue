@@ -842,7 +842,7 @@ const downloadManagePermissionsCSVData = () => {
         align-items: center;
         > * {
             flex: 1 1 0;
-            height: 100%;
+            height: 2.6rem;
         }
         :first-child {
             flex: 5 1 35ch;
@@ -852,9 +852,6 @@ const downloadManagePermissionsCSVData = () => {
             border-width: 1px;
             border-style: solid;
             border-color: #dfdfe1;
-            .button-content {
-                margin-bottom: 3px;
-            }
         }
     }
 }
