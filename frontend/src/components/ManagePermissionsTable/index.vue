@@ -588,7 +588,11 @@ const handleFilter = (searchValue: string, isChanged: boolean) => {
 };
 
 const isDataExporting = ref<boolean>(false); // loading indicator for downloading CSV
-const downloadAppUsersTableData = () => {
+/**
+ * Download the CSV file for the Manage Permissions table based on the table type.
+ * Delegated to the exportToCsv function to export the data.
+ */
+const downloadManagePermissionsCSVData = () => {
     exportToCsv(
         props.appId,
         props.appName,
@@ -599,6 +603,7 @@ const downloadAppUsersTableData = () => {
                 const response = await exportDataTableApiCall(appId, tableType);
                 isDataExporting.value = false;
                 return {
+                    // retrieve filename from backend (response headers)
                     filename: response.headers["content-disposition"]
                         .split("=")[1]
                         .trim(),
@@ -642,7 +647,7 @@ const downloadAppUsersTableData = () => {
             />
             <Button
                 :disabled="getTotalRecords() === 0"
-                @click="downloadAppUsersTableData"
+                @click="downloadManagePermissionsCSVData"
                 :isLoading="isDataExporting"
                 outlined
                 label="Download table as CSV file&nbsp;&nbsp;"
