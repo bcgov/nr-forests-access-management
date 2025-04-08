@@ -259,6 +259,7 @@ variable "fam_console_idp_name_bceid" {
   type = string
 }
 
+// Required for all OIDC clients
 variable "minimum_oidc_attribute_list" {
   description = "Required fields for FAM clients to be able to read and write"
   type        = list(string)

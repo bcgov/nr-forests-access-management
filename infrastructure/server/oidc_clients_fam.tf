@@ -1,3 +1,8 @@
+/*
+User OIDC attributes, FAM includes:
+  - minimum_oidc_attribute_list: required for all OIDC clients
+  - custom:idp_business_name: FAM uses this attribute to display user's organization name.
+*/
 resource "aws_cognito_user_pool_client" "fam_console_oidc_client" {
   access_token_validity                = "5"
   allowed_oauth_flows                  = ["code"]
