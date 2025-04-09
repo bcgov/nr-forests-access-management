@@ -734,3 +734,64 @@ def test_get_fam_application_user_role_assignment__no_params_in_request_then_use
 
     # !! Below line is very important (to restor the method from mock) for not to interfere subsequent tests cases.
     crud_application.get_application_role_assignments = original_fn
+
+
+def test_export_application_user_roles_success(
+    mocker,
+    test_client_fixture: starlette.testclient.TestClient,
+    test_rsa_key,
+    get_fam_application_user_role_assignment_dependencies_override,
+):
+    """
+    Test the export_application_user_roles endpoint for successful CSV export.
+    """
+    mock_results = [
+        Mock(
+            role=Mock(
+                application=Mock(application_name="TestApp"),
+                display_name="TestRole",
+                forest_client=None,
+            ),
+            user=Mock(
+                user_name="test_user",
+                user_type_relation=Mock(description="TestDomain"),
+                first_name="Test",
+                last_name="User",
+                email="test_user@example.com",
+            ),
+            create_date=Mock(strftime=lambda fmt: "2023-01-01"),
+        )
+    ]
+
+    mocker.patch(
+        "api.app.routers.router_application.crud_application.get_application_role_assignments_no_paging",
+        return_value=mock_results,
+    )
+
+    token = jwt_utils.create_jwt_token(test_rsa_key)
+    response = test_client_fixture.get(
+        f"{get_application_role_assignment_end_point}/export",
+        headers=jwt_utils.headers(token),
+    )
+
+    assert response.status_code == HTTPStatus.OK
+    assert "text/csv" in response.headers["Content-Type"].lower()
+    assert "Content-Disposition" in response.headers
+    filename = response.headers["Content-Disposition"].split("=")[1]
+    assert ".csv" in filename
+
+
+def test_export_application_user_roles_unauthorized(
+    test_client_fixture: starlette.testclient.TestClient, test_rsa_key
+):
+    """
+    Test the export_application_user_roles endpoint for unauthorized access.
+    """
+    unauthorized_token = jwt_utils.create_jwt_token(test_rsa_key, [NOT_EXIST_ROLE_NAME])
+
+    response = test_client_fixture.get(
+        f"{get_application_role_assignment_end_point}/export",
+        headers=jwt_utils.headers(unauthorized_token),
+    )
+
+    assert response.status_code == HTTPStatus.FORBIDDEN
