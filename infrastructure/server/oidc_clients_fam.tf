@@ -1,3 +1,8 @@
+/*
+User OIDC attributes, FAM includes:
+  - minimum_oidc_attribute_list: required for all OIDC clients
+  - custom:idp_business_name: FAM uses this attribute to display user's organization name.
+*/
 resource "aws_cognito_user_pool_client" "fam_console_oidc_client" {
   access_token_validity                = "5"
   allowed_oauth_flows                  = ["code"]
@@ -20,7 +25,7 @@ resource "aws_cognito_user_pool_client" "fam_console_oidc_client" {
   id_token_validity                             = "60"
   name                                          = "fam_console"
   prevent_user_existence_errors                 = "ENABLED"
-  read_attributes                               = concat(var.minimum_oidc_attribute_list, ["custom:idp_display_name", "email", "custom:idp_business_id", "custom:idp_business_name"])
+  read_attributes                               = concat(var.minimum_oidc_attribute_list, ["custom:idp_business_name"])
   refresh_token_validity                        = "24"
   supported_identity_providers                  = [var.fam_console_idp_name, var.fam_console_idp_name_bceid]
 
@@ -31,7 +36,7 @@ resource "aws_cognito_user_pool_client" "fam_console_oidc_client" {
   }
 
   user_pool_id     = aws_cognito_user_pool.fam_user_pool.id
-  write_attributes = concat(var.minimum_oidc_attribute_list, ["custom:idp_display_name", "email", "custom:idp_business_id", "custom:idp_business_name"])
+  write_attributes = concat(var.minimum_oidc_attribute_list, ["custom:idp_business_name"])
 
   depends_on = [
     aws_cognito_identity_provider.dev_idir_oidc_provider,
