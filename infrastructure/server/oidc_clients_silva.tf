@@ -21,7 +21,7 @@ resource "aws_cognito_user_pool_client" "dev_silva_oidc_client" {
   id_token_validity                             = "60"
   name                                          = "silva_dev"
   prevent_user_existence_errors                 = "ENABLED"
-  read_attributes                               = "${concat(var.minimum_oidc_attribute_list, ["custom:idp_display_name", "email"])}"
+  read_attributes                               = var.minimum_oidc_attribute_list
   refresh_token_validity                        = "24"
   supported_identity_providers                  = [
     "${aws_cognito_identity_provider.dev_idir_oidc_provider.provider_name}",
@@ -35,7 +35,7 @@ resource "aws_cognito_user_pool_client" "dev_silva_oidc_client" {
   }
 
   user_pool_id     = aws_cognito_user_pool.fam_user_pool.id
-  write_attributes = "${concat(var.minimum_oidc_attribute_list, ["custom:idp_display_name", "email"])}"
+  write_attributes = var.minimum_oidc_attribute_list
 }
 
 resource "aws_cognito_user_pool_client" "test_silva_oidc_client" {
@@ -61,7 +61,7 @@ resource "aws_cognito_user_pool_client" "test_silva_oidc_client" {
   id_token_validity                             = "60"
   name                                          = "silva_test"
   prevent_user_existence_errors                 = "ENABLED"
-  read_attributes                               = "${concat(var.minimum_oidc_attribute_list, ["custom:idp_display_name", "email"])}"
+  read_attributes                               = var.minimum_oidc_attribute_list
   refresh_token_validity                        = "24"
   supported_identity_providers                  = [
     "${aws_cognito_identity_provider.test_idir_oidc_provider.provider_name}",
@@ -75,7 +75,7 @@ resource "aws_cognito_user_pool_client" "test_silva_oidc_client" {
   }
 
   user_pool_id     = aws_cognito_user_pool.fam_user_pool.id
-  write_attributes = "${concat(var.minimum_oidc_attribute_list, ["custom:idp_display_name", "email"])}"
+  write_attributes = var.minimum_oidc_attribute_list
 }
 
 resource "aws_cognito_user_pool_client" "prod_silva_oidc_client" {
@@ -99,7 +99,7 @@ resource "aws_cognito_user_pool_client" "prod_silva_oidc_client" {
   id_token_validity                             = "60"
   name                                          = "silva_prod"
   prevent_user_existence_errors                 = "ENABLED"
-  read_attributes                               = "${concat(var.minimum_oidc_attribute_list, ["custom:idp_display_name", "email"])}"
+  read_attributes                               = var.minimum_oidc_attribute_list
   refresh_token_validity                        = "24"
   supported_identity_providers                  = [
     "${aws_cognito_identity_provider.prod_idir_oidc_provider.provider_name}",
@@ -113,5 +113,5 @@ resource "aws_cognito_user_pool_client" "prod_silva_oidc_client" {
   }
 
   user_pool_id     = aws_cognito_user_pool.fam_user_pool.id
-  write_attributes = "${concat(var.minimum_oidc_attribute_list, ["custom:idp_display_name", "email"])}"
+  write_attributes = var.minimum_oidc_attribute_list
 }
