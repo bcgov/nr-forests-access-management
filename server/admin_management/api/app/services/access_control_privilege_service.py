@@ -72,8 +72,8 @@ class AccessControlPrivilegeService:
         Arguments:
             application_id (int): The application's id, to find out the delegated admins
         Returns:
-            PagedResultsSchema[FamAccessControlPrivilegeGetResponse]: results containing
-            list of delegated admins assigned to this application.
+            List[FamAccessControlPrivilegeGetResponse]: results containing list of delegated admins
+            assigned to this application.
         """
         delegated_admins = []
         qr = self.access_control_privilege_repository.get_delegated_admins_assignment_by_application_id(

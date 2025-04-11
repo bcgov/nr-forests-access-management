@@ -227,7 +227,7 @@ def __export_delegated_admin_csv_file(data: List[FamAccessControlPrivilegeGetRes
     """
     This is a private helper function to export the delegated assignments data to a CSV file.
     """
-    ini_title_line = f"Application: {data[0].role.application.application_description}"
+    ini_title_line = f"Application: {data[0].role.application.application_description}" if data else None
     csv_rows = [
         {
             "User Name": item.user.user_name,

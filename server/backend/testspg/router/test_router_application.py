@@ -779,8 +779,34 @@ def test_export_application_user_roles_success(
     assert "text/csv" in response.headers["Content-Type"].lower()
     assert "Content-Disposition" in response.headers
     filename = response.headers["Content-Disposition"].split("=")[1]
-    assert ".csv" in filename
+    assert filename.endswith(".csv")
+    assert response.content is not None
 
+def test_export_application_user_roles_no_data(
+    mocker,
+    test_client_fixture: starlette.testclient.TestClient,
+    test_rsa_key,
+    get_fam_application_user_role_assignment_dependencies_override,
+):
+    mocker.patch(
+        "api.app.routers.router_application.crud_application.get_application_role_assignments_no_paging",
+        return_value=[],
+    )
+
+    token = jwt_utils.create_jwt_token(test_rsa_key)
+    response = test_client_fixture.get(
+        f"{get_application_role_assignment_end_point}/export",
+        headers=jwt_utils.headers(token),
+    )
+
+    assert response.status_code == HTTPStatus.OK
+    assert "text/csv" in response.headers["Content-Type"].lower()
+    assert "Content-Disposition" in response.headers
+    assert response.headers["Content-Disposition"].startswith("attachment; filename=")
+    filename = response.headers["Content-Disposition"].split("=")[1]
+    assert filename.endswith(".csv")
+    assert response.content is not None
+    assert b"User Name" not in response.content  # No data in CSV
 
 def test_export_application_user_roles_unauthorized(
     test_client_fixture: starlette.testclient.TestClient, test_rsa_key
