@@ -13,6 +13,7 @@ from api.app.constants import (CURRENT_TERMS_AND_CONDITIONS_VERSION,
 from api.app.crud import crud_application
 from api.app.main import apiPrefix
 from api.app.models.model import FamUserTermsConditions
+from api.app.routers.router_application import router
 from api.app.routers.router_guards import (
     authorize_by_app_id, enforce_bceid_terms_conditions_guard)
 from api.app.schemas.pagination import UserRolePageParamsSchema
@@ -795,3 +796,22 @@ def test_export_application_user_roles_unauthorized(
     )
 
     assert response.status_code == HTTPStatus.FORBIDDEN
+
+
+def test_export_application_user_roles_has_necessary_authorizeaton_guard_checks():
+    """
+    Test that the export_application_user_roles endpoint has authorization guards in place.
+    This test verifies that the endpoint is protected by the 'authorize_by_app_id' and
+    'enforce_bceid_terms_conditions_guard' dependencies.
+    """
+    route = next(
+        (route for route in router.routes if route.path == "/{application_id}/user-role-assignment/export"),
+        None,
+    )
+    assert route is not None
+    assert any(
+        dependency.dependency == authorize_by_app_id for dependency in route.dependencies
+    ), "authorize_by_app_id check should be a dependency for export_application_user_roles"
+    assert any(
+        dependency.dependency == enforce_bceid_terms_conditions_guard for dependency in route.dependencies
+    ), "enforce_bceid_terms_conditions_guard check should be a dependency for export_application_user_roles"
