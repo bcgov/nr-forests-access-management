@@ -23,6 +23,7 @@ import { computed, nextTick, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import {
+    exportDataTableApiCall,
     exportToCsv,
     getOrganizationName,
     sortFieldToEnum,
@@ -587,20 +588,33 @@ const handleFilter = (searchValue: string, isChanged: boolean) => {
 };
 
 const isDataExporting = ref<boolean>(false); // loading indicator for downloading CSV
-const downloadAppUsersTableData = () => {
-    exportToCsv(props.appId, props.appName, (appId: number) => {
-        isDataExporting.value = true;
-        return AppActlApiService.applicationsApi
-            .exportApplicationUserRoles(appId)
-            .then((response) => {
+/**
+ * Download the CSV file for the Manage Permissions table based on the table type.
+ * Delegated to the exportToCsv function to export the data.
+ */
+const downloadManagePermissionsCSVData = () => {
+    exportToCsv(
+        props.appId,
+        props.appName,
+        props.tableType,
+        async (appId: number, tableType: ManagePermissionsTableEnum) => {
+            isDataExporting.value = true;
+            try {
+                const response = await exportDataTableApiCall(appId, tableType);
                 isDataExporting.value = false;
-                return response.data;
-            })
-            .catch((error) => {
+                return {
+                    // retrieve filename from backend (response headers)
+                    filename: response.headers["content-disposition"]
+                        .split("=")[1]
+                        .trim(),
+                    data: response.data,
+                };
+            } catch (error) {
                 isDataExporting.value = false;
                 throw new Error("Failed to download the CSV file.");
-            });
-    });
+            }
+        }
+    );
 };
 </script>
 
@@ -632,9 +646,8 @@ const downloadAppUsersTableData = () => {
                 @blur="handleFilter"
             />
             <Button
-                :disabled="!hasUserRoleRecords"
-                v-if="isAppUserTable"
-                @click="downloadAppUsersTableData"
+                :disabled="getTotalRecords() === 0"
+                @click="downloadManagePermissionsCSVData"
                 :isLoading="isDataExporting"
                 outlined
                 label="Download table as CSV file&nbsp;&nbsp;"
@@ -824,15 +837,15 @@ const downloadAppUsersTableData = () => {
 
     .table-toolbar-container {
         display: flex;
+        flex-wrap: wrap;
         justify-content: space-between;
         align-items: center;
-        height: 6.1vh;
         > * {
             flex: 1 1 0;
-            height: 100%;
+            height: 2.6rem;
         }
         :first-child {
-            flex: 5 1 0;
+            flex: 5 1 35ch;
         }
         button {
             border-radius: 0;

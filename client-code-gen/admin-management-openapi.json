@@ -108,6 +108,28 @@
                 ]
             }
         },
+        "/application-admins/export": {
+            "get": {
+                "tags": ["FAM Application Admin"],
+                "summary": "Export application admins information",
+                "operationId": "export_application_admins",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "6jfveou69mgford233or30hmta": []
+                    }
+                ]
+            }
+        },
         "/application-admins/{application_admin_id}": {
             "delete": {
                 "tags": ["FAM Application Admin"],
@@ -318,6 +340,50 @@
                                 "schema": {
                                     "$ref": "#/components/schemas/PagedResultsSchema_FamAccessControlPrivilegeGetResponse_"
                                 }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/access-control-privileges/export": {
+            "get": {
+                "tags": ["FAM Access Control Privileges"],
+                "summary": "Export delegated ddmin roles information by application ID",
+                "description": "Export delegated admin assignment records associated with an application as csv data",
+                "operationId": "export_access_control_privileges_by_application_id",
+                "security": [
+                    {
+                        "6jfveou69mgford233or30hmta": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "application_id",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "title": "Application Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
                             }
                         }
                     },
@@ -565,11 +631,7 @@
             "FamAccessControlPrivilegeResponse": {
                 "properties": {
                     "email_sending_status": {
-                        "allOf": [
-                            {
-                                "$ref": "#/components/schemas/EmailSendingStatus"
-                            }
-                        ],
+                        "$ref": "#/components/schemas/EmailSendingStatus",
                         "default": "NOT_REQUIRED"
                     },
                     "assignments_detail": {

@@ -39,7 +39,7 @@ export const FAMApplicationsApiAxiosParamCreator = function (configuration?: Con
     return {
         /**
          * Export users/roles assignment records associated with an application as csv data
-         * @summary Export User roles Information by application ID
+         * @summary Export user roles information by application ID
          * @param {number} applicationId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -192,7 +192,7 @@ export const FAMApplicationsApiFp = function(configuration?: Configuration) {
     return {
         /**
          * Export users/roles assignment records associated with an application as csv data
-         * @summary Export User roles Information by application ID
+         * @summary Export user roles information by application ID
          * @param {number} applicationId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -247,7 +247,7 @@ export const FAMApplicationsApiFactory = function (configuration?: Configuration
     return {
         /**
          * Export users/roles assignment records associated with an application as csv data
-         * @summary Export User roles Information by application ID
+         * @summary Export user roles information by application ID
          * @param {number} applicationId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -292,7 +292,7 @@ export const FAMApplicationsApiFactory = function (configuration?: Configuration
 export interface FAMApplicationsApiInterface {
     /**
      * Export users/roles assignment records associated with an application as csv data
-     * @summary Export User roles Information by application ID
+     * @summary Export user roles information by application ID
      * @param {number} applicationId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -337,7 +337,7 @@ export interface FAMApplicationsApiInterface {
 export class FAMApplicationsApi extends BaseAPI implements FAMApplicationsApiInterface {
     /**
      * Export users/roles assignment records associated with an application as csv data
-     * @summary Export User roles Information by application ID
+     * @summary Export user roles information by application ID
      * @param {number} applicationId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}

@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime
 from typing import List
 
 from api.app import jwt_validation
@@ -8,8 +9,8 @@ from api.app.routers.router_guards import (
     enforce_self_grant_guard, get_current_requester, get_verified_target_user,
     validate_param_access_control_privilege_id)
 from api.app.routers.router_utils import (
-    access_control_privilege_service_instance, role_service_instance,
-    user_service_instance)
+    access_control_privilege_service_instance, csv_file_data_streamer,
+    role_service_instance, user_service_instance)
 from api.app.schemas.pagination import (DelegatedAdminPageParamsSchema,
                                         PagedResultsSchema)
 from api.app.schemas.schemas import (FamAccessControlPrivilegeCreateRequest,
@@ -23,6 +24,7 @@ from api.app.services.user_service import UserService
 from api.app.utils.audit_util import (AuditEventLog, AuditEventOutcome,
                                       AuditEventType)
 from fastapi import APIRouter, Depends, Request, Response
+from fastapi.responses import StreamingResponse
 
 LOGGER = logging.getLogger(__name__)
 
@@ -137,6 +139,35 @@ def get_access_control_privileges_by_application_id(
         application_id, page_params
     )
 
+@router.get(
+    "/export",
+    dependencies=[Depends(authorize_by_app_id)],
+    summary="Export delegated ddmin roles information by application ID",
+)
+def export_access_control_privileges_by_application_id(
+    application_id: int,
+    access_control_privilege_service: AccessControlPrivilegeService = Depends(
+        access_control_privilege_service_instance
+    )
+):
+    """
+    Export delegated admin assignment records associated with an application as csv data
+    """
+    LOGGER.debug(
+        f"Export delegated admin assignment records associated with application_id: {application_id}"
+    )
+    results: List[FamAccessControlPrivilegeGetResponse] = (
+        access_control_privilege_service.get_delegated_admin_assignment_by_application_id_no_paging(
+        application_id)
+    )
+
+    filename = f"application_{results[0].role.application.application_name}_delegated_admin_roles-{datetime.now().strftime('%Y-%m-%d')}.csv" if results else "user_roles.csv"
+    return StreamingResponse(__export_delegated_admin_csv_file(results), media_type="text/csv",
+    headers={
+        "Access-Control-Expose-Headers":"Content-Disposition",
+        "Content-Disposition": f"attachment; filename={filename}"
+    })
+
 
 @router.delete(
     "/{access_control_privilege_id}",
@@ -190,3 +221,22 @@ def delete_access_control_privilege(
 
     finally:
         audit_event_log.log_event()
+
+
+def __export_delegated_admin_csv_file(data: List[FamAccessControlPrivilegeGetResponse]):
+    """
+    This is a private helper function to export the delegated assignments data to a CSV file.
+    """
+    ini_title_line = f"Application: {data[0].role.application.application_description}" if data else None
+    csv_rows = [
+        {
+            "User Name": item.user.user_name,
+            "Domain": item.user.user_type_relation.description,
+            "First Name": item.user.first_name,
+            "Last Name": item.user.last_name,
+            "Email": item.user.email,
+            "Forest Client ID": f"'{item.role.forest_client.forest_client_number}'" if item.role.forest_client else None,
+            "Role Enable To Assign": item.role.display_name,
+            "Added On": item.create_date.strftime("%Y-%m-%d")
+        } for item in data]
+    return csv_file_data_streamer(ini_title_line=ini_title_line, data=csv_rows)

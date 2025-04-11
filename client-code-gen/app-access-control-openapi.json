@@ -163,7 +163,7 @@
         "/fam-applications/{application_id}/user-role-assignment/export": {
             "get": {
                 "tags": ["FAM Applications"],
-                "summary": "Export User roles Information by application ID",
+                "summary": "Export user roles information by application ID",
                 "description": "Export users/roles assignment records associated with an application as csv data",
                 "operationId": "export_application_user_roles",
                 "security": [

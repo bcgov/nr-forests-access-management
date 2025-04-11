@@ -113,6 +113,40 @@ export const FAMApplicationAdminApiAxiosParamCreator = function (configuration?:
         },
         /**
          * 
+         * @summary Export application admins information
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        exportApplicationAdmins: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/application-admins/export`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication 6jfveou69mgford233or30hmta required
+            // oauth required
+            await setOAuthToObject(localVarHeaderParameter, "6jfveou69mgford233or30hmta", [], configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary Get Application Admins
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -183,6 +217,18 @@ export const FAMApplicationAdminApiFp = function(configuration?: Configuration) 
         },
         /**
          * 
+         * @summary Export application admins information
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async exportApplicationAdmins(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.exportApplicationAdmins(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['FAMApplicationAdminApi.exportApplicationAdmins']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
          * @summary Get Application Admins
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -225,6 +271,15 @@ export const FAMApplicationAdminApiFactory = function (configuration?: Configura
         },
         /**
          * 
+         * @summary Export application admins information
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        exportApplicationAdmins(options?: any): AxiosPromise<any> {
+            return localVarFp.exportApplicationAdmins(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @summary Get Application Admins
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -260,6 +315,15 @@ export interface FAMApplicationAdminApiInterface {
      * @memberof FAMApplicationAdminApiInterface
      */
     deleteApplicationAdmin(applicationAdminId: number, options?: RawAxiosRequestConfig): AxiosPromise<void>;
+
+    /**
+     * 
+     * @summary Export application admins information
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof FAMApplicationAdminApiInterface
+     */
+    exportApplicationAdmins(options?: RawAxiosRequestConfig): AxiosPromise<any>;
 
     /**
      * 
@@ -301,6 +365,17 @@ export class FAMApplicationAdminApi extends BaseAPI implements FAMApplicationAdm
      */
     public deleteApplicationAdmin(applicationAdminId: number, options?: RawAxiosRequestConfig) {
         return FAMApplicationAdminApiFp(this.configuration).deleteApplicationAdmin(applicationAdminId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Export application admins information
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof FAMApplicationAdminApi
+     */
+    public exportApplicationAdmins(options?: RawAxiosRequestConfig) {
+        return FAMApplicationAdminApiFp(this.configuration).exportApplicationAdmins(options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

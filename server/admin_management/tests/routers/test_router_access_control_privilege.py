@@ -7,6 +7,7 @@ import tests.jwt_utils as jwt_utils
 from api.app.constants import DelegatedAdminSortByEnum, SortOrderEnum
 from api.app.jwt_validation import ERROR_PERMISSION_REQUIRED
 from api.app.main import apiPrefix
+from api.app.routers.router_access_control_privilege import router
 from api.app.routers.router_guards import (
     ERROR_INVALID_ACCESS_CONTROL_PRIVILEGE_ID, ERROR_INVALID_APPLICATION_ID,
     ERROR_INVALID_ROLE_ID, authorize_by_app_id)
@@ -20,11 +21,13 @@ from tests.constants import (INVALID_APPLICATION_ID,
                              TEST_FOREST_CLIENT_NUMBER,
                              TEST_FOREST_CLIENT_NUMBER_TWO,
                              TEST_INACTIVE_FOREST_CLIENT_NUMBER,
+                             TEST_NON_EXIST_ROLE_NAME,
                              TEST_NOT_EXIST_APPLICATION_ID,
                              TEST_NOT_EXIST_ROLE_ID,
                              TEST_USER_BUSINESS_GUID_BCEID)
-from tests.test_data.access_control_privilege_data import \
-    APP_DELEGATED_ADMIN_PAGED_RESULT_4_RECORDS
+from tests.test_data.access_control_privilege_data import (
+    APP_DELEGATED_ADMIN_PAGED_RESULT_4_RECORDS,
+    APP_DELEGATED_ADMIN_RESPONSE_SCHEMA_4_RECORDS)
 
 LOGGER = logging.getLogger(__name__)
 endPoint = f"{apiPrefix}/access-control-privileges"
@@ -378,3 +381,83 @@ def test_get_access_control_privileges_by_application_id__no_params_in_request_t
         sort_order=SortOrderEnum.DESC,
         sort_by=DelegatedAdminSortByEnum.CREATE_DATE
     )
+
+def test_export_access_control_privileges_by_application_id_success(
+    mocker,
+    test_client_fixture: starlette.testclient.TestClient,
+    test_rsa_key,
+    get_access_control_privileges_by_application_id_dependencies_override,
+):
+    mocker.patch(
+        "api.app.routers.router_access_control_privilege.AccessControlPrivilegeService.get_delegated_admin_assignment_by_application_id_no_paging",
+        return_value=APP_DELEGATED_ADMIN_RESPONSE_SCHEMA_4_RECORDS,
+    )
+
+    token = jwt_utils.create_jwt_token(test_rsa_key)
+    response = test_client_fixture.get(
+        f"{endPoint}/export?application_id={TEST_APPLICATION_ID_FOM_DEV}",
+        headers=jwt_utils.headers(token),
+    )
+
+    assert response.status_code == HTTPStatus.OK
+    assert "text/csv" in response.headers["Content-Type"].lower()
+    assert "Content-Disposition" in response.headers
+    assert response.headers["Content-Disposition"].startswith("attachment; filename=")
+    filename = response.headers["Content-Disposition"].split("=")[1]
+    assert filename.endswith(".csv")
+    assert response.content is not None
+
+def test_export_access_control_privileges_by_application_id_no_data(
+    mocker,
+    test_client_fixture: starlette.testclient.TestClient,
+    test_rsa_key,
+    get_access_control_privileges_by_application_id_dependencies_override,
+):
+    mocker.patch(
+        "api.app.routers.router_access_control_privilege.AccessControlPrivilegeService.get_delegated_admin_assignment_by_application_id_no_paging",
+        return_value=[],
+    )
+
+    token = jwt_utils.create_jwt_token(test_rsa_key)
+    response = test_client_fixture.get(
+        f"{endPoint}/export?application_id={TEST_APPLICATION_ID_FOM_DEV}",
+        headers=jwt_utils.headers(token),
+    )
+
+    assert response.status_code == HTTPStatus.OK
+    assert "text/csv" in response.headers["Content-Type"].lower()
+    assert "Content-Disposition" in response.headers
+    assert response.headers["Content-Disposition"].startswith("attachment; filename=")
+    filename = response.headers["Content-Disposition"].split("=")[1]
+    assert filename.endswith(".csv")
+    assert response.content is not None
+    assert b"User Name" not in response.content  # No data in CSV
+
+def test_export_access_control_privileges_by_application_id_unauthorized(
+    test_client_fixture: starlette.testclient.TestClient, test_rsa_key
+):
+    """
+    Test the export_access_control_privileges_by_application_id endpoint for unauthorized access.
+    """
+    unauthorized_token = jwt_utils.create_jwt_token(test_rsa_key, [TEST_NON_EXIST_ROLE_NAME])
+
+    response = test_client_fixture.get(
+        f"{endPoint}/export?application_id={TEST_APPLICATION_ID_FOM_DEV}",
+        headers=jwt_utils.headers(unauthorized_token),
+    )
+
+    assert response.status_code == HTTPStatus.FORBIDDEN
+
+def test_export_access_control_privileges_by_application_id_has_necessary_authorizeaton_guard_checks():
+    """
+    Test the export_access_control_privileges_by_application_id endpoint has authorization guards in place.
+    This test verifies that the endpoint is protected by the 'authorize_by_app_id' dependencie.
+    """
+    route = next(
+        (route for route in router.routes if route.path == "/export"),
+        None,
+    )
+    assert route is not None
+    assert any(
+        dependency.dependency == authorize_by_app_id for dependency in route.dependencies
+    ), "authorize_by_app_id check should be a dependency for export_access_control_privileges_by_application_id"

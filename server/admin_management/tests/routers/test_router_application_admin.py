@@ -7,13 +7,18 @@ from api.app.constants import (ERROR_CODE_INVALID_REQUEST_PARAMETER,
                                AdminRoleAuthGroup, UserType)
 from api.app.jwt_validation import ERROR_PERMISSION_REQUIRED
 from api.app.main import apiPrefix
+from api.app.routers.router_application_admin import router
 from api.app.routers.router_guards import (ERROR_INVALID_APPLICATION_ID,
-                                           ERROR_NOT_ALLOWED_USER_TYPE)
+                                           ERROR_NOT_ALLOWED_USER_TYPE,
+                                           authorize_by_fam_admin)
 from api.app.services.user_service import UserService
 from tests.constants import (TEST_APPLICATION_NAME_FAM,
                              TEST_FOM_DEV_ADMIN_ROLE, TEST_INVALID_USER_TYPE,
                              TEST_NEW_APPLICATION_ADMIN,
+                             TEST_NON_EXIST_ROLE_NAME,
                              TEST_NOT_EXIST_APPLICATION_ID)
+from tests.test_data.application_admin_data import \
+    APP_ADMIN_RESPONSE_SCHEMA_4_RECORDS
 
 LOGGER = logging.getLogger(__name__)
 endPoint = f"{apiPrefix}/application-admins"
@@ -191,3 +196,72 @@ def test_get_application_admins(
     assert "application" in data[0].keys()
     # - Verify list contains application admin for "FAM"
     assert any(TEST_APPLICATION_NAME_FAM in x["application"].values() for x in data)
+
+def test_export_application_admins_success(
+    mocker,
+    test_client_fixture: starlette.testclient.TestClient,
+    test_rsa_key
+):
+    mocker.patch(
+        "api.app.routers.router_application_admin.ApplicationAdminService.get_application_admins",
+        return_value=APP_ADMIN_RESPONSE_SCHEMA_4_RECORDS,
+    )
+
+    token = jwt_utils.create_jwt_token(test_rsa_key, [AdminRoleAuthGroup.FAM_ADMIN])
+    response = test_client_fixture.get(f"{endPoint}/export", headers=jwt_utils.headers(token))
+
+    assert response.status_code == HTTPStatus.OK
+    assert "text/csv" in response.headers["Content-Type"].lower()
+    assert "Content-Disposition" in response.headers
+    assert response.headers["Content-Disposition"].startswith("attachment; filename=")
+    filename = response.headers["Content-Disposition"].split("=")[1]
+    assert filename.endswith(".csv")
+    assert response.content is not None
+
+def test_export_application_admins_no_data(
+    mocker,
+    test_client_fixture: starlette.testclient.TestClient,
+    test_rsa_key
+):
+    mocker.patch(
+        "api.app.routers.router_application_admin.ApplicationAdminService.get_application_admins",
+        return_value=[],
+    )
+
+    token = jwt_utils.create_jwt_token(test_rsa_key, [AdminRoleAuthGroup.FAM_ADMIN])
+    response = test_client_fixture.get(f"{endPoint}/export", headers=jwt_utils.headers(token))
+
+    assert response.status_code == HTTPStatus.OK
+    assert "text/csv" in response.headers["Content-Type"].lower()
+    assert "Content-Disposition" in response.headers
+    assert response.headers["Content-Disposition"].startswith("attachment; filename=")
+    filename = response.headers["Content-Disposition"].split("=")[1]
+    assert filename.endswith(".csv")
+    assert response.content is not None
+    assert b"User Name" not in response.content  # No data in CSV
+
+def test_export_application_admins_no_data_unauthorized(
+    test_client_fixture: starlette.testclient.TestClient, test_rsa_key
+):
+    """
+    Test the export_application_admins endpoint for unauthorized access.
+    """
+    unauthorized_token = jwt_utils.create_jwt_token(test_rsa_key, [TEST_NON_EXIST_ROLE_NAME])
+
+    response = test_client_fixture.get(f"{endPoint}/export", headers=jwt_utils.headers(unauthorized_token))
+
+    assert response.status_code == HTTPStatus.FORBIDDEN
+
+def test_export_application_admins_has_necessary_authorizeaton_guard_checks():
+    """
+    Test the export_application_admins endpoint has authorization guards in place.
+    This test verifies that the endpoint is protected by the 'authorize_by_fam_admin' dependencie.
+    """
+    route = next(
+        (route for route in router.routes if route.path == "/export"),
+        None,
+    )
+    assert route is not None
+    assert any(
+        dependency.dependency == authorize_by_fam_admin for dependency in route.dependencies
+    ), "authorize_by_fam_admin check should be a dependency for export_application_admins"

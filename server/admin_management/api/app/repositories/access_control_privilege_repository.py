@@ -119,16 +119,26 @@ class AccessControlPrivilegeRepository(SimplePaginateRepository):
             PagedResultsSchema[FamAccessControlPrivilegeGetResponse]: A paged results containing
             pagination metadata and a list of delegated admins assigned to this application.
         """
-        base_query = (
-            select(FamAccessControlPrivilege)
-            .join(FamUser)
-            .join(FamRole)
-            .outerjoin(FamRole.forest_client_relation)
-            .filter(FamRole.application_id == application_id)
-        )
+        base_query = self.__delegated_admin_assignments_base_query(application_id)
         return super().get_paginated_results(
             base_query=base_query, page_params=page_params, ResultSchema=FamAccessControlPrivilegeGetResponse
         )
+
+    def get_delegated_admins_assignment_by_application_id(
+        self, application_id: int
+    ) -> List[FamAccessControlPrivilegeGetResponse]:
+        """
+        Queries app_fam.fam_access_control_privilege for the application's Delegated Admin records.
+        No pagination.
+        Arguments:
+            application_id (int): The application's id, to find out the delegated admins
+            belong to this application.
+        Returns:
+            List[FamAccessControlPrivilegeGetResponse]: A list of delegated admins assigned to this application.
+        """
+        base_query = self.__delegated_admin_assignments_base_query(application_id)
+        # don't need pagination
+        return self.db.scalars(base_query).all()
 
     def create_access_control_privilege(
         self, fam_access_control_priviliege: FamAccessControlPrivilegeCreateDto
@@ -170,4 +180,16 @@ class AccessControlPrivilegeRepository(SimplePaginateRepository):
             .filter(FamAccessControlPrivilege.user_id == user_id)
             .order_by(FamRole.application_id, FamRole.role_id)
             .all()
+        )
+
+    def __delegated_admin_assignments_base_query(self, application_id: int) -> select:
+        """
+        Base query for delegated admin assignments.
+        """
+        return (
+            select(FamAccessControlPrivilege)
+            .join(FamUser)
+            .join(FamRole)
+            .outerjoin(FamRole.forest_client_relation)
+            .filter(FamRole.application_id == application_id)
         )
