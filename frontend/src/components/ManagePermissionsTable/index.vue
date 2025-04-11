@@ -23,8 +23,8 @@ import { computed, nextTick, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import {
+    downloadCsvFromResponse,
     exportDataTableApiCall,
-    exportToCsv,
     getOrganizationName,
     sortFieldToEnum,
 } from "@/components/ManagePermissionsTable/utils";
@@ -587,34 +587,24 @@ const handleFilter = (searchValue: string, isChanged: boolean) => {
     }
 };
 
-const isDataExporting = ref<boolean>(false); // loading indicator for downloading CSV
 /**
- * Download the CSV file for the Manage Permissions table based on the table type.
- * Delegated to the exportToCsv function to export the data.
+ * Export CSV handling using TanStak.
+ * Just a note:
+ * TanStak only has function 'useMutation' that does not cache the data
+ * although the api is a GET request but the name 'mutation' is quite strange
+ * and normally 'mutation' is used for POST.
  */
+const exportToCsvMutation = useMutation({
+    mutationFn: () => exportDataTableApiCall(props.appId, props.tableType),
+    onSuccess: (csvResponse) => {
+        downloadCsvFromResponse(csvResponse);
+    },
+    onError: (error) => {
+        throw new Error("Failed to download the CSV file.");
+    },
+});
 const downloadManagePermissionsCSVData = () => {
-    exportToCsv(
-        props.appId,
-        props.appName,
-        props.tableType,
-        async (appId: number, tableType: ManagePermissionsTableEnum) => {
-            isDataExporting.value = true;
-            try {
-                const response = await exportDataTableApiCall(appId, tableType);
-                isDataExporting.value = false;
-                return {
-                    // retrieve filename from backend (response headers)
-                    filename: response.headers["content-disposition"]
-                        .split("=")[1]
-                        .trim(),
-                    data: response.data,
-                };
-            } catch (error) {
-                isDataExporting.value = false;
-                throw new Error("Failed to download the CSV file.");
-            }
-        }
-    );
+    exportToCsvMutation.mutate();
 };
 </script>
 
@@ -648,7 +638,7 @@ const downloadManagePermissionsCSVData = () => {
             <Button
                 :disabled="getTotalRecords() === 0"
                 @click="downloadManagePermissionsCSVData"
-                :isLoading="isDataExporting"
+                :isLoading="exportToCsvMutation.isPending.value"
                 outlined
                 label="Download table as CSV file&nbsp;&nbsp;"
                 :icon="DownloadIcon"

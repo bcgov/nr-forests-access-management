@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime
 from typing import List
 
 from api.app import database
@@ -70,7 +71,7 @@ def export_application_user_roles(
         db=db, application_id=application_id, requester=requester
     )
 
-    filename = f"application_{results[0].role.application.application_name}_user_roles.csv" if results else "user_roles.csv"
+    filename = f"application_{results[0].role.application.application_name}_user_roles-{datetime.now().strftime('%Y-%m-%d')}.csv" if results else "user_roles.csv"
     return StreamingResponse(__export_app_user_roles_csv_file(results), media_type="text/csv", headers={
         "Access-Control-Expose-Headers":"Content-Disposition",
         "Content-Disposition": f"attachment; filename={filename}"

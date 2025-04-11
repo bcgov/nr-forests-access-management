@@ -9,7 +9,7 @@ import type { PaginationType } from "@/types/PaginationTypes";
 import { formatAxiosError } from "@/utils/ApiUtils";
 import { formatForestClientDisplayName } from "@/utils/ForestClientUtils";
 import { formatUserNameAndId } from "@/utils/UserUtils";
-import { isAxiosError } from "axios";
+import { isAxiosError, type AxiosResponse } from "axios";
 import {
     type FamAccessControlPrivilegeGetResponse,
     type FamAppAdminGetResponse,
@@ -337,22 +337,18 @@ export const exportDataTableApiCall = (
     }
 };
 
-export const exportToCsv = async (
-    appId: number,
-    appName: string,
-    tableType: ManagePermissionsTableEnum,
-    fetchCsvData: (
-        appId: number,
-        tableType: ManagePermissionsTableEnum
-    ) => Promise<{ filename: any; data: any }> | void // callback function to fetch csv data
+export const downloadCsvFromResponse = async (
+    csvResponse: AxiosResponse<any, any>
 ) => {
-    const csvData = await fetchCsvData(appId, tableType);
-    if (csvData) {
-        const csvContent = `data:text/csv;charset=utf-8,${csvData.data}`;
+    if (csvResponse) {
+        const csvContent = `data:text/csv;charset=utf-8,${csvResponse.data}`;
         const encodedUri = encodeURI(csvContent);
         const link = document.createElement("a");
+        const filename = csvResponse.headers["content-disposition"]
+            .split("=")[1]
+            .trim();
         link.setAttribute("href", encodedUri);
-        link.setAttribute("download", `${csvData.filename}`);
+        link.setAttribute("download", filename);
         document.body.appendChild(link);
         link.click();
     }
