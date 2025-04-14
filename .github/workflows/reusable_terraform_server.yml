@@ -206,6 +206,8 @@ jobs:
                     fam_api_base_url=`terragrunt run-all output fam_api_base_url --terragrunt-non-interactive | sed 's/^"//' | sed 's/"$//'`
                     smoke_test_url="$fam_api_base_url/smoke_test"
                     echo "Smoke test URL: [$smoke_test_url]"
+                    echo "Waiting for 30 seconds before executing the smoke test..."
+                    sleep 30
                     curl --silent --show-error --fail $smoke_test_url
                   else
                     echo "Not executing terraform apply - smoke test skipped"
