@@ -23,7 +23,8 @@ import { computed, nextTick, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import {
-    exportToCsv,
+    downloadCsvFromResponse,
+    exportDataTableApiCall,
     getOrganizationName,
     sortFieldToEnum,
 } from "@/components/ManagePermissionsTable/utils";
@@ -586,21 +587,24 @@ const handleFilter = (searchValue: string, isChanged: boolean) => {
     }
 };
 
-const isDataExporting = ref<boolean>(false); // loading indicator for downloading CSV
-const downloadAppUsersTableData = () => {
-    exportToCsv(props.appId, props.appName, (appId: number) => {
-        isDataExporting.value = true;
-        return AppActlApiService.applicationsApi
-            .exportApplicationUserRoles(appId)
-            .then((response) => {
-                isDataExporting.value = false;
-                return response.data;
-            })
-            .catch((error) => {
-                isDataExporting.value = false;
-                throw new Error("Failed to download the CSV file.");
-            });
-    });
+/**
+ * Export CSV handling using TanStak.
+ * Just a note:
+ * TanStak only has function 'useMutation' that does not cache the data
+ * although the api is a GET request but the name 'mutation' is quite strange
+ * and normally 'mutation' is used for POST.
+ */
+const exportToCsvMutation = useMutation({
+    mutationFn: () => exportDataTableApiCall(props.appId, props.tableType),
+    onSuccess: (csvResponse) => {
+        downloadCsvFromResponse(csvResponse);
+    },
+    onError: (error) => {
+        throw new Error("Failed to download the CSV file.");
+    },
+});
+const downloadManagePermissionsCSVData = () => {
+    exportToCsvMutation.mutate();
 };
 </script>
 
@@ -632,10 +636,9 @@ const downloadAppUsersTableData = () => {
                 @blur="handleFilter"
             />
             <Button
-                :disabled="!hasUserRoleRecords"
-                v-if="isAppUserTable"
-                @click="downloadAppUsersTableData"
-                :isLoading="isDataExporting"
+                :disabled="getTotalRecords() === 0"
+                @click="downloadManagePermissionsCSVData"
+                :isLoading="exportToCsvMutation.isPending.value"
                 outlined
                 label="Download table as CSV file&nbsp;&nbsp;"
                 :icon="DownloadIcon"
@@ -824,15 +827,15 @@ const downloadAppUsersTableData = () => {
 
     .table-toolbar-container {
         display: flex;
+        flex-wrap: wrap;
         justify-content: space-between;
         align-items: center;
-        height: 6.1vh;
         > * {
             flex: 1 1 0;
-            height: 100%;
+            height: 2.6rem;
         }
         :first-child {
-            flex: 5 1 0;
+            flex: 5 1 35ch;
         }
         button {
             border-radius: 0;

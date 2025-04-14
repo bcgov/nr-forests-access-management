@@ -1,3 +1,7 @@
+import {
+    AdminMgmtApiService,
+    AppActlApiService,
+} from "@/services/ApiServiceFactory";
 import { ManagePermissionsTableEnum } from "@/types/ManagePermissionsTypes";
 import type { PermissionNotificationType } from "@/types/NotificationTypes";
 import { Severity } from "@/types/NotificationTypes";
@@ -5,7 +9,7 @@ import type { PaginationType } from "@/types/PaginationTypes";
 import { formatAxiosError } from "@/utils/ApiUtils";
 import { formatForestClientDisplayName } from "@/utils/ForestClientUtils";
 import { formatUserNameAndId } from "@/utils/UserUtils";
-import { isAxiosError } from "axios";
+import { isAxiosError, type AxiosResponse } from "axios";
 import {
     type FamAccessControlPrivilegeGetResponse,
     type FamAppAdminGetResponse,
@@ -315,18 +319,36 @@ export const sortFieldToEnum = (
     }
 };
 
-export const exportToCsv = async (
+export const exportDataTableApiCall = (
     appId: number,
-    appName: string,
-    fetchCsvData: (appId: number) => Promise<string> | void // callback function to fetch csv data
+    tableType: ManagePermissionsTableEnum
 ) => {
-    const csvData = await fetchCsvData(appId);
-    if (csvData) {
-        const csvContent = `data:text/csv;charset=utf-8,${csvData}`;
+    switch (tableType) {
+        case ManagePermissionsTableEnum.AppUser:
+            return AppActlApiService.applicationsApi.exportApplicationUserRoles(
+                appId
+            );
+        case ManagePermissionsTableEnum.DelegatedAdmin:
+            return AdminMgmtApiService.delegatedAdminApi.exportAccessControlPrivilegesByApplicationId(
+                appId
+            );
+        case ManagePermissionsTableEnum.AppAdmin:
+            return AdminMgmtApiService.applicationAdminApi.exportApplicationAdmins();
+    }
+};
+
+export const downloadCsvFromResponse = async (
+    csvResponse: AxiosResponse<any, any>
+) => {
+    if (csvResponse) {
+        const csvContent = `data:text/csv;charset=utf-8,${csvResponse.data}`;
         const encodedUri = encodeURI(csvContent);
         const link = document.createElement("a");
+        const filename = csvResponse.headers["content-disposition"]
+            .split("=")[1]
+            .trim();
         link.setAttribute("href", encodedUri);
-        link.setAttribute("download", `${appName}_user_roles.csv`);
+        link.setAttribute("download", filename);
         document.body.appendChild(link);
         link.click();
     }
