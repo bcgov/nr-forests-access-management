@@ -92,6 +92,7 @@ def audit_log(original_func):
 
             func_return = original_func(*args, **kwargs)
 
+            # original_function execution was successful, log the change in Cognito event 'groupsToOverride' for user's access roles.
             audit_event_log["requestingUser"]["accessRoles"] = func_return["response"]["claimsOverrideDetails"][
                 "groupOverrideDetails"]["groupsToOverride"]
 
@@ -166,13 +167,16 @@ def populate_user_if_necessary(db_connection, event) -> None:
         "custom:idp_business_id"
     )  # only bceid user has this attribute
     cognito_user_id = event["userName"]
-
+    email = event["request"]["userAttributes"].get("email")
     user_type_code = USER_TYPE_CODE_DICT[user_type]
 
     if user_type_code in [USER_TYPE_BCSC_DEV, USER_TYPE_BCSC_TEST, USER_TYPE_BCSC_PROD]:
         user_name = user_guid
     else:
         user_name = event["request"]["userAttributes"]["custom:idp_username"]
+
+    LOGGER.debug(f"'populate_user_if_necessary': (user_name: {user_name}, user_type_code: {user_type_code}, "
+                 f"user_guid: {user_guid}, business_guid: {business_guid}, email: {email})")
 
     cursor = db_connection.cursor()
 
@@ -199,7 +203,7 @@ def populate_user_if_necessary(db_connection, event) -> None:
         VALUES( {user_type_code}, {user_guid}, {cognito_user_id}, {user_name}, {business_guid},
         CURRENT_USER, CURRENT_DATE, CURRENT_USER, CURRENT_DATE)
         ON CONFLICT (user_type_code, user_guid) DO
-        UPDATE SET user_name = {user_name},  cognito_user_id = {cognito_user_id}, update_user = CURRENT_USER, update_date = CURRENT_DATE;"""
+        UPDATE SET user_name = {user_name},  cognito_user_id = {cognito_user_id}, business_guid = {business_guid}, email = {email}, update_user = CURRENT_USER, update_date = CURRENT_DATE;"""
 
     sql_query = sql.SQL(raw_query).format(
         user_type_code=sql.Literal(user_type_code),
@@ -207,6 +211,7 @@ def populate_user_if_necessary(db_connection, event) -> None:
         cognito_user_id=sql.Literal(cognito_user_id),
         user_name=sql.Literal(user_name),
         business_guid=sql.Literal(business_guid),
+        email=sql.Literal(email),
     )
 
     cursor.execute(sql_query)
@@ -244,6 +249,9 @@ def handle_event(db_connection, event) -> event_type.Event:
         event["request"]["userAttributes"]["custom:idp_name"]
     ]
     cognito_client_id = event["callerContext"]["clientId"]
+
+    LOGGER.debug(f"'handle_event' to get access roles for the user: (user_guid: {user_guid}, "
+                 f"user_type_code: {user_type_code}, cognito_client_id: {cognito_client_id})")
 
     sql_query = sql.SQL(query).format(
         user_guid=sql.Literal(user_guid),
