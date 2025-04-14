@@ -1,5 +1,6 @@
 import logging
 from http import HTTPStatus
+from typing import List
 
 from api.app.repositories.application_admin_repository import \
     ApplicationAdminRepository
@@ -18,8 +19,13 @@ class ApplicationAdminService:
         self.application_service = ApplicationService(db)
         self.user_service = UserService(db)
 
-    def get_application_admins(self) -> schemas.FamAppAdminGetResponse:
-        return self.application_admin_repo.get_application_admins()
+    def get_application_admins(self) -> List[schemas.FamAppAdminGetResponse]:
+        application_admins = []
+        qr = self.application_admin_repo.get_application_admins()
+        # convert to schema objects
+        for result in qr:
+            application_admins.append(schemas.FamAppAdminGetResponse.model_validate(result))
+        return application_admins
 
     def get_application_admin_by_id(
         self, application_admin_id: int
