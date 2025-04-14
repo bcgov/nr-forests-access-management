@@ -1,3 +1,4 @@
+import functools
 import json
 import logging
 import logging.config
@@ -46,6 +47,68 @@ class AuditEventOutcome(str, Enum):
     FAIL = 0
 
 
+def audit_log(original_func):
+    """
+    Decorator to handle audit logging for functions.
+    Please refer to below for why "@functools.wraps" Python decorator is used.:
+        ref: https://hayageek.com/functools-wraps-in-python/#:~:text=The%20functools.,in%20every%20way%20that%20matters. and
+        ref: Ref: https://docs.python.org/3/library/functools.html#functools.wraps
+    """
+    @functools.wraps(original_func)
+    def decorated_func(*args, **kwargs):
+        audit_event_log = {
+            "auditEventTypeCode": "USER_LOGIN",
+            "auditEventResultCode": AuditEventOutcome.SUCCESS.name,
+            "requestingUser": {},
+        }
+
+        try:
+            args_repr = [repr(a) for a in args]
+            kwargs_repr = [f"{k}={v!r}" for k, v in kwargs.items()]
+            signature = ", ".join(args_repr + kwargs_repr)
+            LOGGER.debug(f"function {original_func.__name__} called with args {signature}")
+
+            event = args[0]  # First argument is the event
+            audit_event_log["cognitoApplicationId"] = event["callerContext"]["clientId"]
+            audit_event_log["requestingUser"]["userGuid"] = event["request"]["userAttributes"]["custom:idp_user_id"]
+            audit_event_log["requestingUser"]["userType"] = USER_TYPE_CODE_DICT[
+                event["request"]["userAttributes"]["custom:idp_name"]
+            ]
+
+            if audit_event_log["requestingUser"]["userType"] == USER_TYPE_IDIR:
+                audit_event_log["requestingUser"]["idpUserName"] = event["request"]["userAttributes"][
+                    "custom:idp_username"]
+            elif audit_event_log["requestingUser"]["userType"] == USER_TYPE_BCEID_BUSINESS:
+                audit_event_log["requestingUser"]["idpUserName"] = event["request"]["userAttributes"][
+                    "custom:idp_username"]
+                audit_event_log["requestingUser"]["businessGuid"] = event["request"][
+                    "userAttributes"].get("custom:idp_business_id")
+            else:
+                # for bc service card login, there is no custom:idp_username mapped, use display name instead, and it is optinal
+                audit_event_log["requestingUser"]["idpDisplayName"] = event["request"][
+                    "userAttributes"].get("custom:idp_display_name")
+
+            audit_event_log["requestingUser"]["cognitoUsername"] = event["userName"]
+
+            func_return = original_func(*args, **kwargs)
+
+            audit_event_log["requestingUser"]["accessRoles"] = func_return["response"]["claimsOverrideDetails"][
+                "groupOverrideDetails"]["groupsToOverride"]
+
+            return func_return
+
+        except Exception as e:
+            audit_event_log["auditEventResultCode"] = AuditEventOutcome.FAIL.name
+            audit_event_log["exception"] = original_func.__name__ + ": " + str(e)
+            raise e
+
+        finally:
+            LOGGER.info(json.dumps(audit_event_log))
+
+    return decorated_func
+
+
+@audit_log
 def lambda_handler(event: event_type.Event, context: Any) -> event_type.Event:
     """recieves a cognito event object, checks to see if the user associated
     with the event exists in the database.  If not it gets added.  Finally
@@ -68,68 +131,16 @@ def lambda_handler(event: event_type.Event, context: Any) -> event_type.Event:
     When we onboard applications to FAM, we config at least the minimum attribute list for them
     All applications should be configured with user attributes: "custom:idp_name", "custom:idp_user_id", "custom:idp_username"
     """
-
-    audit_event_log = {
-        "auditEventTypeCode": "USER_LOGIN",
-        "auditEventResultCode": AuditEventOutcome.SUCCESS.name,
-        "requestingUser": {},
-    }
-
     LOGGER.debug(f"context: {context}")
-
     LOGGER.debug(f"event: {event}")
 
-    try:
+    db_connection = obtain_db_connection()
+    populate_user_if_necessary(db_connection, event)
 
-        audit_event_log["cognitoApplicationId"] = event["callerContext"]["clientId"]
-        audit_event_log["requestingUser"]["userGuid"] = event["request"][
-            "userAttributes"
-        ]["custom:idp_user_id"]
-        audit_event_log["requestingUser"]["userType"] = USER_TYPE_CODE_DICT[
-            event["request"]["userAttributes"]["custom:idp_name"]
-        ]
+    event_with_authz = handle_event(db_connection, event)
 
-        if audit_event_log["requestingUser"]["userType"] == USER_TYPE_IDIR:
-            audit_event_log["requestingUser"]["idpUserName"] = event["request"][
-                "userAttributes"
-            ]["custom:idp_username"]
-        elif audit_event_log["requestingUser"]["userType"] == USER_TYPE_BCEID_BUSINESS:
-            audit_event_log["requestingUser"]["idpUserName"] = event["request"][
-                "userAttributes"
-            ]["custom:idp_username"]
-            # for the user attributes that are not configured to be readable and writable for all applications
-            # we make the audit log optional
-            audit_event_log["requestingUser"]["businessGuid"] = event["request"][
-                "userAttributes"
-            ].get("custom:idp_business_id")
-        else:
-            # for bc service card login, there is no custom:idp_username mapped, use display name instead, and it is optinal
-            audit_event_log["requestingUser"]["idpDisplayName"] = event["request"][
-                "userAttributes"
-            ].get("custom:idp_display_name")
-
-        audit_event_log["requestingUser"]["cognitoUsername"] = event["userName"]
-
-        db_connection = obtain_db_connection()
-        populate_user_if_necessary(db_connection, event)
-
-        event_with_authz = handle_event(db_connection, event)
-
-        release_db_connection(db_connection)
-
-        audit_event_log["requestingUser"]["accessRoles"] = event_with_authz["response"][
-            "claimsOverrideDetails"
-        ]["groupOverrideDetails"]["groupsToOverride"]
-
-        return event_with_authz
-
-    except Exception as e:
-        audit_event_log["auditEventResultCode"] = AuditEventOutcome.FAIL.name
-        audit_event_log["exception"] = type(e).__name__ + ": " + str(e)
-        raise e
-
-    finally:
-        LOGGER.info(json.dumps(audit_event_log))
+    release_db_connection(db_connection)
+    return event_with_authz
 
 
 def obtain_db_connection() -> Any:
