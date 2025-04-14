@@ -20,7 +20,7 @@ logConfigFile = os.path.join(os.path.dirname(__file__), "./config", "logging.con
 logging.config.fileConfig(logConfigFile, disable_existing_loggers=False)
 
 LOGGER = logging.getLogger()
-LOGLEVEL = os.getenv("LOGLEVEL_AUTH", "INFO").upper()
+LOGLEVEL = os.getenv("LOGLEVEL_AUTH", "INFO").upper() # Used to trun "DEBUG" logging on/off; default to "INFO"
 LOGGER.setLevel(LOGLEVEL)
 
 IDP_NAME_BCSC_DEV = "ca.bc.gov.flnr.fam.dev"
@@ -252,8 +252,8 @@ def handle_event(db_connection, event) -> event_type.Event:
     ]
     cognito_client_id = event["callerContext"]["clientId"]
 
-    LOGGER.debug(f"'handle_event' to get access roles for the user: (user_guid: {user_guid}, "
-                 f"user_type_code: {user_type_code}, cognito_client_id: {cognito_client_id})")
+    LOGGER.debug(f"'handle_event' with user's attributes: (user_guid: {user_guid}, user_type_code: {user_type_code}, "
+                 f"cognito_client_id: {cognito_client_id}) to get access roles for the user.")
 
     sql_query = sql.SQL(query).format(
         user_guid=sql.Literal(user_guid),
@@ -308,4 +308,7 @@ def handle_event(db_connection, event) -> event_type.Event:
             "preferredRole": "",
         }
     }
+
+    LOGGER.debug(f"'handle_event' user's access roles are appended for the token: (access roles: {role_list}).")
+
     return event
