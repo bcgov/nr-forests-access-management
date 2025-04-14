@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime
 from typing import List
 
 from api.app import database, jwt_validation
@@ -12,6 +13,7 @@ from api.app.routers.router_guards import (authorize_by_fam_admin,
                                            validate_param_user_type)
 from api.app.routers.router_utils import (application_admin_service_instance,
                                           application_service_instance,
+                                          csv_file_data_streamer,
                                           user_service_instance)
 from api.app.schemas import schemas
 from api.app.schemas.schemas import Requester, TargetUser
@@ -21,6 +23,7 @@ from api.app.services.user_service import UserService
 from api.app.utils.audit_util import (AuditEventLog, AuditEventOutcome,
                                       AuditEventType)
 from fastapi import APIRouter, Depends, Request, Response
+from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 
 LOGGER = logging.getLogger(__name__)
@@ -40,6 +43,24 @@ async def get_application_admins(
     ),
 ):
     return application_admin_service.get_application_admins()
+
+
+@router.get(
+    "/export",
+    dependencies=[Depends(authorize_by_fam_admin)],
+    summary="Export application admins information",
+)
+async def export_application_admins(
+    application_admin_service: ApplicationAdminService = Depends(
+        application_admin_service_instance
+    ),
+):
+    results: List[schemas.FamAppAdminGetResponse] = application_admin_service.get_application_admins()
+    filename = f"FAM_app_admins-{datetime.now().strftime('%Y-%m-%d')}.csv"
+    return StreamingResponse(__export_appplication_admin_csv_file(results), media_type="text/csv", headers={
+        "Access-Control-Expose-Headers":"Content-Disposition",
+        "Content-Disposition": f"attachment; filename={filename}"
+    })
 
 
 @router.post(
@@ -154,3 +175,22 @@ def delete_application_admin(
 
     finally:
         audit_event_log.log_event()
+
+
+def __export_appplication_admin_csv_file(data: List[schemas.FamAppAdminGetResponse]):
+    """
+    This is a private helper function to export the application admin assignments data to a CSV file.
+    """
+    ini_title_line = "FAM Application Admin"
+    csv_rows = [
+        {
+            "User Name": item.user.user_name,
+            "Domain": item.user.user_type_relation.description,
+            "First Name": item.user.first_name,
+            "Last Name": item.user.last_name,
+            "Email": item.user.email,
+            "Application": f"'{item.application.application_description}'",
+            "Environment": item.application.app_environment,
+            "Role Enable To Assign": "Admin"
+        } for item in data]
+    return csv_file_data_streamer(ini_title_line=ini_title_line, data=csv_rows)

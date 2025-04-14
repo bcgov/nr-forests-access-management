@@ -13,6 +13,7 @@ from api.app.constants import (CURRENT_TERMS_AND_CONDITIONS_VERSION,
 from api.app.crud import crud_application
 from api.app.main import apiPrefix
 from api.app.models.model import FamUserTermsConditions
+from api.app.routers.router_application import router
 from api.app.routers.router_guards import (
     authorize_by_app_id, enforce_bceid_terms_conditions_guard)
 from api.app.schemas.pagination import UserRolePageParamsSchema
@@ -734,3 +735,109 @@ def test_get_fam_application_user_role_assignment__no_params_in_request_then_use
 
     # !! Below line is very important (to restor the method from mock) for not to interfere subsequent tests cases.
     crud_application.get_application_role_assignments = original_fn
+
+
+def test_export_application_user_roles_success(
+    mocker,
+    test_client_fixture: starlette.testclient.TestClient,
+    test_rsa_key,
+    get_fam_application_user_role_assignment_dependencies_override,
+):
+    """
+    Test the export_application_user_roles endpoint for successful CSV export.
+    """
+    mock_results = [
+        Mock(
+            role=Mock(
+                application=Mock(application_name="TestApp"),
+                display_name="TestRole",
+                forest_client=None,
+            ),
+            user=Mock(
+                user_name="test_user",
+                user_type_relation=Mock(description="TestDomain"),
+                first_name="Test",
+                last_name="User",
+                email="test_user@example.com",
+            ),
+            create_date=Mock(strftime=lambda fmt: "2023-01-01"),
+        )
+    ]
+
+    mocker.patch(
+        "api.app.routers.router_application.crud_application.get_application_role_assignments_no_paging",
+        return_value=mock_results,
+    )
+
+    token = jwt_utils.create_jwt_token(test_rsa_key)
+    response = test_client_fixture.get(
+        f"{get_application_role_assignment_end_point}/export",
+        headers=jwt_utils.headers(token),
+    )
+
+    assert response.status_code == HTTPStatus.OK
+    assert "text/csv" in response.headers["Content-Type"].lower()
+    assert "Content-Disposition" in response.headers
+    filename = response.headers["Content-Disposition"].split("=")[1]
+    assert filename.endswith(".csv")
+    assert response.content is not None
+
+def test_export_application_user_roles_no_data(
+    mocker,
+    test_client_fixture: starlette.testclient.TestClient,
+    test_rsa_key,
+    get_fam_application_user_role_assignment_dependencies_override,
+):
+    mocker.patch(
+        "api.app.routers.router_application.crud_application.get_application_role_assignments_no_paging",
+        return_value=[],
+    )
+
+    token = jwt_utils.create_jwt_token(test_rsa_key)
+    response = test_client_fixture.get(
+        f"{get_application_role_assignment_end_point}/export",
+        headers=jwt_utils.headers(token),
+    )
+
+    assert response.status_code == HTTPStatus.OK
+    assert "text/csv" in response.headers["Content-Type"].lower()
+    assert "Content-Disposition" in response.headers
+    assert response.headers["Content-Disposition"].startswith("attachment; filename=")
+    filename = response.headers["Content-Disposition"].split("=")[1]
+    assert filename.endswith(".csv")
+    assert response.content is not None
+    assert b"User Name" not in response.content  # No data in CSV
+
+def test_export_application_user_roles_unauthorized(
+    test_client_fixture: starlette.testclient.TestClient, test_rsa_key
+):
+    """
+    Test the export_application_user_roles endpoint for unauthorized access.
+    """
+    unauthorized_token = jwt_utils.create_jwt_token(test_rsa_key, [NOT_EXIST_ROLE_NAME])
+
+    response = test_client_fixture.get(
+        f"{get_application_role_assignment_end_point}/export",
+        headers=jwt_utils.headers(unauthorized_token),
+    )
+
+    assert response.status_code == HTTPStatus.FORBIDDEN
+
+
+def test_export_application_user_roles_has_necessary_authorizeaton_guard_checks():
+    """
+    Test that the export_application_user_roles endpoint has authorization guards in place.
+    This test verifies that the endpoint is protected by the 'authorize_by_app_id' and
+    'enforce_bceid_terms_conditions_guard' dependencies.
+    """
+    route = next(
+        (route for route in router.routes if route.path == "/{application_id}/user-role-assignment/export"),
+        None,
+    )
+    assert route is not None
+    assert any(
+        dependency.dependency == authorize_by_app_id for dependency in route.dependencies
+    ), "authorize_by_app_id check should be a dependency for export_application_user_roles"
+    assert any(
+        dependency.dependency == enforce_bceid_terms_conditions_guard for dependency in route.dependencies
+    ), "enforce_bceid_terms_conditions_guard check should be a dependency for export_application_user_roles"

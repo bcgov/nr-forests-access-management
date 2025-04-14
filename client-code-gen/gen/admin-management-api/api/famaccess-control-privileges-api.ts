@@ -118,6 +118,47 @@ export const FAMAccessControlPrivilegesApiAxiosParamCreator = function (configur
             };
         },
         /**
+         * Export delegated admin assignment records associated with an application as csv data
+         * @summary Export delegated ddmin roles information by application ID
+         * @param {number} applicationId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        exportAccessControlPrivilegesByApplicationId: async (applicationId: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'applicationId' is not null or undefined
+            assertParamExists('exportAccessControlPrivilegesByApplicationId', 'applicationId', applicationId)
+            const localVarPath = `/access-control-privileges/export`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication 6jfveou69mgford233or30hmta required
+            // oauth required
+            await setOAuthToObject(localVarHeaderParameter, "6jfveou69mgford233or30hmta", [], configuration)
+
+            if (applicationId !== undefined) {
+                localVarQueryParameter['application_id'] = applicationId;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * Get \'Delegated Admin Privileges\' for an application with pagination.
          * @summary Get Access Control Privileges By Application Id
          * @param {number} applicationId 
@@ -220,6 +261,19 @@ export const FAMAccessControlPrivilegesApiFp = function(configuration?: Configur
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
+         * Export delegated admin assignment records associated with an application as csv data
+         * @summary Export delegated ddmin roles information by application ID
+         * @param {number} applicationId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async exportAccessControlPrivilegesByApplicationId(applicationId: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.exportAccessControlPrivilegesByApplicationId(applicationId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['FAMAccessControlPrivilegesApi.exportAccessControlPrivilegesByApplicationId']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
          * Get \'Delegated Admin Privileges\' for an application with pagination.
          * @summary Get Access Control Privileges By Application Id
          * @param {number} applicationId 
@@ -268,6 +322,16 @@ export const FAMAccessControlPrivilegesApiFactory = function (configuration?: Co
             return localVarFp.deleteAccessControlPrivilege(accessControlPrivilegeId, options).then((request) => request(axios, basePath));
         },
         /**
+         * Export delegated admin assignment records associated with an application as csv data
+         * @summary Export delegated ddmin roles information by application ID
+         * @param {number} applicationId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        exportAccessControlPrivilegesByApplicationId(applicationId: number, options?: any): AxiosPromise<any> {
+            return localVarFp.exportAccessControlPrivilegesByApplicationId(applicationId, options).then((request) => request(axios, basePath));
+        },
+        /**
          * Get \'Delegated Admin Privileges\' for an application with pagination.
          * @summary Get Access Control Privileges By Application Id
          * @param {number} applicationId 
@@ -310,6 +374,16 @@ export interface FAMAccessControlPrivilegesApiInterface {
      * @memberof FAMAccessControlPrivilegesApiInterface
      */
     deleteAccessControlPrivilege(accessControlPrivilegeId: number, options?: RawAxiosRequestConfig): AxiosPromise<void>;
+
+    /**
+     * Export delegated admin assignment records associated with an application as csv data
+     * @summary Export delegated ddmin roles information by application ID
+     * @param {number} applicationId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof FAMAccessControlPrivilegesApiInterface
+     */
+    exportAccessControlPrivilegesByApplicationId(applicationId: number, options?: RawAxiosRequestConfig): AxiosPromise<any>;
 
     /**
      * Get \'Delegated Admin Privileges\' for an application with pagination.
@@ -357,6 +431,18 @@ export class FAMAccessControlPrivilegesApi extends BaseAPI implements FAMAccessC
      */
     public deleteAccessControlPrivilege(accessControlPrivilegeId: number, options?: RawAxiosRequestConfig) {
         return FAMAccessControlPrivilegesApiFp(this.configuration).deleteAccessControlPrivilege(accessControlPrivilegeId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Export delegated admin assignment records associated with an application as csv data
+     * @summary Export delegated ddmin roles information by application ID
+     * @param {number} applicationId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof FAMAccessControlPrivilegesApi
+     */
+    public exportAccessControlPrivilegesByApplicationId(applicationId: number, options?: RawAxiosRequestConfig) {
+        return FAMAccessControlPrivilegesApiFp(this.configuration).exportAccessControlPrivilegesByApplicationId(applicationId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

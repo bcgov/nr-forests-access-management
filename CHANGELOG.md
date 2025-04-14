@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.33.2](https://github.com/bcgov/nr-forests-access-management/compare/v1.33.1...v1.33.2) (2025-04-09)
+
+
+### Bug Fixes
+
+* [#1763](https://github.com/bcgov/nr-forests-access-management/issues/1763) Adjust Cognito app clients read/write attributes ([#1792](https://github.com/bcgov/nr-forests-access-management/issues/1792)) ([fbd7ad1](https://github.com/bcgov/nr-forests-access-management/commit/fbd7ad1b0877d5aafdcd99f9845a11f571404778))
+* [#1798](https://github.com/bcgov/nr-forests-access-management/issues/1798) Add V63 flyway script for APT display name update. ([#1799](https://github.com/bcgov/nr-forests-access-management/issues/1799)) ([7d6919f](https://github.com/bcgov/nr-forests-access-management/commit/7d6919f692a57af322a2722e88b2f66dde15435f))
+
 ## [1.33.1](https://github.com/bcgov/nr-forests-access-management/compare/v1.33.0...v1.33.1) (2025-03-26)
 
 
