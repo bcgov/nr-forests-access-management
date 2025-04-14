@@ -20,6 +20,8 @@ logConfigFile = os.path.join(os.path.dirname(__file__), "./config", "logging.con
 logging.config.fileConfig(logConfigFile, disable_existing_loggers=False)
 
 LOGGER = logging.getLogger()
+LOGLEVEL = os.getenv("LOGLEVEL_AUTH", "INFO").upper()
+LOGGER.setLevel(LOGLEVEL)
 
 IDP_NAME_BCSC_DEV = "ca.bc.gov.flnr.fam.dev"
 IDP_NAME_BCSC_TEST = "ca.bc.gov.flnr.fam.test"
