@@ -172,9 +172,6 @@ def populate_user_if_necessary(db_connection, event) -> None:
     email = event["request"]["userAttributes"].get("email")
     user_type_code = USER_TYPE_CODE_DICT[user_type]
 
-    family_name = event["request"]["userAttributes"].get("family_name")
-    given_name = event["request"]["userAttributes"].get("given_name")
-
     if user_type_code in [USER_TYPE_BCSC_DEV, USER_TYPE_BCSC_TEST, USER_TYPE_BCSC_PROD]:
         user_name = user_guid
     else:
@@ -182,7 +179,6 @@ def populate_user_if_necessary(db_connection, event) -> None:
 
     LOGGER.debug(f"'populate_user_if_necessary': (user_name: {user_name}, user_type_code: {user_type_code}, "
                  f"user_guid: {user_guid}, business_guid: {business_guid}, email: {email})")
-    LOGGER.debug(f"'populate_user_if_necessary' with family_name: {family_name}, given_name: {given_name}")
 
     cursor = db_connection.cursor()
 
