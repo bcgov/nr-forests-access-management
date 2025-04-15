@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.34.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.33.2...v1.34.0) (2025-04-14)
+
+
+### Features
+
+* [#1768](https://github.com/bcgov/nr-forests-access-management/issues/1768) Ability to export applications delegated admin table and fam table ([#1803](https://github.com/bcgov/nr-forests-access-management/issues/1803)) ([910ed94](https://github.com/bcgov/nr-forests-access-management/commit/910ed94b51154e14133cf6664567e39d6a9b9504))
+
+
+### Bug Fixes
+
+* [#1802](https://github.com/bcgov/nr-forests-access-management/issues/1802) Update role name for apt ([#1804](https://github.com/bcgov/nr-forests-access-management/issues/1804)) ([ef1a035](https://github.com/bcgov/nr-forests-access-management/commit/ef1a035053d2e526ce4de04e201f50701b408693))
+
 ## [1.33.2](https://github.com/bcgov/nr-forests-access-management/compare/v1.33.1...v1.33.2) (2025-04-09)
 
 
