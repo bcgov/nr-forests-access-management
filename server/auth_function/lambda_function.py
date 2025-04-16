@@ -51,7 +51,7 @@ class AuditEventOutcome(str, Enum):
 
 def audit_log(original_func):
     """
-    Decorator to handle audit logging for functions.
+    Decorator to handle audit log for lambda_handler (AWS Cognito Pre-Token tirgger event) function.
     Please refer to below for why "@functools.wraps" Python decorator is used.:
         ref: https://hayageek.com/functools-wraps-in-python/#:~:text=The%20functools.,in%20every%20way%20that%20matters. and
         ref: Ref: https://docs.python.org/3/library/functools.html#functools.wraps
