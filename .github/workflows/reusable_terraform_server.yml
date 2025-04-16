@@ -194,6 +194,11 @@ jobs:
                   # Run terraform
                   terragrunt run-all ${{ inputs.tf_subcommand }} --terragrunt-non-interactive
 
+            - name: Wait for 30 seconds
+              run: |
+                  echo "Waiting for 30 seconds before executing the smoke test..."
+                  sleep 30s
+
             - id: smoke_test
               name: Smoke Test
               working-directory: ${{ env.TG_SRC_PATH }}/${{ inputs.environment_name }}
