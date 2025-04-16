@@ -4,8 +4,8 @@ import pprint
 import sys
 
 import pytest
+from constant import TEST_ADMIN_ROLE_NAME, TEST_ROLE_NAME
 from psycopg2 import sql
-from constant import TEST_ROLE_NAME, TEST_ADMIN_ROLE_NAME
 
 modulePath = os.path.join(os.path.dirname(__file__), "..")
 sys.path.append(modulePath)
@@ -36,6 +36,7 @@ def test_create_user_if_not_found(
     test_cognito_user_id = test_user_properties["cognito_user_id"]
     test_idp_username = test_user_properties["idp_username"]
     test_idp_business_guid = test_user_properties["idp_business_id"]
+    test_email = test_user_properties["email"]
 
     # make sure the user doesn't exist
     user_query = sql.SQL(
@@ -65,12 +66,14 @@ def test_create_user_if_not_found(
         user_type_code = {} and
         user_guid = {} and
         cognito_user_id = {} and
+        email = {} and
         user_name = {};"""
 
     replaced_query = sql.SQL(raw_query).format(
         sql.Literal(test_idp_type_code),
         sql.Literal(test_idp_user_id),
         sql.Literal(test_cognito_user_id),
+        sql.Literal(test_email),
         sql.Literal(test_idp_username),
     )
 
@@ -128,6 +131,7 @@ def test_update_user_if_already_exists(
     test_cognito_user_id = test_user_properties["cognito_user_id"]
     test_idp_username = test_user_properties["idp_username"]
     test_idp_business_guid = test_user_properties["idp_business_id"]
+    test_email = test_user_properties["email"]
 
     # execute
     result = lambda_function.lambda_handler(cognito_event, cognito_context)
@@ -140,11 +144,13 @@ def test_update_user_if_already_exists(
         user_type_code = {} and
         user_guid = {} and
         cognito_user_id = {} and
+        email = {} and
         user_name = {};"""
     query = sql.SQL(raw_query).format(
         sql.Literal(test_idp_type_code),
         sql.Literal(test_idp_user_id),
         sql.Literal(test_cognito_user_id),
+        sql.Literal(test_email),
         sql.Literal(test_idp_username),
     )
 
@@ -158,11 +164,13 @@ def test_update_user_if_already_exists(
             user_type_code = {} and
             user_guid = {} and
             cognito_user_id = {} and
+            business_guid = {} and
             user_name = {};"""
         query = sql.SQL(raw_query).format(
             sql.Literal(test_idp_type_code),
             sql.Literal(test_idp_user_id),
             sql.Literal(test_cognito_user_id),
+            sql.Literal(test_idp_business_guid),
             sql.Literal(test_idp_username)
         )
 

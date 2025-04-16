@@ -200,9 +200,9 @@ def populate_user_if_necessary(db_connection, event) -> None:
 
     # insert new user, or update user information
     raw_query = """INSERT INTO app_fam.fam_user
-        (user_type_code, user_guid, cognito_user_id, user_name, business_guid,
+        (user_type_code, user_guid, cognito_user_id, user_name, business_guid, email,
         create_user, create_date, update_user, update_date)
-        VALUES( {user_type_code}, {user_guid}, {cognito_user_id}, {user_name}, {business_guid},
+        VALUES( {user_type_code}, {user_guid}, {cognito_user_id}, {user_name}, {business_guid}, {email},
         CURRENT_USER, CURRENT_DATE, CURRENT_USER, CURRENT_DATE)
         ON CONFLICT (user_type_code, user_guid) DO
         UPDATE SET user_name = {user_name},  cognito_user_id = {cognito_user_id}, business_guid = {business_guid}, email = {email}, update_user = CURRENT_USER, update_date = CURRENT_DATE;"""
