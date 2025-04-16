@@ -72,24 +72,24 @@ def test_create_user_if_not_found(
 
     if test_idp_business_guid is not None:
         # validate the user is created with the business_guid
-        __verify_user_with_optional_business_guid_found(
+        __verify_user_with_optional_property_found(
             db_pg_transaction,
             test_idp_type_code,
             test_idp_user_id,
             test_cognito_user_id,
             test_idp_username,
-            test_idp_business_guid,
+            {"business_guid": test_idp_business_guid},
         )
 
     if test_email is not None:
         # validate the user is created with the test_email
-        __verify_user_with_optional_email_found(
+        __verify_user_with_optional_property_found(
             db_pg_transaction,
             test_idp_type_code,
             test_idp_user_id,
             test_cognito_user_id,
             test_idp_username,
-            test_email,
+            {"email": test_email},
         )
 
 
@@ -140,24 +140,24 @@ def test_update_user_if_already_exists(
     cursor = db_pg_transaction.cursor()
     if test_idp_business_guid is not None:
         # verify the user is updated with business_guid
-        __verify_user_with_optional_business_guid_found(
+        __verify_user_with_optional_property_found(
             db_pg_transaction,
             test_idp_type_code,
             test_idp_user_id,
             test_cognito_user_id,
             test_idp_username,
-            test_idp_business_guid,
+            {"business_guid": test_idp_business_guid},
         )
 
     if test_email is not None:
         # verify the user is updated with business_guid
-        __verify_user_with_optional_email_found(
+        __verify_user_with_optional_property_found(
             db_pg_transaction,
             test_idp_type_code,
             test_idp_user_id,
             test_cognito_user_id,
             test_idp_username,
-            test_email,
+            {"email": test_email},
         )
 
 def __verify_user_with_primary_attributes_found(
@@ -186,57 +186,29 @@ def __verify_user_with_primary_attributes_found(
     assert count == 1
 
 
-def __verify_user_with_optional_business_guid_found(
+def __verify_user_with_optional_property_found(
     db_pg_transaction,
     test_idp_type_code,
     test_idp_user_id,
     test_cognito_user_id,
     test_idp_username,
-    test_idp_business_guid,
+    optional_key_value: dict,
 ):
     cursor = db_pg_transaction.cursor()
-    raw_query = """select count(*) from app_fam.fam_user where
-        user_type_code = {} and
-        user_guid = {} and
-        cognito_user_id = {} and
-        user_name = {} and
-        business_guid = {};"""
+    key, value = list(optional_key_value.items())[0]  # Extract the key and value from the dictionary
+    raw_query = f"""select count(*) from app_fam.fam_user where
+        user_type_code = {{}} and
+        user_guid = {{}} and
+        cognito_user_id = {{}} and
+        user_name = {{}} and
+        {key} = {{}};"""
 
     query = sql.SQL(raw_query).format(
         sql.Literal(test_idp_type_code),
         sql.Literal(test_idp_user_id),
         sql.Literal(test_cognito_user_id),
         sql.Literal(test_idp_username),
-        sql.Literal(test_idp_business_guid),
-    )
-
-    cursor.execute(query)
-    count = cursor.fetchone()[0]
-    assert count == 1
-
-
-def __verify_user_with_optional_email_found(
-    db_pg_transaction,
-    test_idp_type_code,
-    test_idp_user_id,
-    test_cognito_user_id,
-    test_idp_username,
-    test_email,
-):
-    cursor = db_pg_transaction.cursor()
-    raw_query = """select count(*) from app_fam.fam_user where
-        user_type_code = {} and
-        user_guid = {} and
-        cognito_user_id = {} and
-        user_name = {} and
-        email = {};"""
-
-    query = sql.SQL(raw_query).format(
-        sql.Literal(test_idp_type_code),
-        sql.Literal(test_idp_user_id),
-        sql.Literal(test_cognito_user_id),
-        sql.Literal(test_idp_username),
-        sql.Literal(test_email),
+        sql.Literal(value),
     )
 
     cursor.execute(query)
