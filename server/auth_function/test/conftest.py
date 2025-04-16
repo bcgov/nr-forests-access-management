@@ -112,6 +112,7 @@ def test_user_properties(cognito_event):
 
     test_user_properties["cognito_user_id"] = cognito_event["userName"]
     test_user_properties["idp_business_id"] = user_attribs.get("custom:idp_business_id")
+    test_user_properties["email"] = user_attribs.get("email")
     return test_user_properties
 
 
