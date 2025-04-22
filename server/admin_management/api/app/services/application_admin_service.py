@@ -6,6 +6,7 @@ from api.app.repositories.application_admin_repository import \
     ApplicationAdminRepository
 from api.app.schemas import schemas
 from api.app.services.application_service import ApplicationService
+from api.app.services.permission_audit_service import PermissionAuditService
 from api.app.services.user_service import UserService
 from api.app.utils import utils
 from sqlalchemy.orm import Session
@@ -18,6 +19,7 @@ class ApplicationAdminService:
         self.application_admin_repo = ApplicationAdminRepository(db)
         self.application_service = ApplicationService(db)
         self.user_service = UserService(db)
+        self.permission_audit_service = PermissionAuditService(db)
 
     def get_application_admins(self) -> List[schemas.FamAppAdminGetResponse]:
         application_admins = []
@@ -73,6 +75,10 @@ class ApplicationAdminService:
                     request.application_id, fam_user.user_id, requester
                 )
             )
+            # save audit record
+            self.permission_audit_service.store_application_admin_permission_granted_audit_history(
+                requester, fam_user, fam_application_admin_user
+            )
 
         fam_application_admin_user_dict = fam_application_admin_user.__dict__
         app_admin_user_assignment = schemas.FamAppAdminGetResponse(
@@ -87,3 +93,6 @@ class ApplicationAdminService:
         return self.application_admin_repo.delete_application_admin(
             application_admin_id
         )
+
+        # TODO: save audit record
+

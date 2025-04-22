@@ -9,7 +9,8 @@ from api.app.constants import (ERROR_CODE_UNKNOWN_STATE,
                                PrivilegeDetailsScopeTypeEnum)
 from api.app.integration.forest_client_integration import \
     ForestClientIntegrationService
-from api.app.models.model import FamAccessControlPrivilege, FamUser
+from api.app.models.model import (FamAccessControlPrivilege,
+                                  FamApplicationAdmin, FamUser)
 from api.app.repositories.permission_audit_repository import \
     PermissionAuditRepository
 from api.app.schemas.forest_client_integration import \
@@ -36,7 +37,7 @@ class PermissionAuditService:
         self,
         requester: Requester,
         change_target_user: FamUser,
-        new_delegated_admin_permission_granted_list: List[FamAccessControlPrivilegeCreateResponse] # 'dadmin' => 'delegated_admin'
+        new_delegated_admin_permission_granted_list: List[FamAccessControlPrivilegeCreateResponse]
     ):
         success_granted_list = list(filter(
             lambda res: res.status_code == HTTPStatus.OK, new_delegated_admin_permission_granted_list
@@ -60,6 +61,31 @@ class PermissionAuditService:
         LOGGER.debug(f"Adding audit record for ({change_type}): {audit_record}")
         self.repo.save(audit_record)
 
+    def store_application_admin_permission_granted_audit_history(
+        self,
+        requester: Requester,
+        change_target_user: FamUser,
+        fam_application_admin_user: FamApplicationAdmin
+    ):
+        change_type = PrivilegeChangeTypeEnum.GRANT
+        privilege_details = PrivilegeDetailsSchema(
+            permission_type=PrivilegeDetailsPermissionTypeEnum.APPLICATION_ADMIN,
+        )
+        audit_record = PermissionAuditHistoryCreateSchema(
+            application_id=fam_application_admin_user.application.application_id,
+            create_user=requester.user_name,
+            change_performer_user_id=requester.user_id,
+            change_target_user_id=change_target_user.user_id,
+            change_performer_user_details=PermissionAuditService.to_change_performer_user_details(requester),
+            privilege_change_type_code=change_type,
+            privilege_details=privilege_details,
+            create_date=datetime.datetime.now(datetime.UTC),
+            change_date=datetime.datetime.now(datetime.UTC)
+        )
+
+        LOGGER.debug(f"Adding audit record for ({change_type}): {audit_record}")
+        self.repo.save(audit_record)
+
     def store_delegated_admin_permissions_revoked_audit_history(
         self, requester: Requester, delete_record: FamAccessControlPrivilege
     ):
@@ -69,6 +95,30 @@ class PermissionAuditService:
         privilege_details = PermissionAuditService.to_delegated_admin_privliege_revoked_details(delete_record)
         audit_record = PermissionAuditHistoryCreateSchema(
             application_id=revoked_permission_role.application.application_id,
+            create_user=requester.user_name,
+            change_performer_user_id=requester.user_id,
+            change_target_user_id=revoked_permission_target_user.user_id,
+            change_performer_user_details=PermissionAuditService.to_change_performer_user_details(requester),
+            privilege_change_type_code=change_type,
+            privilege_details=privilege_details,
+            create_date=datetime.datetime.now(datetime.UTC),
+            change_date=datetime.datetime.now(datetime.UTC)
+        )
+
+        LOGGER.debug(f"Adding audit record for ({change_type}): {audit_record}")
+        self.repo.save(audit_record)
+
+    def store_application_admin_permissions_revoked_audit_history(
+        self, requester: Requester, delete_record: FamApplicationAdmin
+    ):
+        revoked_permission_target_user = delete_record.user
+        revoked_permission_role = delete_record.application
+        change_type = PrivilegeChangeTypeEnum.REVOKE
+        privilege_details = PrivilegeDetailsSchema(
+            permission_type=PrivilegeDetailsPermissionTypeEnum.APPLICATION_ADMIN,
+        )
+        audit_record = PermissionAuditHistoryCreateSchema(
+            application_id=revoked_permission_role.application_id,
             create_user=requester.user_name,
             change_performer_user_id=requester.user_id,
             change_target_user_id=revoked_permission_target_user.user_id,

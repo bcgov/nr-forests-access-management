@@ -363,7 +363,7 @@ class FamApplicationAdmin(Base):
         onupdate=func.now(),
         comment="The date and time the record was created or last updated.",
     )
-    application = relationship(
+    application: Mapped[FamApplication] = relationship(
         "FamApplication", back_populates="fam_application_admin", lazy="joined"
     )
     user = relationship(
