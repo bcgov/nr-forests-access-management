@@ -41,7 +41,7 @@ resource "aws_db_subnet_group" "famdb_subnet_group" {
 
 data "aws_rds_engine_version" "postgresql" {
   engine  = "aurora-postgresql"
-  version = "13.18"
+  version = "16.6"
 }
 
 module "aurora_postgresql_v2" {
@@ -71,13 +71,14 @@ module "aurora_postgresql_v2" {
   apply_immediately   = true
   skip_final_snapshot = true
   auto_minor_version_upgrade = false
+  allow_major_version_upgrade = true
 
-  db_parameter_group_name         = aws_db_parameter_group.famdb_postgresql13.id
-  db_cluster_parameter_group_name = aws_rds_cluster_parameter_group.famdb_postgresql13.id
+  db_cluster_parameter_group_name = aws_rds_cluster_parameter_group.famdb_postgresql16.id
+  db_cluster_db_instance_parameter_group_name = aws_db_parameter_group.famdb_postgresql16.id
 
   serverlessv2_scaling_configuration = {
     min_capacity = 0.5
-    max_capacity = 1
+    max_capacity = 4
   }
 
   instance_class = "db.serverless"
@@ -93,12 +94,46 @@ module "aurora_postgresql_v2" {
   enabled_cloudwatch_logs_exports = ["postgresql"]
 }
 
+resource "aws_rds_cluster_parameter_group" "famdb_postgresql16" {
+  name        = "${var.famdb_cluster_name}-cluster-parameter-group-v16"
+  family      = "aurora-postgresql16"
+  description = "${var.famdb_cluster_name}-cluster-parameter-group-v16"
+  tags = {
+    managed-by = "terraform"
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_db_parameter_group" "famdb_postgresql16" {
+  name        = "${var.famdb_cluster_name}-parameter-group-v16"
+  family      = "aurora-postgresql16"
+  description = "${var.famdb_cluster_name}-parameter-group-v16"
+
+  tags = {
+    managed-by = "terraform"
+  }
+
+  # add this in case of failure
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+
+# Keep v13 before 16 kicks in and in effect
 resource "aws_db_parameter_group" "famdb_postgresql13" {
   name        = "${var.famdb_cluster_name}-parameter-group"
   family      = "aurora-postgresql13"
   description = "${var.famdb_cluster_name}-parameter-group"
   tags = {
     managed-by = "terraform"
+  }
+
+  lifecycle {
+    create_before_destroy = true
   }
 }
 
@@ -109,7 +144,12 @@ resource "aws_rds_cluster_parameter_group" "famdb_postgresql13" {
   tags = {
     managed-by = "terraform"
   }
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
+
 
 resource "random_pet" "master_creds_secret_name" {
   prefix = "famdb-master-creds"
