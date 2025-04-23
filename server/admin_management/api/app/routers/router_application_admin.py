@@ -103,7 +103,7 @@ def create_application_admin(
         )
 
         response = application_admin_service.create_application_admin(
-            application_admin_request, target_user, requester.cognito_user_id
+            application_admin_request, target_user, requester
         )
 
         # get target user from database, so for existing user, we can get the cognito user id

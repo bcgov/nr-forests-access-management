@@ -40,13 +40,13 @@ class ApplicationAdminRepository:
         )
 
     def create_application_admin(
-        self, application_id: int, user_id: int, requester: str
+        self, application_id: int, user_id: int, requester_cognito_user_id: str
     ) -> FamApplicationAdmin:
         new_fam_application_admin = FamApplicationAdmin(
             **{
                 "user_id": user_id,
                 "application_id": application_id,
-                "create_user": requester,
+                "create_user": requester_cognito_user_id,
             }
         )
         self.db.add(new_fam_application_admin)

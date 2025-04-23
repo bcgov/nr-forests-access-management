@@ -11,7 +11,8 @@ from tests.constants import (TEST_CREATOR, TEST_INVALID_USER_TYPE,
 LOGGER = logging.getLogger(__name__)
 
 
-def test_create_application_admin(application_admin_service: ApplicationAdminService):
+def test_create_application_admin(application_admin_service: ApplicationAdminService, new_idir_requester):
+    requester = new_idir_requester
     # test invalid user type
     with pytest.raises(ValidationError) as e:
         application_admin_service.create_application_admin(
@@ -22,7 +23,7 @@ def test_create_application_admin(application_admin_service: ApplicationAdminSer
                     "application_id": TEST_NEW_APPLICATION_ADMIN.get("application_id"),
                 }
             ),
-            TEST_CREATOR,
+            requester,
         )
     assert str(e.value).find("Input should be 'I' or 'B'") != -1
 
@@ -31,7 +32,7 @@ def test_create_application_admin(application_admin_service: ApplicationAdminSer
     new_application_admin = application_admin_service.create_application_admin(
         schemas.FamAppAdminCreateRequest(**TEST_NEW_APPLICATION_ADMIN),
         mocked_admin_target_user,
-        TEST_CREATOR,
+        requester,
     )
     assert new_application_admin.application_id == TEST_NEW_APPLICATION_ADMIN.get(
         "application_id"
@@ -52,6 +53,6 @@ def test_create_application_admin(application_admin_service: ApplicationAdminSer
         application_admin_service.create_application_admin(
             schemas.FamAppAdminCreateRequest(**TEST_NEW_APPLICATION_ADMIN),
             mocked_admin_target_user,
-            TEST_CREATOR,
+            requester,
         )
     assert str(e._excinfo).find("User is admin already") != -1

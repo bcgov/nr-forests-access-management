@@ -38,7 +38,7 @@ class ApplicationAdminService:
 
     def create_application_admin(
         self, request: schemas.FamAppAdminCreateRequest,
-        target_user: schemas.TargetUser, requester: str
+        target_user: schemas.TargetUser, requester: schemas.Requester
     ) -> schemas.FamAppAdminGetResponse:
         # Request has information: user_name, user_type_code, application_id
         LOGGER.debug(
@@ -47,10 +47,10 @@ class ApplicationAdminService:
 
         # Verify if user already exists or add a new user
         fam_user = self.user_service.find_or_create(
-            request.user_type_code, request.user_name, request.user_guid, requester
+            request.user_type_code, request.user_name, request.user_guid, requester.cognito_user_id
         )
         fam_user = self.user_service.update_user_properties_from_verified_target_user(
-            fam_user.user_id, target_user, requester
+            fam_user.user_id, target_user, requester.cognito_user_id
         )
 
         # Verify if user is admin already
@@ -72,7 +72,7 @@ class ApplicationAdminService:
             # Create application admin if user is not admin yet
             fam_application_admin_user = (
                 self.application_admin_repo.create_application_admin(
-                    request.application_id, fam_user.user_id, requester
+                    request.application_id, fam_user.user_id, requester.cognito_user_id
                 )
             )
             # save audit record
