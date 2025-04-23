@@ -89,10 +89,13 @@ class ApplicationAdminService:
         )
         return app_admin_user_assignment
 
-    def delete_application_admin(self, application_admin_id: int):
-        return self.application_admin_repo.delete_application_admin(
+    def delete_application_admin(self, requester: schemas.Requester, application_admin_id: int):
+        deleted_record = self.application_admin_repo.delete_application_admin(
             application_admin_id
         )
 
-        # TODO: save audit record
+        # save audit record
+        self.permission_audit_service.store_application_admin_permissions_revoked_audit_history(
+            requester, deleted_record
+        )
 

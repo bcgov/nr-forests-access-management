@@ -57,7 +57,7 @@ class ApplicationAdminRepository:
         )
         return new_fam_application_admin
 
-    def delete_application_admin(self, application_admin_id: int):
+    def delete_application_admin(self, application_admin_id: int) -> FamApplicationAdmin:
         record = (
             self.db.query(FamApplicationAdmin)
             .filter(FamApplicationAdmin.application_admin_id == application_admin_id)
@@ -65,6 +65,7 @@ class ApplicationAdminRepository:
         )
         self.db.delete(record)
         self.db.flush()
+        return record
 
     def get_user_app_admin_grants(self, user_id: int) -> List[FamApplication]:
         """

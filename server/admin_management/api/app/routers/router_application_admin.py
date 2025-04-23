@@ -166,7 +166,7 @@ def delete_application_admin(
         audit_event_log.application = application_admin.application
         audit_event_log.target_user = application_admin.user
 
-        return application_admin_service.delete_application_admin(application_admin_id)
+        return application_admin_service.delete_application_admin(requester, application_admin_id)
 
     except Exception as e:
         audit_event_log.event_outcome = AuditEventOutcome.FAIL
