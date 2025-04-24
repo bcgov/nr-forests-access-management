@@ -201,12 +201,17 @@ jobs:
                   licenceplate: ${{ secrets.licenceplate }}
                   target_env: ${{ inputs.environment_name }}
               run: |
-                  if [[ "apply" == "${{ inputs.tf_subcommand }}" ]]
-                  then
-                    fam_api_base_url=`terragrunt run-all output fam_api_base_url --terragrunt-non-interactive | sed 's/^"//' | sed 's/"$//'`
-                    smoke_test_url="$fam_api_base_url/smoke_test"
-                    echo "Smoke test URL: [$smoke_test_url]"
-                    curl --silent --show-error --fail $smoke_test_url
-                  else
-                    echo "Not executing terraform apply - smoke test skipped"
-                  fi
+                  # Wait for 1 minute
+                    echo "Waiting for 1 minute before running the smoke test..."
+                    sleep 60
+
+                  # Run smoke test
+                    if [[ "apply" == "${{ inputs.tf_subcommand }}" ]]
+                    then
+                      fam_api_base_url=`terragrunt run-all output fam_api_base_url --terragrunt-non-interactive | sed 's/^"//' | sed 's/"$//'`
+                      smoke_test_url="$fam_api_base_url/smoke_test"
+                      echo "Smoke test URL: [$smoke_test_url]"
+                      curl --silent --show-error --fail $smoke_test_url
+                    else
+                      echo "Not executing terraform apply - smoke test skipped"
+                    fi
