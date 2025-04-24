@@ -1,11 +1,11 @@
 <script setup lang="ts">
+import Chip from "@/components/UI/Chip.vue";
 import OrganizationsList from "@/components/UserPermissionHistoryTable/OrganizationList.vue";
 import {
     PrivilegeChangeTypeEnum,
     PrivilegeDetailsPermissionTypeEnum,
 } from "fam-app-acsctl-api/model";
 import type { PrivilegeDetailsSchema } from "fam-app-acsctl-api/model/privilege-details-schema";
-import Chip from "@/components/UI/Chip.vue";
 
 const props = defineProps<{
     permissionDetails: PrivilegeDetailsSchema;
@@ -68,6 +68,19 @@ const props = defineProps<{
                 v-if="role.scopes?.find((scope) => scope !== null)"
                 :scopes="role.scopes"
             />
+        </div>
+    </div>
+
+    <!-- Details display for: permission Type change history as an 'ApplicationAdmin' -->
+    <div
+        v-if="
+            props.permissionDetails.permission_type ===
+            PrivilegeDetailsPermissionTypeEnum.ApplicationAdmin
+        "
+    >
+        <div class="permission-type-container">
+            <p>Role:</p>
+            <Chip :label="props.permissionDetails.permission_type" />
         </div>
     </div>
 </template>
