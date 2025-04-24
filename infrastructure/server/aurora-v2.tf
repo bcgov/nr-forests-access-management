@@ -78,7 +78,7 @@ module "aurora_postgresql_v2" {
 
   serverlessv2_scaling_configuration = {
     min_capacity = 0.5
-    max_capacity = 4
+    max_capacity = 1
   }
 
   instance_class = "db.serverless"
@@ -117,34 +117,6 @@ resource "aws_db_parameter_group" "famdb_postgresql16" {
   }
 
   # add this in case of failure
-  lifecycle {
-    create_before_destroy = true
-  }
-}
-
-
-# Keep v13 before 16 kicks in and in effect
-resource "aws_db_parameter_group" "famdb_postgresql13" {
-  name        = "${var.famdb_cluster_name}-parameter-group"
-  family      = "aurora-postgresql13"
-  description = "${var.famdb_cluster_name}-parameter-group"
-  tags = {
-    managed-by = "terraform"
-  }
-
-  lifecycle {
-    create_before_destroy = true
-  }
-}
-
-resource "aws_rds_cluster_parameter_group" "famdb_postgresql13" {
-  name        = "${var.famdb_cluster_name}-cluster-parameter-group"
-  family      = "aurora-postgresql13"
-  description = "${var.famdb_cluster_name}-cluster-parameter-group"
-  tags = {
-    managed-by = "terraform"
-  }
-
   lifecycle {
     create_before_destroy = true
   }
