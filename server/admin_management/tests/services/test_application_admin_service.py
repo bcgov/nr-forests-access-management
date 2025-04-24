@@ -1,4 +1,5 @@
 import logging
+from unittest.mock import MagicMock
 
 import pytest
 from api.app.schemas import schemas
@@ -12,6 +13,9 @@ LOGGER = logging.getLogger(__name__)
 
 
 def test_create_application_admin(application_admin_service: ApplicationAdminService, new_idir_requester):
+
+    application_admin_service.permission_audit_service.store_application_admin_permission_granted_audit_history = MagicMock()
+
     requester = new_idir_requester
     # test invalid user type
     with pytest.raises(ValidationError) as e:
@@ -47,6 +51,9 @@ def test_create_application_admin(application_admin_service: ApplicationAdminSer
         new_application_admin.application_admin_id
         == application_admin.application_admin_id
     )
+
+    # Verify audit history service is called
+    application_admin_service.permission_audit_service.store_application_admin_permission_granted_audit_history.assert_called()
 
     # test create duplication application admin
     with pytest.raises(HTTPException) as e:

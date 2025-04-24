@@ -1,6 +1,5 @@
 import copy
 import logging
-from datetime import datetime
 from http import HTTPStatus
 from typing import List
 
@@ -12,20 +11,24 @@ from api.app.constants import (ERROR_CODE_UNKNOWN_STATE,
 from api.app.integration.forest_client_integration import \
     ForestClientIntegrationService
 from api.app.models.model import (FamAccessControlPrivilege, FamApplication,
-                                  FamForestClient, FamPrivilegeChangeAudit,
-                                  FamRole, FamUser)
+                                  FamApplicationAdmin, FamPrivilegeChangeAudit,
+                                  FamUser)
 from api.app.schemas.schemas import (FamAccessControlPrivilegeCreateResponse,
-                                     FamAccessControlPrivilegeGetResponse,
-                                     FamApplicationBase, FamForestClientBase,
-                                     FamRoleBase, FamRoleWithClientDto,
-                                     FamUserInfoDto, FamUserTypeDto, Requester)
+                                     Requester)
 from api.app.services.permission_audit_service import PermissionAuditService
 from fastapi import HTTPException
 from mock import patch
 from sqlalchemy.orm import Session
 from tests.constants import (MOCK_FIND_CLIENT_00001011_RETURN,
                              TEST_APPLICATION_ID_FOM_DEV, TEST_USER_GUID_BCEID,
-                             TEST_USER_NAME_BCEID)
+                             TEST_USER_GUID_IDIR, TEST_USER_NAME_BCEID,
+                             TEST_USER_NAME_IDIR)
+from tests.test_data.access_control_privilege_data import (
+    sameple_delegated_admin_role_with_client_revoked_record,
+    sameple_delegated_admin_role_with_no_client_revoked_record,
+    sameple_delegated_admin_role_with_notfound_client_revoked_record,
+    sample_delegated_admin_permission_granted_no_scope_details,
+    sample_delegated_admin_permission_granted_with_scope_details)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -280,6 +283,81 @@ def test_store_delegated_admin_audit_history_revoke_role_client_search_error(
 	assert audit_record is None
 
 
+def test_store_application_admin_permission_granted_audit_history_success(
+	db_pg_session: Session,
+	permission_audit_service: PermissionAuditService,
+	setup_new_user,
+	new_idir_requester: Requester,
+	mocker
+):
+	"""
+	Test service saving application admin permission granted history successfully.
+	"""
+	performer: Requester = new_idir_requester
+	change_target_user: FamUser = setup_new_user(
+		UserType.BCEID,
+		TEST_USER_NAME_IDIR,
+		TEST_USER_GUID_IDIR
+	)
+	mock_application_admin_user = FamApplicationAdmin(
+		application=FamApplication(
+			application_id=TEST_APPLICATION_ID_FOM_DEV,
+			application_name="FOM_DEV"
+		),
+		user=change_target_user
+	)
+	change_performer_user_details_fn_spy = mocker.spy(PermissionAuditService, 'to_change_performer_user_details')
+
+	# Test the service: granting application admin permission.
+	permission_audit_service.store_application_admin_permission_granted_audit_history(
+		performer, change_target_user, mock_application_admin_user
+	)
+
+	# Find the audit record and verify
+	audit_record = db_pg_session.query(FamPrivilegeChangeAudit).filter(
+		FamPrivilegeChangeAudit.application_id == mock_application_admin_user.application.application_id,
+		FamPrivilegeChangeAudit.change_performer_user_id == performer.user_id,
+		FamPrivilegeChangeAudit.change_target_user_id == change_target_user.user_id
+	).one()
+	assert audit_record is not None
+	assert change_performer_user_details_fn_spy.call_count == 1
+	assert audit_record.privilege_change_type_code == PrivilegeChangeTypeEnum.GRANT
+	assert audit_record.change_target_user_id == change_target_user.user_id
+	assert audit_record.privilege_details["permission_type"] == PrivilegeDetailsPermissionTypeEnum.APPLICATION_ADMIN
+	verify_change_performer_user(audit_record, performer)
+
+
+def test_store_application_admin_permission_granted_audit_history_nosaving_when_no_application_admin(
+	db_pg_session: Session,
+	permission_audit_service: PermissionAuditService,
+	setup_new_user,
+	new_idir_requester: Requester
+):
+	"""
+	Test service saving application admin permission granted history with no application admin.
+	Should raise an exception and no history being saved.
+	"""
+	performer: Requester = new_idir_requester
+	change_target_user: FamUser = setup_new_user(
+		UserType.BCEID,
+		TEST_USER_NAME_IDIR,
+		TEST_USER_GUID_IDIR
+	)
+	mock_application_admin_user = None
+
+	with pytest.raises(Exception):
+		permission_audit_service.store_application_admin_permission_granted_audit_history(
+			performer, change_target_user, mock_application_admin_user
+		)
+
+	# Verify no audit record is saved
+	audit_record = db_pg_session.query(FamPrivilegeChangeAudit).filter(
+		FamPrivilegeChangeAudit.change_performer_user_id == performer.user_id,
+		FamPrivilegeChangeAudit.change_target_user_id == change_target_user.user_id
+	).one_or_none()
+	assert audit_record is None
+
+
 def verify_change_performer_user(audit_record: FamPrivilegeChangeAudit, performer: FamUser):
 	audit_record.change_performer_user_id == performer.user_id
 	change_performer_user_details_dict = audit_record.change_performer_user_details
@@ -335,68 +413,3 @@ def verify_delegated_admin_revoked_privilege_details(
 		scope = audit_scopes[0]
 		scope.get("scope_type") == PrivilegeDetailsScopeTypeEnum.CLIENT  # Current FAM supports 'CLIENT' type only, more in future.
 		scope.get("client_id") == org_id
-
-
-# sample end user permission granted response - role with no scope
-sample_delegated_admin_permission_granted_no_scope_details = FamAccessControlPrivilegeCreateResponse(
-	**{'status_code': HTTPStatus.OK,
-		'detail': FamAccessControlPrivilegeGetResponse(
-		access_control_privilege_id=999, user_id=9, role_id=4,
-		user=FamUserInfoDto(user_name='dadminuser', first_name='first', last_name='last', email='a@b.com',
-			user_type_relation=FamUserTypeDto(user_type_code=UserType.BCEID, description='BCEID')),
-		role=FamRoleWithClientDto(role_name='FOM_REVIEWER',
-		application=FamApplicationBase(application_id=2, application_name='FOM_DEV', application_description='Forest Operations Map (DEV)'),
-		role_id=999, display_name='Reviewer', role_purpose='Provides the privilege to review all FOMs in the system', forest_client_relation=None, parent_role=None),
-		create_date=datetime(2024, 11, 1, 19, 44, 47)),
-		'error_message': None
-	}
- )
-
-# sample delegated admin permission granted response - role with forest_client scope
-sample_delegated_admin_permission_granted_with_scope_details = FamAccessControlPrivilegeCreateResponse(
-	**{'status_code': HTTPStatus.OK,
-		'detail': FamAccessControlPrivilegeGetResponse(
-		access_control_privilege_id=888, user_id=9, role_id=127,
-		user=FamUserInfoDto(user_name='dadminuser', first_name='first', last_name='last', email='a@b.com',
-			user_type_relation=FamUserTypeDto(user_type_code=UserType.BCEID, description='BCEID')),
-		role=FamRoleWithClientDto(role_name='FOM_SUBMITTER_00001012',
-		application=FamApplicationBase(application_id=2, application_name='FOM_DEV', application_description='Forest Operations Map (DEV)'),
-		role_id=127, display_name='Submitter', role_purpose='Provides the privilege to submit a FOM (on behalf of a specific forest client)',
-		forest_client_relation=FamForestClientBase(client_name=None, forest_client_number="00001012", status=None),
-		parent_role=FamRoleBase(role_name="FOM_SUBMITTER", role_type_code="A",
-			application=FamApplicationBase(application_id=2, application_name='FOM_DEV', application_description='Forest Operations Map (DEV)'))),
-			create_date=datetime(2024, 11, 1, 19, 44, 47)),
-		'error_message': None
-	}
- )
-
-sameple_delegated_admin_role_with_no_client_revoked_record = FamAccessControlPrivilege(**{
-	"user_id": 111, "role_id": 999,
-	"user": FamUser(**{"user_id": 111}),
-	"role": FamRole(** {"display_name": "Reviewer",
-		"application": FamApplication(** {"application_id": TEST_APPLICATION_ID_FOM_DEV})
-	})
-})
-
-sameple_delegated_admin_role_with_client_revoked_record = FamAccessControlPrivilege(**{
-	"user_id": 111, "role_id": 999,
-	"user": FamUser(**{"user_id": 111}),
-	"role": FamRole(**{"display_name": "Submitter", "role_name": "FOM_SUBMITTER_00001011",
-		"application": FamApplication(** {"application_id": TEST_APPLICATION_ID_FOM_DEV, }),
-		"client_number_id": 3, "forest_client_relation": FamForestClient(**{
-			"forest_client_number": "00001011"
-		})
-   })
-})
-
-sameple_delegated_admin_role_with_notfound_client_revoked_record = FamAccessControlPrivilege(**{
-	"user_id": 111, "role_id": 999,
-	"user": FamUser(**{"user_id": 111}),
-	"role": FamRole(**{"display_name": "Submitter", "role_name": "FOM_SUBMITTER_09090909",
-		"application": FamApplication(** {"application_id": TEST_APPLICATION_ID_FOM_DEV, }),
-		"client_number_id": 3, "forest_client_relation": FamForestClient(**{
-			"forest_client_number": "09090909"
-		})
-   })
-})
-
