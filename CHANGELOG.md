@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.34.2](https://github.com/bcgov/nr-forests-access-management/compare/v1.34.1...v1.34.2) (2025-04-24)
+
+
+### Bug Fixes
+
+* [#1740](https://github.com/bcgov/nr-forests-access-management/issues/1740) AWS rds postgresql engine major version upgrade post release ([#1814](https://github.com/bcgov/nr-forests-access-management/issues/1814)) ([ffad790](https://github.com/bcgov/nr-forests-access-management/commit/ffad79003cb02714944b79b855501b289daec21f))
+
+## [1.34.1](https://github.com/bcgov/nr-forests-access-management/compare/v1.34.0...v1.34.1) (2025-04-23)
+
+
+### Bug Fixes
+
+* [#1740](https://github.com/bcgov/nr-forests-access-management/issues/1740) postgresql engine major version upgrade ([#1791](https://github.com/bcgov/nr-forests-access-management/issues/1791)) ([6d291dd](https://github.com/bcgov/nr-forests-access-management/commit/6d291ddf40e62d81cf28eb6dde02ee66f6d0d718))
+
 ## [1.34.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.33.2...v1.34.0) (2025-04-14)
 
 
