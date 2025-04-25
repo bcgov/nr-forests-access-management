@@ -358,6 +358,81 @@ def test_store_application_admin_permission_granted_audit_history_nosaving_when_
 	assert audit_record is None
 
 
+def test_store_application_admin_permissions_revoked_audit_history_success(
+	db_pg_session: Session,
+	permission_audit_service: PermissionAuditService,
+	setup_new_user,
+	new_idir_requester: Requester,
+	mocker
+):
+	"""
+	Test service saving application admin permission revoked history successfully.
+	"""
+	performer: Requester = new_idir_requester
+	change_target_user: FamUser = setup_new_user(
+		UserType.BCEID,
+		TEST_USER_NAME_IDIR,
+		TEST_USER_GUID_IDIR
+	)
+	mock_application_admin_user = FamApplicationAdmin(
+		application=FamApplication(
+			application_id=TEST_APPLICATION_ID_FOM_DEV,
+			application_name="FOM_DEV"
+		),
+		user=change_target_user
+	)
+	change_performer_user_details_fn_spy = mocker.spy(PermissionAuditService, 'to_change_performer_user_details')
+
+	# Test the service: revoking application admin permission.
+	permission_audit_service.store_application_admin_permissions_revoked_audit_history(
+		performer, mock_application_admin_user
+	)
+
+	# Find the audit record and verify
+	audit_record = db_pg_session.query(FamPrivilegeChangeAudit).filter(
+		FamPrivilegeChangeAudit.application_id == mock_application_admin_user.application.application_id,
+		FamPrivilegeChangeAudit.change_performer_user_id == performer.user_id,
+		FamPrivilegeChangeAudit.change_target_user_id == change_target_user.user_id
+	).one()
+	assert audit_record is not None
+	assert change_performer_user_details_fn_spy.call_count == 1
+	assert audit_record.privilege_change_type_code == PrivilegeChangeTypeEnum.REVOKE
+	assert audit_record.change_target_user_id == change_target_user.user_id
+	assert audit_record.privilege_details["permission_type"] == PrivilegeDetailsPermissionTypeEnum.APPLICATION_ADMIN
+	verify_change_performer_user(audit_record, performer)
+
+
+def test_store_application_admin_permissions_revoked_audit_history_nosaving_when_no_application_admin(
+	db_pg_session: Session,
+	permission_audit_service: PermissionAuditService,
+	setup_new_user,
+	new_idir_requester: Requester
+):
+	"""
+	Test service saving application admin permission revoked history with no application admin.
+	Should raise an exception and no history being saved.
+	"""
+	performer: Requester = new_idir_requester
+	change_target_user: FamUser = setup_new_user(
+		UserType.BCEID,
+		TEST_USER_NAME_IDIR,
+		TEST_USER_GUID_IDIR
+	)
+	mock_application_admin_user = None
+
+	with pytest.raises(Exception):
+		permission_audit_service.store_application_admin_permissions_revoked_audit_history(
+			performer, mock_application_admin_user
+		)
+
+	# Verify no audit record is saved
+	audit_record = db_pg_session.query(FamPrivilegeChangeAudit).filter(
+		FamPrivilegeChangeAudit.change_performer_user_id == performer.user_id,
+		FamPrivilegeChangeAudit.change_target_user_id == change_target_user.user_id
+	).one_or_none()
+	assert audit_record is None
+
+
 def verify_change_performer_user(audit_record: FamPrivilegeChangeAudit, performer: FamUser):
 	audit_record.change_performer_user_id == performer.user_id
 	change_performer_user_details_dict = audit_record.change_performer_user_details
