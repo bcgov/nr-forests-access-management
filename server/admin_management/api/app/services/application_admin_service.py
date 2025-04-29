@@ -54,15 +54,15 @@ class ApplicationAdminService:
         )
 
         # Verify if user is admin already
-        fam_application_admin_user = (
+        fam_application_admin = (
             self.application_admin_repo.get_application_admin_by_app_and_user_id(
                 request.application_id, fam_user.user_id
             )
         )
-        if fam_application_admin_user:
+        if fam_application_admin:
             LOGGER.debug(
                 "FamApplicationAdmin already exists with id: "
-                + f"{fam_application_admin_user.application_admin_id}."
+                + f"{fam_application_admin.application_admin_id}."
             )
             error_msg = "User is admin already."
             utils.raise_http_exception(
@@ -70,19 +70,19 @@ class ApplicationAdminService:
                 error_msg=error_msg)
         else:
             # Create application admin if user is not admin yet
-            fam_application_admin_user = (
+            fam_application_admin = (
                 self.application_admin_repo.create_application_admin(
                     request.application_id, fam_user.user_id, requester.cognito_user_id
                 )
             )
             # save audit record
             self.permission_audit_service.store_application_admin_permission_granted_audit_history(
-                requester, fam_user, fam_application_admin_user
+                requester, fam_user, fam_application_admin
             )
 
-        fam_application_admin_user_dict = fam_application_admin_user.__dict__
+        fam_application_admin_dict = fam_application_admin.__dict__
         app_admin_user_assignment = schemas.FamAppAdminGetResponse(
-            **fam_application_admin_user_dict
+            **fam_application_admin_dict
         )
         LOGGER.debug(
             f"Application admin user assignment executed successfully: {app_admin_user_assignment}"

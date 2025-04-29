@@ -65,14 +65,14 @@ class PermissionAuditService:
         self,
         requester: Requester,
         change_target_user: FamUser,
-        fam_application_admin_user: FamApplicationAdmin
+        fam_application_admin: FamApplicationAdmin
     ):
         change_type = PrivilegeChangeTypeEnum.GRANT
         privilege_details = PrivilegeDetailsSchema(
             permission_type=PrivilegeDetailsPermissionTypeEnum.APPLICATION_ADMIN,
         )
         audit_record = PermissionAuditHistoryCreateSchema(
-            application_id=fam_application_admin_user.application.application_id,
+            application_id=fam_application_admin.application.application_id,
             create_user=requester.user_name,
             change_performer_user_id=requester.user_id,
             change_target_user_id=change_target_user.user_id,
