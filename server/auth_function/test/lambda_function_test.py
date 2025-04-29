@@ -4,8 +4,8 @@ import pprint
 import sys
 
 import pytest
+from constant import TEST_ADMIN_ROLE_NAME, TEST_ROLE_NAME
 from psycopg2 import sql
-from constant import TEST_ROLE_NAME, TEST_ADMIN_ROLE_NAME
 
 modulePath = os.path.join(os.path.dirname(__file__), "..")
 sys.path.append(modulePath)
@@ -36,6 +36,7 @@ def test_create_user_if_not_found(
     test_cognito_user_id = test_user_properties["cognito_user_id"]
     test_idp_username = test_user_properties["idp_username"]
     test_idp_business_guid = test_user_properties["idp_business_id"]
+    test_email = test_user_properties["email"]
 
     # make sure the user doesn't exist
     user_query = sql.SQL(
@@ -59,45 +60,37 @@ def test_create_user_if_not_found(
     assert len(results) == 1
     assert results[0][0] == test_idp_username
 
-    # validate that there is one user in the database with the properties from
+    # validate that there is one user in the database with primary properties from
     # the incoming event
-    raw_query = """select count(*) from app_fam.fam_user where
-        user_type_code = {} and
-        user_guid = {} and
-        cognito_user_id = {} and
-        user_name = {};"""
-
-    replaced_query = sql.SQL(raw_query).format(
-        sql.Literal(test_idp_type_code),
-        sql.Literal(test_idp_user_id),
-        sql.Literal(test_cognito_user_id),
-        sql.Literal(test_idp_username),
+    __verify_user_with_primary_attributes_found(
+        db_pg_transaction,
+        test_idp_type_code,
+        test_idp_user_id,
+        test_cognito_user_id,
+        test_idp_username,
     )
-
-    cursor.execute(replaced_query)
-    count = cursor.fetchone()[0]
-    assert count == 1
 
     if test_idp_business_guid is not None:
         # validate the user is created with the business_guid
-        raw_query = """select count(*) from app_fam.fam_user where
-            user_type_code = {} and
-            user_guid = {} and
-            cognito_user_id = {} and
-            user_name = {} and
-            business_guid = {};"""
-
-        replaced_query = sql.SQL(raw_query).format(
-            sql.Literal(test_idp_type_code),
-            sql.Literal(test_idp_user_id),
-            sql.Literal(test_cognito_user_id),
-            sql.Literal(test_idp_username),
-            sql.Literal(test_idp_business_guid),
+        __verify_user_with_optional_property_found(
+            db_pg_transaction,
+            test_idp_type_code,
+            test_idp_user_id,
+            test_cognito_user_id,
+            test_idp_username,
+            {"business_guid": test_idp_business_guid},
         )
 
-        cursor.execute(replaced_query)
-        count = cursor.fetchone()[0]
-        assert count == 1
+    if test_email is not None:
+        # validate the user is created with the test_email
+        __verify_user_with_optional_property_found(
+            db_pg_transaction,
+            test_idp_type_code,
+            test_idp_user_id,
+            test_cognito_user_id,
+            test_idp_username,
+            {"email": test_email},
+        )
 
 
 @pytest.mark.parametrize(
@@ -128,19 +121,59 @@ def test_update_user_if_already_exists(
     test_cognito_user_id = test_user_properties["cognito_user_id"]
     test_idp_username = test_user_properties["idp_username"]
     test_idp_business_guid = test_user_properties["idp_business_id"]
+    test_email = test_user_properties["email"]
 
     # execute
     result = lambda_function.lambda_handler(cognito_event, cognito_context)
     LOGGER.debug(f"result: \n{pprint.pformat(result, indent=4)}")
 
-    # validate that there is one user in the database with the properties from
+    # validate that there is one user in the database with primary properties from
     # the incoming event
+    __verify_user_with_primary_attributes_found(
+        db_pg_transaction,
+        test_idp_type_code,
+        test_idp_user_id,
+        test_cognito_user_id,
+        test_idp_username,
+    )
+
+    cursor = db_pg_transaction.cursor()
+    if test_idp_business_guid is not None:
+        # verify the user is updated with business_guid
+        __verify_user_with_optional_property_found(
+            db_pg_transaction,
+            test_idp_type_code,
+            test_idp_user_id,
+            test_cognito_user_id,
+            test_idp_username,
+            {"business_guid": test_idp_business_guid},
+        )
+
+    if test_email is not None:
+        # verify the user is updated with business_guid
+        __verify_user_with_optional_property_found(
+            db_pg_transaction,
+            test_idp_type_code,
+            test_idp_user_id,
+            test_cognito_user_id,
+            test_idp_username,
+            {"email": test_email},
+        )
+
+def __verify_user_with_primary_attributes_found(
+    db_pg_transaction,
+    test_idp_type_code,
+    test_idp_user_id,
+    test_cognito_user_id,
+    test_idp_username,
+):
     cursor = db_pg_transaction.cursor()
     raw_query = """select count(*) from app_fam.fam_user where
-        user_type_code = {} and
-        user_guid = {} and
-        cognito_user_id = {} and
-        user_name = {};"""
+    user_type_code = {} and
+    user_guid = {} and
+    cognito_user_id = {} and
+    user_name = {};"""
+
     query = sql.SQL(raw_query).format(
         sql.Literal(test_idp_type_code),
         sql.Literal(test_idp_user_id),
@@ -152,23 +185,35 @@ def test_update_user_if_already_exists(
     count = cursor.fetchone()[0]
     assert count == 1
 
-    if test_idp_business_guid is not None:
-        # verify the user is updated with business_guid
-        raw_query = """select count(*) from app_fam.fam_user where
-            user_type_code = {} and
-            user_guid = {} and
-            cognito_user_id = {} and
-            user_name = {};"""
-        query = sql.SQL(raw_query).format(
-            sql.Literal(test_idp_type_code),
-            sql.Literal(test_idp_user_id),
-            sql.Literal(test_cognito_user_id),
-            sql.Literal(test_idp_username)
-        )
 
-        cursor.execute(query)
-        count = cursor.fetchone()[0]
-        assert count == 1
+def __verify_user_with_optional_property_found(
+    db_pg_transaction,
+    test_idp_type_code,
+    test_idp_user_id,
+    test_cognito_user_id,
+    test_idp_username,
+    optional_key_value: dict,
+):
+    cursor = db_pg_transaction.cursor()
+    key, value = list(optional_key_value.items())[0]  # Extract the key and value from the dictionary
+    raw_query = f"""select count(*) from app_fam.fam_user where
+        user_type_code = {{}} and
+        user_guid = {{}} and
+        cognito_user_id = {{}} and
+        user_name = {{}} and
+        {key} = {{}};"""
+
+    query = sql.SQL(raw_query).format(
+        sql.Literal(test_idp_type_code),
+        sql.Literal(test_idp_user_id),
+        sql.Literal(test_cognito_user_id),
+        sql.Literal(test_idp_username),
+        sql.Literal(value),
+    )
+
+    cursor.execute(query)
+    count = cursor.fetchone()[0]
+    assert count == 1
 
 
 @pytest.mark.parametrize(
