@@ -1,6 +1,5 @@
 import copy
 import logging
-from datetime import datetime
 from http import HTTPStatus
 from typing import List
 
@@ -13,28 +12,24 @@ from api.app.crud.services.permission_audit_service import \
     PermissionAuditService
 from api.app.integration.forest_client_integration import \
     ForestClientIntegrationService
-from api.app.models.model import (FamApplication, FamForestClient,
-                                  FamPrivilegeChangeAudit, FamRole, FamUser,
+from api.app.models.model import (FamPrivilegeChangeAudit, FamUser,
                                   FamUserRoleXref)
-from api.app.schemas.fam_application import FamApplicationSchema
-from api.app.schemas.fam_application_user_role_assignment_get import \
-    FamApplicationUserRoleAssignmentGetSchema
-from api.app.schemas.fam_forest_client import FamForestClientSchema
-from api.app.schemas.fam_role_min import FamRoleMinSchema
-from api.app.schemas.fam_role_with_client import FamRoleWithClientSchema
-from api.app.schemas.fam_user_info import FamUserInfoSchema
 from api.app.schemas.fam_user_role_assignment_create_response import \
     FamUserRoleAssignmentCreateRes
-from api.app.schemas.fam_user_type import FamUserTypeSchema
 from api.app.schemas.requester import RequesterSchema
 from fastapi import HTTPException
 from mock import patch
 from sqlalchemy.orm import Session
-from testspg.constants import (FOM_DEV_APPLICATION_ID,
-                               MOCK_FIND_CLIENT_00001011_RETURN,
+from testspg.constants import (MOCK_FIND_CLIENT_00001011_RETURN,
                                TEST_USER_GUID_IDIR, TEST_USER_NAME_IDIR,
                                USER_GUID_BCEID_LOAD_2_TEST,
                                USER_NAME_BCEID_LOAD_2_TEST)
+from testspg.test_data.app_user_roles_mock_data import (
+    sameple_user_role_with_client_revoked_record,
+    sameple_user_role_with_no_client_revoked_record,
+    sameple_user_role_with_notfound_client_revoked_record,
+    sample_end_user_permission_granted_no_scope_details,
+    sample_end_user_permission_granted_with_scope_details)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -348,66 +343,4 @@ def verify_end_user_revoked_privilege_details(
 		scope = audit_scopes[0]
 		scope.get("scope_type") == PrivilegeDetailsScopeTypeEnum.CLIENT  # Current FAM supports 'CLIENT' type only, more in future.
 		scope.get("client_id") == org_id
-
-
-# sample end user permission granted response - role with no scope
-sample_end_user_permission_granted_no_scope_details = FamUserRoleAssignmentCreateRes(
-	**{'status_code': HTTPStatus.OK,
-		'detail': FamApplicationUserRoleAssignmentGetSchema(
-		user_role_xref_id=999, user_id=9, role_id=4,
-		user=FamUserInfoSchema(user_name='enduser', first_name='first', last_name='last', email='a@b.com',
-			user_type_relation=FamUserTypeSchema(user_type_code=UserType.BCEID, description='BCEID')),
-		role=FamRoleWithClientSchema(role_name='FOM_REVIEWER', role_type_code='C',
-		application=FamApplicationSchema(application_id=2, application_name='FOM_DEV', application_description='Forest Operations Map (DEV)'),
-		role_id=999, display_name='Reviewer', role_purpose='Provides the privilege to review all FOMs in the system', forest_client_relation=None, parent_role=None),
-		create_date=datetime(2024, 11, 1, 19, 44, 47)),
-		'error_message': None
-	}
- )
-
-# sample end user permission granted response - role with forest_client scope
-sample_end_user_permission_granted_with_scope_details = FamUserRoleAssignmentCreateRes(
-	**{'status_code': HTTPStatus.OK,
-		'detail': FamApplicationUserRoleAssignmentGetSchema(
-		user_role_xref_id=888, user_id=9, role_id=127,
-		user=FamUserInfoSchema(user_name='enduser', first_name='first', last_name='last', email='a@b.com',
-			user_type_relation=FamUserTypeSchema(user_type_code=UserType.BCEID, description='BCEID')),
-		role=FamRoleWithClientSchema(role_name='FOM_SUBMITTER_00001012', role_type_code='C',
-		application=FamApplicationSchema(application_id=2, application_name='FOM_DEV', application_description='Forest Operations Map (DEV)'),
-		role_id=127, display_name='Submitter', role_purpose='Provides the privilege to submit a FOM (on behalf of a specific forest client)',
-		forest_client_relation=FamForestClientSchema(client_name=None, forest_client_number="00001012", status=None),
-		parent_role=FamRoleMinSchema(role_name="FOM_SUBMITTER", role_type_code="A",
-			application=FamApplicationSchema(application_id=2, application_name='FOM_DEV', application_description='Forest Operations Map (DEV)'))),
-		create_date=datetime(2024, 11, 1, 19, 44, 47)),
-		'error_message': None
-	}
- )
-
-sameple_user_role_with_no_client_revoked_record = FamUserRoleXref(**{
-	"user_id": 111, "role_id": 999,
-	"user": FamUser(**{"user_id": 111}),
-	"role": FamRole(** {"display_name": "Reviewer", "application": FamApplication(** {"application_id": 2})})
-})
-
-sameple_user_role_with_client_revoked_record = FamUserRoleXref(**{
-	"user_id": 111, "role_id": 999,
-	"user": FamUser(**{"user_id": 111}),
-	"role": FamRole(**{"display_name": "Submitter", "role_name": "FOM_SUBMITTER_00001011",
-		"application": FamApplication(** {"application_id": FOM_DEV_APPLICATION_ID, }),
-		"client_number_id": 3, "forest_client_relation": FamForestClient(**{
-			"forest_client_number": "00001011"
-		})
-   })
-})
-
-sameple_user_role_with_notfound_client_revoked_record = FamUserRoleXref(**{
-	"user_id": 111, "role_id": 999,
-	"user": FamUser(**{"user_id": 111}),
-	"role": FamRole(**{"display_name": "Submitter", "role_name": "FOM_SUBMITTER_09090909",
-		"application": FamApplication(** {"application_id": FOM_DEV_APPLICATION_ID, }),
-		"client_number_id": 3, "forest_client_relation": FamForestClient(**{
-			"forest_client_number": "09090909"
-		})
-   })
-})
 

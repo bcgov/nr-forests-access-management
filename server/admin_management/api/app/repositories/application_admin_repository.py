@@ -40,13 +40,13 @@ class ApplicationAdminRepository:
         )
 
     def create_application_admin(
-        self, application_id: int, user_id: int, requester: str
+        self, application_id: int, user_id: int, requester_cognito_user_id: str
     ) -> FamApplicationAdmin:
         new_fam_application_admin = FamApplicationAdmin(
             **{
                 "user_id": user_id,
                 "application_id": application_id,
-                "create_user": requester,
+                "create_user": requester_cognito_user_id,
             }
         )
         self.db.add(new_fam_application_admin)
@@ -57,7 +57,7 @@ class ApplicationAdminRepository:
         )
         return new_fam_application_admin
 
-    def delete_application_admin(self, application_admin_id: int):
+    def delete_application_admin(self, application_admin_id: int) -> FamApplicationAdmin:
         record = (
             self.db.query(FamApplicationAdmin)
             .filter(FamApplicationAdmin.application_admin_id == application_admin_id)
@@ -65,6 +65,7 @@ class ApplicationAdminRepository:
         )
         self.db.delete(record)
         self.db.flush()
+        return record
 
     def get_user_app_admin_grants(self, user_id: int) -> List[FamApplication]:
         """

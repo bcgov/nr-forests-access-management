@@ -76,6 +76,11 @@ import {
     type ConfirmTextType,
 } from "./utils";
 
+type TableRowType =
+    | FamApplicationUserRoleAssignmentGetSchema
+    | FamAccessControlPrivilegeGetResponse
+    | FamAppAdminGetResponse;
+
 const router = useRouter();
 const route = useRoute();
 
@@ -287,12 +292,14 @@ const getQueryErrorValue = () => {
     return undefined;
 };
 
-const navigateToUserDetails = (userId: string) => {
+const navigateToUserDetails = (rowData: TableRowType) => {
     router.push({
         name: UserDetailsRoute.name,
         params: {
-            appId: selectedApp.value?.id,
-            userId,
+            appId: !isAppAdminTable
+                ? selectedApp.value?.id
+                : (rowData as FamAppAdminGetResponse).application_id,
+            userId: rowData.user_id,
         },
     });
 };
@@ -417,12 +424,7 @@ const showConfirmDialog = (header: string, onAccept: () => void) => {
     );
 };
 
-const handleDelete = (
-    privilegeObject:
-        | FamApplicationUserRoleAssignmentGetSchema
-        | FamAccessControlPrivilegeGetResponse
-        | FamAppAdminGetResponse
-) => {
+const handleDelete = (privilegeObject: TableRowType) => {
     const userName = formatUserNameAndId(
         privilegeObject.user.user_name,
         privilegeObject.user.first_name,
@@ -466,10 +468,7 @@ const handleDelete = (
 
 // New tag logic
 const highlightNewUserAccessRow = (
-    rowData:
-        | FamApplicationUserRoleAssignmentGetSchema
-        | FamAccessControlPrivilegeGetResponse
-        | FamAppAdminGetResponse
+    rowData: TableRowType
 ): object | undefined => {
     switch (props.tableType) {
         case ManagePermissionsTableEnum.AppAdmin:
@@ -770,10 +769,9 @@ const downloadManagePermissionsCSVData = () => {
                 <template #body="{ data }">
                     <div class="nowrap-cell action-button-group">
                         <button
-                            v-if="!isAppAdminTable"
                             title="User permission history"
                             class="btn btn-icon"
-                            @click="navigateToUserDetails(data.user_id)"
+                            @click="navigateToUserDetails(data)"
                         >
                             <RecentlyViewedIcon />
                         </button>
