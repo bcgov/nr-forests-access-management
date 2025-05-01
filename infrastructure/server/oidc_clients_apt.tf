@@ -43,7 +43,8 @@ resource "aws_cognito_user_pool_client" "test_apt_oidc_client" {
   callback_urls                                 = [
       var.oidc_sso_playground_url,
       "http://localhost:8080/apt2/callback",
-      "https://testapps.nrs.gov.bc.ca/int/apt2/callback"
+      "https://testapps.nrs.gov.bc.ca/int/apt2/callback",
+      "https://dlvrapps.nrs.gov.bc.ca/int/apt2/callback"
     ]
   logout_urls                                   = [
       var.oidc_sso_playground_url,
