@@ -45,8 +45,7 @@ resource "aws_cognito_user_pool_client" "test_fom_oidc_client" {
   allowed_oauth_scopes                          = ["openid", "profile", "email"]
   callback_urls                                 = [
     var.oidc_sso_playground_url,
-    "https://fom-test.nrs.gov.bc.ca/admin/search",
-    "https://fom-demo.apps.silver.devops.gov.bc.ca/admin/search",
+    "https://fom-test.apps.silver.devops.gov.bc.ca/admin/search",
     "http://localhost:4200/admin/search"
   ]
   logout_urls                                   = [
