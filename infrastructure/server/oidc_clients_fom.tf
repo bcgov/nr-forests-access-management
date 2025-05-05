@@ -50,8 +50,7 @@ resource "aws_cognito_user_pool_client" "test_fom_oidc_client" {
   ]
   logout_urls                                   = [
     var.oidc_sso_playground_url,
-    "${var.cognito_app_client_logout_chain_url.test}https://fom-test.nrs.gov.bc.ca/admin/not-authorized?loggedout=true",
-    "${var.cognito_app_client_logout_chain_url.test}https://fom-demo.apps.silver.devops.gov.bc.ca/admin/not-authorized?loggedout=true"
+    "${var.cognito_app_client_logout_chain_url.test}https://fom-test.apps.silver.devops.gov.bc.ca/admin/not-authorized?loggedout=true",
   ]
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
