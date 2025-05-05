@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.35.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.34.2...v1.35.0) (2025-05-05)
+
+
+### Features
+
+* [#1801](https://github.com/bcgov/nr-forests-access-management/issues/1801) Permissions history page for granting application admin ([#1816](https://github.com/bcgov/nr-forests-access-management/issues/1816)) ([7ff8429](https://github.com/bcgov/nr-forests-access-management/commit/7ff84293a77933771b1cc438dc79dd7e1bd102cd))
+
+
+### Bug Fixes
+
+* [#1764](https://github.com/bcgov/nr-forests-access-management/issues/1764) enable auth lambda trigger to update user record again ([#1806](https://github.com/bcgov/nr-forests-access-management/issues/1806)) ([064cd90](https://github.com/bcgov/nr-forests-access-management/commit/064cd90b1da20ceb85db3a8500df40874e469f3b))
+* [#1818](https://github.com/bcgov/nr-forests-access-management/issues/1818) Callback url addition for APT in test. ([#1820](https://github.com/bcgov/nr-forests-access-management/issues/1820)) ([045d7ab](https://github.com/bcgov/nr-forests-access-management/commit/045d7ab74746444458bec035b98289b841311184))
+* [#1821](https://github.com/bcgov/nr-forests-access-management/issues/1821) FOM test environment logout url change. ([#1824](https://github.com/bcgov/nr-forests-access-management/issues/1824)) ([510cec6](https://github.com/bcgov/nr-forests-access-management/commit/510cec659c9f76987a751a02bb77a909159d4208))
+* 1821 fom callback url change ([#1822](https://github.com/bcgov/nr-forests-access-management/issues/1822)) ([6d581ea](https://github.com/bcgov/nr-forests-access-management/commit/6d581ea67abffe7010d804c134aaa8bea16e7beb))
+* Add service unavailable message. ([#1825](https://github.com/bcgov/nr-forests-access-management/issues/1825)) ([c07051f](https://github.com/bcgov/nr-forests-access-management/commit/c07051fce050e368c6858d574b295f51dc8cb70f))
+
 ## [1.34.2](https://github.com/bcgov/nr-forests-access-management/compare/v1.34.1...v1.34.2) (2025-04-24)
 
 
