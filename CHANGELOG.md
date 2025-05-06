@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.35.1](https://github.com/bcgov/nr-forests-access-management/compare/v1.35.0...v1.35.1) (2025-05-06)
+
+
+### Bug Fixes
+
+* Remove service interruption warning ([#1826](https://github.com/bcgov/nr-forests-access-management/issues/1826)) ([53f50cd](https://github.com/bcgov/nr-forests-access-management/commit/53f50cd57e9d861a11e2bab984746936e9047619))
+
 ## [1.35.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.34.2...v1.35.0) (2025-05-05)
 
 
