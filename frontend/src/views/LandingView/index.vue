@@ -16,12 +16,6 @@ const auth = useAuth();
             <div class="col-sm-6 col-md-7 col-lg-7 landing-content-left">
                 <img :src="logo" alt="BCGov Logo" width="160" class="logo" />
                 <h1 id="landing-title" class="landing-title">Welcome to FAM</h1>
-                <div>
-                    <ErrorText
-                        show-icon
-                        error-msg="We're aware FAM is down and we are working to resolve this issue. Please check back later if you are experiencing problem login."
-                    />
-                </div>
                 <h2 id="landing-subtitle" class="landing-subtitle">
                     Forests Access Management
                 </h2>
