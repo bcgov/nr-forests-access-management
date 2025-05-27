@@ -45,14 +45,16 @@ resource "aws_cognito_user_pool_client" "test_silva_oidc_client" {
   allowed_oauth_flows                           = ["code"]
   allowed_oauth_flows_user_pool_client          = "true"
   allowed_oauth_scopes                          = ["openid", "profile", "email"]
-  callback_urls                                 = [
-    var.oidc_sso_playground_url,
-    "http://localhost:3000/dashboard",
-    "http://localhost:4173/dashboard",
-    "https://nr-silva-test-frontend.apps.silver.devops.gov.bc.ca/dashboard",
-    "https://silva-test.nrs.gov.bc.ca/dashboard",
-    [for i in range("${var.dev_pr_url_count}") : "https://nr-silva-${i}-frontend.apps.silver.devops.gov.bc.ca/dashboard"])
-  ]
+  callback_urls                                 = concat(
+    [
+      var.oidc_sso_playground_url,
+      "http://localhost:3000/dashboard",
+      "http://localhost:4173/dashboard",
+      "https://nr-silva-test-frontend.apps.silver.devops.gov.bc.ca/dashboard",
+      "https://silva-test.nrs.gov.bc.ca/dashboard"
+    ],
+    [for i in range("${var.dev_pr_url_count}") : "https://nr-silva-${i}-frontend.apps.silver.devops.gov.bc.ca/dashboard"]
+  )
   logout_urls                                   = concat(
     [
       var.oidc_sso_playground_url,
