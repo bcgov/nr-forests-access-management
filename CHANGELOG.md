@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.35.2](https://github.com/bcgov/nr-forests-access-management/compare/v1.35.1...v1.35.2) (2025-05-27)
+
+
+### Bug Fixes
+
+* [#1829](https://github.com/bcgov/nr-forests-access-management/issues/1829) modify silva dev and test login logout urls ([#1830](https://github.com/bcgov/nr-forests-access-management/issues/1830)) ([df8dbfd](https://github.com/bcgov/nr-forests-access-management/commit/df8dbfd874414b88dc2ddc592a6e4a86580a0e0f))
+
 ## [1.35.1](https://github.com/bcgov/nr-forests-access-management/compare/v1.35.0...v1.35.1) (2025-05-06)
 
 
