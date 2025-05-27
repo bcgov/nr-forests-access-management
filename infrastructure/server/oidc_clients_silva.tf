@@ -6,13 +6,15 @@ resource "aws_cognito_user_pool_client" "dev_silva_oidc_client" {
   callback_urls                                 = concat(
     [
       var.oidc_sso_playground_url,
-      "http://localhost:3000/dashboard"
+      "http://localhost:3000/dashboard",
+      "http://localhost:4173/dashboard"
     ],
     [for i in range("${var.dev_pr_url_count}") : "https://nr-silva-${i}-frontend.apps.silver.devops.gov.bc.ca/dashboard"])
   logout_urls                                   = concat(
     [
       var.oidc_sso_playground_url,
-      "${var.cognito_app_client_logout_chain_url.dev}http://localhost:3000/"
+      "${var.cognito_app_client_logout_chain_url.dev}http://localhost:3000/",
+      "${var.cognito_app_client_logout_chain_url.dev}http://localhost:4173/"
     ],
     [for i in range("${var.dev_pr_url_count}") : "${var.cognito_app_client_logout_chain_url.dev}https://nr-silva-${i}-frontend.apps.silver.devops.gov.bc.ca/"])
   enable_propagate_additional_user_context_data = "false"
@@ -43,18 +45,28 @@ resource "aws_cognito_user_pool_client" "test_silva_oidc_client" {
   allowed_oauth_flows                           = ["code"]
   allowed_oauth_flows_user_pool_client          = "true"
   allowed_oauth_scopes                          = ["openid", "profile", "email"]
-  callback_urls                                 = [
-    var.oidc_sso_playground_url,
-    "http://localhost:3000/dashboard",
-    "https://nr-silva-test-frontend.apps.silver.devops.gov.bc.ca/dashboard",
-    "https://silva-test.nrs.gov.bc.ca/dashboard"
-  ]
-  logout_urls                                   = [
-    var.oidc_sso_playground_url,
-    "${var.cognito_app_client_logout_chain_url.test}http://localhost:3000/",
-    "${var.cognito_app_client_logout_chain_url.test}https://nr-silva-test-frontend.apps.silver.devops.gov.bc.ca/",
-    "${var.cognito_app_client_logout_chain_url.test}https://silva-test.nrs.gov.bc.ca/"
-  ]
+  callback_urls                                 = concat(
+    [
+      var.oidc_sso_playground_url,
+      "http://localhost:3000/dashboard",
+      "http://localhost:4173/dashboard",
+      "https://nr-silva-test-frontend.apps.silver.devops.gov.bc.ca/dashboard",
+      "https://silva-test.nrs.gov.bc.ca/dashboard"
+    ],
+    [for i in range("${var.dev_pr_url_count}") : "https://nr-silva-${i}-frontend.apps.silver.devops.gov.bc.ca/dashboard"]
+  )
+  logout_urls                                   = concat(
+    [
+      var.oidc_sso_playground_url,
+      "${var.cognito_app_client_logout_chain_url.test}http://localhost:3000/",
+      "${var.cognito_app_client_logout_chain_url.test}http://localhost:4173/",
+      "${var.cognito_app_client_logout_chain_url.test}https://nr-silva-test-frontend.apps.silver.devops.gov.bc.ca/",
+      "${var.cognito_app_client_logout_chain_url.test}https://silva-test.nrs.gov.bc.ca/"
+    ],
+    [
+      for i in range("${var.dev_pr_url_count}") : "${var.cognito_app_client_logout_chain_url.test}https://nr-silva-${i}-frontend.apps.silver.devops.gov.bc.ca/"
+    ]
+  )
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
   explicit_auth_flows                           = ["ALLOW_REFRESH_TOKEN_AUTH"]
