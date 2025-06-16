@@ -8,7 +8,6 @@ const currentAuthState: AuthState = {
     cognitoUser: null,
     accessToken: null,
     idToken: null,
-    refreshToken: null,
     isAuthRestored: false,
 };
 

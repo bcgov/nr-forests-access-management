@@ -1,9 +1,4 @@
-import type {
-    CognitoUser,
-    CognitoAccessToken,
-    CognitoIdToken,
-    CognitoRefreshToken,
-} from "amazon-cognito-identity-js";
+import type { AuthUser, JWT } from "aws-amplify/auth";
 
 import type { IdpProvider } from "@/enum/IdpEnum";
 
@@ -20,10 +15,9 @@ export type FamLoginUser = {
 export type AuthState = {
     readonly isAuthenticated: boolean;
     readonly famLoginUser: FamLoginUser | null;
-    readonly cognitoUser: CognitoUser | null;
-    readonly accessToken: CognitoAccessToken | null;
-    readonly idToken: CognitoIdToken | null;
-    readonly refreshToken: CognitoRefreshToken | null;
+    readonly cognitoUser: AuthUser | null;
+    readonly accessToken: JWT | null;
+    readonly idToken: JWT | null;
     readonly isAuthRestored: boolean;
 };
 

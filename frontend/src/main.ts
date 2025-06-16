@@ -1,6 +1,6 @@
 import { createApp } from "vue";
 import { Amplify } from "aws-amplify";
-import awsExports from "./aws-exports";
+import amplifyconfig from "./amplifyconfiguration";
 import App from "@/App.vue";
 import { router } from "@/router";
 
@@ -12,7 +12,7 @@ import { isAxiosError } from "axios";
 import { THREE_HOURS } from "@/constants/TimeUnits";
 
 // Configure Amplify
-Amplify.configure(awsExports);
+Amplify.configure(amplifyconfig);
 
 // QueryClient retry logic extracted into a function
 function retryQuery(failureCount: number, error: unknown): boolean {
