@@ -87,9 +87,6 @@ const logout = async () => {
     authState.value = {
         isAuthenticated: false,
         famLoginUser: null,
-        cognitoUser: null,
-        accessToken: null,
-        idToken: null,
         isAuthRestored: true,
     };
 
@@ -159,9 +156,6 @@ const restoreSession = async () => {
         authState.value = {
             isAuthenticated: false,
             famLoginUser: null,
-            cognitoUser: null,
-            accessToken: null,
-            idToken: null,
             isAuthRestored: true,
         };
     } finally {
@@ -170,7 +164,7 @@ const restoreSession = async () => {
 };
 
 const loadUser = async (): Promise<any> => {
-    const cognitoUser: AuthUser = await getCurrentUser();
+    await getCurrentUser();
     // forceRefresh to retrieve the latest user attributes after they are changed
     // bypass the local cache without needing the user to sign out and sign back in, similar as bypassCache in v5
     const session: AuthSession = await fetchAuthSession({ forceRefresh: true });
@@ -179,17 +173,16 @@ const loadUser = async (): Promise<any> => {
     const idToken = session.tokens?.idToken;
 
     if (!accessToken || !idToken) {
-        throw new Error("Access token or ID token is undefined");
+        throw new Error(
+            "Access token or ID token is undefined from current user session"
+        );
     }
 
     const famLoginUser = getFamLoginUser(idToken.toString());
 
     authState.value = {
         isAuthenticated: true,
-        cognitoUser,
         famLoginUser,
-        accessToken,
-        idToken,
         isAuthRestored: true,
     };
 

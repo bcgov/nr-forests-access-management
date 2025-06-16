@@ -1,5 +1,3 @@
-import type { AuthUser, JWT } from "aws-amplify/auth";
-
 import type { IdpProvider } from "@/enum/IdpEnum";
 
 export type IdpTypes = IdpProvider.IDIR | IdpProvider.BCEIDBUSINESS;
@@ -15,9 +13,6 @@ export type FamLoginUser = {
 export type AuthState = {
     readonly isAuthenticated: boolean;
     readonly famLoginUser: FamLoginUser | null;
-    readonly cognitoUser: AuthUser | null;
-    readonly accessToken: JWT | null;
-    readonly idToken: JWT | null;
     readonly isAuthRestored: boolean;
 };
 
