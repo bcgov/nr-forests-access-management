@@ -6,6 +6,7 @@ import {
     signOut,
     getCurrentUser,
     fetchAuthSession,
+    decodeJWT,
 } from "aws-amplify/auth";
 import type { AuthSession } from "aws-amplify/auth";
 import type { IdpTypes, AuthContext, FamLoginUser } from "@/types/AuthTypes";
@@ -99,8 +100,7 @@ const logout = async () => {
  * @returns {FamLoginUser} The extracted user information.
  */
 const getFamLoginUser = (idToken: string): FamLoginUser => {
-    const payloadJson = atob(idToken.split(".")[1]);
-    const payload: Record<string, any> = JSON.parse(payloadJson);
+    const payload: Record<string, any> = decodeJWT(idToken).payload;
     return {
         username: payload["custom:idp_username"],
         displayName: payload["custom:idp_display_name"],
@@ -164,7 +164,6 @@ const restoreSession = async () => {
 };
 
 const loadUser = async (): Promise<any> => {
-    await getCurrentUser();
     // forceRefresh to retrieve the latest user attributes after they are changed
     // bypass the local cache without needing the user to sign out and sign back in, similar as bypassCache in v5
     const session: AuthSession = await fetchAuthSession({ forceRefresh: true });
@@ -173,9 +172,7 @@ const loadUser = async (): Promise<any> => {
     const idToken = session.tokens?.idToken;
 
     if (!accessToken || !idToken) {
-        throw new Error(
-            "Access token or ID token is undefined from current user session"
-        );
+        throw new Error("The user is not authenticated");
     }
 
     const famLoginUser = getFamLoginUser(idToken.toString());

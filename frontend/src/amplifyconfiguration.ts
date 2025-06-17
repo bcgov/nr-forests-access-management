@@ -21,7 +21,6 @@ const config = {
         Cognito: {
             userPoolId: env.fam_user_pool_id.value,
             userPoolClientId: env.fam_console_web_client_id.value, // This is App Client Id
-            signUpVerificationMethod: verificationMethods,
             loginWith: {
                 oauth: {
                     domain: `${env.fam_cognito_domain.value}.auth.ca-central-1.amazoncognito.com`,
