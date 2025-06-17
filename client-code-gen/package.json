@@ -11,6 +11,6 @@
     "gen-app-access-control-api": "rm -rf gen/app-access-control-api && openapi-generator-cli generate -i app-access-control-openapi.json --generator-name typescript-axios -o gen/app-access-control-api --config api.json"
   },
   "dependencies": {
-    "@openapitools/openapi-generator-cli": "^2.15.3"
+    "@openapitools/openapi-generator-cli": "^2.20.2"
   }
 }
