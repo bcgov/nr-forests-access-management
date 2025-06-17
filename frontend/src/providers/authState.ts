@@ -5,10 +5,6 @@ import type { AuthState } from "@/types/AuthTypes";
 const currentAuthState: AuthState = {
     isAuthenticated: false,
     famLoginUser: null,
-    cognitoUser: null,
-    accessToken: null,
-    idToken: null,
-    refreshToken: null,
     isAuthRestored: false,
 };
 

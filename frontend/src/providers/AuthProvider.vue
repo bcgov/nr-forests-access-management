@@ -1,15 +1,14 @@
 <script setup lang="ts">
 import { ref, provide, onMounted, onBeforeUnmount, readonly } from "vue";
 import axios from "axios";
-import { Auth } from "aws-amplify";
-import type {
-    CognitoUser,
-    CognitoAccessToken,
-    CognitoIdToken,
-    CognitoRefreshToken,
-} from "amazon-cognito-identity-js";
-import type { CognitoUserSession } from "amazon-cognito-identity-js";
-
+import {
+    signInWithRedirect,
+    signOut,
+    getCurrentUser,
+    fetchAuthSession,
+    decodeJWT,
+} from "aws-amplify/auth";
+import type { AuthSession } from "aws-amplify/auth";
 import type { IdpTypes, AuthContext, FamLoginUser } from "@/types/AuthTypes";
 import { AUTH_KEY } from "@/constants/InjectionKeys";
 import { ONE_SECOND, THREE_MINUTES, HALF_HOUR } from "@/constants/TimeUnits";
@@ -67,7 +66,12 @@ const login = async (idP: IdpTypes) => {
             idP === IdpProvider.IDIR
                 ? environmentSettings.getIdentityProviderIdir()
                 : environmentSettings.getIdentityProviderBceid();
-        await Auth.federatedSignIn({ customProvider });
+
+        signInWithRedirect({
+            provider: {
+                custom: customProvider,
+            },
+        });
     } catch (error) {
         console.error("Login failed:", error);
     }
@@ -84,29 +88,25 @@ const logout = async () => {
     authState.value = {
         isAuthenticated: false,
         famLoginUser: null,
-        cognitoUser: null,
-        accessToken: null,
-        idToken: null,
-        refreshToken: null,
         isAuthRestored: true,
     };
 
-    await Auth.signOut();
+    await signOut();
 };
 
 /**
  * Extracts user information from the provided ID token.
- * @param {CognitoIdToken} idToken The ID token from which to extract user info.
+ * @param {string} idToken The ID token from which to extract user info.
  * @returns {FamLoginUser} The extracted user information.
  */
-const getFamLoginUser = (idToken: CognitoIdToken): FamLoginUser => {
-    const decodedIdToken = idToken.decodePayload();
+const getFamLoginUser = (idToken: string): FamLoginUser => {
+    const payload: Record<string, any> = decodeJWT(idToken).payload;
     return {
-        username: decodedIdToken["custom:idp_username"],
-        displayName: decodedIdToken["custom:idp_display_name"],
-        email: decodedIdToken["email"],
-        idpProvider: decodedIdToken["custom:idp_name"]?.toLowerCase(),
-        organization: decodedIdToken["custom:idp_business_name"],
+        username: payload["custom:idp_username"],
+        displayName: payload["custom:idp_display_name"],
+        email: payload["email"],
+        idpProvider: payload["custom:idp_name"]?.toLowerCase(),
+        organization: payload["custom:idp_business_name"],
     };
 };
 
@@ -116,32 +116,8 @@ const getFamLoginUser = (idToken: CognitoIdToken): FamLoginUser => {
 const handlePostLogin = async () => {
     try {
         isLoading.value = true;
-        const cognitoUser: CognitoUser = await Auth.currentAuthenticatedUser({
-            // retrieve the latest user attributes after they are changed
-            // this will bypass the local cache without needing the user to sign out and sign back in
-            bypassCache: true,
-        });
-        const session: CognitoUserSession = await Auth.currentSession();
-
-        const accessToken: CognitoAccessToken = session.getAccessToken();
-        const idToken: CognitoIdToken = session.getIdToken();
-        const refreshToken: CognitoRefreshToken = session.getRefreshToken();
-
-        const famLoginUser = getFamLoginUser(idToken);
-
-        authState.value = {
-            isAuthenticated: true,
-            cognitoUser,
-            famLoginUser,
-            accessToken,
-            idToken,
-            refreshToken,
-            isAuthRestored: true,
-        };
-
-        setAxiosAuthorizationHeader(accessToken.getJwtToken());
-
-        startSilentRefresh(cognitoUser);
+        await loadUser();
+        startSilentRefresh();
         resetInactivityTimeout();
 
         /*
@@ -167,83 +143,19 @@ const handlePostLogin = async () => {
 };
 
 /**
- * Prevents concurrent token refresh attempts, reducing potential race conditions.
- */
-let isRefreshing = false;
-
-const refreshUserSession = (
-    cognitoUser: CognitoUser,
-    refreshToken: CognitoRefreshToken
-) => {
-    if (isRefreshing) {
-        return;
-    }
-
-    isRefreshing = true;
-    cognitoUser.refreshSession(
-        refreshToken,
-        (err, session: CognitoUserSession) => {
-            isRefreshing = false;
-            if (err) {
-                console.error("Token refresh failed:", err);
-                logout();
-            } else {
-                authState.value = {
-                    ...authState.value,
-                    accessToken: session.getAccessToken(),
-                    idToken: session.getIdToken(),
-                };
-                setAxiosAuthorizationHeader(
-                    session.getAccessToken().getJwtToken()
-                );
-                console.log("Tokens refreshed successfully.");
-            }
-        }
-    );
-};
-
-/**
  * Restores the user's session on page reload if the user is already authenticated.
  */
 const restoreSession = async () => {
     try {
         isLoading.value = true;
-        const cognitoUser: CognitoUser = await Auth.currentAuthenticatedUser({
-            // retrieve the latest user attributes after they are changed
-            // this will bypass the local cache without needing the user to sign out and sign back in
-            bypassCache: true,
-        });
-        const session: CognitoUserSession = await Auth.currentSession();
-
-        const accessToken: CognitoAccessToken = session.getAccessToken();
-        const idToken: CognitoIdToken = session.getIdToken();
-        const refreshToken: CognitoRefreshToken = session.getRefreshToken();
-
-        const famLoginUser = getFamLoginUser(idToken);
-
-        authState.value = {
-            isAuthenticated: true,
-            cognitoUser,
-            famLoginUser,
-            accessToken,
-            idToken,
-            refreshToken,
-            isAuthRestored: true,
-        };
-
-        setAxiosAuthorizationHeader(accessToken.getJwtToken());
-        refreshUserSession(cognitoUser, refreshToken);
-        startSilentRefresh(cognitoUser);
+        await loadUser();
+        startSilentRefresh();
         resetInactivityTimeout();
     } catch (error) {
         console.warn(error);
         authState.value = {
             isAuthenticated: false,
             famLoginUser: null,
-            cognitoUser: null,
-            accessToken: null,
-            idToken: null,
-            refreshToken: null,
             isAuthRestored: true,
         };
     } finally {
@@ -251,20 +163,51 @@ const restoreSession = async () => {
     }
 };
 
+const loadUser = async (): Promise<any> => {
+    // forceRefresh to retrieve the latest user attributes after they are changed
+    // bypass the local cache without needing the user to sign out and sign back in, similar as bypassCache in v5
+    const session: AuthSession = await fetchAuthSession({ forceRefresh: true });
+
+    const accessToken = session.tokens?.accessToken;
+    const idToken = session.tokens?.idToken;
+
+    if (!accessToken || !idToken) {
+        throw new Error("The user is not authenticated");
+    }
+
+    const famLoginUser = getFamLoginUser(idToken.toString());
+
+    authState.value = {
+        isAuthenticated: true,
+        famLoginUser,
+        isAuthRestored: true,
+    };
+
+    setAxiosAuthorizationHeader(accessToken.toString());
+};
+
+/**
+ * Prevents concurrent token refresh attempts, reducing potential race conditions.
+ */
+let isRefreshing = false;
+
 /**
  * Starts silent token refresh process for the authenticated user.
  */
-const startSilentRefresh = (cognitoUser: CognitoUser) => {
+const startSilentRefresh = () => {
     if (refreshIntervalId) clearInterval(refreshIntervalId);
 
     refreshIntervalId = setInterval(async () => {
         try {
-            if (authState.value.refreshToken) {
-                refreshUserSession(cognitoUser, authState.value.refreshToken);
+            if (!isRefreshing) {
+                isRefreshing = true;
+                loadUser();
             }
         } catch (error) {
             console.error("Silent refresh failed:", error);
             logout();
+        } finally {
+            isRefreshing = false;
         }
     }, REFRESH_INTERVAL) as unknown as number;
 };
@@ -355,6 +298,7 @@ onMounted(() => {
  */
 onBeforeUnmount(() => {
     stopSilentRefresh();
+
     if (inactivityTimeoutId) {
         clearTimeout(inactivityTimeoutId);
     }
