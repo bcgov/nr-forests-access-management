@@ -7,7 +7,7 @@ import {
     getCurrentUser,
     fetchAuthSession,
 } from "aws-amplify/auth";
-import type { AuthUser, AuthSession } from "aws-amplify/auth";
+import type { AuthSession } from "aws-amplify/auth";
 import type { IdpTypes, AuthContext, FamLoginUser } from "@/types/AuthTypes";
 import { AUTH_KEY } from "@/constants/InjectionKeys";
 import { ONE_SECOND, THREE_MINUTES, HALF_HOUR } from "@/constants/TimeUnits";
@@ -187,7 +187,6 @@ const loadUser = async (): Promise<any> => {
     };
 
     setAxiosAuthorizationHeader(accessToken.toString());
-    return accessToken;
 };
 
 /**
