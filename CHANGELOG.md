@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.35.4](https://github.com/bcgov/nr-forests-access-management/compare/v1.35.3...v1.35.4) (2025-06-18)
+
+
+### Bug Fixes
+
+* **deps:** [#1839](https://github.com/bcgov/nr-forests-access-management/issues/1839) Update the openapitool package in code gen ([#1843](https://github.com/bcgov/nr-forests-access-management/issues/1843)) ([55783c7](https://github.com/bcgov/nr-forests-access-management/commit/55783c7a29b07b9e081669cd521a5dbfe00e7234))
+* **deps:** [#1839](https://github.com/bcgov/nr-forests-access-management/issues/1839) Upgrade aws-amplify to v6 ([#1840](https://github.com/bcgov/nr-forests-access-management/issues/1840)) ([0df1504](https://github.com/bcgov/nr-forests-access-management/commit/0df1504a8fcf8693db2ac53c20909b19f8d24fa6))
+* **deps:** update dependency axios to v1.8.2 [security] ([#1772](https://github.com/bcgov/nr-forests-access-management/issues/1772)) ([8c2da0a](https://github.com/bcgov/nr-forests-access-management/commit/8c2da0a3d1207be68dd81b28c85adf43d76c86f6))
+
 ## [1.35.2](https://github.com/bcgov/nr-forests-access-management/compare/v1.35.1...v1.35.2) (2025-05-27)
 
 
