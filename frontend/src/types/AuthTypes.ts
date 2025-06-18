@@ -1,10 +1,3 @@
-import type {
-    CognitoUser,
-    CognitoAccessToken,
-    CognitoIdToken,
-    CognitoRefreshToken,
-} from "amazon-cognito-identity-js";
-
 import type { IdpProvider } from "@/enum/IdpEnum";
 
 export type IdpTypes = IdpProvider.IDIR | IdpProvider.BCEIDBUSINESS;
@@ -20,10 +13,6 @@ export type FamLoginUser = {
 export type AuthState = {
     readonly isAuthenticated: boolean;
     readonly famLoginUser: FamLoginUser | null;
-    readonly cognitoUser: CognitoUser | null;
-    readonly accessToken: CognitoAccessToken | null;
-    readonly idToken: CognitoIdToken | null;
-    readonly refreshToken: CognitoRefreshToken | null;
     readonly isAuthRestored: boolean;
 };
 

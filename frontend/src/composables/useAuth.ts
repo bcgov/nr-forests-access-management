@@ -1,6 +1,6 @@
 import { inject } from "vue";
 import { useRouter } from "vue-router";
-import { Auth } from "aws-amplify";
+import { signOut } from "aws-amplify/auth";
 import { AUTH_KEY } from "@/constants/InjectionKeys";
 import type { AuthContext } from "@/types/AuthTypes";
 
@@ -16,7 +16,7 @@ const useAuth = (): AuthContext => {
 
     if (!auth) {
         // If auth context is missing, log out and redirect to landing page
-        Auth.signOut()
+        signOut()
             .then(() => {
                 router.push("/");
             })
