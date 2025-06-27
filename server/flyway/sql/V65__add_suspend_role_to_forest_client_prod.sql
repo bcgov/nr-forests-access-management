@@ -1,4 +1,4 @@
--- Add a CLIENT_SUSPEND role to Forest Client DEV and TEST
+-- Add a CLIENT_SUSPEND role to Forest Client PROD
 WITH application_ids AS (
     SELECT
         application_id,

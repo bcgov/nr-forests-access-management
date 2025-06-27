@@ -1,4 +1,4 @@
--- Add a CLIENT_SUSPEND role to Forest Client DEV and TEST
+-- Add a FOM_ADMIN role to FOM DEV and TEST
 WITH application_ids AS (
     SELECT
         application_id,
@@ -20,7 +20,7 @@ INSERT INTO
     )
 SELECT
     'FOM_ADMIN',
-    'Manage FOM analytics summary data.',
+    'Manage and access FOM analytics summary data, with additional permissions to oversee and support administrative tasks.',
     application_id,
     'C',
     CURRENT_USER,
