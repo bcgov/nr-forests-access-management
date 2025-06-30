@@ -20,7 +20,7 @@ INSERT INTO
     )
 SELECT
     'FOM_ADMIN',
-    'Manage and access FOM analytics summary data, with additional permissions to oversee and support administrative tasks.',
+    'Manages FOM data and performs administrative tasks.',
     application_id,
     'C',
     CURRENT_USER,
