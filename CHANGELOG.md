@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.36.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.35.3...v1.36.0) (2025-06-30)
+
+
+### Features
+
+* **flyway:** [#1855](https://github.com/bcgov/nr-forests-access-management/issues/1855),[#1857](https://github.com/bcgov/nr-forests-access-management/issues/1857) Added role for fam clients ([#1859](https://github.com/bcgov/nr-forests-access-management/issues/1859)) ([ee1bf7b](https://github.com/bcgov/nr-forests-access-management/commit/ee1bf7b4a82f08f2a63696388573fbd9aeaedc66))
+
+
+### Bug Fixes
+
+* [#1846](https://github.com/bcgov/nr-forests-access-management/issues/1846) added terraform required provider version ([#1852](https://github.com/bcgov/nr-forests-access-management/issues/1852)) ([b1c973e](https://github.com/bcgov/nr-forests-access-management/commit/b1c973e26ed2aa7999a92399e7c0ba00713de0fe))
+* **deps:** [#1839](https://github.com/bcgov/nr-forests-access-management/issues/1839) Update the openapitool package in code gen ([#1843](https://github.com/bcgov/nr-forests-access-management/issues/1843)) ([55783c7](https://github.com/bcgov/nr-forests-access-management/commit/55783c7a29b07b9e081669cd521a5dbfe00e7234))
+* **deps:** [#1839](https://github.com/bcgov/nr-forests-access-management/issues/1839) Update vite related packages for frontend ([#1844](https://github.com/bcgov/nr-forests-access-management/issues/1844)) ([aae4d6f](https://github.com/bcgov/nr-forests-access-management/commit/aae4d6f5c33d06540b2c01a4acf06e5b6ab49dc8))
+* **deps:** [#1839](https://github.com/bcgov/nr-forests-access-management/issues/1839) Upgrade aws-amplify to v6 ([#1840](https://github.com/bcgov/nr-forests-access-management/issues/1840)) ([0df1504](https://github.com/bcgov/nr-forests-access-management/commit/0df1504a8fcf8693db2ac53c20909b19f8d24fa6))
+* **deps:** update dependency axios to v1.8.2 [security] ([#1772](https://github.com/bcgov/nr-forests-access-management/issues/1772)) ([8c2da0a](https://github.com/bcgov/nr-forests-access-management/commit/8c2da0a3d1207be68dd81b28c85adf43d76c86f6))
+
 ## [1.35.2](https://github.com/bcgov/nr-forests-access-management/compare/v1.35.1...v1.35.2) (2025-05-27)
 
 
