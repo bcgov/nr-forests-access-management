@@ -13,25 +13,23 @@ permissions:
   id-token: write # This is required for requesting the JWT
   contents: read # This is required for actions/checkout
 
-  jobs:
+jobs:
+  test-LZA-oidc:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    test-LZA-oidc:
-      runs-on: ubuntu-latest
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.FAM_GHA_LZA_ROLE }} # AWS-GHA OIDC auth role.
+          role-session-name: lza-tools-deployment
+          aws-region: ca-central-1
 
-      steps:
-        - name: Checkout
-          uses: actions/checkout@v4
-
-        - name: Configure AWS Credentials
-          uses: aws-actions/configure-aws-credentials@v4
-          with:
-            role-to-assume: ${{ vars.FAM_GHA_LZA_ROLE }} # AWS-GHA OIDC auth role.
-            role-session-name: lza-tools-deployment
-            aws-region: ca-central-1
-
-        - name: Verify AWS authentication
-          run: |
-            aws sts get-caller-identity
-            aws s3 ls
-            echo "OIDC Test Successful"
+      - name: Verify AWS authentication
+        run: |
+          aws sts get-caller-identity
+          aws s3 ls
+          echo "OIDC Test Successful"
 
