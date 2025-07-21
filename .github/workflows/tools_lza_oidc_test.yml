@@ -30,7 +30,7 @@ permissions:
             aws-region: ca-central-1
 
         - name: Verify AWS authentication
-            run: |
+          run: |
             aws sts get-caller-identity
             aws s3 ls
             echo "OIDC Test Successful"
