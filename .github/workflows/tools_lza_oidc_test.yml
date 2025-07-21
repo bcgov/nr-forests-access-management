@@ -1,0 +1,37 @@
+name: LZA DEPLOY Tools Environment
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      # Enable a specific branch to temporarily test in the tools environment.
+      - "feat/1886-lza-github-oidc"
+
+# When use GHA OIDC provider and for action to create the JWT, it is required to have the id-token: write permission
+# permission can be added at job level or workflow level. Ref: https://github.com/aws-actions/configure-aws-credentials#OIDC
+permissions:
+  id-token: write # This is required for requesting the JWT
+  contents: read # This is required for actions/checkout
+
+  jobs:
+
+    test-LZA-oidc:
+      runs-on: ubuntu-latest
+
+      steps:
+        - name: Checkout
+          uses: actions/checkout@v4
+
+        - name: Configure AWS Credentials
+          uses: aws-actions/configure-aws-credentials@v4
+          with:
+            role-to-assume: ${{ vars.FAM_GHA_LZA_ROLE }} # AWS-GHA OIDC auth role.
+            role-session-name: lza-tools-deployment
+            aws-region: ca-central-1
+
+        - name: Verify AWS authentication
+            run: |
+            aws sts get-caller-identity
+            aws s3 ls
+            echo "OIDC Test Successful"
+
