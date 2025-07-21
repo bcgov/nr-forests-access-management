@@ -15,7 +15,10 @@ permissions:
 
 jobs:
   test-LZA-oidc:
+    name: Test LZA OIDC Authentication
     runs-on: ubuntu-latest
+    environment: tools
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
