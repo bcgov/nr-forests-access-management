@@ -5,7 +5,7 @@ on:
   push:
     branches:
       # Enable a specific branch to temporarily test in the tools environment.
-      - "feat/1886-lza-github-oidc"
+      - "feat/laz-migration"
 
 # When use GHA OIDC provider and for action to create the JWT, it is required to have the id-token: write permission
 # permission can be added at job level or workflow level. Ref: https://github.com/aws-actions/configure-aws-credentials#OIDC
