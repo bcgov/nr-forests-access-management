@@ -1,5 +1,5 @@
 terraform {
-  source = "../../lza-infrastructure/server"
+  source = "../../terraform/server"
 }
 
 locals {
