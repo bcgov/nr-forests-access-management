@@ -67,24 +67,24 @@ jobs:
         with:
           terraform_version: ${{ env.TF_VERSION }}
 
-      # - name: Terragrunt ${{ inputs.tf_subcommand }}
-      #   working-directory: ${{ env.TG_SRC_PATH }}/${{ inputs.environment_name }}
-      #   env:
-      #     licenceplate: ${{ secrets.licenceplate }}
-      #     target_env: ${{ inputs.environment_name }}
-      #   run: |
-      #     # Run terraform
-      #     terragrunt run-all ${{ inputs.tf_subcommand }} --terragrunt-non-interactive
+      - name: Terragrunt ${{ inputs.tf_subcommand }}
+        working-directory: ${{ env.TG_SRC_PATH }}/${{ inputs.environment_name }}
+        env:
+          licenceplate: ${{ secrets.licenceplate }}
+          target_env: ${{ inputs.environment_name }}
+        run: |
+          # Run terraform
+          terragrunt run-all ${{ inputs.tf_subcommand }} --terragrunt-non-interactive
 
-      # - name: Wait for 30 seconds
-      #   run: |
-      #     echo "Waiting for 30 seconds before executing the smoke test..."
-      #     sleep 30s
+      - name: Wait for 30 seconds
+        run: |
+          echo "Waiting for 30 seconds before executing the smoke test..."
+          sleep 30s
 
-      # - name: Show Terraform Outputs (Optional step, will be replaced by a smoke test later)
-      #   working-directory: ${{ env.TG_SRC_PATH }}/${{ inputs.environment_name }}
-      #   env:
-      #     licenceplate: ${{ secrets.licenceplate }}
-      #     target_env: ${{ inputs.environment_name }}
-      #   run: |
-      #     terragrunt output
+      - name: Show Terraform Outputs (Optional step, will be replaced by a smoke test later)
+        working-directory: ${{ env.TG_SRC_PATH }}/${{ inputs.environment_name }}
+        env:
+          licenceplate: ${{ secrets.licenceplate }}
+          target_env: ${{ inputs.environment_name }}
+        run: |
+          terragrunt output
