@@ -1,5 +1,5 @@
 terraform {
-  source = "../../terraform/server"
+  source = "../../../terraform/server"
 }
 
 locals {
