@@ -1,7 +1,7 @@
-flake8==7.1.1
+flake8==7.3.0
 pytest==7.4.4
-pytest-mock==3.14.0
-testcontainers==4.9.0
+pytest-mock==3.14.1
+testcontainers==4.10.0
 testcontainers-core==0.0.1rc1
 
 # used to create the md report used by gha when tests run
@@ -10,19 +10,19 @@ pytest-emoji==0.2.0
 
 # used to reverse engineer database after flyway migrations, not part of
 # deployment so putting as a dev dependency
-sqlacodegen==3.0.0rc5
+sqlacodegen==3.0.0
 
-python-dotenv==1.0.1
+python-dotenv==1.1.1
 
 # used to mock out sqlalchemy for testing
-mock==5.1.0
+mock==5.2.0
 mock-alchemy==0.2.6
 
 # used to create test JWT
-pycryptodome==3.21.0
+pycryptodome==3.23.0
 
 pytest-env==0.8.2
 pytest-dotenv==0.5.2
 
-pytest-asyncio==0.23.8
+pytest-asyncio==0.26.0
 requests>=2.32.0 # not directly required, pinned by Snyk to avoid a vulnerability

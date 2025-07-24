@@ -1,13 +1,13 @@
 pytest==7.4.4
-pytest-mock==3.14.0
-testcontainers==4.9.0
+pytest-mock==3.14.1
+testcontainers==4.10.0
 testcontainers-core==0.0.1rc1
 
 # used to create test JWT
-pycryptodome==3.21.0
+pycryptodome==3.23.0
 
 # used to mock out sqlalchemy for testing
-mock==5.1.0
+mock==5.2.0
 mock-alchemy==0.2.6
 
 # used to create the md report used by gha when tests run
