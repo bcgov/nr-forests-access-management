@@ -1,0 +1,18 @@
+name: LZA DESTROY Tools Backend
+
+on:
+  workflow_dispatch:
+
+# permission can be added at job level or workflow level
+permissions:
+  id-token: write # This is required for requesting the JWT
+  contents: read # This is required for actions/checkout
+
+jobs:
+  aws-tools-destruction-server:
+    uses: ./.github/workflows/lza_reusable_terraform_server.yml
+    with:
+      environment_name: tools
+      tf_subcommand: destroy
+    secrets:
+      licenceplate: ${{ secrets.LZA_LICENCEPLATE}}
