@@ -6,12 +6,12 @@ resource "aws_cognito_user_pool_client" "dev_ilcr_oidc_client" {
   callback_urls                                 = [
     var.oidc_sso_playground_url,
     "http://localhost:8080/ilcr/callback",
-    "https://dlvrapps.nrs.gov.bc.ca/int/ilcr/callback"
+    "https://dlvrapps.nrs.gov.bc.ca/ext/ilcr/callback"
   ]
   logout_urls                                   = [
     var.oidc_sso_playground_url,
-    "${var.cognito_app_client_logout_chain_url.dev}http://localhost:8080/",
-    "${var.cognito_app_client_logout_chain_url.dev}https://dlvrapps.nrs.gov.bc.ca/int/ilcr"
+    "${var.cognito_app_client_logout_chain_url.dev}http://localhost:8080/ilcr/logout",
+    "${var.cognito_app_client_logout_chain_url.dev}https://dlvrapps.nrs.gov.bc.ca/ext/ilcr/logout"
   ]
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
@@ -44,12 +44,12 @@ resource "aws_cognito_user_pool_client" "test_ilcr_oidc_client" {
   callback_urls                                 = [
       var.oidc_sso_playground_url,
       "http://localhost:8080/ilcr/callback",
-      "https://testapps.nrs.gov.bc.ca/int/ilcr/callback"
+      "https://testapps.nrs.gov.bc.ca/ext/ilcr/callback"
     ]
   logout_urls                                   = [
       var.oidc_sso_playground_url,
-      "${var.cognito_app_client_logout_chain_url.test}http://localhost:8080/",
-      "${var.cognito_app_client_logout_chain_url.test}https://testapps.nrs.gov.bc.ca/int/ilcr"
+      "${var.cognito_app_client_logout_chain_url.test}http://localhost:8080/ilcr/logout",
+      "${var.cognito_app_client_logout_chain_url.test}https://testapps.nrs.gov.bc.ca/ext/ilcr/logout"
     ]
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
@@ -81,11 +81,11 @@ resource "aws_cognito_user_pool_client" "prod_ilcr_oidc_client" {
   allowed_oauth_scopes                          = ["openid", "profile", "email"]
   callback_urls                                 = [
     var.oidc_sso_playground_url,
-    "https://apps.nrs.gov.bc.ca/int/ilcr/callback"
+    "https://apps.nrs.gov.bc.ca/ext/ilcr/callback"
   ]
   logout_urls                                   = [
     var.oidc_sso_playground_url,
-    "${var.cognito_app_client_logout_chain_url.prod}https://apps.nrs.gov.bc.ca/int/ilcr"
+    "${var.cognito_app_client_logout_chain_url.prod}https://apps.nrs.gov.bc.ca/ext/ilcr/logout"
   ]
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
