@@ -283,6 +283,9 @@ data "aws_lambda_invocation" "invoke_flyway_migration" {
   }
   JSON
 
+  # If there is a new flyway that requires Cognito clients (the IDs) to be created, "add the new clients in this block"
+  # when BOTH the NEW flyway and the NEW clients need to be applied together.
+  # If the new client is already created separately before flyway run, then it can be left out of this block.
   depends_on = [
     aws_db_cluster_snapshot.fam_pre_flyway_snapshot,
     aws_cognito_user_pool_client.fam_console_oidc_client,
