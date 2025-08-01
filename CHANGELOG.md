@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.38.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.37.0...v1.38.0) (2025-08-01)
+
+
+### Features
+
+* [#1880](https://github.com/bcgov/nr-forests-access-management/issues/1880) add new legacy application ilcr to fam ([#1910](https://github.com/bcgov/nr-forests-access-management/issues/1910)) ([926b9fa](https://github.com/bcgov/nr-forests-access-management/commit/926b9facd8424fc7e10aa65c672fa1802f46e5a3))
+
 ## [1.37.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.36.0...v1.37.0) (2025-07-31)
 
 
