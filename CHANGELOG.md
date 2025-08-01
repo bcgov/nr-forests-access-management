@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.37.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.36.0...v1.37.0) (2025-07-31)
+
+
+### Features
+
+* [#1880](https://github.com/bcgov/nr-forests-access-management/issues/1880) add ilcr OIDC client ([#1906](https://github.com/bcgov/nr-forests-access-management/issues/1906)) ([728881b](https://github.com/bcgov/nr-forests-access-management/commit/728881bd567f6bc95a96537c93f2d9eaee8b01ef))
+
+
+### Bug Fixes
+
+* 1880 fix flyway terraform missing comma ([#1908](https://github.com/bcgov/nr-forests-access-management/issues/1908)) ([ff786b3](https://github.com/bcgov/nr-forests-access-management/commit/ff786b3330e86557f5d1123c8f5041b9d98a7bfa))
+* fix another comma ([#1909](https://github.com/bcgov/nr-forests-access-management/issues/1909)) ([d8c8701](https://github.com/bcgov/nr-forests-access-management/commit/d8c870173c0138a836487c0ce89454b5985becef))
+
 ## [1.36.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.35.3...v1.36.0) (2025-06-30)
 
 
