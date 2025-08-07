@@ -1,0 +1,96 @@
+name: LZA Run Terraform (Backend)
+
+# When use GHA OIDC provider and for action to create the JWT, it is required to have the id-token: write permission
+# permission can be added at job level or workflow level. Ref: https://github.com/aws-actions/configure-aws-credentials#OIDC
+permissions:
+  id-token: write # This is required for requesting the JWT
+  contents: read # This is required for actions/checkout
+
+on:
+  workflow_call:
+    inputs:
+      environment_name:
+        required: true
+        type: string
+      tf_subcommand:
+        required: true
+        type: string
+      execute_flyway:
+        required: false
+        type: string
+        default: "false"
+    secrets:
+      licenceplate:
+        required: true
+
+env:
+  TF_VERSION: 1.12.2
+  TG_VERSION: 0.37.1
+  TG_SRC_PATH: lza-infrastructure/landing-zone/server
+  AWS_REGION: ca-central-1
+
+jobs:
+  aws-server-deployment:
+    name: Run Terraform to Deploy Server
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment_name }}
+
+    env:
+      AWS_OIDC_GHA_ROLE: ${{ vars.FAM_GHA_LZA_ROLE }} # AWS-GHA OIDC auth role.
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.AWS_OIDC_GHA_ROLE }}
+          role-session-name: server-${{ inputs.environment_name }}-deployment
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Verify AWS authentication (Optional step, will remove later)
+        run: |
+          aws sts get-caller-identity
+          aws s3 ls
+          echo "OIDC Test Successful"
+
+      - name: Setup Terragrunt
+        uses: autero1/action-terragrunt@v3.0.2
+        with:
+          terragrunt-version: ${{ env.TG_VERSION }}
+
+      - name: Create Terraform vars
+        working-directory: ${{ env.TG_SRC_PATH }}/${{ inputs.environment_name }}
+        run: |
+          # Pass variables from github actions to terraform
+          cat > github.auto.tfvars <<EOF
+          execute_flyway = ${{ inputs.execute_flyway }}
+          EOF
+
+      - name: HashiCorp - Setup Terraform
+        uses: hashicorp/setup-terraform@v3.1.2
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Terragrunt ${{ inputs.tf_subcommand }}
+        working-directory: ${{ env.TG_SRC_PATH }}/${{ inputs.environment_name }}
+        env:
+          licenceplate: ${{ secrets.licenceplate }}
+          target_env: ${{ inputs.environment_name }}
+        run: |
+          # Run terraform
+          terragrunt run-all ${{ inputs.tf_subcommand }} --terragrunt-non-interactive
+
+      - name: Wait for 30 seconds
+        run: |
+          echo "Waiting for 30 seconds before executing the smoke test..."
+          sleep 30s
+
+      - name: Show Terraform Outputs (Optional step, will be replaced by a smoke test later)
+        working-directory: ${{ env.TG_SRC_PATH }}/${{ inputs.environment_name }}
+        env:
+          licenceplate: ${{ secrets.licenceplate }}
+          target_env: ${{ inputs.environment_name }}
+        run: |
+          terragrunt output

@@ -1,0 +1,13 @@
+name: LZA DESTROY Tools Backend
+
+on:
+  workflow_dispatch:
+
+jobs:
+  aws-tools-destruction-server:
+    uses: ./.github/workflows/lza_reusable_terraform_server.yml
+    with:
+      environment_name: tools
+      tf_subcommand: destroy
+    secrets:
+      licenceplate: ${{ secrets.LZA_LICENCEPLATE}}
