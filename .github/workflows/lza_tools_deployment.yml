@@ -8,7 +8,7 @@ jobs:
     uses: ./.github/workflows/lza_reusable_terraform_server.yml
     with:
       environment_name: tools
-      tf_subcommand: apply
+      tf_subcommand: plan # apply
       # execute_flyway: true
 
     secrets:
