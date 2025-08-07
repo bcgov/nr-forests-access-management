@@ -267,7 +267,10 @@ data "aws_lambda_invocation" "invoke_flyway_migration" {
           "client_id_prod_apt_oidc_client" : "${aws_cognito_user_pool_client.prod_apt_oidc_client.id}",
           "client_id_dev_results_exam_oidc_client" : "${aws_cognito_user_pool_client.dev_results_exam_oidc_client.id}",
           "client_id_test_results_exam_oidc_client" : "${aws_cognito_user_pool_client.test_results_exam_oidc_client.id}",
-          "client_id_prod_results_exam_oidc_client" : "${aws_cognito_user_pool_client.prod_results_exam_oidc_client.id}"
+          "client_id_prod_results_exam_oidc_client" : "${aws_cognito_user_pool_client.prod_results_exam_oidc_client.id}",
+          "client_id_dev_ilcr_oidc_client" : "${aws_cognito_user_pool_client.dev_ilcr_oidc_client.id}",
+          "client_id_test_ilcr_oidc_client" : "${aws_cognito_user_pool_client.test_ilcr_oidc_client.id}",
+          "client_id_prod_ilcr_oidc_client" : "${aws_cognito_user_pool_client.prod_ilcr_oidc_client.id}"
         },
         "target": "latest"
     },
@@ -280,6 +283,9 @@ data "aws_lambda_invocation" "invoke_flyway_migration" {
   }
   JSON
 
+  # If there is a new flyway that requires Cognito clients (the IDs) to be created, "add the new clients in this block"
+  # when BOTH the NEW flyway and the NEW clients need to be applied together.
+  # If the new client is already created separately before flyway run, then it can be left out of this block.
   depends_on = [
     aws_db_cluster_snapshot.fam_pre_flyway_snapshot,
     aws_cognito_user_pool_client.fam_console_oidc_client,
