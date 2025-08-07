@@ -8,6 +8,7 @@ generate "tools_tfvars" {
   disable_signature = true
   contents          = <<-EOF
   target_env = "tools"
+  famdb_cluster_name = "tools-fam-cluster"
   subnet_data_a = "Tools-Data-A"
   subnet_data_b = "Tools-Data-B"
   subnet_app_a = "Tools-App-A"

@@ -3,6 +3,13 @@ variable "target_env" {
   type        = string
 }
 
+# Aurora Database
+variable "famdb_cluster_name" {
+  description = "Name for the FAM database cluster -- must be unique"
+  type        = string
+}
+
+
 # Networking Variables
 variable "subnet_data_a" {
   description = "Value of the name tag for a subnet in the DATA security group"
