@@ -170,13 +170,13 @@ resource "aws_cognito_user_pool" "fam_user_pool" {
     default_email_option = "CONFIRM_WITH_CODE"
   }
 
-  lambda_config {
-    pre_token_generation = aws_lambda_function.fam-auth-function.arn
-  }
+  # lambda_config {
+  #   pre_token_generation = aws_lambda_function.fam-auth-function.arn
+  # }
 
-  depends_on = [
-    aws_lambda_function.fam-auth-function
-  ]
+  # depends_on = [
+  #   aws_lambda_function.fam-auth-function
+  # ]
 }
 
 resource "aws_cognito_user_pool_domain" "main" {
