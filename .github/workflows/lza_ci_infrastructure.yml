@@ -1,0 +1,35 @@
+name: Continuous Integration Infrastructure
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - "main"
+    paths:
+      - "lza/**"
+
+concurrency:
+  group: deploy-dev-global # Prevents this workflow from running if another deployment or CI workflow with the same group is in progress
+
+jobs:
+  backend-terraform-plan:
+    uses: ./.github/workflows/lza_reusable_terraform_server.yml
+    with:
+      environment_name: tools # TODO: change to dev later
+      tf_subcommand: plan
+      execute_flyway: false
+    secrets:
+      licenceplate: ${{ secrets.LZA_LICENCEPLATE}}
+
+
+  backend-terraform-plan-destroy:
+    needs: backend-terraform-plan
+    uses: ./.github/workflows/reusable_terraform_server.yml
+    with:
+      environment_name: dev
+      # This command can detect issues with the terraform destroy: graph -verbose -draw-cycles -type=plan-destroy
+      # Only needed for the backend because we don't destroy the frontend.
+      tf_subcommand: plan -destroy
+      execute_flyway: false
+    secrets:
+      licenceplate: ${{ secrets.LZA_LICENCEPLATE}}
