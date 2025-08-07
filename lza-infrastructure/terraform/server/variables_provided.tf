@@ -15,11 +15,6 @@ variable "fam_user_pool_domain_name" {
   type        = string
 }
 
-variable "famdb_cluster_name" {
-  description = "Name for the FAM database cluster -- must be unique"
-  type        = string
-}
-
 # OIDC issuers at Pathfinder SSO (Keycloak)
 
 variable "dev_oidc_idp_issuer" {
