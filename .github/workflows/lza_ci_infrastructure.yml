@@ -1,4 +1,4 @@
-name: Continuous Integration Infrastructure
+name: LZA Continuous Integration Infrastructure
 
 on:
   workflow_dispatch:
