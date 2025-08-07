@@ -2,23 +2,13 @@ name: LZA DEPLOY Tools Environment
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      # Enable a specific branch to temporarily test in the tools environment.
-      - "feat/laz-migration"
-
-# When use GHA OIDC provider and for action to create the JWT, it is required to have the id-token: write permission
-# permission can be added at job level or workflow level. Ref: https://github.com/aws-actions/configure-aws-credentials#OIDC
-permissions:
-  id-token: write # This is required for requesting the JWT
-  contents: read # This is required for actions/checkout
 
 jobs:
   aws-tools-deployment-server:
     uses: ./.github/workflows/lza_reusable_terraform_server.yml
     with:
       environment_name: tools
-      tf_subcommand: apply # apply
+      tf_subcommand: apply
       # execute_flyway: true
 
     secrets:
