@@ -6,13 +6,13 @@ variable "fam_util_ec2_instance_ami" {
   description = "Instance image for FAM Util EC2"
   type        = string
   # Amazon Linux 2 Kernel 5.10 AMI 2.0.20230119.1 x86_64 HVM gp2
-  default     = "ami-092e716d46cd65cac"
+  default     = "ami-047d9348c6bdd7573"
 }
 
 variable "fam_util_ec2_instance_type" {
   description = "Instance type to use for the instance"
   type        = string
-  default     = "t2.micro"
+  default     = "t3.small"
 }
 
 resource "aws_instance" "fam_util_ec2_instance" {
@@ -46,10 +46,42 @@ resource "aws_instance" "fam_util_ec2_instance" {
   # Script to install postgresql.
   user_data = <<EOF
   #!/bin/bash
-  echo "Installing postgresql.x86_64" > init.log
-  sudo yum update -y >> init.log 2>&1 &
-  sudo yum install -y postgresql.x86_64 >> init.log 2>&1 &
-  echo "Postgres installation done" >> init.log
+  # Exit immediately on error, undefined variable, or pipeline error
+  set -euo pipefail
+
+  # Log all output to a file
+  exec > /var/log/user-data.log 2>&1
+
+  echo "[INFO] Starting EC2 initialization..."
+
+  # Update packages
+  echo "[INFO] Updating system packages..."
+  sudo dnf update -y
+
+  # Install PostgreSQL 16 repo (Fedora 38 version for Amazon Linux 2023)
+  echo "[INFO] Adding PostgreSQL 16 repository..."
+  sudo dnf install -y https://download.postgresql.org/pub/repos/yum/16/fedora/fedora-38-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+
+  # Disable default PostgreSQL module to avoid conflicts
+  echo "[INFO] Disabling default PostgreSQL module..."
+  sudo dnf -qy module disable postgresql
+
+  # Install only PostgreSQL 16 client (psql)
+  echo "[INFO] Installing psql 16..."
+  sudo dnf install -y postgresql16
+
+  # Verify psql installation
+  echo "[INFO] Verifying installation..."
+  psql --version
+
+  echo "[SUCCESS] psql 16 installation completed."
+
+
+  # #!/bin/bash
+  # echo "Installing postgresql.x86_64" > init.log
+  # sudo yum update -y >> init.log 2>&1 &
+  # sudo yum install -y postgresql.x86_64 >> init.log 2>&1 &
+  # echo "Postgres installation done" >> init.log
 
   EOF
 
