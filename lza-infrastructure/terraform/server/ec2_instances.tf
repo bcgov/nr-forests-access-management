@@ -44,6 +44,10 @@ resource "aws_instance" "fam_util_ec2_instance" {
   }
 
   # Script to install postgresql.
+  # Note, although LZA has the same ec2 instance, e.g., Amazon Linux 2 and instance type etc and the same postgres engine version like in ASEA,
+  # the postgresql installation didnot work for connecting to db, due to this unclear error "The "SCRAM authentication requires libpq version 10 or above",
+  # likely due to db pasword encryption method used to store secrete in db server. So below script is changed to install PostgreSQL 14
+  # (previously was version 9, too low). This is the most straight foward solution. TODO: In the future, we may try out using different ec2_instance_ami.
   user_data = <<EOF
   #!/bin/bash
   set -e
