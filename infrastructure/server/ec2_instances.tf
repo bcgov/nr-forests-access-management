@@ -44,22 +44,22 @@ resource "aws_instance" "fam_util_ec2_instance" {
   }
 
   # Script to install postgresql.
-  user_data = <<EOF
-  #!/bin/bash
-  set -e
+  user_data = <<-EOF
+#!/bin/bash
+set -e
 
-  LOGFILE="/var/log/init-postgresql-install.log"
+LOGFILE="/var/log/init-postgresql-install.log"
 
-  # Install only PostgreSQL 16 client (psql)
-  echo "[INFO] Installing psql 16..." | sudo tee -a $LOGFILE
-  sudo dnf install -y postgresql16 | sudo tee -a $LOGFILE
+# Install only PostgreSQL 16 client (psql)
+echo "[INFO] Installing psql 16..." | sudo tee -a $LOGFILE
+sudo dnf install -y postgresql16 | sudo tee -a $LOGFILE
 
-  # Verify psql installation
-  echo "[INFO] Verifying installation..." | sudo tee -a $LOGFILE
-  psql --version | sudo tee -a $LOGFILE
+# Verify psql installation
+echo "[INFO] Verifying installation..." | sudo tee -a $LOGFILE
+psql --version | sudo tee -a $LOGFILE
 
-  echo "[SUCCESS] psql 16 installation completed." | sudo tee -a $LOGFILE
-  EOF
+echo "[SUCCESS] psql 16 installation completed." | sudo tee -a $LOGFILE
+EOF
 }
 
 resource "aws_ec2_instance_state" "fam_util_ec2_instance_state" {
