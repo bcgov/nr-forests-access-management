@@ -59,16 +59,7 @@ resource "aws_instance" "fam_util_ec2_instance" {
   psql --version | sudo tee -a $LOGFILE
 
   echo "[SUCCESS] psql 16 installation completed." | sudo tee -a $LOGFILE
-
-
-  # #!/bin/bash
-  # echo "Installing postgresql.x86_64" > init.log
-  # sudo yum update -y >> init.log 2>&1 &
-  # sudo yum install -y postgresql.x86_64 >> init.log 2>&1 &
-  # echo "Postgres installation done" >> init.log
-
   EOF
-
 }
 
 resource "aws_ec2_instance_state" "fam_util_ec2_instance_state" {
