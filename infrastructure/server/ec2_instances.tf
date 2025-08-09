@@ -46,25 +46,8 @@ resource "aws_instance" "fam_util_ec2_instance" {
   # Script to install postgresql.
   user_data = <<EOF
   #!/bin/bash
-  # Exit immediately on error, undefined variable, or pipeline error
-  set -euo pipefail
-
-  # Log all output to a file
-  exec > /var/log/user-data.log 2>&1
-
-  echo "[INFO] Starting EC2 initialization..."
-
-  # Update packages
-  echo "[INFO] Updating system packages..."
-  sudo dnf update -y
-
-  # Install PostgreSQL 16 repo (Fedora 38 version for Amazon Linux 2023)
-  echo "[INFO] Adding PostgreSQL 16 repository..."
-  sudo dnf install -y https://download.postgresql.org/pub/repos/yum/16/fedora/fedora-38-x86_64/pgdg-redhat-repo-latest.noarch.rpm
-
-  # Disable default PostgreSQL module to avoid conflicts
-  echo "[INFO] Disabling default PostgreSQL module..."
-  sudo dnf -qy module disable postgresql
+  set -eo pipefail
+  sudo tee /var/log/ec2-init.log > /dev/null
 
   # Install only PostgreSQL 16 client (psql)
   echo "[INFO] Installing psql 16..."
