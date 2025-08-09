@@ -22,6 +22,28 @@ on:
     secrets:
       licenceplate:
         required: true
+      dev_oidc_idir_idp_client_secret:
+        required: true
+      test_oidc_idir_idp_client_secret:
+        required: true
+      prod_oidc_idir_idp_client_secret:
+        required: true
+      dev_oidc_bceid_business_idp_client_secret:
+        required: true
+      test_oidc_bceid_business_idp_client_secret:
+        required: true
+      prod_oidc_bceid_business_idp_client_secret:
+        required: true
+      forest_client_api_api_key_test:
+        required: true
+      forest_client_api_api_key_prod:
+        required: false
+      dev_oidc_bcsc_idp_client_secret:
+        required: true
+      test_oidc_bcsc_idp_client_secret:
+        required: true
+      prod_oidc_bcsc_idp_client_secret:
+        required: true
 
 env:
   TF_VERSION: 1.12.2
@@ -66,6 +88,17 @@ jobs:
           # Pass variables from github actions to terraform
           cat > github.auto.tfvars <<EOF
           execute_flyway = ${{ inputs.execute_flyway }}
+          dev_oidc_idir_idp_client_secret = "${{ secrets.dev_oidc_idir_idp_client_secret }}"
+          test_oidc_idir_idp_client_secret = "${{ secrets.test_oidc_idir_idp_client_secret }}"
+          prod_oidc_idir_idp_client_secret = "${{ secrets.prod_oidc_idir_idp_client_secret }}"
+          dev_oidc_bceid_business_idp_client_secret = "${{ secrets.dev_oidc_bceid_business_idp_client_secret }}"
+          test_oidc_bceid_business_idp_client_secret = "${{ secrets.test_oidc_bceid_business_idp_client_secret }}"
+          prod_oidc_bceid_business_idp_client_secret = "${{ secrets.prod_oidc_bceid_business_idp_client_secret }}"
+          forest_client_api_api_key_test = "${{ secrets.forest_client_api_api_key_test }}"
+          forest_client_api_api_key_prod = "${{ secrets.forest_client_api_api_key_prod }}"
+          dev_oidc_bcsc_idp_client_secret = "${{ secrets.dev_oidc_bcsc_idp_client_secret }}"
+          test_oidc_bcsc_idp_client_secret = "${{ secrets.test_oidc_bcsc_idp_client_secret }}"
+          prod_oidc_bcsc_idp_client_secret = "${{ secrets.prod_oidc_bcsc_idp_client_secret }}"
           EOF
 
       - name: HashiCorp - Setup Terraform
@@ -81,16 +114,3 @@ jobs:
         run: |
           # Run terraform
           terragrunt run-all ${{ inputs.tf_subcommand }} --terragrunt-non-interactive
-
-      - name: Wait for 30 seconds
-        run: |
-          echo "Waiting for 30 seconds before executing the smoke test..."
-          sleep 30s
-
-      - name: Show Terraform Outputs (Optional step, will be replaced by a smoke test later)
-        working-directory: ${{ env.TG_SRC_PATH }}/${{ inputs.environment_name }}
-        env:
-          licenceplate: ${{ secrets.licenceplate }}
-          target_env: ${{ inputs.environment_name }}
-        run: |
-          terragrunt output
