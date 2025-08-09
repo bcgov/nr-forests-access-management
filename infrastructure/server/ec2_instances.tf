@@ -46,18 +46,19 @@ resource "aws_instance" "fam_util_ec2_instance" {
   # Script to install postgresql.
   user_data = <<EOF
   #!/bin/bash
-  set -eo pipefail
-  sudo tee /var/log/ec2-init.log > /dev/null
+  set -e
+
+  LOGFILE="/var/log/init-postgresql-install.log"
 
   # Install only PostgreSQL 16 client (psql)
-  echo "[INFO] Installing psql 16..."
-  sudo dnf install -y postgresql16
+  echo "[INFO] Installing psql 16..." | sudo tee -a $LOGFILE
+  sudo dnf install -y postgresql16 | sudo tee -a $LOGFILE
 
   # Verify psql installation
-  echo "[INFO] Verifying installation..."
-  psql --version
+  echo "[INFO] Verifying installation..." | sudo tee -a $LOGFILE
+  psql --version | sudo tee -a $LOGFILE
 
-  echo "[SUCCESS] psql 16 installation completed."
+  echo "[SUCCESS] psql 16 installation completed." | sudo tee -a $LOGFILE
 
 
   # #!/bin/bash
