@@ -55,6 +55,19 @@ exec > >(tee -a "$LOGFILE") 2>&1
 
 echo "[INFO] Starting initialization..."
 
+# Wait for DNS resolution (amazonlinux.com chosen as stable)
+MAX_RETRIES=30
+COUNT=0
+until host amazonlinux.com >/dev/null 2>&1; do
+    let COUNT=COUNT+1
+    if [ "$COUNT" -ge "$MAX_RETRIES" ]; then
+        echo "[ERROR] DNS not available after retry. Check VPC/NAT/S3 endpoint."
+        exit 1
+    fi
+    echo "[INFO] Waiting for DNS to be ready..."
+    sleep 2
+done
+
 # Wait for dnf repo to be available
 for i in {1..10}; do
     if dnf repolist &>/dev/null; then
