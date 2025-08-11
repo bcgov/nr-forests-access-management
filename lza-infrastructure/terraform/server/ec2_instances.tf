@@ -43,7 +43,6 @@ resource "aws_instance" "fam_util_ec2_instance" {
       managed-by = "terraform"
   }
 
-  # Script to install postgresql.
   user_data = <<-EOF
 #!/bin/bash
 set -e
@@ -99,5 +98,5 @@ resource "aws_ec2_instance_state" "fam_util_ec2_instance_state" {
 
 resource "aws_iam_instance_profile" "fam_util_ec2_instance_profile" {
   name = "${local.fam_util_ec2_instance_profile_name_prefix}_instance_profile"
-  role = "EC2-Default-SSM-AD-Role" # default role given by ASEA platform, can't change.
+  role = "EC2-Default-SSM-AD-Role" # default role given by LZA platform.
 }
