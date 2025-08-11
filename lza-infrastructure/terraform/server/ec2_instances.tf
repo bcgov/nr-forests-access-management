@@ -5,14 +5,14 @@ locals {
 variable "fam_util_ec2_instance_ami" {
   description = "Instance image for FAM Util EC2"
   type        = string
-  # Amazon Linux 2 Kernel 5.10 AMI 2.0.20230119.1 x86_64 HVM gp2
-  default     = "ami-092e716d46cd65cac"
+  # Amazon Linux 2023 (kernel-6.1)
+  default     = "ami-06131bddb5c4ff9ac"
 }
 
 variable "fam_util_ec2_instance_type" {
   description = "Instance type to use for the instance"
   type        = string
-  default     = "t2.micro"
+  default     = "t3.small"
 }
 
 resource "aws_instance" "fam_util_ec2_instance" {
@@ -43,30 +43,38 @@ resource "aws_instance" "fam_util_ec2_instance" {
       managed-by = "terraform"
   }
 
-  # Script to install postgresql.
-  # Note, although LZA has the same ec2 instance, e.g., Amazon Linux 2 and instance type etc and the same postgres engine version like in ASEA,
-  # the postgresql installation didnot work for connecting to db, due to this unclear error "The "SCRAM authentication requires libpq version 10 or above",
-  # likely due to db pasword encryption method used to store secrete in db server. So below script is changed to install PostgreSQL 14
-  # (previously was version 9, too low). This is the most straight foward solution. TODO: In the future, we may try out using different ec2_instance_ami.
   user_data = <<EOF
-  #!/bin/bash
-  set -e
+#!/bin/bash
+set -e
 
-  LOGFILE="/var/log/init-postgresql-install.log"
+LOGFILE="/var/log/init-postgresql-install.log"
 
-  echo "Starting PostgreSQL client installation..." | tee -a $LOGFILE
+# Redirect all output (stdout & stderr) to both logfile and console
+exec > >(tee -a "$LOGFILE") 2>&1
 
-  # Enable PostgreSQL 14 repo from Amazon Linux Extras
-  sudo amazon-linux-extras enable postgresql14 | tee -a $LOGFILE
+echo "[INFO] Starting initialization..."
 
-  # Clean yum metadata cache
-  sudo yum clean metadata | tee -a $LOGFILE
+# Wait for dnf repo to be available
+for i in {1..10}; do
+    if dnf repolist &>/dev/null; then
+        echo "[INFO] Network and package repo ready."
+        break
+    else
+        echo "[INFO] Waiting for package repo..."
+        sleep 5
+    fi
+done
 
-  # Install PostgreSQL 14 client (postgresql package will point to 14 now)
-  sudo yum install -y postgresql | tee -a $LOGFILE
+# Install only PostgreSQL 16 client
+echo "[INFO] Installing psql 16..."
+dnf install -y postgresql16
 
-  echo "PostgreSQL client installation complete." | tee -a $LOGFILE
-  EOF
+# Verify psql installation
+echo "[INFO] Verifying installation..."
+psql --version
+
+echo "[SUCCESS] psql 16 installation completed."
+EOF
 }
 
 resource "aws_ec2_instance_state" "fam_util_ec2_instance_state" {

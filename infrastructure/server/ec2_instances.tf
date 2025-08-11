@@ -5,8 +5,8 @@ locals {
 variable "fam_util_ec2_instance_ami" {
   description = "Instance image for FAM Util EC2"
   type        = string
-  # Amazon Linux 2 Kernel 5.10 AMI 2.0.20230119.1 x86_64 HVM gp2
-  default     = "ami-047d9348c6bdd7573"
+  # Amazon Linux 2023 (kernel-6.1)
+  default     = "ami-06131bddb5c4ff9ac"
 }
 
 variable "fam_util_ec2_instance_type" {
