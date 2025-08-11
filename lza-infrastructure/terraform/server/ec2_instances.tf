@@ -43,7 +43,7 @@ resource "aws_instance" "fam_util_ec2_instance" {
       managed-by = "terraform"
   }
 
-  user_data = <<EOF
+  user_data = <<-EOF
 #!/bin/bash
 set -e
 
