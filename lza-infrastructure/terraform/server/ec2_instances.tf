@@ -60,7 +60,7 @@ COUNT=0
 until host amazonlinux.com >/dev/null 2>&1; do
     COUNT=\$((COUNT + 1))
     if [ "\$COUNT" -ge "\$MAX_RETRIES" ]; then
-        echo "[ERROR] DNS not available after \${MAX_RETRIES} attempts. Check VPC/NAT/S3 endpoint."
+        echo "[ERROR] DNS not available after $${MAX_RETRIES} attempts. Check VPC/NAT/S3 endpoint."
         exit 1
     fi
     echo "[INFO] Waiting for DNS to be ready..."
