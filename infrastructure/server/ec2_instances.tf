@@ -50,29 +50,31 @@ set -e
 
 LOGFILE="/var/log/init-postgresql-install.log"
 
-echo "[INFO] Starting initialization..." | sudo tee -a $LOGFILE
+# Redirect all output (stdout & stderr) to both logfile and console
+exec > >(tee -a "$LOGFILE") 2>&1
 
-# Wait for network
-until ping -c1 amazonlinux.com &>/dev/null; do
-    echo "[INFO] Waiting for network..." | sudo tee -a $LOGFILE
-    sleep 2
+echo "[INFO] Starting initialization..."
+
+# Wait for dnf repo to be available
+for i in {1..10}; do
+    if dnf repolist &>/dev/null; then
+        echo "[INFO] Network and package repo ready."
+        break
+    else
+        echo "[INFO] Waiting for package repo..."
+        sleep 5
+    fi
 done
 
-echo "[INFO] Network ready." | sudo tee -a $LOGFILE
-
-# Refresh DNF metadata
-echo "[INFO] Refreshing package metadata..." | sudo tee -a $LOGFILE
-sudo dnf makecache -y 2>&1 | sudo tee -a $LOGFILE
-
-# Install only PostgreSQL 16 client (psql)
-echo "[INFO] Installing psql 16..." | sudo tee -a $LOGFILE
-sudo dnf install -y postgresql16 | sudo tee -a $LOGFILE
+# Install only PostgreSQL 16 client
+echo "[INFO] Installing psql 16..."
+dnf install -y postgresql16
 
 # Verify psql installation
-echo "[INFO] Verifying installation..." | sudo tee -a $LOGFILE
-psql --version | sudo tee -a $LOGFILE
+echo "[INFO] Verifying installation..."
+psql --version
 
-echo "[SUCCESS] psql 16 installation completed." | sudo tee -a $LOGFILE
+echo "[SUCCESS] psql 16 installation completed."
 EOF
 }
 
