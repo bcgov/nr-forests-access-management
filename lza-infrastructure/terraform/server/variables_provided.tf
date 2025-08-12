@@ -3,6 +3,11 @@ variable "target_env" {
   type        = string
 }
 
+variable "licence_plate" {
+  description = "AWS project license plate"
+  type        = string
+}
+
 # ------------------------ Aurora Database Variables ------------------------ #
 variable "famdb_cluster_name" {
   description = "Name for the FAM database cluster -- must be unique"

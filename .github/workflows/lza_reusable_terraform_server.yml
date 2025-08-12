@@ -95,6 +95,7 @@ jobs:
 
           # Pass variables from github actions to terraform
           cat > github.auto.tfvars <<EOF
+          licence_plate = ${{ secrets.licenceplate }}
           db_cluster_snapshot_identifier = "$db_cluster_snapshot_identifier"
           execute_flyway = ${{ inputs.execute_flyway }}
           dev_oidc_idir_idp_client_secret = "${{ secrets.dev_oidc_idir_idp_client_secret }}"

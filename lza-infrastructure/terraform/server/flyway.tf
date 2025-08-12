@@ -51,7 +51,8 @@ data "aws_rds_cluster" "flyway_database" {
 
 locals {
   flyway_lambda_name = "fam-flyway-lambda-${var.target_env}"
-  flyway_scripts_bucket_name = "fam-flyway-bucket-${var.target_env}"
+  # S3 bucket nees to be globally unique. This bucket name was conflict with ASEA for LZA, so add licence plate.
+  flyway_scripts_bucket_name = "fam-flyway-bucket-${var.licence_plate}-${var.target_env}"
 }
 
 # IAM role to allow lambda to run, access secret, and access sql from s3
