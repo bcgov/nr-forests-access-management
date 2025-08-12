@@ -85,6 +85,14 @@ jobs:
       - name: Create Terraform vars
         working-directory: ${{ env.TG_SRC_PATH }}/${{ inputs.environment_name }}
         run: |
+          # calculate the db_cluster_snapshot_identifier, attempting to ensure it
+          # is less than 63 characters and has no non alphanumeric characters
+          refname=${{ github.ref_name }}
+          commit=${{ github.sha }}
+          db_cluster_snapshot_identifier="pre-flyway-${refname:0:12}-${commit:0:7}"
+          db_cluster_snapshot_identifier=$(echo $db_cluster_snapshot_identifier |  tr -d '\n' | tr -cs '[-][:alnum:]' '-' )
+          echo $db_cluster_snapshot_identifier
+
           # Pass variables from github actions to terraform
           cat > github.auto.tfvars <<EOF
           execute_flyway = ${{ inputs.execute_flyway }}
