@@ -114,6 +114,19 @@ data "aws_iam_policy_document" "flyway_exec_policydoc" {
   }
 }
 
+# Temporarily added for troubleshooting ------
+resource "aws_vpc_endpoint" "secretsmanager" {
+  vpc_id            = data.aws_vpc.selected.id
+  service_name      = "com.amazonaws.ca-central-1.secretsmanager"
+  vpc_endpoint_type = "Interface"
+  subnet_ids        = [data.aws_subnet.a_data.id, data.aws_subnet.b_data.id]
+  security_group_ids = [aws_security_group.fam_data_sg.id] # SG that allows 443 from Lambda SG
+  tags = {
+    "managed-by" = "terraform"
+  }
+}
+# --------------------------------------------
+
 resource "aws_iam_role" "flyway_exec" {
   name               = "${local.flyway_lambda_name}-role"
   assume_role_policy = data.aws_iam_policy_document.flyway_exec_policydoc.json
