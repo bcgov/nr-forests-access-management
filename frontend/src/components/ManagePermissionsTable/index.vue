@@ -819,11 +819,7 @@ const downloadManagePermissionsCSVData = () => {
                     sortable
                 >
                     <template #body="{ data }">
-                        <span v-if="isApplicationAdminTable">
-                            <!-- Application admin doesn't have create_date in current response -->
-                            --
-                        </span>
-                        <span v-else>
+                        <span>
                             {{ utcToLocalDate(data.create_date) }}
                         </span>
                     </template>
@@ -841,6 +837,7 @@ const downloadManagePermissionsCSVData = () => {
                             </button>
 
                             <button
+                                v-if="!isApplicationAdminTable"
                                 title="Delete user"
                                 class="btn btn-icon"
                                 @click="handleDelete(data)"
