@@ -134,8 +134,8 @@ resource "aws_lambda_function" "flyway-migrations" {
   runtime = "java11"
 
   vpc_config {
-    subnet_ids         = [data.aws_subnet.a_data.id, data.aws_subnet.b_data.id]
-    security_group_ids = ["${aws_security_group.fam_data_sg.id}"]
+    subnet_ids         = [data.aws_subnet.a_app.id, data.aws_subnet.b_app.id]
+    security_group_ids = ["${aws_security_group.fam_app_sg.id}"]
   }
 
   memory_size = 512
