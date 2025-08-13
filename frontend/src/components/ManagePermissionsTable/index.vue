@@ -107,6 +107,8 @@ const props = defineProps<{
 
 const isAppAdminTable = props.tableType === ManagePermissionsTableEnum.AppAdmin;
 const isAppUserTable = props.tableType === ManagePermissionsTableEnum.AppUser;
+const isApplicationAdminTable =
+    props.tableType === ManagePermissionsTableEnum.ApplicationAdmin;
 const isDelegatedTable =
     props.tableType === ManagePermissionsTableEnum.DelegatedAdmin;
 
@@ -121,15 +123,16 @@ const appAdminQuery = useQuery({
     enabled: isAppAdminTable,
     select: (data) => {
         // Sort then move matching IDs to the start of the array
-        const sortedByUserName = data.sort((a, b) =>
+        const sortedByUserName = data.sort((a: any, b: any) =>
             a.user.user_name.localeCompare(b.user.user_name)
         );
         return [
-            ...sortedByUserName.filter((item) =>
+            ...sortedByUserName.filter((item: any) =>
                 newFamAdminIds.includes(item.application_admin_id)
             ),
             ...sortedByUserName.filter(
-                (item) => !newFamAdminIds.includes(item.application_admin_id)
+                (item: any) =>
+                    !newFamAdminIds.includes(item.application_admin_id)
             ),
         ];
     },
@@ -206,6 +209,23 @@ const delegatedAdminQuery = useQuery({
     enabled: isDelegatedTable,
 });
 
+// Application admins data query for specific application
+const applicationAdminQuery = useQuery({
+    queryKey: ["application_admins", "by_application", props.appId],
+    queryFn: () =>
+        AdminMgmtApiService.applicationAdminApi
+            .getApplicationAdminsByApplicationId(props.appId)
+            .then((res) => res.data),
+    refetchOnMount: "always",
+    enabled: isApplicationAdminTable,
+    select: (data) => {
+        // Sort by user name
+        return data.sort((a: any, b: any) =>
+            a.user.user_name.localeCompare(b.user.user_name)
+        );
+    },
+});
+
 const tableFilter = ref({
     global: { value: "", matchMode: FilterMatchMode.CONTAINS },
 });
@@ -220,6 +240,8 @@ const getTotalRecords = (): number => {
             return appAdminQuery.data.value?.length ?? 0;
         case ManagePermissionsTableEnum.AppUser:
             return appUserQuery.data.value?.meta.total ?? 0;
+        case ManagePermissionsTableEnum.ApplicationAdmin:
+            return applicationAdminQuery.data.value?.length ?? 0;
         case ManagePermissionsTableEnum.DelegatedAdmin:
             return delegatedAdminQuery.data.value?.meta.total ?? 0;
         default:
@@ -236,6 +258,8 @@ const getTableRows = computed(() => {
             const records = appUserQuery.data.value?.results ?? [];
             hasUserRoleRecords.value = records.length > 0 ? true : false;
             return records;
+        case ManagePermissionsTableEnum.ApplicationAdmin:
+            return applicationAdminQuery.data.value ?? [];
         case ManagePermissionsTableEnum.DelegatedAdmin:
             return delegatedAdminQuery.data.value?.results ?? [];
         default:
@@ -250,6 +274,8 @@ const isQueryLoading = (): boolean => {
             return appAdminQuery.isLoading.value;
         case ManagePermissionsTableEnum.AppUser:
             return appUserQuery.isLoading.value;
+        case ManagePermissionsTableEnum.ApplicationAdmin:
+            return applicationAdminQuery.isLoading.value;
         case ManagePermissionsTableEnum.DelegatedAdmin:
             return delegatedAdminQuery.isLoading.value;
         default:
@@ -264,6 +290,8 @@ const isQueryError = (): boolean => {
             return appAdminQuery.isError.value;
         case ManagePermissionsTableEnum.AppUser:
             return appUserQuery.isError.value;
+        case ManagePermissionsTableEnum.ApplicationAdmin:
+            return applicationAdminQuery.isError.value;
         case ManagePermissionsTableEnum.DelegatedAdmin:
             return delegatedAdminQuery.isError.value;
         default:
@@ -279,6 +307,9 @@ const getQueryErrorValue = () => {
             break;
         case ManagePermissionsTableEnum.AppUser:
             error = appUserQuery.error.value;
+            break;
+        case ManagePermissionsTableEnum.ApplicationAdmin:
+            error = applicationAdminQuery.error.value;
             break;
         case ManagePermissionsTableEnum.DelegatedAdmin:
             error = delegatedAdminQuery.error.value;
@@ -457,7 +488,7 @@ const handleDelete = (privilegeObject: TableRowType) => {
         );
     }
 
-    if (isAppAdminTable) {
+    if (isAppAdminTable || isApplicationAdminTable) {
         const famAdmin = privilegeObject as FamAppAdminGetResponse;
         setConfirmTextProps(userName, "Admin", props.appName);
         showConfirmDialog("Remove Access", () =>
@@ -484,6 +515,10 @@ const highlightNewUserAccessRow = (
                 return NEW_ACCESS_STYLE_IN_TABLE;
             }
             return undefined;
+        case ManagePermissionsTableEnum.ApplicationAdmin:
+            // For application admins, we don't currently support highlighting new ones
+            // as they are not added through the same workflow
+            return undefined;
         case ManagePermissionsTableEnum.DelegatedAdmin:
             const delegatedAdmin =
                 rowData as FamAccessControlPrivilegeGetResponse;
@@ -506,7 +541,7 @@ const highlightNewUserAccessRow = (
 const tableRef = ref<HTMLElement | null>(null);
 
 const handlePageChange = (event: DataTablePageEvent): void => {
-    if (isAppAdminTable) {
+    if (isAppAdminTable || isApplicationAdminTable) {
         return;
     }
 
@@ -525,7 +560,7 @@ const handlePageChange = (event: DataTablePageEvent): void => {
 };
 
 const handleSort = (event: DataTableSortEvent): void => {
-    if (isAppAdminTable) {
+    if (isAppAdminTable || isApplicationAdminTable) {
         return;
     }
     const { sortField, sortOrder } = event;
@@ -559,7 +594,7 @@ const resetPageNumber = () => {
 };
 
 const handleFilter = (searchValue: string, isChanged: boolean) => {
-    if (!isAppAdminTable && isChanged) {
+    if (!isAppAdminTable && !isApplicationAdminTable && isChanged) {
         showFilterError.value = false;
         let strToSearch: string | null = searchValue;
 
@@ -654,139 +689,169 @@ const downloadManagePermissionsCSVData = () => {
             v-else-if="isQueryError()"
             :error-msg="getQueryErrorValue()"
         />
-        <DataTable
-            v-else
-            :lazy="!isAppAdminTable"
-            :value="getTableRows"
-            :total-records="getTotalRecords()"
-            v-model:first="firstRow"
-            removableSort
-            stripedRows
-            v-model:filters="tableFilter"
-            filterDisplay="menu"
-            :globalFilterFields="filterList"
-            paginator
-            :rows="DEFAULT_ROW_PER_PAGE"
-            :rowsPerPageOptions="TABLE_ROWS_PER_PAGE"
-            :paginatorTemplate="TABLE_PAGINATOR_TEMPLATE"
-            :currentPageReportTemplate="TABLE_CURRENT_PAGE_REPORT_TEMPLATE"
-            :rowStyle="highlightNewUserAccessRow"
-            @page="handlePageChange"
-            @sort="handleSort"
-            :loading="isFetching"
-        >
-            <template #empty> No user found. </template>
-
-            <template #loading><Spinner /></template>
-
-            <Column header="User Name" field="user.user_name" sortable>
-                <template #body="{ data }">
-                    <div class="nowrap-cell">
-                        <NewUserTag v-if="highlightNewUserAccessRow(data)" />
-                        <span>{{ data.user.user_name }}</span>
-                    </div>
-                </template>
-            </Column>
-
-            <Column
-                header="Domain"
-                field="user.user_type.description"
-                sortable
-            />
-
-            <Column
-                header="Full Name"
-                sortable
-                field="fullName"
-                sort-field="user.first_name"
+        <!-- Data Table -->
+        <div v-else>
+            <DataTable
+                :lazy="!isAppAdminTable && !isApplicationAdminTable"
+                :value="getTableRows"
+                :total-records="getTotalRecords()"
+                v-model:first="firstRow"
+                removableSort
+                stripedRows
+                v-model:filters="tableFilter"
+                filterDisplay="menu"
+                :globalFilterFields="
+                    isApplicationAdminTable ? undefined : filterList
+                "
+                :dataKey="
+                    isApplicationAdminTable
+                        ? 'application_admin_id'
+                        : isAppUserTable
+                        ? 'user_role_xref_id'
+                        : isDelegatedTable
+                        ? 'access_control_privilege_id'
+                        : 'application_admin_id'
+                "
+                :paginator="!isApplicationAdminTable"
+                :rows="DEFAULT_ROW_PER_PAGE"
+                :rowsPerPageOptions="TABLE_ROWS_PER_PAGE"
+                :paginatorTemplate="TABLE_PAGINATOR_TEMPLATE"
+                :currentPageReportTemplate="TABLE_CURRENT_PAGE_REPORT_TEMPLATE"
+                :rowStyle="highlightNewUserAccessRow"
+                @page="handlePageChange"
+                @sort="handleSort"
+                :loading="isFetching"
             >
-                <template #body="{ data }">
-                    {{
-                        formatUserNameAndId(
-                            null,
-                            data.user.first_name,
-                            data.user.last_name
-                        )
-                    }}
-                </template>
-            </Column>
+                <template #empty> No user found. </template>
 
-            <Column header="Email" field="user.email" sortable />
+                <template #loading><Spinner /></template>
 
-            <Column
-                v-if="isAppAdminTable"
-                header="Application"
-                field="application.application_description"
-                sortable
-            />
+                <Column header="User Name" field="user.user_name" sortable>
+                    <template #body="{ data }">
+                        <div class="nowrap-cell">
+                            <NewUserTag
+                                v-if="highlightNewUserAccessRow(data)"
+                            />
+                            <span>{{ data.user.user_name }}</span>
+                        </div>
+                    </template>
+                </Column>
 
-            <Column
-                v-if="isAppAdminTable"
-                header="Environment"
-                field="application.app_environment"
-                sortable
-            />
+                <Column
+                    header="Domain"
+                    field="user.user_type.description"
+                    sortable
+                >
+                    <template #body="{ data }">
+                        <span>
+                            {{ data.user.user_type.description }}
+                        </span>
+                    </template>
+                </Column>
 
-            <Column
-                v-if="!isAppAdminTable"
-                field="role.forest_client.forest_client_number"
-                sort-field="role.forest_client.forest_client_number"
-                header="Organization"
-                sortable
-            >
-                <template #body="{ data }">
-                    {{ getOrganizationName(data) }}
-                </template>
-            </Column>
+                <Column
+                    header="Full Name"
+                    sortable
+                    field="fullName"
+                    sort-field="user.first_name"
+                >
+                    <template #body="{ data }">
+                        {{
+                            formatUserNameAndId(
+                                null,
+                                data.user.first_name,
+                                data.user.last_name
+                            )
+                        }}
+                    </template>
+                </Column>
 
-            <Column
-                :header="isAppUserTable ? 'Role' : 'Role Enabled To Assign'"
-                field="roleDisplay"
-                :sortable="!isAppAdminTable"
-                sort-field="role.display_name"
-            >
-                <template #body="{ data }">
-                    <Chip
-                        :label="
-                            isAppAdminTable ? 'Admin' : data.role.display_name
-                        "
-                    />
-                </template>
-            </Column>
+                <Column header="Email" field="user.email" sortable />
 
-            <Column
-                v-if="!isAppAdminTable"
-                header="Added On"
-                field="create_date"
-                sortable
-            >
-                <template #body="{ data }">
-                    {{ utcToLocalDate(data.create_date) }}
-                </template>
-            </Column>
+                <Column
+                    v-if="isAppAdminTable"
+                    header="Application"
+                    field="application.application_description"
+                    sortable
+                />
 
-            <Column header="Action" class="action-col">
-                <template #body="{ data }">
-                    <div class="nowrap-cell action-button-group">
-                        <button
-                            title="User permission history"
-                            class="btn btn-icon"
-                            @click="navigateToUserDetails(data)"
-                        >
-                            <RecentlyViewedIcon />
-                        </button>
+                <Column
+                    v-if="isAppAdminTable"
+                    header="Environment"
+                    field="application.app_environment"
+                    sortable
+                />
 
-                        <button
-                            title="Delete user"
-                            class="btn btn-icon"
-                            @click="handleDelete(data)"
-                        >
-                            <TrashIcon />
-                        </button>
-                    </div>
-                </template>
-            </Column>
-        </DataTable>
+                <Column
+                    v-if="!isAppAdminTable && !isApplicationAdminTable"
+                    field="role.forest_client.forest_client_number"
+                    sort-field="role.forest_client.forest_client_number"
+                    header="Organization"
+                    sortable
+                >
+                    <template #body="{ data }">
+                        {{ getOrganizationName(data) }}
+                    </template>
+                </Column>
+
+                <Column
+                    v-if="!isApplicationAdminTable"
+                    :header="isAppUserTable ? 'Role' : 'Role Enabled To Assign'"
+                    field="roleDisplay"
+                    :sortable="!isAppAdminTable"
+                    sort-field="role.display_name"
+                >
+                    <template #body="{ data }">
+                        <Chip
+                            :label="
+                                isAppAdminTable
+                                    ? 'Admin'
+                                    : data.role.display_name
+                            "
+                        />
+                    </template>
+                </Column>
+
+                <Column
+                    v-if="!isAppAdminTable || isApplicationAdminTable"
+                    header="Added On"
+                    field="create_date"
+                    sortable
+                >
+                    <template #body="{ data }">
+                        <span v-if="isApplicationAdminTable">
+                            <!-- Application admin doesn't have create_date in current response -->
+                            --
+                        </span>
+                        <span v-else>
+                            {{ utcToLocalDate(data.create_date) }}
+                        </span>
+                    </template>
+                </Column>
+
+                <Column header="Action" class="action-col">
+                    <template #body="{ data }">
+                        <div class="nowrap-cell action-button-group">
+                            <button
+                                title="User permission history"
+                                class="btn btn-icon"
+                                @click="navigateToUserDetails(data)"
+                            >
+                                <RecentlyViewedIcon />
+                            </button>
+
+                            <button
+                                title="Delete user"
+                                class="btn btn-icon"
+                                @click="handleDelete(data)"
+                            >
+                                <TrashIcon />
+                            </button>
+                        </div>
+                    </template>
+                </Column>
+            </DataTable>
+        </div>
     </div>
 </template>
 <style lang="scss">

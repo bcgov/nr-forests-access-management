@@ -86,3 +86,24 @@ class ApplicationAdminRepository:
             .order_by(FamApplication.application_id)
             .all()
         )
+
+    def get_application_admins_by_application_id(
+        self, application_id: int, current_user_id: int = None
+    ) -> List[FamApplicationAdmin]:
+        """
+        Get all application admins for a specific application.
+        Optionally exclude the current user from the results.
+
+        :param application_id: The application ID to get admins for.
+        :param current_user_id: Optional user ID to exclude from results.
+        :return: List of FamApplicationAdmin for the specified application.
+        """
+        query = (
+            self.db.query(FamApplicationAdmin)
+            .filter(FamApplicationAdmin.application_id == application_id)
+        )
+
+        if current_user_id:
+            query = query.filter(FamApplicationAdmin.user_id != current_user_id)
+
+        return query.order_by(FamApplicationAdmin.user_id).all()

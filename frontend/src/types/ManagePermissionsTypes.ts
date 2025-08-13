@@ -4,6 +4,7 @@ export enum ManagePermissionsTableEnum {
     AppAdmin = "APP_ADMIN",
     AppUser = "APP_USER",
     DelegatedAdmin = "DELEGATED_ADMIN",
+    ApplicationAdmin = "APPLICATION_ADMIN",
 }
 
 export type ManagePermissionsTabType = {
