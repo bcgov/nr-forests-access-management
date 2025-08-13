@@ -64,6 +64,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Stage Flyway SQL files
+        run: |
+            mkdir infrastructure/server/sql
+            rsync -r server/flyway/sql/* infrastructure/server/sql
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
