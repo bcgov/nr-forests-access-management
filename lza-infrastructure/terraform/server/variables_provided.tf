@@ -3,10 +3,31 @@ variable "target_env" {
   type        = string
 }
 
+variable "licence_plate" {
+  description = "AWS project license plate"
+  type        = string
+}
+
 # ------------------------ Aurora Database Variables ------------------------ #
 variable "famdb_cluster_name" {
   description = "Name for the FAM database cluster -- must be unique"
   type        = string
+}
+
+# Variables to control flyway process
+
+variable "execute_flyway" {
+  description = "Toggle for whether to execute flyway (suppress on terraform plan)"
+  type = bool
+  default = false
+}
+
+variable "db_cluster_snapshot_identifier" {
+  description = "Value fo the db_cluster_snapshot_identifier used for the fam_pre_flyway_snapshot resource (flyway.tf).  Validation will identify length constraint violations before it attempts to deploy"
+  validation {
+    condition     = length(var.db_cluster_snapshot_identifier) < 63
+    error_message = "The aws_db_cluster_snapshot property db_cluster_snapshot_identifier cannot exceed 63 characters."
+  }
 }
 
 # ------------------------ Cognito Variables ------------------------ #

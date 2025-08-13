@@ -9,7 +9,7 @@ jobs:
     with:
       environment_name: tools
       tf_subcommand: apply
-      # execute_flyway: true
+      execute_flyway: true
 
     secrets:
       licenceplate: ${{ secrets.LZA_LICENCEPLATE}}
