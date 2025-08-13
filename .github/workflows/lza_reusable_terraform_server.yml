@@ -66,8 +66,8 @@ jobs:
 
       - name: Stage Flyway SQL files
         run: |
-            mkdir infrastructure/server/sql
-            rsync -r server/flyway/sql/* infrastructure/server/sql
+          mkdir lza-infrastructure/terraform/server/sql
+          rsync -r server/flyway/sql/* lza-infrastructure/terraform/server/sql
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
