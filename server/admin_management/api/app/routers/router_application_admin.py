@@ -54,10 +54,10 @@ async def get_application_admins(
 async def get_application_admins_by_application_id(
     application_id: int,
     requester: Requester = Depends(get_current_requester),
-    token_claims: dict = Depends(jwt_validation.authorize),
     application_admin_service: ApplicationAdminService = Depends(
         application_admin_service_instance
     ),
+    claims: dict = Depends(jwt_validation.authorize),
     application_service: ApplicationService = Depends(application_service_instance),
 ):
     """
@@ -65,8 +65,8 @@ async def get_application_admins_by_application_id(
     Excludes the current requesting user from the results.
     Only accessible by admins of the specified application.
     """
-    # Validate access by calling the authorization function directly
-    authorize_by_app_id(application_id, token_claims, application_service)
+    # Authorize access to this application
+    authorize_by_app_id(application_id, claims, application_service)
 
     return application_admin_service.get_application_admins_by_application_id(
         application_id, requester.user_id
