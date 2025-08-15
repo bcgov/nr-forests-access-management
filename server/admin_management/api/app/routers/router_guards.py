@@ -358,3 +358,31 @@ def validate_param_access_control_privilege_id(
         utils.raise_http_exception(
             error_code=ERROR_INVALID_ACCESS_CONTROL_PRIVILEGE_ID, error_msg=error_msg
         )
+
+
+def authorize_by_application_admin(
+    application_id: int,
+    claims: dict = Depends(validate_token),
+    application_service: ApplicationService = Depends(application_service_instance),
+):
+    """
+    Verify that the requesting user is an admin of the specified application.
+    This allows application admins to view other admins of the same application.
+    """
+    application = application_service.get_application(application_id)
+    if not application:
+        error_msg = f"Application ID {application_id} not found."
+        utils.raise_http_exception(
+            error_code=ERROR_INVALID_APPLICATION_ID, error_msg=error_msg
+        )
+
+    required_role = f"{application.application_name.upper()}_ADMIN"
+    access_roles = get_access_roles(claims)
+
+    if required_role not in access_roles:
+        error_msg = f"Operation requires role {required_role}."
+        utils.raise_http_exception(
+            status_code=HTTPStatus.FORBIDDEN,
+            error_code=ERROR_PERMISSION_REQUIRED,
+            error_msg=error_msg,
+        )

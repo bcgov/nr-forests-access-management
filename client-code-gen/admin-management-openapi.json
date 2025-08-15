@@ -130,6 +130,55 @@
                 ]
             }
         },
+        "/application-admins/application/{application_id}": {
+            "get": {
+                "tags": ["FAM Application Admin"],
+                "summary": "Get Application Admins By Application Id",
+                "operationId": "get_application_admins_by_application_id",
+                "parameters": [
+                    {
+                        "name": "application_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "title": "Application Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "items": {
+                                        "$ref": "#/components/schemas/FamAppAdminGetResponse"
+                                    },
+                                    "type": "array",
+                                    "title": "Response Get Application Admins By Application Id"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "6jfveou69mgford233or30hmta": []
+                    }
+                ]
+            }
+        },
         "/application-admins/{application_admin_id}": {
             "delete": {
                 "tags": ["FAM Application Admin"],
