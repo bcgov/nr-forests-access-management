@@ -98,6 +98,29 @@ jobs:
           path: ./lza-infrastructure/terraform/server/fam-ui-api.zip
           if-no-files-found: error
 
+      - name: Install and Package Dependencies - FAM Admin Management API
+        run: |
+          cd server/admin_management
+          mkdir packaging
+          cd packaging
+          pip install -t . -r ../requirements.txt --platform manylinux2014_x86_64 --only-binary=:all:
+          zip -r9 ../../fam-admin-management-api.zip .
+          cd ..
+          rm -rf packaging
+          cd ../../
+          cd server/admin_management
+          zip -u ../fam-admin-management-api.zip -r api/ -x database/**\* tests/**\* venv/**\* .env
+          cd ..
+          mv fam-admin-management-api.zip ../infrastructure/server
+          cd ..
+
+      - name: Upload zip file artifact - FAM Admin Management API
+        uses: actions/upload-artifact@v4
+        with:
+          name: fam-admin-management-api
+          path: ./infrastructure/server/fam-admin-management-api.zip
+          if-no-files-found: error
+
       - name: Stage Flyway SQL files
         run: |
           mkdir lza-infrastructure/terraform/server/sql
