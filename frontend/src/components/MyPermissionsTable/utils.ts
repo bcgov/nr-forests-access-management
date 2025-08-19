@@ -25,7 +25,7 @@ const getFamAdminPermission = (
             {
                 application: famGrant.application.description,
                 env: famGrant.application.env,
-                role: "Admin",
+                role: "Application Admin",
             },
         ];
     }
@@ -38,7 +38,7 @@ const getAppAdminPermission = (
     return access.grants.map((grant: FamGrantDetailDto) => ({
         application: grant.application.description,
         env: grant.application.env,
-        role: "Admin",
+        role: "Application Admin",
     }));
 };
 
