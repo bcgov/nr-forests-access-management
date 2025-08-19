@@ -123,15 +123,16 @@ const appAdminQuery = useQuery({
     enabled: isAppAdminTable,
     select: (data) => {
         // Sort then move matching IDs to the start of the array
-        const sortedByUserName = data.sort((a: any, b: any) =>
-            a.user.user_name.localeCompare(b.user.user_name)
+        const sortedByUserName = data.sort(
+            (a: FamAppAdminGetResponse, b: FamAppAdminGetResponse) =>
+                a.user.user_name.localeCompare(b.user.user_name)
         );
         return [
-            ...sortedByUserName.filter((item: any) =>
+            ...sortedByUserName.filter((item: FamAppAdminGetResponse) =>
                 newFamAdminIds.includes(item.application_admin_id)
             ),
             ...sortedByUserName.filter(
-                (item: any) =>
+                (item: FamAppAdminGetResponse) =>
                     !newFamAdminIds.includes(item.application_admin_id)
             ),
         ];
@@ -220,8 +221,9 @@ const applicationAdminQuery = useQuery({
     enabled: isApplicationAdminTable,
     select: (data) => {
         // Sort by user name
-        return data.sort((a: any, b: any) =>
-            a.user.user_name.localeCompare(b.user.user_name)
+        return data.sort(
+            (a: FamAppAdminGetResponse, b: FamAppAdminGetResponse) =>
+                a.user.user_name.localeCompare(b.user.user_name)
         );
     },
 });
@@ -488,7 +490,7 @@ const handleDelete = (privilegeObject: TableRowType) => {
         );
     }
 
-    if (isAppAdminTable || isApplicationAdminTable) {
+    if (isAppAdminTable) {
         const famAdmin = privilegeObject as FamAppAdminGetResponse;
         setConfirmTextProps(userName, "Admin", props.appName);
         showConfirmDialog("Remove Access", () =>
@@ -514,10 +516,6 @@ const highlightNewUserAccessRow = (
             if (newAppUserIds.includes(appAdmin.user_role_xref_id)) {
                 return NEW_ACCESS_STYLE_IN_TABLE;
             }
-            return undefined;
-        case ManagePermissionsTableEnum.ApplicationAdmin:
-            // For application admins, we don't currently support highlighting new ones
-            // as they are not added through the same workflow
             return undefined;
         case ManagePermissionsTableEnum.DelegatedAdmin:
             const delegatedAdmin =
@@ -670,6 +668,7 @@ const downloadManagePermissionsCSVData = () => {
                 @blur="handleFilter"
             />
             <Button
+                v-if="!isApplicationAdminTable"
                 :disabled="getTotalRecords() === 0"
                 @click="downloadManagePermissionsCSVData"
                 :isLoading="exportToCsvMutation.isPending.value"
@@ -700,9 +699,6 @@ const downloadManagePermissionsCSVData = () => {
                 stripedRows
                 v-model:filters="tableFilter"
                 filterDisplay="menu"
-                :globalFilterFields="
-                    isApplicationAdminTable ? undefined : filterList
-                "
                 :dataKey="
                     isApplicationAdminTable
                         ? 'application_admin_id'
@@ -813,7 +809,7 @@ const downloadManagePermissionsCSVData = () => {
                 </Column>
 
                 <Column
-                    v-if="!isAppAdminTable || isApplicationAdminTable"
+                    v-if="!isAppAdminTable"
                     header="Added On"
                     field="create_date"
                     sortable

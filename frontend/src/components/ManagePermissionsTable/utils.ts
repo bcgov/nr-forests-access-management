@@ -334,9 +334,6 @@ export const exportDataTableApiCall = (
             );
         case ManagePermissionsTableEnum.AppAdmin:
             return AdminMgmtApiService.applicationAdminApi.exportApplicationAdmins();
-        case ManagePermissionsTableEnum.ApplicationAdmin:
-            // For now, use the same export as AppAdmin since we don't have a specific endpoint for application-specific export
-            return AdminMgmtApiService.applicationAdminApi.exportApplicationAdmins();
     }
 };
 

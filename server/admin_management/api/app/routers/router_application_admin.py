@@ -50,6 +50,7 @@ async def get_application_admins(
     "/application/{application_id}",
     response_model=List[schemas.FamAppAdminGetResponse],
     status_code=200,
+    dependencies=[Depends(authorize_by_app_id)]
 )
 async def get_application_admins_by_application_id(
     application_id: int,
@@ -61,12 +62,10 @@ async def get_application_admins_by_application_id(
     application_service: ApplicationService = Depends(application_service_instance),
 ):
     """
-    Get all application admins for a specific application.
+    The Dependency of authorize_by_app_id ensures that only users with admin access to the specified application can retrieve its admins.
     Excludes the current requesting user from the results.
     Only accessible by admins of the specified application.
     """
-    # Authorize access to this application
-    authorize_by_app_id(application_id, claims, application_service)
 
     return application_admin_service.get_application_admins_by_application_id(
         application_id, requester.user_id
