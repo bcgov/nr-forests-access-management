@@ -8,6 +8,12 @@ variable "licence_plate" {
   type        = string
 }
 
+# ------------------------ KMS Variables ------------------------ #
+variable "fam_gha_lza_role" {
+  description = "AWS project IAM role ARN for GitHub Actions to assume"
+  type        = string
+}
+
 # ------------------------ Aurora Database Variables ------------------------ #
 variable "famdb_cluster_name" {
   description = "Name for the FAM database cluster -- must be unique"
