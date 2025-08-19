@@ -351,3 +351,60 @@ variable "subnet_web_b" {
   description = "Value of the name tag for a subnet in the Web security group"
   type = string
 }
+
+# ------------------------ Integration - API Keys/Secrets ------------------------ #
+variable "forest_client_api_api_key_test" {
+  type = string
+  sensitive = true
+}
+
+variable "forest_client_api_api_key_prod" {
+  type = string
+  sensitive = true
+  default = "no_need_in_dev_and_test_env"
+}
+
+variable "forest_client_api_base_url_test" {
+  type = string
+}
+
+variable "forest_client_api_base_url_prod" {
+  type = string
+  default = "no_need_in_dev_and_test_env"
+}
+
+variable "idim_proxy_api_base_url_prod" {
+  type = string
+  sensitive = true
+  default = "no_need_in_dev_and_test_env"
+}
+
+variable "idim_proxy_api_api_key" {
+  type = string
+  sensitive = true
+}
+
+variable "gc_notify_email_api_key" {
+  type = string
+  sensitive = true
+}
+
+variable "fam_update_user_info_api_key" {
+  type = string
+  sensitive = true
+}
+
+variable "api_gateway_stage_name" {
+  description = "Stage name for the REST API in API Gateway (appears in URI)"
+  type = string
+  default = "v1"
+}
+
+# Variables for FAM front-end config
+
+variable "front_end_redirect_path" {
+  description = "Path to public FAM front-end (for redirect URI)"
+  type = string
+}
+
+
