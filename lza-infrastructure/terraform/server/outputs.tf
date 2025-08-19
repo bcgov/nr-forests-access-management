@@ -3,10 +3,10 @@
 #   value       = aws_api_gateway_stage.admin_management_api_gateway_stage.invoke_url
 # }
 
-# output "fam_api_base_url" {
-#   description = "Base URL for API Gateway stage."
-#   value       = aws_api_gateway_deployment.fam_api_gateway_deployment.invoke_url
-# }
+output "fam_api_base_url" {
+  description = "Base URL for API Gateway stage."
+  value       = aws_api_gateway_deployment.fam_api_gateway_deployment.invoke_url
+}
 
 data "aws_region" "current" {}
 
