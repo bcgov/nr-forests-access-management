@@ -111,14 +111,14 @@ jobs:
           cd server/admin_management
           zip -u ../fam-admin-management-api.zip -r api/ -x database/**\* tests/**\* venv/**\* .env
           cd ..
-          mv fam-admin-management-api.zip ../infrastructure/server
+          mv fam-admin-management-api.zip ../lza-infrastructure/terraform/server
           cd ..
 
       - name: Upload zip file artifact - FAM Admin Management API
         uses: actions/upload-artifact@v4
         with:
           name: fam-admin-management-api
-          path: ./infrastructure/server/fam-admin-management-api.zip
+          path: ./lza-infrastructure/terraform/server/fam-admin-management-api.zip
           if-no-files-found: error
 
       - name: Stage Flyway SQL files
