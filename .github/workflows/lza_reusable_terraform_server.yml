@@ -64,6 +64,28 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+            python-version: "3.12"
+
+      - name: Auth function zip
+        run: |
+            mkdir auth_function_packaging
+            rsync -r server/auth_function/* auth_function_packaging -F --exclude=requirements.txt --exclude=test
+            pip install -t auth_function_packaging -r server/auth_function/requirements.txt
+            cd auth_function_packaging
+            zip -r9 ../lza-infrastructure/terraform/server/fam_auth_function.zip .
+            cd ..
+            rm -rf auth_function_packaging
+
+      - name: Auth function upload zip file artifact
+        uses: actions/upload-artifact@v4
+        with:
+            name: fam-auth-function
+            path: ./lza-infrastructure/terraform/server/fam_auth_function.zip
+            if-no-files-found: error
+
       - name: Stage Flyway SQL files
         run: |
           mkdir lza-infrastructure/terraform/server/sql
