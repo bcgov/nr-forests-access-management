@@ -242,8 +242,6 @@ const getTotalRecords = (): number => {
             return appAdminQuery.data.value?.length ?? 0;
         case ManagePermissionsTableEnum.AppUser:
             return appUserQuery.data.value?.meta.total ?? 0;
-        case ManagePermissionsTableEnum.ApplicationAdmin:
-            return applicationAdminQuery.data.value?.length ?? 0;
         case ManagePermissionsTableEnum.DelegatedAdmin:
             return delegatedAdminQuery.data.value?.meta.total ?? 0;
         default:
