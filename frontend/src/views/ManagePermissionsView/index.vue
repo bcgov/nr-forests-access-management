@@ -139,6 +139,18 @@ const tabs: ManagePermissionsTabType[] = [
         icon: UserIcon as Component,
     },
     {
+        // Delegated Admin table
+        key: ManagePermissionsTableEnum.DelegatedAdmin,
+        visible: computed(() =>
+            isSelectedAppAuthorized(
+                AdminRoleAuthGroup.AppAdmin,
+                selectedApp.value?.id,
+                adminUserAccessQuery.data.value
+            )
+        ),
+        icon: EnterpriseIcon as Component,
+    },
+    {
         // Application Admins table - show other admins for the selected application (except FAM)
         key: ManagePermissionsTableEnum.ApplicationAdmin,
         visible: computed(
@@ -151,18 +163,6 @@ const tabs: ManagePermissionsTabType[] = [
                 )
         ),
         icon: HelpDeskIcon as Component,
-    },
-    {
-        // Delegated Admin table
-        key: ManagePermissionsTableEnum.DelegatedAdmin,
-        visible: computed(() =>
-            isSelectedAppAuthorized(
-                AdminRoleAuthGroup.AppAdmin,
-                selectedApp.value?.id,
-                adminUserAccessQuery.data.value
-            )
-        ),
-        icon: EnterpriseIcon as Component,
     },
 ];
 

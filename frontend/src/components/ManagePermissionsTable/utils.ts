@@ -81,6 +81,10 @@ export const getTableHeaderDescription = (
             return `
             This table shows all the delegated administrators in ${appName} and the roles they are allowed to manage for their users
             `;
+        case ManagePermissionsTableEnum.ApplicationAdmin:
+            return `
+            This table shows all the Application Administrators in ${appName}
+            `;
         default:
             return `This table shows all the users in ${appName} and their permissions levels`;
     }
