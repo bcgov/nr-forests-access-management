@@ -14,18 +14,10 @@ variable "fam_gha_lza_role" {
   type        = string
 }
 
-# ------------------------ Aurora Database Variables ------------------------ #
+# ------------------ Aurora Database Variables ------------------ #
 variable "famdb_cluster_name" {
   description = "Name for the FAM database cluster -- must be unique"
   type        = string
-}
-
-# Variables to control flyway process
-
-variable "execute_flyway" {
-  description = "Toggle for whether to execute flyway (suppress on terraform plan)"
-  type = bool
-  default = false
 }
 
 variable "db_cluster_snapshot_identifier" {
@@ -34,6 +26,13 @@ variable "db_cluster_snapshot_identifier" {
     condition     = length(var.db_cluster_snapshot_identifier) < 63
     error_message = "The aws_db_cluster_snapshot property db_cluster_snapshot_identifier cannot exceed 63 characters."
   }
+}
+
+# ------------- Variables to control flyway process ------------- #
+variable "execute_flyway" {
+  description = "Toggle for whether to execute flyway (suppress on terraform plan)"
+  type = bool
+  default = false
 }
 
 # ------------------------ Cognito Variables ------------------------ #
@@ -65,22 +64,22 @@ variable "prod_oidc_idp_issuer" {
   default = "https://loginproxy.gov.bc.ca/auth/realms/standard"
 }
 
-# # OIDC issuers at BCSC
+# OIDC issuers at BCSC
 
-# variable "dev_bcsc_oidc_idp_issuer" {
-#   type = string
-#   default = "https://idtest.gov.bc.ca/oauth2"
-# }
+variable "dev_bcsc_oidc_idp_issuer" {
+  type = string
+  default = "https://idtest.gov.bc.ca/oauth2"
+}
 
-# variable "test_bcsc_oidc_idp_issuer" {
-#   type = string
-#   default = "https://idtest.gov.bc.ca/oauth2"
-# }
+variable "test_bcsc_oidc_idp_issuer" {
+  type = string
+  default = "https://idtest.gov.bc.ca/oauth2"
+}
 
-# variable "prod_bcsc_oidc_idp_issuer" {
-#   type = string
-#   default = "https://id.gov.bc.ca/oauth2"
-# }
+variable "prod_bcsc_oidc_idp_issuer" {
+  type = string
+  default = "https://id.gov.bc.ca/oauth2"
+}
 
 # Variables for Pathfinder SSO client ID (same in dev, test, prod)
 
@@ -134,39 +133,39 @@ variable "prod_oidc_bceid_business_idp_client_secret" {
   sensitive = true
 }
 
-# # Client secrets for BCSC in each environment
+# Client secrets for BCSC in each environment
 
-# variable "dev_oidc_bcsc_idp_client_secret" {
-#   type = string
-#   sensitive = true
-# }
+variable "dev_oidc_bcsc_idp_client_secret" {
+  type = string
+  sensitive = true
+}
 
-# variable "test_oidc_bcsc_idp_client_secret" {
-#   type = string
-#   sensitive = true
-# }
+variable "test_oidc_bcsc_idp_client_secret" {
+  type = string
+  sensitive = true
+}
 
-# variable "prod_oidc_bcsc_idp_client_secret" {
-#   type = string
-#   sensitive = true
-# }
+variable "prod_oidc_bcsc_idp_client_secret" {
+  type = string
+  sensitive = true
+}
 
-# # Client IDs for BCSC in each environment
+# Client IDs for BCSC in each environment
 
-# variable "dev_oidc_bcsc_idp_client_id" {
-#   type = string
-#   default = "ca.bc.gov.flnr.fam.dev"
-# }
+variable "dev_oidc_bcsc_idp_client_id" {
+  type = string
+  default = "ca.bc.gov.flnr.fam.dev"
+}
 
-# variable "test_oidc_bcsc_idp_client_id" {
-#   type = string
-#   default = "ca.bc.gov.flnr.fam.test"
-# }
+variable "test_oidc_bcsc_idp_client_id" {
+  type = string
+  default = "ca.bc.gov.flnr.fam.test"
+}
 
-# variable "prod_oidc_bcsc_idp_client_id" {
-#   type = string
-#   default = "ca.bc.gov.flnr.fam.prod"
-# }
+variable "prod_oidc_bcsc_idp_client_id" {
+  type = string
+  default = "ca.bc.gov.flnr.fam.prod"
+}
 
 # Variables for Cognito Client config
 
@@ -257,49 +256,49 @@ variable "maximum_oidc_attribute_write_list" {
   ]
 }
 
-# # Variables for connecting Cognito to BCSC OIDC
+# Variables for connecting Cognito to BCSC OIDC
 
-# variable "use_override_proxy_endpoints" {
-#   description = "Toggle for whether to use proxy endpoints based on different AWS enviornment, or hardcode it"
-#   type = bool
-#   default = false
-# }
+variable "use_override_proxy_endpoints" {
+  description = "Toggle for whether to use proxy endpoints based on different AWS enviornment, or hardcode it"
+  type = bool
+  default = false
+}
 
-# variable "dev_override_bcsc_userinfo_proxy_endpoint" {
-#   description = "Endpoint for Cognito to get userinfo data for BCSC DEV environment"
-#   type = string
-#   default = "not used unless overridden in terragrunt"
-# }
+variable "dev_override_bcsc_userinfo_proxy_endpoint" {
+  description = "Endpoint for Cognito to get userinfo data for BCSC DEV environment"
+  type = string
+  default = "not used unless overridden in terragrunt"
+}
 
-# variable "test_override_bcsc_userinfo_proxy_endpoint" {
-#   description = "Endpoint for Cognito to get userinfo data for BCSC TEST environment"
-#   type = string
-#   default = "not used unless overridden in terragrunt"
-# }
+variable "test_override_bcsc_userinfo_proxy_endpoint" {
+  description = "Endpoint for Cognito to get userinfo data for BCSC TEST environment"
+  type = string
+  default = "not used unless overridden in terragrunt"
+}
 
-# variable "prod_override_bcsc_userinfo_proxy_endpoint" {
-#   description = "Endpoint for Cognito to get userinfo data for BCSC PROD environment"
-#   type = string
-#   default = "not used unless overridden in terragrunt"
-# }
+variable "prod_override_bcsc_userinfo_proxy_endpoint" {
+  description = "Endpoint for Cognito to get userinfo data for BCSC PROD environment"
+  type = string
+  default = "not used unless overridden in terragrunt"
+}
 
-# variable "dev_override_bcsc_token_proxy_endpoint" {
-#   description = "Endpoint for Cognito to get token for BCSC DEV environment"
-#   type = string
-#   default = "not used unless overridden in terragrunt"
-# }
+variable "dev_override_bcsc_token_proxy_endpoint" {
+  description = "Endpoint for Cognito to get token for BCSC DEV environment"
+  type = string
+  default = "not used unless overridden in terragrunt"
+}
 
-# variable "test_override_bcsc_token_proxy_endpoint" {
-#   description = "Endpoint for Cognito to get token for BCSC TEST environment"
-#   type = string
-#   default = "not used unless overridden in terragrunt"
-# }
+variable "test_override_bcsc_token_proxy_endpoint" {
+  description = "Endpoint for Cognito to get token for BCSC TEST environment"
+  type = string
+  default = "not used unless overridden in terragrunt"
+}
 
-# variable "prod_override_bcsc_token_proxy_endpoint" {
-#   description = "Endpoint for Cognito to get token for BCSC PROD environment"
-#   type = string
-#   default = "not used unless overridden in terragrunt"
-# }
+variable "prod_override_bcsc_token_proxy_endpoint" {
+  description = "Endpoint for Cognito to get token for BCSC PROD environment"
+  type = string
+  default = "not used unless overridden in terragrunt"
+}
 
 variable "dev_pr_url_count" {
   description = "Number of pull request redirect urls of Cognito dev clients"

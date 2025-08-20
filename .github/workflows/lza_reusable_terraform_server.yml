@@ -75,6 +75,23 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Auth function zip
+        run: |
+          mkdir auth_function_packaging
+          rsync -r server/auth_function/* auth_function_packaging -F --exclude=requirements.txt --exclude=test
+          pip install -t auth_function_packaging -r server/auth_function/requirements.txt
+          cd auth_function_packaging
+          zip -r9 ../lza-infrastructure/terraform/server/fam_auth_function.zip .
+          cd ..
+          rm -rf auth_function_packaging
+
+      - name: Auth function upload zip file artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: fam-auth-function
+          path: ./lza-infrastructure/terraform/server/fam_auth_function.zip
+          if-no-files-found: error
+
       - name: Install and Package Dependencies - FAM API
         run: |
           cd server/backend
@@ -185,11 +202,6 @@ jobs:
           # Run terraform
           terragrunt run-all ${{ inputs.tf_subcommand }} --terragrunt-non-interactive
 
-      - name: Wait for 30 seconds
-        run: |
-          echo "Waiting for 30 seconds before executing the smoke test..."
-          sleep 30s
-
       - id: smoke_test
         name: Smoke Test
         working-directory: ${{ env.TG_SRC_PATH }}/${{ inputs.environment_name }}
@@ -197,9 +209,9 @@ jobs:
           licenceplate: ${{ secrets.licenceplate }}
           target_env: ${{ inputs.environment_name }}
         run: |
-          # Wait for 1 minute
-            echo "Waiting for 1 minute before running the smoke test..."
-            sleep 60
+          # Wait for a short time before first attempt
+            echo "Waiting for 25 seconds before running the smoke test..."
+            sleep 25
 
           # Run smoke test
             if [[ "apply" == "${{ inputs.tf_subcommand }}" ]]
@@ -207,7 +219,35 @@ jobs:
               fam_api_base_url=`terragrunt run-all output fam_api_base_url --terragrunt-non-interactive | sed 's/^"//' | sed 's/"$//'`
               smoke_test_url="$fam_api_base_url/smoke_test"
               echo "Smoke test URL: [$smoke_test_url]"
-              curl --silent --show-error --fail $smoke_test_url
+
+              # retry setup for dealing smoke testing failing due to "cold start" with API Gateway.
+              max_attempts=10
+              attempt=1
+              wait_time=2
+              success=0
+
+              while [[ $attempt -le $max_attempts ]]; do
+                echo "Attempt $attempt/$max_attempts..."
+                if curl --silent --show-error --fail "$smoke_test_url"; then
+                  echo "Smoke test succeeded"
+                  success=1
+                  break
+                else
+                  echo "Smoke test failed (attempt $attempt). Retrying in $wait_time seconds..."
+                  sleep $wait_time
+                  # Double wait time but cap at 60s
+                  wait_time=$(( wait_time * 2 ))
+                  if [[ $wait_time -gt 60 ]]; then
+                    wait_time=60
+                  fi
+                fi
+                attempt=$(( attempt + 1 ))
+              done
+
+              if [[ $success -ne 1 ]]; then
+                echo "Smoke test failed after $max_attempts attempts"
+                exit 1
+              fi
             else
               echo "Not executing terraform apply - smoke test skipped"
             fi
