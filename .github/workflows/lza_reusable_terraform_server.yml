@@ -220,7 +220,7 @@ jobs:
               smoke_test_url="$fam_api_base_url/smoke_test"
               echo "Smoke test URL: [$smoke_test_url]"
 
-              # retry setup for dealing with API Gateway failing due to "cold start".
+              # retry setup for dealing smoke testing failing due to "cold start" with API Gateway.
               max_attempts=10
               attempt=1
               wait_time=2
