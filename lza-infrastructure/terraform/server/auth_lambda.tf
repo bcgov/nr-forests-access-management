@@ -69,11 +69,6 @@ resource "aws_iam_role" "fam_auth_lambda_exec" {
   assume_role_policy = data.aws_iam_policy_document.fam_auth_lambda_exec_policydoc.json
 }
 
-# TODO: remove this later, it is originally at fam_api.tf
-data "aws_db_proxy" "api_lambda_db_proxy" {
-  name = aws_db_proxy.famdb_proxy_api.name
-}
-
 resource "aws_lambda_function" "fam-auth-function" {
   filename      = "fam_auth_function.zip"
   function_name = local.auth_lambda_name
