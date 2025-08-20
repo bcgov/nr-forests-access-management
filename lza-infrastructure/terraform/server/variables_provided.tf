@@ -14,18 +14,10 @@ variable "fam_gha_lza_role" {
   type        = string
 }
 
-# ------------------------ Aurora Database Variables ------------------------ #
+# ------------------ Aurora Database Variables ------------------ #
 variable "famdb_cluster_name" {
   description = "Name for the FAM database cluster -- must be unique"
   type        = string
-}
-
-# Variables to control flyway process
-
-variable "execute_flyway" {
-  description = "Toggle for whether to execute flyway (suppress on terraform plan)"
-  type = bool
-  default = false
 }
 
 variable "db_cluster_snapshot_identifier" {
@@ -34,6 +26,13 @@ variable "db_cluster_snapshot_identifier" {
     condition     = length(var.db_cluster_snapshot_identifier) < 63
     error_message = "The aws_db_cluster_snapshot property db_cluster_snapshot_identifier cannot exceed 63 characters."
   }
+}
+
+# ------------- Variables to control flyway process ------------- #
+variable "execute_flyway" {
+  description = "Toggle for whether to execute flyway (suppress on terraform plan)"
+  type = bool
+  default = false
 }
 
 # ------------------------ Cognito Variables ------------------------ #
