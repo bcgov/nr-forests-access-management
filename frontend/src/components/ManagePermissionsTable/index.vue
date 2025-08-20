@@ -105,7 +105,8 @@ const props = defineProps<{
     addNotifications: (newNotifications: PermissionNotificationType[]) => void;
 }>();
 
-const isAppAdminTable = props.tableType === ManagePermissionsTableEnum.AppAdmin;
+const isAppAdminTable =
+    props.tableType === ManagePermissionsTableEnum.FamAppAdmin;
 const isAppUserTable = props.tableType === ManagePermissionsTableEnum.AppUser;
 const isApplicationAdminTable =
     props.tableType === ManagePermissionsTableEnum.ApplicationAdmin;
@@ -238,7 +239,7 @@ const handleSearchChange = (searchValue: string) => {
 
 const getTotalRecords = (): number => {
     switch (props.tableType) {
-        case ManagePermissionsTableEnum.AppAdmin:
+        case ManagePermissionsTableEnum.FamAppAdmin:
             return appAdminQuery.data.value?.length ?? 0;
         case ManagePermissionsTableEnum.AppUser:
             return appUserQuery.data.value?.meta.total ?? 0;
@@ -252,7 +253,7 @@ const getTotalRecords = (): number => {
 const hasUserRoleRecords = ref<boolean>(false);
 const getTableRows = computed(() => {
     switch (props.tableType) {
-        case ManagePermissionsTableEnum.AppAdmin:
+        case ManagePermissionsTableEnum.FamAppAdmin:
             return appAdminQuery.data.value ?? [];
         case ManagePermissionsTableEnum.AppUser:
             const records = appUserQuery.data.value?.results ?? [];
@@ -270,7 +271,7 @@ const getTableRows = computed(() => {
 // Get the query loading status
 const isQueryLoading = (): boolean => {
     switch (props.tableType) {
-        case ManagePermissionsTableEnum.AppAdmin:
+        case ManagePermissionsTableEnum.FamAppAdmin:
             return appAdminQuery.isLoading.value;
         case ManagePermissionsTableEnum.AppUser:
             return appUserQuery.isLoading.value;
@@ -286,7 +287,7 @@ const isQueryLoading = (): boolean => {
 // Get the query fetching status
 const isQueryError = (): boolean => {
     switch (props.tableType) {
-        case ManagePermissionsTableEnum.AppAdmin:
+        case ManagePermissionsTableEnum.FamAppAdmin:
             return appAdminQuery.isError.value;
         case ManagePermissionsTableEnum.AppUser:
             return appUserQuery.isError.value;
@@ -302,7 +303,7 @@ const isQueryError = (): boolean => {
 const getQueryErrorValue = () => {
     let error = null;
     switch (props.tableType) {
-        case ManagePermissionsTableEnum.AppAdmin:
+        case ManagePermissionsTableEnum.FamAppAdmin:
             error = appAdminQuery.error.value;
             break;
         case ManagePermissionsTableEnum.AppUser:
@@ -502,7 +503,7 @@ const highlightNewUserAccessRow = (
     rowData: TableRowType
 ): object | undefined => {
     switch (props.tableType) {
-        case ManagePermissionsTableEnum.AppAdmin:
+        case ManagePermissionsTableEnum.FamAppAdmin:
             const famAdin = rowData as FamAppAdminGetResponse;
             if (newFamAdminIds.includes(famAdin.application_admin_id)) {
                 return NEW_ACCESS_STYLE_IN_TABLE;

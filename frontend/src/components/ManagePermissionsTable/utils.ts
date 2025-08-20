@@ -50,7 +50,7 @@ export const getTableHeaderTitle = (
     tableType: ManagePermissionsTableEnum
 ): string => {
     switch (tableType) {
-        case ManagePermissionsTableEnum.AppAdmin:
+        case ManagePermissionsTableEnum.FamAppAdmin:
             return `${appName} users`;
         case ManagePermissionsTableEnum.AppUser:
             return `${appName} users`;
@@ -69,7 +69,7 @@ export const getTableHeaderDescription = (
     tableType: ManagePermissionsTableEnum
 ): string => {
     switch (tableType) {
-        case ManagePermissionsTableEnum.AppAdmin:
+        case ManagePermissionsTableEnum.FamAppAdmin:
             return `
             This table shows all the users in ${appName} and their permissions levels
             `;
@@ -95,7 +95,7 @@ export const getTableHeaderDescription = (
  */
 export const getHeaders = (tableType: ManagePermissionsTableEnum): string[] => {
     switch (tableType) {
-        case ManagePermissionsTableEnum.AppAdmin:
+        case ManagePermissionsTableEnum.FamAppAdmin:
             return [
                 "User Name",
                 "Domain",
@@ -336,7 +336,7 @@ export const exportDataTableApiCall = (
             return AdminMgmtApiService.delegatedAdminApi.exportAccessControlPrivilegesByApplicationId(
                 appId
             );
-        case ManagePermissionsTableEnum.AppAdmin:
+        case ManagePermissionsTableEnum.FamAppAdmin:
             return AdminMgmtApiService.applicationAdminApi.exportApplicationAdmins();
     }
 };
