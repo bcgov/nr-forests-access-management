@@ -59,22 +59,22 @@ variable "prod_oidc_idp_issuer" {
   default = "https://loginproxy.gov.bc.ca/auth/realms/standard"
 }
 
-# # OIDC issuers at BCSC
+# OIDC issuers at BCSC
 
-# variable "dev_bcsc_oidc_idp_issuer" {
-#   type = string
-#   default = "https://idtest.gov.bc.ca/oauth2"
-# }
+variable "dev_bcsc_oidc_idp_issuer" {
+  type = string
+  default = "https://idtest.gov.bc.ca/oauth2"
+}
 
-# variable "test_bcsc_oidc_idp_issuer" {
-#   type = string
-#   default = "https://idtest.gov.bc.ca/oauth2"
-# }
+variable "test_bcsc_oidc_idp_issuer" {
+  type = string
+  default = "https://idtest.gov.bc.ca/oauth2"
+}
 
-# variable "prod_bcsc_oidc_idp_issuer" {
-#   type = string
-#   default = "https://id.gov.bc.ca/oauth2"
-# }
+variable "prod_bcsc_oidc_idp_issuer" {
+  type = string
+  default = "https://id.gov.bc.ca/oauth2"
+}
 
 # Variables for Pathfinder SSO client ID (same in dev, test, prod)
 
@@ -128,39 +128,39 @@ variable "prod_oidc_bceid_business_idp_client_secret" {
   sensitive = true
 }
 
-# # Client secrets for BCSC in each environment
+# Client secrets for BCSC in each environment
 
-# variable "dev_oidc_bcsc_idp_client_secret" {
-#   type = string
-#   sensitive = true
-# }
+variable "dev_oidc_bcsc_idp_client_secret" {
+  type = string
+  sensitive = true
+}
 
-# variable "test_oidc_bcsc_idp_client_secret" {
-#   type = string
-#   sensitive = true
-# }
+variable "test_oidc_bcsc_idp_client_secret" {
+  type = string
+  sensitive = true
+}
 
-# variable "prod_oidc_bcsc_idp_client_secret" {
-#   type = string
-#   sensitive = true
-# }
+variable "prod_oidc_bcsc_idp_client_secret" {
+  type = string
+  sensitive = true
+}
 
-# # Client IDs for BCSC in each environment
+# Client IDs for BCSC in each environment
 
-# variable "dev_oidc_bcsc_idp_client_id" {
-#   type = string
-#   default = "ca.bc.gov.flnr.fam.dev"
-# }
+variable "dev_oidc_bcsc_idp_client_id" {
+  type = string
+  default = "ca.bc.gov.flnr.fam.dev"
+}
 
-# variable "test_oidc_bcsc_idp_client_id" {
-#   type = string
-#   default = "ca.bc.gov.flnr.fam.test"
-# }
+variable "test_oidc_bcsc_idp_client_id" {
+  type = string
+  default = "ca.bc.gov.flnr.fam.test"
+}
 
-# variable "prod_oidc_bcsc_idp_client_id" {
-#   type = string
-#   default = "ca.bc.gov.flnr.fam.prod"
-# }
+variable "prod_oidc_bcsc_idp_client_id" {
+  type = string
+  default = "ca.bc.gov.flnr.fam.prod"
+}
 
 # Variables for Cognito Client config
 
