@@ -38,7 +38,7 @@ resource "aws_cognito_user_pool_client" "dev_forest_client_oidc_client" {
   }
 
   user_pool_id = aws_cognito_user_pool.fam_user_pool.id
-  write_attributes = "${concat(var.minimum_oidc_attribute_list, ["custom:idp_display_name", "email"])}"
+  # write_attributes = "${concat(var.minimum_oidc_attribute_list, ["custom:idp_display_name", "email"])}"
   write_attributes = var.maximum_oidc_attribute_write_list
 }
 
