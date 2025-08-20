@@ -257,49 +257,49 @@ variable "maximum_oidc_attribute_write_list" {
   ]
 }
 
-# # Variables for connecting Cognito to BCSC OIDC
+# Variables for connecting Cognito to BCSC OIDC
 
-# variable "use_override_proxy_endpoints" {
-#   description = "Toggle for whether to use proxy endpoints based on different AWS enviornment, or hardcode it"
-#   type = bool
-#   default = false
-# }
+variable "use_override_proxy_endpoints" {
+  description = "Toggle for whether to use proxy endpoints based on different AWS enviornment, or hardcode it"
+  type = bool
+  default = false
+}
 
-# variable "dev_override_bcsc_userinfo_proxy_endpoint" {
-#   description = "Endpoint for Cognito to get userinfo data for BCSC DEV environment"
-#   type = string
-#   default = "not used unless overridden in terragrunt"
-# }
+variable "dev_override_bcsc_userinfo_proxy_endpoint" {
+  description = "Endpoint for Cognito to get userinfo data for BCSC DEV environment"
+  type = string
+  default = "not used unless overridden in terragrunt"
+}
 
-# variable "test_override_bcsc_userinfo_proxy_endpoint" {
-#   description = "Endpoint for Cognito to get userinfo data for BCSC TEST environment"
-#   type = string
-#   default = "not used unless overridden in terragrunt"
-# }
+variable "test_override_bcsc_userinfo_proxy_endpoint" {
+  description = "Endpoint for Cognito to get userinfo data for BCSC TEST environment"
+  type = string
+  default = "not used unless overridden in terragrunt"
+}
 
-# variable "prod_override_bcsc_userinfo_proxy_endpoint" {
-#   description = "Endpoint for Cognito to get userinfo data for BCSC PROD environment"
-#   type = string
-#   default = "not used unless overridden in terragrunt"
-# }
+variable "prod_override_bcsc_userinfo_proxy_endpoint" {
+  description = "Endpoint for Cognito to get userinfo data for BCSC PROD environment"
+  type = string
+  default = "not used unless overridden in terragrunt"
+}
 
-# variable "dev_override_bcsc_token_proxy_endpoint" {
-#   description = "Endpoint for Cognito to get token for BCSC DEV environment"
-#   type = string
-#   default = "not used unless overridden in terragrunt"
-# }
+variable "dev_override_bcsc_token_proxy_endpoint" {
+  description = "Endpoint for Cognito to get token for BCSC DEV environment"
+  type = string
+  default = "not used unless overridden in terragrunt"
+}
 
-# variable "test_override_bcsc_token_proxy_endpoint" {
-#   description = "Endpoint for Cognito to get token for BCSC TEST environment"
-#   type = string
-#   default = "not used unless overridden in terragrunt"
-# }
+variable "test_override_bcsc_token_proxy_endpoint" {
+  description = "Endpoint for Cognito to get token for BCSC TEST environment"
+  type = string
+  default = "not used unless overridden in terragrunt"
+}
 
-# variable "prod_override_bcsc_token_proxy_endpoint" {
-#   description = "Endpoint for Cognito to get token for BCSC PROD environment"
-#   type = string
-#   default = "not used unless overridden in terragrunt"
-# }
+variable "prod_override_bcsc_token_proxy_endpoint" {
+  description = "Endpoint for Cognito to get token for BCSC PROD environment"
+  type = string
+  default = "not used unless overridden in terragrunt"
+}
 
 variable "dev_pr_url_count" {
   description = "Number of pull request redirect urls of Cognito dev clients"
