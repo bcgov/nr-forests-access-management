@@ -28,7 +28,7 @@ resource "aws_s3_bucket_policy" "web_distribution" {
 }
 
 resource "aws_cloudfront_distribution" "web_distribution" {
-  aliases             = ["${var.cloudfront_vanity_domain}"]
+  # aliases             = ["${var.cloudfront_vanity_domain}"]
   enabled             = true
   is_ipv6_enabled     = true
   wait_for_deployment = false
