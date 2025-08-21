@@ -20,7 +20,7 @@ on:
                 required: true
 
 env:
-    TF_VERSION: 1.2.2
+    TF_VERSION: 1.12.2
     TG_VERSION: 0.37.1
     TG_SRC_PATH: lza-infrastructure/landing-zone/frontend
     TG_SERVER_SRC_PATH: lza-infrastructure/landing-zone/server
