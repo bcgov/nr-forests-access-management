@@ -1,5 +1,5 @@
 locals {
-  flyway_scripts_bucket_name = "fam-cloudfront-bucket-${var.target_env}"
+  flyway_scripts_bucket_name = "fam-cloudfront-bucket-${var.licence_plate}-${var.target_env}"
 }
 
 resource "aws_s3_bucket" "web_distribution" {
