@@ -27,11 +27,11 @@ jobs:
       gc_notify_email_api_key: "${{ secrets.GC_NOTIFY_EMAIL_API_KEY }}"
       fam_update_user_info_api_key: "${{ secrets.FAM_UPDATE_USER_INFO_API_KEY }}"
 
-  # aws-tools-deployment-frontend:
-  #   needs: aws-tools-deployment-server
-  #   uses: ./.github/workflows/lza_reusable_terraform_frontend.yml
-  #   with:
-  #     environment_name: tools
-  #     tf_subcommand: apply
-  #   secrets:
-  #     licenceplate: ${{ secrets.LZA_LICENCEPLATE}}
+  aws-tools-deployment-frontend:
+    needs: aws-tools-deployment-server
+    uses: ./.github/workflows/lza_reusable_terraform_frontend.yml
+    with:
+      environment_name: tools
+      tf_subcommand: apply
+    secrets:
+      licenceplate: ${{ secrets.LZA_LICENCEPLATE}}
