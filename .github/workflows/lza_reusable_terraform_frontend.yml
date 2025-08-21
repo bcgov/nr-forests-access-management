@@ -1,0 +1,92 @@
+name: LZA Run Terraform (Frontend)
+
+on:
+    workflow_call:
+        inputs:
+            environment_name:
+                required: true
+                type: string
+            tf_subcommand:
+                required: true
+                type: string
+        secrets:
+            licenceplate:
+                required: true
+
+env:
+    TF_VERSION: 1.2.2
+    TG_VERSION: 0.37.1
+    TG_SRC_PATH: lza-infrastructure/landing-zone/frontend
+    TG_SERVER_SRC_PATH: lza-infrastructure/landing-zone/server
+    AWS_REGION: ca-central-1
+
+jobs:
+    aws-frontend-deployment:
+        name: Run Terraform to Deploy Frontend
+        runs-on: ubuntu-latest
+        environment: ${{ inputs.environment_name }}
+
+        env:
+            AWS_OIDC_GHA_ROLE: ${{ vars.FAM_GHA_LZA_ROLE }} # AWS-GHA OIDC auth role.
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: HashiCorp - Setup Terraform
+              uses: hashicorp/setup-terraform@v3.1.2
+              with:
+                terraform_version: ${{ env.TF_VERSION }}
+
+            - name: Build Frontend
+              working-directory: frontend
+              run: |
+                  npm run install-frontend
+                  npm run build
+                  mkdir ../lza-infrastructure/terraform/frontend/dist
+                  rsync -r dist/* ../lza-infrastructure/terraform/frontend/dist
+
+            - name: Configure AWS Credentials
+              uses: aws-actions/configure-aws-credentials@v4
+              with:
+                  role-to-assume: ${{ env.AWS_OIDC_GHA_ROLE }}
+                  role-session-name: frontend-${{ inputs.environment_name }}-deployment
+                  aws-region: ${{ env.AWS_REGION }}
+
+            - name: Setup Terragrunt
+              uses: autero1/action-terragrunt@v3.0.2
+              with:
+                  terragrunt-version: ${{ env.TG_VERSION }}
+
+            - id: terragrunt-server-output
+              name: Terragrunt Server Output
+              working-directory: ${{ env.TG_SERVER_SRC_PATH }}/${{ inputs.environment_name }}
+              env:
+                  licenceplate: ${{ secrets.licenceplate }}
+                  target_env: ${{ inputs.environment_name }}
+              run: |
+                  # Run terraform
+                  cat > github.auto.tfvars <<EOF
+                  oidc_idir_idp_client_secret = "NA"
+                  oidc_bceid_business_idp_client_secret = "NA"
+                  db_cluster_snapshot_identifier = "NA"
+                  execute_flyway = false
+                  EOF
+                  terragrunt run-all output -json > ../../../../lza-infrastructure/terraform/frontend/dist/env.json
+
+            - id: terragrunt-server-output-test
+              working-directory: lza-infrastructure/terraform/frontend/dist
+              name: Terragrunt Server Output Verify
+              run: |
+                  echo "printing out contents of env.json"
+                  echo "===================================="
+                  cat env.json
+                  echo "===================================="
+
+            # - name: Terragrunt ${{ inputs.tf_subcommand }}
+            #   working-directory: ${{ env.TG_SRC_PATH }}/${{ inputs.environment_name }}
+            #   env:
+            #       licenceplate: ${{ secrets.licenceplate }}
+            #       target_env: ${{ inputs.environment_name }}
+            #   run: |
+            #       terragrunt run-all ${{ inputs.tf_subcommand }} --terragrunt-non-interactive
