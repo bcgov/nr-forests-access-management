@@ -35,10 +35,10 @@ output "frontend_logout_chain_url" {
   value = var.target_env == "prod" ? var.cognito_app_client_logout_chain_url.prod : var.cognito_app_client_logout_chain_url.test
 }
 
-# output "front_end_redirect_base_url" {
-#   description = "Frontend CloudFront base url"
-#   value = var.front_end_redirect_path
-# }
+output "front_end_redirect_base_url" {
+  description = "Frontend CloudFront base url"
+  value = var.front_end_redirect_path
+}
 
 output "target_env" {
   description = "dev, test, or prod in AWS"
