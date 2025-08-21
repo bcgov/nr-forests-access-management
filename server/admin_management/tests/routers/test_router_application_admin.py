@@ -265,3 +265,46 @@ def test_export_application_admins_has_necessary_authorizeaton_guard_checks():
     assert any(
         dependency.dependency == authorize_by_fam_admin for dependency in route.dependencies
     ), "authorize_by_fam_admin check should be a dependency for export_application_admins"
+
+def test_get_application_admins_by_application_id(mocker, test_client_fixture, test_rsa_key):
+    """
+    Test GET /application-admins/application/{application_id} returns expected data and 200 status.
+    """
+    # Use a valid application ID that exists in test database
+    from tests.constants import TEST_APPLICATION_ID_FAM
+    from tests.test_data.mock_application_admins import MOCK_APPLICATION_ADMINS
+
+    # Mock the application service to return a valid application (required by authorize_by_app_id guard)
+    mock_application = mocker.MagicMock()
+    mock_application.application_name = "FAM"
+    mock_application.application_id = TEST_APPLICATION_ID_FAM
+    mocker.patch(
+        "api.app.routers.router_application_admin.ApplicationService.get_application",
+        return_value=mock_application,
+    )
+
+    # Mock the application admin service to return known data
+    mocker.patch(
+        "api.app.routers.router_application_admin.ApplicationAdminService.get_application_admins_by_application_id",
+        return_value=[MOCK_APPLICATION_ADMINS[0]],
+    )
+
+    application_id = TEST_APPLICATION_ID_FAM
+    token = jwt_utils.create_jwt_token(test_rsa_key, [AdminRoleAuthGroup.FAM_ADMIN])
+
+    # Act: Make the GET request
+    response = test_client_fixture.get(
+        f"{endPoint}/application/{application_id}",
+        headers=jwt_utils.headers(token)
+    )
+
+    # Assert: Check response
+    assert response.status_code == 200
+    data = response.json()
+    assert isinstance(data, list)
+    assert "application_admin_id" in data[0]
+    assert "user_id" in data[0]
+    assert "application_id" in data[0]
+    assert "user" in data[0]
+    assert "application" in data[0]
+    assert data[0]["application_admin_id"] == MOCK_APPLICATION_ADMINS[0]["application_admin_id"]

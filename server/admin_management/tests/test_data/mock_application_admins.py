@@ -1,4 +1,4 @@
-# Mock data for application admins for use in tests
+ # Mock data for application admins for use in tests
 
 MOCK_APPLICATION_ADMINS = [
     {
@@ -39,4 +39,11 @@ MOCK_APPLICATION_ADMINS = [
             "application_description": "Test application"
         },
     },
+
+]
+
+# Export as schema objects for router tests
+from api.app.schemas.schemas import FamAppAdminGetResponse
+MOCK_APPLICATION_ADMINS_SCHEMA = [
+    FamAppAdminGetResponse(**record) for record in MOCK_APPLICATION_ADMINS
 ]
