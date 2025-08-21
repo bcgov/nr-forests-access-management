@@ -31,7 +31,7 @@ generate "tools_tfvars" {
     tools = "${local.common_vars.inputs.idp_logout_chain_tools_url}"
   }
   # front_end_redirect_path = "https://fam-tools.nrs.gov.bc.ca"
-  front_end_redirect_path = "d3dndacxwfefe0.cloudfront.net"
+  front_end_redirect_path = "https://d3dndacxwfefe0.cloudfront.net"
   fam_callback_urls = [
     "https://fam-tools.nrs.gov.bc.ca/authCallback",
     "http://localhost:5173/authCallback",
