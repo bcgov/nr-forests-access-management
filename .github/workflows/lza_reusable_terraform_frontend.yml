@@ -89,10 +89,10 @@ jobs:
                   cat env.json
                   echo "===================================="
 
-            # - name: Terragrunt ${{ inputs.tf_subcommand }}
-            #   working-directory: ${{ env.TG_SRC_PATH }}/${{ inputs.environment_name }}
-            #   env:
-            #       licenceplate: ${{ secrets.licenceplate }}
-            #       target_env: ${{ inputs.environment_name }}
-            #   run: |
-            #       terragrunt run-all ${{ inputs.tf_subcommand }} --terragrunt-non-interactive
+            - name: Terragrunt ${{ inputs.tf_subcommand }}
+              working-directory: ${{ env.TG_SRC_PATH }}/${{ inputs.environment_name }}
+              env:
+                  licenceplate: ${{ secrets.licenceplate }}
+                  target_env: ${{ inputs.environment_name }}
+              run: |
+                  terragrunt run-all ${{ inputs.tf_subcommand }} --terragrunt-non-interactive
