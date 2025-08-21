@@ -1,5 +1,5 @@
 terraform {
-  source = "..//..//..//..//lza-infrastructure//terraform//frontend"
+  source = "../../../../lza-infrastructure/terraform/frontend"
 }
 
 locals {
