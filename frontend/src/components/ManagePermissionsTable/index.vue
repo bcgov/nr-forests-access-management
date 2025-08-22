@@ -105,7 +105,7 @@ const props = defineProps<{
     addNotifications: (newNotifications: PermissionNotificationType[]) => void;
 }>();
 
-const isAppAdminTable =
+const isFamAppAdminTable =
     props.tableType === ManagePermissionsTableEnum.FamAppAdmin;
 const isAppUserTable = props.tableType === ManagePermissionsTableEnum.AppUser;
 const isApplicationAdminTable =
@@ -114,14 +114,14 @@ const isDelegatedTable =
     props.tableType === ManagePermissionsTableEnum.DelegatedAdmin;
 
 // Fam App Admins data query, this query has no pagination and create date
-const appAdminQuery = useQuery({
+const famAppAdminQuery = useQuery({
     queryKey: ["application_admins"],
     queryFn: () =>
         AdminMgmtApiService.applicationAdminApi
             .getApplicationAdmins()
             .then((res) => res.data),
     refetchOnMount: "always",
-    enabled: isAppAdminTable,
+    enabled: isFamAppAdminTable,
     select: (data) => {
         // Sort then move matching IDs to the start of the array
         const sortedByUserName = data.sort(
@@ -240,7 +240,7 @@ const handleSearchChange = (searchValue: string) => {
 const getTotalRecords = (): number => {
     switch (props.tableType) {
         case ManagePermissionsTableEnum.FamAppAdmin:
-            return appAdminQuery.data.value?.length ?? 0;
+            return famAppAdminQuery.data.value?.length ?? 0;
         case ManagePermissionsTableEnum.AppUser:
             return appUserQuery.data.value?.meta.total ?? 0;
         case ManagePermissionsTableEnum.DelegatedAdmin:
@@ -254,7 +254,7 @@ const hasUserRoleRecords = ref<boolean>(false);
 const getTableRows = computed(() => {
     switch (props.tableType) {
         case ManagePermissionsTableEnum.FamAppAdmin:
-            return appAdminQuery.data.value ?? [];
+            return famAppAdminQuery.data.value ?? [];
         case ManagePermissionsTableEnum.AppUser:
             const records = appUserQuery.data.value?.results ?? [];
             hasUserRoleRecords.value = records.length > 0 ? true : false;
@@ -272,7 +272,7 @@ const getTableRows = computed(() => {
 const isQueryLoading = (): boolean => {
     switch (props.tableType) {
         case ManagePermissionsTableEnum.FamAppAdmin:
-            return appAdminQuery.isLoading.value;
+            return famAppAdminQuery.isLoading.value;
         case ManagePermissionsTableEnum.AppUser:
             return appUserQuery.isLoading.value;
         case ManagePermissionsTableEnum.ApplicationAdmin:
@@ -288,7 +288,7 @@ const isQueryLoading = (): boolean => {
 const isQueryError = (): boolean => {
     switch (props.tableType) {
         case ManagePermissionsTableEnum.FamAppAdmin:
-            return appAdminQuery.isError.value;
+            return famAppAdminQuery.isError.value;
         case ManagePermissionsTableEnum.AppUser:
             return appUserQuery.isError.value;
         case ManagePermissionsTableEnum.ApplicationAdmin:
@@ -304,7 +304,7 @@ const getQueryErrorValue = () => {
     let error = null;
     switch (props.tableType) {
         case ManagePermissionsTableEnum.FamAppAdmin:
-            error = appAdminQuery.error.value;
+            error = famAppAdminQuery.error.value;
             break;
         case ManagePermissionsTableEnum.AppUser:
             error = appUserQuery.error.value;
@@ -328,7 +328,7 @@ const navigateToUserDetails = (rowData: TableRowType) => {
     router.push({
         name: UserDetailsRoute.name,
         params: {
-            appId: !isAppAdminTable
+            appId: !isFamAppAdminTable
                 ? selectedApp.value?.id
                 : (rowData as FamAppAdminGetResponse).application_id,
             userId: rowData.user_id,
@@ -417,7 +417,7 @@ const deleteFamPermissionMutation = useMutation({
             ),
         ]);
     },
-    onSettled: () => appAdminQuery.refetch(),
+    onSettled: () => famAppAdminQuery.refetch(),
 });
 
 const confirm = useConfirm();
@@ -489,7 +489,7 @@ const handleDelete = (privilegeObject: TableRowType) => {
         );
     }
 
-    if (isAppAdminTable) {
+    if (isFamAppAdminTable) {
         const famAdmin = privilegeObject as FamAppAdminGetResponse;
         setConfirmTextProps(userName, "Admin", props.appName);
         showConfirmDialog("Remove Access", () =>
@@ -538,7 +538,7 @@ const highlightNewUserAccessRow = (
 const tableRef = ref<HTMLElement | null>(null);
 
 const handlePageChange = (event: DataTablePageEvent): void => {
-    if (isAppAdminTable || isApplicationAdminTable) {
+    if (isFamAppAdminTable || isApplicationAdminTable) {
         return;
     }
 
@@ -557,7 +557,7 @@ const handlePageChange = (event: DataTablePageEvent): void => {
 };
 
 const handleSort = (event: DataTableSortEvent): void => {
-    if (isAppAdminTable || isApplicationAdminTable) {
+    if (isFamAppAdminTable || isApplicationAdminTable) {
         return;
     }
     const { sortField, sortOrder } = event;
@@ -591,7 +591,7 @@ const resetPageNumber = () => {
 };
 
 const handleFilter = (searchValue: string, isChanged: boolean) => {
-    if (!isAppAdminTable && !isApplicationAdminTable && isChanged) {
+    if (!isFamAppAdminTable && !isApplicationAdminTable && isChanged) {
         showFilterError.value = false;
         let strToSearch: string | null = searchValue;
 
@@ -690,7 +690,7 @@ const downloadManagePermissionsCSVData = () => {
         <!-- Data Table -->
         <div v-else>
             <DataTable
-                :lazy="!isAppAdminTable && !isApplicationAdminTable"
+                :lazy="!isFamAppAdminTable && !isApplicationAdminTable"
                 :value="getTableRows"
                 :total-records="getTotalRecords()"
                 v-model:first="firstRow"
@@ -764,21 +764,21 @@ const downloadManagePermissionsCSVData = () => {
                 <Column header="Email" field="user.email" sortable />
 
                 <Column
-                    v-if="isAppAdminTable"
+                    v-if="isFamAppAdminTable"
                     header="Application"
                     field="application.application_description"
                     sortable
                 />
 
                 <Column
-                    v-if="isAppAdminTable"
+                    v-if="isFamAppAdminTable"
                     header="Environment"
                     field="application.app_environment"
                     sortable
                 />
 
                 <Column
-                    v-if="!isAppAdminTable && !isApplicationAdminTable"
+                    v-if="!isFamAppAdminTable && !isApplicationAdminTable"
                     field="role.forest_client.forest_client_number"
                     sort-field="role.forest_client.forest_client_number"
                     header="Organization"
@@ -793,13 +793,13 @@ const downloadManagePermissionsCSVData = () => {
                     v-if="!isApplicationAdminTable"
                     :header="isAppUserTable ? 'Role' : 'Role Enabled To Assign'"
                     field="roleDisplay"
-                    :sortable="!isAppAdminTable"
+                    :sortable="!isFamAppAdminTable"
                     sort-field="role.display_name"
                 >
                     <template #body="{ data }">
                         <Chip
                             :label="
-                                isAppAdminTable
+                                isFamAppAdminTable
                                     ? 'Admin'
                                     : data.role.display_name
                             "
@@ -808,7 +808,7 @@ const downloadManagePermissionsCSVData = () => {
                 </Column>
 
                 <Column
-                    v-if="!isAppAdminTable"
+                    v-if="!isFamAppAdminTable"
                     header="Added On"
                     field="create_date"
                     sortable
