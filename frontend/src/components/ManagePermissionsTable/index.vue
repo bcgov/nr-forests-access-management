@@ -626,7 +626,13 @@ const handleFilter = (searchValue: string, isChanged: boolean) => {
  * and normally 'mutation' is used for POST.
  */
 const exportToCsvMutation = useMutation({
-    mutationFn: () => exportDataTableApiCall(props.appId, props.tableType),
+    mutationFn: () => {
+        const result = exportDataTableApiCall(props.appId, props.tableType);
+        if (!result) {
+            return Promise.reject(new Error("Invalid table type for export"));
+        }
+        return result;
+    },
     onSuccess: (csvResponse) => {
         downloadCsvFromResponse(csvResponse);
     },
