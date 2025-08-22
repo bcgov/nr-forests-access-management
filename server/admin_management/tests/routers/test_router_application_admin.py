@@ -308,3 +308,42 @@ def test_get_application_admins_by_application_id(mocker, test_client_fixture, t
     assert "user" in data[0]
     assert "application" in data[0]
     assert data[0]["application_admin_id"] == MOCK_APPLICATION_ADMINS[0]["application_admin_id"]
+
+# This test checks if the endpoint returns 400 when the application ID is invalid
+def test_get_application_admins_by_application_id_app_not_found(mocker, test_client_fixture, test_rsa_key):
+    """
+    Test GET /application-admins/application/{application_id} returns 400 if application does not exist.
+    """
+    mocker.patch(
+        "api.app.routers.router_application_admin.ApplicationService.get_application",
+        return_value=None,
+    )
+    application_id = 9999  # Non-existent
+    token = jwt_utils.create_jwt_token(test_rsa_key, [AdminRoleAuthGroup.FAM_ADMIN])
+    response = test_client_fixture.get(
+        f"{endPoint}/application/{application_id}",
+        headers=jwt_utils.headers(token)
+    )
+    assert response.status_code == 400
+    assert "Application ID" in response.text
+
+# This test checks if the endpoint returns 403 when the user lacks the required role
+def test_get_application_admins_by_application_id_forbidden(mocker, test_client_fixture, test_rsa_key):
+    """
+    Test GET /application-admins/application/{application_id} returns 403 if user lacks required role.
+    """
+    from tests.constants import TEST_APPLICATION_ID_FAM
+    mock_application = mocker.MagicMock()
+    mock_application.application_name = "FAM"
+    mock_application.application_id = TEST_APPLICATION_ID_FAM
+    mocker.patch(
+        "api.app.routers.router_application_admin.ApplicationService.get_application",
+        return_value=mock_application,
+    )
+    token = jwt_utils.create_jwt_token(test_rsa_key, ["SOME_OTHER_ROLE"])
+    response = test_client_fixture.get(
+        f"{endPoint}/application/{TEST_APPLICATION_ID_FAM}",
+        headers=jwt_utils.headers(token)
+    )
+    assert response.status_code == 403
+    assert "Operation requires role" in response.text

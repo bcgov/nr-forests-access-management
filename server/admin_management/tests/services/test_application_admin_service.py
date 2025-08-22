@@ -96,9 +96,10 @@ def test_delete_application_admin(application_admin_service: ApplicationAdminSer
 def test_get_application_admins_by_application_id(application_admin_service: ApplicationAdminService):
     # Use a side effect to filter admins by user_id if provided
     def mock_get_admins(application_id, user_id=None):
+        filtered = [admin for admin in MOCK_APPLICATION_ADMINS if admin["application_id"] == application_id]
         if user_id is not None:
-            return [admin for admin in MOCK_APPLICATION_ADMINS if admin["user_id"] != user_id]
-        return MOCK_APPLICATION_ADMINS
+            return [admin for admin in filtered if admin["user_id"] != user_id]
+        return filtered
 
     application_admin_service.application_admin_repo.get_application_admins_by_application_id = MagicMock(side_effect=mock_get_admins)
 
@@ -120,3 +121,8 @@ def test_get_application_admins_by_application_id(application_admin_service: App
     assert len(result) == 1
     assert result[0].application_admin_id == 2
     assert result[0].user_id == 201
+
+    # Scenario 3: Wrong application_id
+    result = application_admin_service.get_application_admins_by_application_id(1556, None)
+    assert isinstance(result, list)
+    assert len(result) == 0
