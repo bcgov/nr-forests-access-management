@@ -34,12 +34,14 @@ generate "tools_tfvars" {
   front_end_redirect_path = "https://d3dndacxwfefe0.cloudfront.net"
   fam_callback_urls = [
     "https://fam-tools.nrs.gov.bc.ca/authCallback",
+    "https://d3dndacxwfefe0.cloudfront.net/authCallback"
     "http://localhost:5173/authCallback",
     "http://localhost:8000/docs/oauth2-redirect",
     "http://localhost:8001/docs/oauth2-redirect"
   ]
   fam_logout_urls = [
     "${local.common_vars.inputs.idp_logout_chain_test_url}https://fam-tools.nrs.gov.bc.ca",
+    "${local.common_vars.inputs.idp_logout_chain_test_url}https://d3dndacxwfefe0.cloudfront.net",
     "${local.common_vars.inputs.idp_logout_chain_test_url}http://localhost:5173"
   ]
   fam_console_idp_name = "TEST-IDIR"
