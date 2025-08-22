@@ -217,6 +217,7 @@ class FamAppAdminGetResponse(BaseModel):
     application_admin_id: int
     user_id: int
     application_id: int
+    create_date: datetime
     user: FamUserInfoDto
     application: FamApplicationBase
 

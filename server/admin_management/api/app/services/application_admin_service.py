@@ -99,3 +99,23 @@ class ApplicationAdminService:
             requester, deleted_record
         )
 
+    def get_application_admins_by_application_id(
+        self, application_id: int, user_id: int = None
+    ) -> List[schemas.FamAppAdminGetResponse]:
+        """
+        Get all application admins for a specific application.
+        Optionally exclude the current user from the results.
+
+        :param application_id: The application ID to get admins for.
+        :param user_id: Optional user ID to exclude from results.
+        :return: List of FamAppAdminGetResponse for the specified application.
+        """
+        application_admins = []
+        qr = self.application_admin_repo.get_application_admins_by_application_id(
+            application_id, user_id
+        )
+        # convert to schema objects
+        for result in qr:
+            application_admins.append(schemas.FamAppAdminGetResponse.model_validate(result))
+        return application_admins
+

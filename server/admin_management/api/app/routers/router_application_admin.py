@@ -4,7 +4,8 @@ from typing import List
 
 from api.app import database, jwt_validation
 from api.app.models.model import FamUser
-from api.app.routers.router_guards import (authorize_by_fam_admin,
+from api.app.routers.router_guards import (authorize_by_app_id,
+                                           authorize_by_fam_admin,
                                            enforce_self_grant_guard,
                                            get_current_requester,
                                            get_verified_target_user,
@@ -43,6 +44,32 @@ async def get_application_admins(
     ),
 ):
     return application_admin_service.get_application_admins()
+
+
+@router.get(
+    "/application/{application_id}",
+    response_model=List[schemas.FamAppAdminGetResponse],
+    status_code=200,
+    dependencies=[Depends(authorize_by_app_id)]
+)
+async def get_application_admins_by_application_id(
+    application_id: int,
+    requester: Requester = Depends(get_current_requester),
+    application_admin_service: ApplicationAdminService = Depends(
+        application_admin_service_instance
+    ),
+    claims: dict = Depends(jwt_validation.authorize),
+    application_service: ApplicationService = Depends(application_service_instance),
+):
+    """
+    The Dependency of authorize_by_app_id ensures that only users with admin access to the specified application can retrieve its admins.
+    Excludes the current requesting user from the results.
+    Only accessible by admins of the specified application.
+    """
+
+    return application_admin_service.get_application_admins_by_application_id(
+        application_id, requester.user_id
+    )
 
 
 @router.get(

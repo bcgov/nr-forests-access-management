@@ -59,9 +59,10 @@ class ForestClientIntegrationService():
             * With mix of ids found and ids not found (e.g., &id=00001011&id=99999999):
                 [{"clientNumber": "00001011"}]
         """
-        request_params = (f"page={search_params.page}&size={search_params.size}{
-            self.__construct_fc_number_search_params(search_params.forest_client_numbers)
-        }")
+        request_params = (
+            f"page={search_params.page}&size={search_params.size}"
+            f"{self.__construct_fc_number_search_params(search_params.forest_client_numbers)}"
+        )
         url = f"{self.api_clients_url}/search?{request_params}"
         LOGGER.debug(f"ForestClientService search() - url: {url}")
 
