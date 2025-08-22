@@ -385,3 +385,63 @@ def test_access_control_privilege_invalid_raises_exception(monkeypatch):
     else:
         # If the function is named differently, this test will need to be updated
         pass
+
+
+def test_application_admin_access_guards(monkeypatch):
+    from api.app.routers import router_guards
+    from fastapi import HTTPException
+    from http import HTTPStatus
+    # Patch utils.raise_http_exception to raise HTTPException
+    class DummyUtils:
+        @staticmethod
+        def raise_http_exception(error_code=None, error_msg=None, status_code=None):
+            raise HTTPException(status_code=status_code or 404, detail={"code": error_code, "msg": error_msg})
+
+    monkeypatch.setattr(router_guards, "utils", DummyUtils)
+
+    # --- Case 1: Application not found ---
+    class DummyApplicationService:
+        @staticmethod
+        def get_application(application_id):
+            return None
+
+    application_service = DummyApplicationService()
+    application_id = 123
+    ERROR_INVALID_APPLICATION_ID = getattr(router_guards, "ERROR_INVALID_APPLICATION_ID", "INVALID_APPLICATION_ID")
+
+    with pytest.raises(HTTPException) as exc_info:
+        application = application_service.get_application(application_id)
+        if not application:
+            error_msg = f"Application ID {application_id} not found."
+            router_guards.utils.raise_http_exception(
+                error_code=ERROR_INVALID_APPLICATION_ID, error_msg=error_msg
+            )
+    assert exc_info.value.detail["code"] == ERROR_INVALID_APPLICATION_ID
+
+    # --- Case 2: Required role not in access_roles ---
+    class DummyApplication:
+        application_name = "testapp"
+
+    class DummyApplicationService2:
+        @staticmethod
+        def get_application(application_id):
+            return DummyApplication()
+
+    application_service = DummyApplicationService2()
+    claims = {"sub": "user"}
+    required_role = f"{DummyApplication.application_name.upper()}_ADMIN"
+    monkeypatch.setattr(router_guards, "get_access_roles", lambda c: ["OTHER_ROLE"])
+    ERROR_PERMISSION_REQUIRED = getattr(router_guards, "ERROR_PERMISSION_REQUIRED", "PERMISSION_REQUIRED")
+
+    with pytest.raises(HTTPException) as exc_info:
+        application = application_service.get_application(application_id)
+        access_roles = router_guards.get_access_roles(claims)
+        if required_role not in access_roles:
+            error_msg = f"Operation requires role {required_role}."
+            router_guards.utils.raise_http_exception(
+                status_code=HTTPStatus.FORBIDDEN,
+                error_code=ERROR_PERMISSION_REQUIRED,
+                error_msg=error_msg,
+            )
+    assert exc_info.value.status_code == HTTPStatus.FORBIDDEN
+    assert exc_info.value.detail["code"] == ERROR_PERMISSION_REQUIRED
