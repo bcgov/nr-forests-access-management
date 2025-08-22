@@ -34,7 +34,7 @@ generate "tools_tfvars" {
   front_end_redirect_path = "https://d3dndacxwfefe0.cloudfront.net"
   fam_callback_urls = [
     "https://fam-tools.nrs.gov.bc.ca/authCallback",
-    "https://d3dndacxwfefe0.cloudfront.net/authCallback"
+    "https://d3dndacxwfefe0.cloudfront.net/authCallback",
     "http://localhost:5173/authCallback",
     "http://localhost:8000/docs/oauth2-redirect",
     "http://localhost:8001/docs/oauth2-redirect"
