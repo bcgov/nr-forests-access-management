@@ -2,6 +2,8 @@
 -- When the script checksum is changed (script or placeholder value), the file will be run.
 -- ${flyway:timestamp}
 
+-- Description: Update fam_application_client.cognito_client_id to match current AWS account Cognito app clients.
+
 -- Purpose:
 --   * Ensure fam_application_client.cognito_client_id matches the correct Cognito clients in current AWS account.
 --   * One main usage is for LZA migration when restoring data from ASEA then update to LZA Cognito app clients.
