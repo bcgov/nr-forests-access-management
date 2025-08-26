@@ -157,6 +157,7 @@ jobs:
                       -Dsonar.python.version=3.12
                       -Dsonar.sources=api
                       -Dsonar.tests=tests
+                      -Dsonar.exclusions=**/tests/**/*,**/test_*.py,config.py
 
     ci-frontend:
         runs-on: ubuntu-latest
