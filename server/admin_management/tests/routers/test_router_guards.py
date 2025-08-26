@@ -445,3 +445,38 @@ def test_application_admin_access_guards(monkeypatch):
             )
     assert exc_info.value.status_code == HTTPStatus.FORBIDDEN
     assert exc_info.value.detail["code"] == ERROR_PERMISSION_REQUIRED
+#  this test verifies the grant_or_delete_app_admin function
+def test_get_verified_target_user_with_role_and_app_env(monkeypatch):
+    from api.app.routers import router_guards
+
+    # Dummy role with application and app_environment
+    class DummyApplication:
+        app_environment = "test_env"
+
+    class DummyRole:
+        application = DummyApplication()
+
+    # Mock utils_service
+    class DummyUtilsService:
+        @staticmethod
+        def use_api_instance_by_app_env(app_env):
+            assert app_env == "test_env"
+            return "api_env"
+
+    # Mock TargetUserValidator
+    class DummyTargetUserValidator:
+        def __init__(self, requester, target_user, api_instance_env):
+            assert api_instance_env == "api_env"
+            self.called = True
+        def verify_user_exist(self):
+            return "verified_user"
+
+    monkeypatch.setattr(router_guards, "utils_service", DummyUtilsService)
+    monkeypatch.setattr(router_guards, "TargetUserValidator", DummyTargetUserValidator)
+
+    requester = MagicMock()
+    target_user = MagicMock()
+    role = DummyRole()
+
+    result = router_guards.get_verified_target_user(requester, target_user, role)
+    assert result == "verified_user"
