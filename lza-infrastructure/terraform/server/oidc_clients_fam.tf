@@ -12,8 +12,8 @@ resource "aws_cognito_user_pool_client" "fam_console_oidc_client" {
     var.fam_callback_urls,
     [
       var.oidc_sso_playground_url,
-      # "${aws_api_gateway_deployment.fam_api_gateway_deployment.invoke_url}/docs/oauth2-redirect",
-      # "${aws_api_gateway_stage.admin_management_api_gateway_stage.invoke_url}/docs/oauth2-redirect"
+      "${aws_api_gateway_deployment.fam_api_gateway_deployment.invoke_url}/docs/oauth2-redirect",
+      "${aws_api_gateway_stage.admin_management_api_gateway_stage.invoke_url}/docs/oauth2-redirect"
     ]
   ))
   logout_urls                                   = concat(
