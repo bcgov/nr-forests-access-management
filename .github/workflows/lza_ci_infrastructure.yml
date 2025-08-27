@@ -15,7 +15,7 @@ jobs:
   backend-terraform-plan:
     uses: ./.github/workflows/lza_reusable_terraform_server.yml
     with:
-      environment_name: tools # TODO: change to dev later
+      environment_name: dev
       tf_subcommand: plan
       execute_flyway: false
     secrets:
@@ -36,7 +36,7 @@ jobs:
 
   backend-terraform-plan-destroy:
     needs: backend-terraform-plan
-    uses: ./.github/workflows/reusable_terraform_server.yml
+    uses: ./.github/workflows/lza_reusable_terraform_server.yml
     with:
       environment_name: dev
       # This command can detect issues with the terraform destroy: graph -verbose -draw-cycles -type=plan-destroy
