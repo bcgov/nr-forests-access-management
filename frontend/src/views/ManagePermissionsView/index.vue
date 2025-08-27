@@ -22,6 +22,7 @@ import NotificationStack from "@/views/ManagePermissionsView/NotificationStack.v
 import { AddAppPermissionRoute, AddFamPermissionRoute } from "@/router/routes";
 import EnterpriseIcon from "@carbon/icons-vue/es/enterprise/16";
 import UserIcon from "@carbon/icons-vue/es/user/16";
+import HelpDeskIcon from "@carbon/icons-vue/es/help-desk/16";
 import AddIcon from "@carbon/icons-vue/es/add/16";
 import { useQuery, useQueryClient } from "@tanstack/vue-query";
 import { isAxiosError } from "axios";
@@ -115,7 +116,7 @@ watch(
 const tabs: ManagePermissionsTabType[] = [
     {
         // Fam Application Admins Table
-        key: ManagePermissionsTableEnum.AppAdmin,
+        key: ManagePermissionsTableEnum.FamAppAdmin,
         visible: computed(() => selectedApp.value?.id === 1),
         icon: UserIcon as Component,
     },
@@ -148,6 +149,20 @@ const tabs: ManagePermissionsTabType[] = [
             )
         ),
         icon: EnterpriseIcon as Component,
+    },
+    {
+        // Application Admins table - show other admins for the selected application (except FAM)
+        key: ManagePermissionsTableEnum.ApplicationAdmin,
+        visible: computed(
+            () =>
+                selectedApp.value?.id !== 1 &&
+                isSelectedAppAuthorized(
+                    AdminRoleAuthGroup.AppAdmin,
+                    selectedApp.value?.id,
+                    adminUserAccessQuery.data.value
+                )
+        ),
+        icon: HelpDeskIcon as Component,
     },
 ];
 
@@ -256,8 +271,9 @@ const onTabChange = (event: TabViewChangeEvent) => {
 };
 
 const tabHeaders: ManagePermissionsTabHeaderType = {
-    [ManagePermissionsTableEnum.AppAdmin]: "Application admins",
+    [ManagePermissionsTableEnum.FamAppAdmin]: "Application admins",
     [ManagePermissionsTableEnum.AppUser]: "Users",
+    [ManagePermissionsTableEnum.ApplicationAdmin]: "Application admins",
     [ManagePermissionsTableEnum.DelegatedAdmin]: "Delegated admins",
 };
 

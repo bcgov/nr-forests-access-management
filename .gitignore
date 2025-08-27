@@ -99,3 +99,6 @@ terraform/tools/output.txt
 # No env files
 *.env
 *.env.bat
+
+# Ds Store files
+.DS_Store

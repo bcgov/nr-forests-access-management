@@ -6,8 +6,10 @@ from api.app.schemas import schemas
 from api.app.services.application_admin_service import ApplicationAdminService
 from fastapi import HTTPException
 from pydantic import ValidationError
-from tests.constants import (TEST_CREATOR, TEST_INVALID_USER_TYPE,
-                             TEST_NEW_APPLICATION_ADMIN)
+from tests.constants import (
+    TEST_CREATOR, TEST_INVALID_USER_TYPE, TEST_NEW_APPLICATION_ADMIN
+)
+from tests.test_data.mock_application_admins import MOCK_APPLICATION_ADMINS
 
 LOGGER = logging.getLogger(__name__)
 
@@ -70,7 +72,7 @@ def test_delete_application_admin(application_admin_service: ApplicationAdminSer
     application_admin_service.application_admin_repo.delete_application_admin = MagicMock()
 
     requester = new_idir_requester
-    test_application_admin_id = 1
+    test_application_admin_id = MOCK_APPLICATION_ADMINS[0]["application_admin_id"]
 
     # Mock the deleted record
     mocked_deleted_record = MagicMock()
@@ -89,3 +91,38 @@ def test_delete_application_admin(application_admin_service: ApplicationAdminSer
     application_admin_service.permission_audit_service.store_application_admin_permissions_revoked_audit_history.assert_called_once_with(
         requester, mocked_deleted_record
     )
+
+
+def test_get_application_admins_by_application_id(application_admin_service: ApplicationAdminService):
+    # Use a side effect to filter admins by user_id if provided
+    def mock_get_admins(application_id, user_id=None):
+        filtered = [admin for admin in MOCK_APPLICATION_ADMINS if admin["application_id"] == application_id]
+        if user_id is not None:
+            return [admin for admin in filtered if admin["user_id"] != user_id]
+        return filtered
+
+    application_admin_service.application_admin_repo.get_application_admins_by_application_id = MagicMock(side_effect=mock_get_admins)
+
+    application_id = MOCK_APPLICATION_ADMINS[0]["application_id"]
+
+    # Scenario 1: No user excluded
+    result = application_admin_service.get_application_admins_by_application_id(application_id, None)
+    assert isinstance(result, list)
+    assert len(result) == 2
+    assert result[0].application_admin_id == MOCK_APPLICATION_ADMINS[0]["application_admin_id"]
+    assert result[0].application_id == MOCK_APPLICATION_ADMINS[0]["application_id"]
+    assert result[0].user_id == MOCK_APPLICATION_ADMINS[0]["user_id"]
+    assert result[1].application_admin_id == MOCK_APPLICATION_ADMINS[1]["application_admin_id"]
+    assert result[1].user_id == MOCK_APPLICATION_ADMINS[1]["user_id"]
+
+    # Scenario 2: Exclude user_id 200
+    result = application_admin_service.get_application_admins_by_application_id(application_id, 200)
+    assert isinstance(result, list)
+    assert len(result) == 1
+    assert result[0].application_admin_id == MOCK_APPLICATION_ADMINS[1]["application_admin_id"]
+    assert result[0].user_id == MOCK_APPLICATION_ADMINS[1]["user_id"]
+
+    # Scenario 3: Wrong application_id
+    result = application_admin_service.get_application_admins_by_application_id(1556, None)
+    assert isinstance(result, list)
+    assert len(result) == 0
