@@ -12,6 +12,8 @@ from tests.constants import (ERROR_VOLIATE_UNIQUE_CONSTRAINT,
                              TEST_APPLICATION_ID_FOM_DEV, TEST_CREATOR,
                              TEST_NEW_APPLICATION_ADMIN_USER_ID,
                              TEST_NEW_IDIR_USER)
+from tests.constants import TEST_NEW_IDIR_USER, TEST_CREATOR, TEST_APPLICATION_ADMIN_APPLICATION_ID, TEST_APPLICATION_ID_FAM
+from api.app.schemas.schemas import FamUserDto
 
 LOGGER = logging.getLogger(__name__)
 
@@ -177,8 +179,6 @@ def test_get_application_admins_by_application_id(
     user_repo: UserRepository
 ):
     # Prepare a new user1
-    from tests.constants import TEST_NEW_IDIR_USER, TEST_CREATOR, TEST_APPLICATION_ADMIN_APPLICATION_ID, TEST_APPLICATION_ID_FAM
-    from api.app.schemas.schemas import FamUserDto
     user1 = user_repo.create_user(FamUserDto(**{**TEST_NEW_IDIR_USER.model_dump(), "user_name": "user1", "user_guid": "A"*32}))
     user2 = user_repo.create_user(FamUserDto(**{**TEST_NEW_IDIR_USER.model_dump(), "user_name": "user2", "user_guid": "B"*32}))
     user3 = user_repo.create_user(FamUserDto(**{**TEST_NEW_IDIR_USER.model_dump(), "user_name": "user3", "user_guid": "C"*32}))

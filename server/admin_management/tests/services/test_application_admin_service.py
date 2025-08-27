@@ -109,17 +109,17 @@ def test_get_application_admins_by_application_id(application_admin_service: App
     result = application_admin_service.get_application_admins_by_application_id(application_id, None)
     assert isinstance(result, list)
     assert len(result) == 2
-    assert result[0].application_admin_id == 1
+    assert result[0].application_admin_id == MOCK_APPLICATION_ADMINS[0]["application_admin_id"]
     assert result[0].application_id == 100
     assert result[0].user_id == 200
-    assert result[1].application_admin_id == 2
+    assert result[1].application_admin_id == MOCK_APPLICATION_ADMINS[1]["application_admin_id"]
     assert result[1].user_id == 201
 
     # Scenario 2: Exclude user_id 200
     result = application_admin_service.get_application_admins_by_application_id(application_id, 200)
     assert isinstance(result, list)
     assert len(result) == 1
-    assert result[0].application_admin_id == 2
+    assert result[0].application_admin_id == MOCK_APPLICATION_ADMINS[1]["application_admin_id"]
     assert result[0].user_id == 201
 
     # Scenario 3: Wrong application_id
