@@ -4,6 +4,7 @@ import pytest
 from api.app.repositories.application_admin_repository import \
     ApplicationAdminRepository
 from api.app.repositories.user_repository import UserRepository
+from api.app.schemas.schemas import FamUserDto
 from sqlalchemy.exc import IntegrityError
 from tests.constants import (ERROR_VOLIATE_UNIQUE_CONSTRAINT,
                              TEST_ANOTHER_CREATER,
@@ -177,8 +178,6 @@ def test_get_application_admins_by_application_id(
     user_repo: UserRepository
 ):
     # Prepare a new user1
-    from tests.constants import TEST_NEW_IDIR_USER, TEST_CREATOR, TEST_APPLICATION_ADMIN_APPLICATION_ID, TEST_APPLICATION_ID_FAM
-    from api.app.schemas.schemas import FamUserDto
     user1 = user_repo.create_user(FamUserDto(**{**TEST_NEW_IDIR_USER.model_dump(), "user_name": "user1", "user_guid": "A"*32}))
     user2 = user_repo.create_user(FamUserDto(**{**TEST_NEW_IDIR_USER.model_dump(), "user_name": "user2", "user_guid": "B"*32}))
     user3 = user_repo.create_user(FamUserDto(**{**TEST_NEW_IDIR_USER.model_dump(), "user_name": "user3", "user_guid": "C"*32}))
