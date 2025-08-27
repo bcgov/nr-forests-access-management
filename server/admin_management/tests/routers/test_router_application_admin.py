@@ -12,13 +12,15 @@ from api.app.routers.router_guards import (ERROR_INVALID_APPLICATION_ID,
                                            ERROR_NOT_ALLOWED_USER_TYPE,
                                            authorize_by_fam_admin)
 from api.app.services.user_service import UserService
-from tests.constants import (TEST_APPLICATION_NAME_FAM,
+from tests.constants import (TEST_APPLICATION_ID_FAM,
+                             TEST_APPLICATION_NAME_FAM,
                              TEST_FOM_DEV_ADMIN_ROLE, TEST_INVALID_USER_TYPE,
                              TEST_NEW_APPLICATION_ADMIN,
                              TEST_NON_EXIST_ROLE_NAME,
                              TEST_NOT_EXIST_APPLICATION_ID)
 from tests.test_data.application_admin_data import \
     APP_ADMIN_RESPONSE_SCHEMA_4_RECORDS
+from tests.test_data.mock_application_admins import MOCK_APPLICATION_ADMINS
 
 LOGGER = logging.getLogger(__name__)
 endPoint = f"{apiPrefix}/application-admins"
@@ -271,9 +273,6 @@ def test_get_application_admins_by_application_id(mocker, test_client_fixture, t
     Test GET /application-admins/application/{application_id} returns expected data and 200 status.
     """
     # Use a valid application ID that exists in test database
-    from tests.constants import TEST_APPLICATION_ID_FAM
-    from tests.test_data.mock_application_admins import MOCK_APPLICATION_ADMINS
-
     # Mock the application service to return a valid application (required by authorize_by_app_id guard)
     mock_application = mocker.MagicMock()
     mock_application.application_name = "FAM"
