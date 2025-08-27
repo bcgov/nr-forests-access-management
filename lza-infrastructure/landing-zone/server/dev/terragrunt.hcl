@@ -29,7 +29,13 @@ generate "dev_tfvars" {
     test = "${local.common_vars.inputs.idp_logout_chain_test_url}"
     prod = "${local.common_vars.inputs.idp_logout_chain_prod_url}"
   }
-  front_end_redirect_path = "https://fam-dev.nrs.gov.bc.ca"
+
+  # front_end_redirect_path = "https://fam-dev.nrs.gov.bc.ca"
+
+  # Use default AWS default temporarily (only known after frotend deployed).
+  # Do this for 'front_end_redirect_path', 'fam_callback_urls' and 'fam_logout_urls'
+  # Remove later.
+  front_end_redirect_path = "https://add-aws-default-temporarily.cloudfront.net"
   fam_callback_urls = [
     "https://fam-dev.nrs.gov.bc.ca/authCallback",
     "http://localhost:5173/authCallback",
