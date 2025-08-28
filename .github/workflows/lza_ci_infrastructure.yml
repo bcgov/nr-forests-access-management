@@ -1,0 +1,71 @@
+name: LZA Continuous Integration Infrastructure
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - "main"
+    paths:
+      - "lza-infrastructure/**"
+      - ".github/workflows/lza_reusable_terraform_server.yml"
+      - ".github/workflows/lza_reusable_terraform_frontend.yml"
+
+concurrency:
+  group: deploy-dev-global # Prevents this workflow from running if another deployment or CI workflow with the same group is in progress
+
+jobs:
+  backend-terraform-plan:
+    uses: ./.github/workflows/lza_reusable_terraform_server.yml
+    with:
+      environment_name: dev
+      tf_subcommand: plan
+      execute_flyway: false
+    secrets:
+      licenceplate: ${{ secrets.LZA_LICENCEPLATE}}
+      dev_oidc_idir_idp_client_secret: "${{ secrets.DEV_OIDC_IDIR_IDP_CLIENT_SECRET }}"
+      test_oidc_idir_idp_client_secret: "${{ secrets.TEST_OIDC_IDIR_IDP_CLIENT_SECRET }}"
+      prod_oidc_idir_idp_client_secret: "${{ secrets.PROD_OIDC_IDIR_IDP_CLIENT_SECRET }}"
+      dev_oidc_bceid_business_idp_client_secret: "${{ secrets.DEV_OIDC_BCEID_BUSINESS_IDP_CLIENT_SECRET }}"
+      test_oidc_bceid_business_idp_client_secret: "${{ secrets.TEST_OIDC_BCEID_BUSINESS_IDP_CLIENT_SECRET }}"
+      prod_oidc_bceid_business_idp_client_secret: "${{ secrets.PROD_OIDC_BCEID_BUSINESS_IDP_CLIENT_SECRET }}"
+      forest_client_api_api_key_test: "${{ secrets.FOREST_CLIENT_API_API_KEY_TEST }}"
+      dev_oidc_bcsc_idp_client_secret: "${{ secrets.DEV_OIDC_BCSC_IDP_CLIENT_SECRET }}"
+      test_oidc_bcsc_idp_client_secret: "${{ secrets.TEST_OIDC_BCSC_IDP_CLIENT_SECRET }}"
+      prod_oidc_bcsc_idp_client_secret: "${{ secrets.PROD_OIDC_BCSC_IDP_CLIENT_SECRET }}"
+      idim_proxy_api_api_key: "${{ secrets.IDIM_PROXY_API_API_KEY }}"
+      gc_notify_email_api_key: "${{ secrets.GC_NOTIFY_EMAIL_API_KEY }}"
+      fam_update_user_info_api_key: "${{ secrets.FAM_UPDATE_USER_INFO_API_KEY }}"
+
+  frontend-terraform-plan:
+    needs: backend-terraform-plan
+    uses: ./.github/workflows/lza_reusable_terraform_frontend.yml
+    with:
+      environment_name: dev
+      tf_subcommand: plan
+    secrets:
+      licenceplate: ${{ secrets.LZA_LICENCEPLATE }}
+
+  backend-terraform-plan-destroy:
+    needs: backend-terraform-plan
+    uses: ./.github/workflows/lza_reusable_terraform_server.yml
+    with:
+      environment_name: dev
+      # This command can detect issues with the terraform destroy: graph -verbose -draw-cycles -type=plan-destroy
+      # Only needed for the backend because we don't destroy the frontend.
+      tf_subcommand: plan -destroy
+      execute_flyway: false
+    secrets:
+      licenceplate: ${{ secrets.LZA_LICENCEPLATE}}
+      dev_oidc_idir_idp_client_secret: "${{ secrets.DEV_OIDC_IDIR_IDP_CLIENT_SECRET }}"
+      test_oidc_idir_idp_client_secret: "${{ secrets.TEST_OIDC_IDIR_IDP_CLIENT_SECRET }}"
+      prod_oidc_idir_idp_client_secret: "${{ secrets.PROD_OIDC_IDIR_IDP_CLIENT_SECRET }}"
+      dev_oidc_bceid_business_idp_client_secret: "${{ secrets.DEV_OIDC_BCEID_BUSINESS_IDP_CLIENT_SECRET }}"
+      test_oidc_bceid_business_idp_client_secret: "${{ secrets.TEST_OIDC_BCEID_BUSINESS_IDP_CLIENT_SECRET }}"
+      prod_oidc_bceid_business_idp_client_secret: "${{ secrets.PROD_OIDC_BCEID_BUSINESS_IDP_CLIENT_SECRET }}"
+      forest_client_api_api_key_test: "${{ secrets.FOREST_CLIENT_API_API_KEY_TEST }}"
+      dev_oidc_bcsc_idp_client_secret: "${{ secrets.DEV_OIDC_BCSC_IDP_CLIENT_SECRET }}"
+      test_oidc_bcsc_idp_client_secret: "${{ secrets.TEST_OIDC_BCSC_IDP_CLIENT_SECRET }}"
+      prod_oidc_bcsc_idp_client_secret: "${{ secrets.PROD_OIDC_BCSC_IDP_CLIENT_SECRET }}"
+      idim_proxy_api_api_key: "${{ secrets.IDIM_PROXY_API_API_KEY }}"
+      gc_notify_email_api_key: "${{ secrets.GC_NOTIFY_EMAIL_API_KEY }}"
+      fam_update_user_info_api_key: "${{ secrets.FAM_UPDATE_USER_INFO_API_KEY }}"

@@ -1,4 +1,3 @@
-from api.app.schemas.schemas import FamAppAdminGetResponse
 # Mock data for application admins for use in tests
 
 MOCK_APPLICATION_ADMINS = [

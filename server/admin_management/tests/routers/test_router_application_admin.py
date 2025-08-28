@@ -12,14 +12,14 @@ from api.app.routers.router_guards import (ERROR_INVALID_APPLICATION_ID,
                                            ERROR_NOT_ALLOWED_USER_TYPE,
                                            authorize_by_fam_admin)
 from api.app.services.user_service import UserService
-from tests.constants import (TEST_APPLICATION_NAME_FAM,
+from tests.constants import (TEST_APPLICATION_ID_FAM,
+                             TEST_APPLICATION_NAME_FAM,
                              TEST_FOM_DEV_ADMIN_ROLE, TEST_INVALID_USER_TYPE,
                              TEST_NEW_APPLICATION_ADMIN,
                              TEST_NON_EXIST_ROLE_NAME,
                              TEST_NOT_EXIST_APPLICATION_ID)
 from tests.test_data.application_admin_data import \
     APP_ADMIN_RESPONSE_SCHEMA_4_RECORDS
-from tests.constants import TEST_APPLICATION_ID_FAM
 from tests.test_data.mock_application_admins import MOCK_APPLICATION_ADMINS
 
 LOGGER = logging.getLogger(__name__)

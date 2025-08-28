@@ -22,6 +22,34 @@ on:
     secrets:
       licenceplate:
         required: true
+      dev_oidc_idir_idp_client_secret:
+        required: true
+      test_oidc_idir_idp_client_secret:
+        required: true
+      prod_oidc_idir_idp_client_secret:
+        required: true
+      dev_oidc_bceid_business_idp_client_secret:
+        required: true
+      test_oidc_bceid_business_idp_client_secret:
+        required: true
+      prod_oidc_bceid_business_idp_client_secret:
+        required: true
+      forest_client_api_api_key_test:
+        required: true
+      forest_client_api_api_key_prod:
+        required: false
+      dev_oidc_bcsc_idp_client_secret:
+        required: true
+      test_oidc_bcsc_idp_client_secret:
+        required: true
+      prod_oidc_bcsc_idp_client_secret:
+        required: true
+      idim_proxy_api_api_key:
+        required: true
+      gc_notify_email_api_key:
+        required: true
+      fam_update_user_info_api_key:
+        required: true
 
 env:
   TF_VERSION: 1.12.2
@@ -42,18 +70,85 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Auth function zip
+        run: |
+          mkdir auth_function_packaging
+          rsync -r server/auth_function/* auth_function_packaging -F --exclude=requirements.txt --exclude=test
+          pip install -t auth_function_packaging -r server/auth_function/requirements.txt
+          cd auth_function_packaging
+          zip -r9 ../lza-infrastructure/terraform/server/fam_auth_function.zip .
+          cd ..
+          rm -rf auth_function_packaging
+
+      - name: Auth function upload zip file artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: fam-auth-function
+          path: ./lza-infrastructure/terraform/server/fam_auth_function.zip
+          if-no-files-found: error
+
+      - name: Install and Package Dependencies - FAM API
+        run: |
+          cd server/backend
+          mkdir packaging
+          cd packaging
+          pip install -t . -r ../requirements.txt --platform manylinux2014_x86_64 --only-binary=:all:
+          zip -r9 ../../fam-ui-api.zip .
+          cd ..
+          rm -rf packaging
+          cd ../../
+          cd server/backend
+          zip -u ../fam-ui-api.zip -r api/ -x database/**\* tests/**\* venv/**\* .env
+          cd ..
+          mv fam-ui-api.zip ../lza-infrastructure/terraform/server
+          cd ..
+
+      - name: Upload zip file artifact - FAM API
+        uses: actions/upload-artifact@v4
+        with:
+          name: fam-ui-api
+          path: ./lza-infrastructure/terraform/server/fam-ui-api.zip
+          if-no-files-found: error
+
+      - name: Install and Package Dependencies - FAM Admin Management API
+        run: |
+          cd server/admin_management
+          mkdir packaging
+          cd packaging
+          pip install -t . -r ../requirements.txt --platform manylinux2014_x86_64 --only-binary=:all:
+          zip -r9 ../../fam-admin-management-api.zip .
+          cd ..
+          rm -rf packaging
+          cd ../../
+          cd server/admin_management
+          zip -u ../fam-admin-management-api.zip -r api/ -x database/**\* tests/**\* venv/**\* .env
+          cd ..
+          mv fam-admin-management-api.zip ../lza-infrastructure/terraform/server
+          cd ..
+
+      - name: Upload zip file artifact - FAM Admin Management API
+        uses: actions/upload-artifact@v4
+        with:
+          name: fam-admin-management-api
+          path: ./lza-infrastructure/terraform/server/fam-admin-management-api.zip
+          if-no-files-found: error
+
+      - name: Stage Flyway SQL files
+        run: |
+          mkdir lza-infrastructure/terraform/server/sql
+          rsync -r server/flyway/sql/* lza-infrastructure/terraform/server/sql
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ env.AWS_OIDC_GHA_ROLE }}
           role-session-name: server-${{ inputs.environment_name }}-deployment
           aws-region: ${{ env.AWS_REGION }}
-
-      - name: Verify AWS authentication (Optional step, will remove later)
-        run: |
-          aws sts get-caller-identity
-          aws s3 ls
-          echo "OIDC Test Successful"
 
       - name: Setup Terragrunt
         uses: autero1/action-terragrunt@v3.0.2
@@ -63,9 +158,34 @@ jobs:
       - name: Create Terraform vars
         working-directory: ${{ env.TG_SRC_PATH }}/${{ inputs.environment_name }}
         run: |
+          # calculate the db_cluster_snapshot_identifier, attempting to ensure it
+          # is less than 63 characters and has no non alphanumeric characters
+          refname=${{ github.ref_name }}
+          commit=${{ github.sha }}
+          db_cluster_snapshot_identifier="pre-flyway-${refname:0:12}-${commit:0:7}"
+          db_cluster_snapshot_identifier=$(echo $db_cluster_snapshot_identifier |  tr -d '\n' | tr -cs '[-][:alnum:]' '-' )
+          echo $db_cluster_snapshot_identifier
+
           # Pass variables from github actions to terraform
           cat > github.auto.tfvars <<EOF
+          licence_plate = "${{ secrets.licenceplate }}"
+          fam_gha_lza_role = "${{ env.AWS_OIDC_GHA_ROLE }}"
+          db_cluster_snapshot_identifier = "$db_cluster_snapshot_identifier"
           execute_flyway = ${{ inputs.execute_flyway }}
+          dev_oidc_idir_idp_client_secret = "${{ secrets.dev_oidc_idir_idp_client_secret }}"
+          test_oidc_idir_idp_client_secret = "${{ secrets.test_oidc_idir_idp_client_secret }}"
+          prod_oidc_idir_idp_client_secret = "${{ secrets.prod_oidc_idir_idp_client_secret }}"
+          dev_oidc_bceid_business_idp_client_secret = "${{ secrets.dev_oidc_bceid_business_idp_client_secret }}"
+          test_oidc_bceid_business_idp_client_secret = "${{ secrets.test_oidc_bceid_business_idp_client_secret }}"
+          prod_oidc_bceid_business_idp_client_secret = "${{ secrets.prod_oidc_bceid_business_idp_client_secret }}"
+          forest_client_api_api_key_test = "${{ secrets.forest_client_api_api_key_test }}"
+          forest_client_api_api_key_prod = "${{ secrets.forest_client_api_api_key_prod }}"
+          dev_oidc_bcsc_idp_client_secret = "${{ secrets.dev_oidc_bcsc_idp_client_secret }}"
+          test_oidc_bcsc_idp_client_secret = "${{ secrets.test_oidc_bcsc_idp_client_secret }}"
+          prod_oidc_bcsc_idp_client_secret = "${{ secrets.prod_oidc_bcsc_idp_client_secret }}"
+          idim_proxy_api_api_key = "${{ secrets.idim_proxy_api_api_key }}"
+          gc_notify_email_api_key = "${{ secrets.gc_notify_email_api_key }}"
+          fam_update_user_info_api_key = "${{ secrets.fam_update_user_info_api_key }}"
           EOF
 
       - name: HashiCorp - Setup Terraform
@@ -82,15 +202,52 @@ jobs:
           # Run terraform
           terragrunt run-all ${{ inputs.tf_subcommand }} --terragrunt-non-interactive
 
-      - name: Wait for 30 seconds
-        run: |
-          echo "Waiting for 30 seconds before executing the smoke test..."
-          sleep 30s
-
-      - name: Show Terraform Outputs (Optional step, will be replaced by a smoke test later)
+      - id: smoke_test
+        name: Smoke Test
         working-directory: ${{ env.TG_SRC_PATH }}/${{ inputs.environment_name }}
         env:
           licenceplate: ${{ secrets.licenceplate }}
           target_env: ${{ inputs.environment_name }}
         run: |
-          terragrunt output
+          # Wait for a short time before first attempt
+            echo "Waiting for 25 seconds before running the smoke test..."
+            sleep 25
+
+          # Run smoke test
+            if [[ "apply" == "${{ inputs.tf_subcommand }}" ]]
+            then
+              fam_api_base_url=`terragrunt run-all output fam_api_base_url --terragrunt-non-interactive | sed 's/^"//' | sed 's/"$//'`
+              smoke_test_url="$fam_api_base_url/smoke_test"
+              echo "Smoke test URL: [$smoke_test_url]"
+
+              # retry setup for dealing smoke testing failing due to "cold start" with API Gateway.
+              max_attempts=10
+              attempt=1
+              wait_time=2
+              success=0
+
+              while [[ $attempt -le $max_attempts ]]; do
+                echo "Attempt $attempt/$max_attempts..."
+                if curl --silent --show-error --fail "$smoke_test_url"; then
+                  echo "Smoke test succeeded"
+                  success=1
+                  break
+                else
+                  echo "Smoke test failed (attempt $attempt). Retrying in $wait_time seconds..."
+                  sleep $wait_time
+                  # Double wait time but cap at 60s
+                  wait_time=$(( wait_time * 2 ))
+                  if [[ $wait_time -gt 60 ]]; then
+                    wait_time=60
+                  fi
+                fi
+                attempt=$(( attempt + 1 ))
+              done
+
+              if [[ $success -ne 1 ]]; then
+                echo "Smoke test failed after $max_attempts attempts"
+                exit 1
+              fi
+            else
+              echo "Not executing terraform apply - smoke test skipped"
+            fi

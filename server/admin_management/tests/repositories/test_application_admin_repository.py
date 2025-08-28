@@ -4,6 +4,7 @@ import pytest
 from api.app.repositories.application_admin_repository import \
     ApplicationAdminRepository
 from api.app.repositories.user_repository import UserRepository
+from api.app.schemas.schemas import FamUserDto
 from sqlalchemy.exc import IntegrityError
 from tests.constants import (ERROR_VOLIATE_UNIQUE_CONSTRAINT,
                              TEST_ANOTHER_CREATER,
@@ -12,8 +13,6 @@ from tests.constants import (ERROR_VOLIATE_UNIQUE_CONSTRAINT,
                              TEST_APPLICATION_ID_FOM_DEV, TEST_CREATOR,
                              TEST_NEW_APPLICATION_ADMIN_USER_ID,
                              TEST_NEW_IDIR_USER)
-from tests.constants import TEST_NEW_IDIR_USER, TEST_CREATOR, TEST_APPLICATION_ADMIN_APPLICATION_ID, TEST_APPLICATION_ID_FAM
-from api.app.schemas.schemas import FamUserDto
 
 LOGGER = logging.getLogger(__name__)
 
