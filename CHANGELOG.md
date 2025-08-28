@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.39.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.38.0...v1.39.0) (2025-08-27)
+
+
+### Features
+
+* add Application Admins tab feature ([#1923](https://github.com/bcgov/nr-forests-access-management/issues/1923)) ([be023a4](https://github.com/bcgov/nr-forests-access-management/commit/be023a420219e5f0c73583e2c430c09d1db04d04))
+* laz migration ([#1904](https://github.com/bcgov/nr-forests-access-management/issues/1904)) ([ae9c78c](https://github.com/bcgov/nr-forests-access-management/commit/ae9c78ccd085b7e14f98b98c9fbf3c2c81136f6d))
+
+
+### Bug Fixes
+
+* Rename "Admin" to "Application Admin" in My Permissions table ([#1914](https://github.com/bcgov/nr-forests-access-management/issues/1914)) ([d782514](https://github.com/bcgov/nr-forests-access-management/commit/d7825149c7af31fb3f59a1939f01613ee0c5598e))
+
 ## [1.38.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.37.0...v1.38.0) (2025-08-01)
 
 
