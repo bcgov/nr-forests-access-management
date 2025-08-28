@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.40.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.39.0...v1.40.0) (2025-08-28)
+
+
+### Features
+
+* [#1933](https://github.com/bcgov/nr-forests-access-management/issues/1933) LZA migration - dev deployment ([#1945](https://github.com/bcgov/nr-forests-access-management/issues/1945)) ([ff8dd34](https://github.com/bcgov/nr-forests-access-management/commit/ff8dd347681778f7c33caaafa1c2c5ce83d1711c))
+
 ## [1.39.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.38.0...v1.39.0) (2025-08-27)
 
 
