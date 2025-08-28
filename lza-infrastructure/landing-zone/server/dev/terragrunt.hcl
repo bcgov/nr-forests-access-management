@@ -12,8 +12,8 @@ generate "dev_tfvars" {
   disable_signature = true
   contents          = <<-EOF
   target_env = "dev"
-  fam_user_pool_name = "dev-fam-user-pool-bcsc"
-  fam_user_pool_domain_name = "dev-fam-user-pool-domain"
+  fam_user_pool_name = "lza-dev-fam-user-pool-bcsc"
+  fam_user_pool_domain_name = "lza-dev-fam-user-pool-domain"
   famdb_cluster_name = "dev-fam-cluster"
   oidc_idir_idp_client_id = "fsa-cognito-idir-dev-4088"
   oidc_idir_idp_issuer = "https://dev.loginproxy.gov.bc.ca/auth/realms/standard"
