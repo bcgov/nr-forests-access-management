@@ -6,7 +6,9 @@ on:
     branches:
       - "main"
     paths:
-      - "lza/**"
+      - "lza-infrastructure/**"
+      - ".github/workflows/lza_reusable_terraform_server.yml"
+      - ".github/workflows/lza_reusable_terraform_frontend.yml"
 
 concurrency:
   group: deploy-dev-global # Prevents this workflow from running if another deployment or CI workflow with the same group is in progress
@@ -33,6 +35,15 @@ jobs:
       idim_proxy_api_api_key: "${{ secrets.IDIM_PROXY_API_API_KEY }}"
       gc_notify_email_api_key: "${{ secrets.GC_NOTIFY_EMAIL_API_KEY }}"
       fam_update_user_info_api_key: "${{ secrets.FAM_UPDATE_USER_INFO_API_KEY }}"
+
+  frontend-terraform-plan:
+    needs: backend-terraform-plan
+    uses: ./.github/workflows/lza_reusable_terraform_frontend.yml
+    with:
+      environment_name: dev
+      tf_subcommand: plan
+    secrets:
+      licenceplate: ${{ secrets.LZA_LICENCEPLATE }}
 
   backend-terraform-plan-destroy:
     needs: backend-terraform-plan
