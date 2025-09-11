@@ -24,7 +24,8 @@ generate "prod_tfvars" {
   subnet_app_b = "Prod-App-B"
   subnet_web_a = "Prod-Web-MainTgwAttach-A"
   subnet_web_b = "Prod-Web-MainTgwAttach-B"
-  front_end_redirect_path = "https://fam.nrs.gov.bc.ca"
+  # front_end_redirect_path = "https://fam.nrs.gov.bc.ca"
+  front_end_redirect_path = "https://dfqhrntsb4jgq.cloudfront.net"
   cognito_app_client_logout_chain_url = {
     dev = "${local.common_vars.inputs.idp_logout_chain_dev_url}"
     test = "${local.common_vars.inputs.idp_logout_chain_test_url}"
@@ -32,9 +33,11 @@ generate "prod_tfvars" {
   }
   fam_callback_urls = [
     "https://fam.nrs.gov.bc.ca/authCallback"
+    "https://dfqhrntsb4jgq.cloudfront.net/authCallback"
   ]
   fam_logout_urls = [
     "${local.common_vars.inputs.idp_logout_chain_prod_url}https://fam.nrs.gov.bc.ca",
+    "${local.common_vars.inputs.idp_logout_chain_prod_url}https://dfqhrntsb4jgq.cloudfront.net",
   ]
   fam_console_idp_name = "PROD-IDIR"
   fam_console_idp_name_bceid = "PROD-BCEIDBUSINESS"
