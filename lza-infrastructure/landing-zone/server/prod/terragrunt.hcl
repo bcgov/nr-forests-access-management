@@ -32,7 +32,7 @@ generate "prod_tfvars" {
     prod = "${local.common_vars.inputs.idp_logout_chain_prod_url}"
   }
   fam_callback_urls = [
-    "https://fam.nrs.gov.bc.ca/authCallback"
+    "https://fam.nrs.gov.bc.ca/authCallback",
     "https://dfqhrntsb4jgq.cloudfront.net/authCallback"
   ]
   fam_logout_urls = [
