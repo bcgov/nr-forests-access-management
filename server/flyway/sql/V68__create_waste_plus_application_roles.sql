@@ -51,8 +51,7 @@ INSERT INTO app_fam.fam_role (
     role_name,
     display_name,
     role_purpose,
-    a
-    pplication_id,
+    application_id,
     role_type_code,
     create_user,
     create_date

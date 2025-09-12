@@ -301,7 +301,6 @@ data "aws_lambda_invocation" "invoke_flyway_migration" {
     aws_cognito_user_pool_client.dev_forest_client_oidc_client,
     aws_cognito_user_pool_client.test_forest_client_oidc_client,
     aws_cognito_user_pool_client.prod_forest_client_oidc_client,
-    aws_cognito_user_pool_client.prod_waste_plus_oidc_client,
     aws_s3_object.sql_files,
   ]
 
