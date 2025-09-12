@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.41.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.40.0...v1.41.0) (2025-09-12)
+
+
+### Features
+
+* add new delegated admin PDF and removed the old PDF file ([#1953](https://github.com/bcgov/nr-forests-access-management/issues/1953)) ([5153ee7](https://github.com/bcgov/nr-forests-access-management/commit/5153ee77999ae9a65c0cc91618b0c368c088a2cb))
+
 ## [1.40.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.39.0...v1.40.0) (2025-09-11)
 
 
