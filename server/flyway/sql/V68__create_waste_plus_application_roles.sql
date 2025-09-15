@@ -62,7 +62,7 @@ VALUES ('WASTE_PLUS_VIEWER', 'Viewer', 'View waste data for a specific client', 
        ('WASTE_PLUS_AREA', 'Area', 'Area waste specialist role to view, approve, and bill submissions', (select application_id from app_fam.fam_application where application_name = 'WASTE_PLUS_PROD'), 'C', CURRENT_USER, CURRENT_DATE),
        ('WASTE_PLUS_ADMIN', 'Admin', 'Timber Pricing Branch role to create and edit all waste data', (select application_id from app_fam.fam_application where application_name = 'WASTE_PLUS_PROD'), 'C', CURRENT_USER, CURRENT_DATE)
 ;
--- Create dev and test Cognito app clients for ICR
+-- Create dev, test and prod Cognito app clients for WASTE_PLUS application
 INSERT INTO app_fam.fam_application_client (
     cognito_client_id,
     application_id,
