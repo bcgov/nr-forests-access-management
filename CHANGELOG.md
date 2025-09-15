@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.42.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.41.0...v1.42.0) (2025-09-15)
+
+
+### Features
+
+* [#1944](https://github.com/bcgov/nr-forests-access-management/issues/1944) WASTE PLUS App Onboarding to FAM ([#1968](https://github.com/bcgov/nr-forests-access-management/issues/1968)) ([76940c0](https://github.com/bcgov/nr-forests-access-management/commit/76940c0fc40cd6da3605d1bdd82ecf495dd317cf))
+* Add default cloudfront callback url for LZA PROD. ([#1965](https://github.com/bcgov/nr-forests-access-management/issues/1965)) ([02daebf](https://github.com/bcgov/nr-forests-access-management/commit/02daebff45ed6ee6f0482606344eccb79d7aa20a))
+
 ## [1.40.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.39.0...v1.40.0) (2025-09-11)
 
 
