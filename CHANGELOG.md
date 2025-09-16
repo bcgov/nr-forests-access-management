@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.42.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.41.0...v1.42.0) (2025-09-15)
+
+
+### Features
+
+* [#1944](https://github.com/bcgov/nr-forests-access-management/issues/1944) WASTE PLUS App Onboarding to FAM ([#1968](https://github.com/bcgov/nr-forests-access-management/issues/1968)) ([76940c0](https://github.com/bcgov/nr-forests-access-management/commit/76940c0fc40cd6da3605d1bdd82ecf495dd317cf))
+* Add default cloudfront callback url for LZA PROD. ([#1965](https://github.com/bcgov/nr-forests-access-management/issues/1965)) ([02daebf](https://github.com/bcgov/nr-forests-access-management/commit/02daebff45ed6ee6f0482606344eccb79d7aa20a))
+
+## [1.40.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.39.0...v1.40.0) (2025-09-11)
+
+
+### Features
+
+* [#1933](https://github.com/bcgov/nr-forests-access-management/issues/1933) LZA migration - dev deployment ([#1945](https://github.com/bcgov/nr-forests-access-management/issues/1945)) ([ff8dd34](https://github.com/bcgov/nr-forests-access-management/commit/ff8dd347681778f7c33caaafa1c2c5ce83d1711c))
+* [#1933](https://github.com/bcgov/nr-forests-access-management/issues/1933) LZA migration dev deployment add default redirect path ([#1947](https://github.com/bcgov/nr-forests-access-management/issues/1947)) ([93746ae](https://github.com/bcgov/nr-forests-access-management/commit/93746ae26a81a42af83ad4a735324553ec02109b))
+* [#1950](https://github.com/bcgov/nr-forests-access-management/issues/1950) Add default cloudfront callback url for LZA test. ([#1960](https://github.com/bcgov/nr-forests-access-management/issues/1960)) ([6913bf7](https://github.com/bcgov/nr-forests-access-management/commit/6913bf7643db8b3d138db65414677733597ce7cd))
+* [#1950](https://github.com/bcgov/nr-forests-access-management/issues/1950) LZA TEST Workflow and Terragrunt Configuration. ([#1959](https://github.com/bcgov/nr-forests-access-management/issues/1959)) ([b95d212](https://github.com/bcgov/nr-forests-access-management/commit/b95d2120a3264b406c2ad67fc62e50f08bc484df))
+* [#1962](https://github.com/bcgov/nr-forests-access-management/issues/1962) Prod LZA workflow and Terragrunt config ([#1963](https://github.com/bcgov/nr-forests-access-management/issues/1963)) ([1fc43d6](https://github.com/bcgov/nr-forests-access-management/commit/1fc43d632c226aa3578a06f822e5ace6ef503e51))
+
 ## [1.39.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.38.0...v1.39.0) (2025-08-27)
 
 

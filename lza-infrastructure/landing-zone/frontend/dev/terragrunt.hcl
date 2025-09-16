@@ -9,6 +9,6 @@ generate "dev_tfvars" {
   contents          = <<-EOF
   target_env = "dev"
   # cloudfront_vanity_domain = "fam-dev.nrs.gov.bc.ca"
-  # cloudfront_certificate_arn = "arn:aws:acm:us-east-1:521834415778:certificate/f6ad099b-525e-47e9-8c0b-6c11c5875d08"
+  # cloudfront_certificate_arn = "arn:aws:acm:us-east-1:111009054567:certificate/86c30b80-cb3a-46d1-a829-1cfff885b302"
 EOF
 }
