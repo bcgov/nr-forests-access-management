@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.43.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.42.0...v1.43.0) (2025-09-19)
+
+
+### Features
+
+* [#1972](https://github.com/bcgov/nr-forests-access-management/issues/1972) FOM PROD admin role ([#1973](https://github.com/bcgov/nr-forests-access-management/issues/1973)) ([574fd00](https://github.com/bcgov/nr-forests-access-management/commit/574fd007cd822c02196cc7eb3134c0de78c70841))
+* [#1976](https://github.com/bcgov/nr-forests-access-management/issues/1976) Adjust Wast redirect url ([#1977](https://github.com/bcgov/nr-forests-access-management/issues/1977)) ([cf90612](https://github.com/bcgov/nr-forests-access-management/commit/cf90612b4f6db7557c2c1e2ebbffd8308f5d2360))
+
 ## [1.42.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.41.0...v1.42.0) (2025-09-15)
 
 
