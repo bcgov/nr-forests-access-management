@@ -24,7 +24,7 @@ VALUES ('ILCR_ADMIN', 'Admin', 'Access to all mills, ability to set up access to
        ('ILCR_SUBMITTER', 'Submitter', 'Access to specific mill data as authorized by the ILCR Access Request Form, requires a BCeID', (select application_id from app_fam.fam_application where application_name = 'ILCR_PROD'), 'C', CURRENT_USER, CURRENT_DATE)
 ;
 
--- Create PROD Cognito app clients for ICR
+-- Create PROD Cognito app clients for ILCR
 INSERT INTO app_fam.fam_application_client (
     cognito_client_id,
     application_id,
