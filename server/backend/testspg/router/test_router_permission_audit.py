@@ -1,4 +1,4 @@
-from api.app.main import apiPrefix
+from api.app.main import internal_api_prefix
 from testspg.test_data.permission_audit_fixture import (
     APPLICATION_ID_1, MOCKED_PERMISSION_HISTORY_RESPONSE, USER_ID_1)
 
@@ -12,7 +12,7 @@ def test_get_permission_audit_history_success(mocker, test_client_fixture, auth_
     )
 
     response = test_client_fixture.get(
-        f"{apiPrefix}/{ENDPOINT_ROOT}?user_id={USER_ID_1}&application_id={APPLICATION_ID_1}",
+        f"{internal_api_prefix}/{ENDPOINT_ROOT}?user_id={USER_ID_1}&application_id={APPLICATION_ID_1}",
         headers=auth_headers,
     )
 
@@ -31,7 +31,7 @@ def test_get_permission_audit_history_bad_request(mocker, test_client_fixture, a
     )
 
     response = test_client_fixture.get(
-        f"{apiPrefix}/{ENDPOINT_ROOT}?user_id=999&application_id=999",
+        f"{internal_api_prefix}/{ENDPOINT_ROOT}?user_id=999&application_id=999",
         headers=auth_headers,
     )
 
@@ -41,7 +41,7 @@ def test_get_permission_audit_history_bad_request(mocker, test_client_fixture, a
 # Test handling of invalid user_id
 def test_get_permission_audit_history_invalid_user_id_type(auth_headers, test_client_fixture):
     response = test_client_fixture.get(
-        f"{apiPrefix}/{ENDPOINT_ROOT}?user_id=invalid_user_id&application_id={APPLICATION_ID_1}",
+        f"{internal_api_prefix}/{ENDPOINT_ROOT}?user_id=invalid_user_id&application_id={APPLICATION_ID_1}",
         headers=auth_headers,
     )
 
@@ -56,7 +56,7 @@ def test_get_permission_audit_history_unauthorized(mocker, test_client_fixture):
     )
 
     response = test_client_fixture.get(
-        f"{apiPrefix}/{ENDPOINT_ROOT}?user_id={USER_ID_1}&application_id={APPLICATION_ID_1}"
+        f"{internal_api_prefix}/{ENDPOINT_ROOT}?user_id={USER_ID_1}&application_id={APPLICATION_ID_1}"
     )
 
     assert response.status_code == 401

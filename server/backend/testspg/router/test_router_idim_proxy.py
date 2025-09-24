@@ -6,7 +6,7 @@ import testspg.jwt_utils as jwt_utils
 from api.app.constants import ERROR_CODE_REQUESTER_NOT_EXISTS
 from api.app.jwt_validation import (ERROR_GROUPS_REQUIRED,
                                     ERROR_PERMISSION_REQUIRED)
-from api.app.main import apiPrefix
+from api.app.main import internal_api_prefix
 from api.app.routers.router_guards import get_current_requester
 from api.app.schemas import RequesterSchema
 from api.app.utils.utils import raise_http_exception
@@ -21,8 +21,8 @@ from testspg.constants import (FOM_DEV_APPLICATION_ID,
 LOGGER = logging.getLogger(__name__)
 
 
-endPoint_search_idir = f"{apiPrefix}/identity-search/idir"
-endPoint_search_bceid = f"{apiPrefix}/identity-search/bceid"
+endPoint_search_idir = f"{internal_api_prefix}/identity-search/idir"
+endPoint_search_bceid = f"{internal_api_prefix}/identity-search/bceid"
 endPoint_search_param_application_id = f"&application_id={FOM_DEV_APPLICATION_ID}"
 valid_user_id_param = "CMENG"
 valid_user_id_param_business_bceid = "LOAD-2-TEST"

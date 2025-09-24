@@ -22,7 +22,7 @@ from api.app.constants import (COGNITO_USERNAME_KEY, DEFAULT_PAGE_SIZE,
                                ERROR_CODE_TERMS_CONDITIONS_REQUIRED, MIN_PAGE,
                                UserType)
 from api.app.crud import crud_user, crud_utils
-from api.app.main import apiPrefix, app
+from api.app.main import app, internal_api_prefix
 from api.app.models.model import FamUser
 from api.app.routers.router_guards import (
     enforce_bceid_terms_conditions_guard, get_current_requester,
@@ -264,7 +264,7 @@ def create_test_user_role_assignment(
     test_client_fixture: starlette.testclient.TestClient, token, request_body
 ):
     response = test_client_fixture.post(
-        f"{apiPrefix}/user-role-assignment",
+        f"{internal_api_prefix}/user-role-assignment",
         json=request_body,
         headers=jwt_utils.headers(token),
     )
