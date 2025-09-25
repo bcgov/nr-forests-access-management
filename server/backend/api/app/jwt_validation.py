@@ -153,6 +153,19 @@ def validate_token(
             headers={"WWW-Authenticate": "Bearer"},
         )
 
+    return claims
+
+def enforce_fam_client_token(
+    claims: dict = Depends(validate_token)
+) -> dict:
+    """
+    Enforce that the token is from the FAM OIDC client.
+    This means the token is from FAM itself to communicate between FAM frontend/backend.
+
+    The logic was refactored out of validate_token function to be used as a separate dependency.
+    The reason is that FAM has now consumer clients access API and validating client_id for
+    token from other apps against FAM OIDC client will not be correct.
+    """
     if claims[JWT_CLIENT_ID_KEY] != get_oidc_client_id():
         raise HTTPException(
             status_code=401,
@@ -162,11 +175,12 @@ def validate_token(
             },
             headers={"WWW-Authenticate": "Bearer"},
         )
-
     return claims
 
 
-def get_access_roles(claims: dict = Depends(validate_token)):
+def get_access_roles(
+    claims: dict = Depends(validate_token)
+):
     groups = claims.get(JWT_GROUPS_KEY)
     return groups
 
