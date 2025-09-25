@@ -4,7 +4,7 @@ from urllib.request import urlopen
 
 import jwt
 from api.app.constants import COGNITO_USERNAME_KEY
-from api.config.config import (get_aws_region, get_oidc_client_id,
+from api.config.config import (get_aws_region, get_fam_oidc_client_id,
                                get_user_pool_domain_name, get_user_pool_id)
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2AuthorizationCodeBearer
@@ -34,7 +34,7 @@ oauth2_scheme = OAuth2AuthorizationCodeBearer(
     authorizationUrl=f"https://{user_pool_domain_name}.auth.{aws_region}.amazoncognito.com/authorize",
     tokenUrl=f"https://{user_pool_domain_name}.auth.{aws_region}.amazoncognito.com/token",
     scopes=None,
-    scheme_name=get_oidc_client_id(),
+    scheme_name=get_fam_oidc_client_id(),
     auto_error=True,
 )
 
@@ -166,7 +166,7 @@ def enforce_fam_client_token(
     The reason is that FAM has now consumer clients access API and validating client_id for
     token from other apps against FAM OIDC client will not be correct.
     """
-    if claims[JWT_CLIENT_ID_KEY] != get_oidc_client_id():
+    if claims[JWT_CLIENT_ID_KEY] != get_fam_oidc_client_id():
         raise HTTPException(
             status_code=401,
             detail={
@@ -193,3 +193,17 @@ def get_request_cognito_user_id(claims: dict = Depends(validate_token)):
     cognito_username = claims[COGNITO_USERNAME_KEY]
     LOGGER.debug(f"Current requester's cognito_username for API: {cognito_username}")
     return cognito_username
+
+
+def get_request_app_client_id(claims: dict = Depends(validate_token)) -> str:
+    oidc_client_id = claims[JWT_CLIENT_ID_KEY]
+    if not oidc_client_id:
+        raise HTTPException(
+            status_code=401,
+            detail={
+                "code": ERROR_INVALID_CLIENT,
+                "description": "Token client ID is empty.",
+            },
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    return oidc_client_id
