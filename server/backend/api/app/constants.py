@@ -122,7 +122,7 @@ DEFAULT_PAGE_SIZE = 50
 MIN_PAGE_SIZE = 10
 
 # -- external API constants
-EXT_MIN_PAGE = 0 # External API pagination is 0 index
+EXT_MIN_PAGE = 1 # External API pagination is 1 index
 EXT_DEFAULT_PAGE_SIZE = 50
 EXT_MIN_PAGE_SIZE = 10
 EXT_MAX_PAGE_SIZE = 100

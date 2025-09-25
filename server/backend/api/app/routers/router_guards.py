@@ -14,16 +14,18 @@ from api.app.constants import (CURRENT_TERMS_AND_CONDITIONS_VERSION,
                                ERROR_CODE_SELF_GRANT_PROHIBITED,
                                ERROR_CODE_TERMS_CONDITIONS_REQUIRED,
                                ERROR_CODE_UNKNOWN_STATE, RoleType, UserType)
-from api.app.crud import (crud_access_control_privilege, crud_role, crud_user,
-                          crud_user_role, crud_utils)
+from api.app.crud import (crud_access_control_privilege, crud_application,
+                          crud_role, crud_user, crud_user_role, crud_utils)
 from api.app.crud.validator.target_user_validator import TargetUserValidator
 from api.app.jwt_validation import (ERROR_GROUPS_REQUIRED,
                                     ERROR_PERMISSION_REQUIRED, JWT_GROUPS_KEY,
                                     enforce_fam_client_token, get_access_roles,
+                                    get_request_app_client_id,
                                     get_request_cognito_user_id,
                                     validate_token)
 from api.app.models.model import FamRole, FamUser
 from api.app.schemas import RequesterSchema, TargetUserSchema
+from api.app.schemas.fam_application import FamApplicationSchema
 from api.app.utils import utils
 from api.config import config
 from fastapi import Depends, Request, Security
@@ -496,3 +498,33 @@ def verify_api_key_for_update_user_info(x_api_key: str = Security(x_api_key)):
             status_code=HTTPStatus.UNAUTHORIZED,
             error_msg="Request needs api key.",
         )
+
+
+def authorize_ext_api_by_app_role(
+    requester: RequesterSchema = Depends(get_current_requester),
+    app_client_id: str = Depends(get_request_app_client_id),
+    db: Session = Depends(database.get_db),
+) -> FamApplicationSchema:
+    """
+    This method is used for the external api authorization check.
+    The requester must have the permission to call the external api for the application.
+    """
+    application: FamApplicationSchema = crud_application.get_application_by_app_client_id(db, app_client_id)
+    if not application:
+        utils.raise_http_exception(
+            status_code=HTTPStatus.FORBIDDEN,
+            error_code=ERROR_CODE_INVALID_OPERATION,
+            error_msg=f"Token contains invalid application client id {app_client_id}.",
+        )
+
+    has_call_api_permission: bool = crud_utils.allow_ext_call_api_permission(
+        db, application.application_id, requester.user_name
+    )
+    if not has_call_api_permission:
+        utils.raise_http_exception(
+            status_code=HTTPStatus.FORBIDDEN,
+            error_code=ERROR_PERMISSION_REQUIRED,
+            error_msg="No permission to call the external api.",
+        )
+
+    return application

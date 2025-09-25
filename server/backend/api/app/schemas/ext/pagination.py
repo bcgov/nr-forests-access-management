@@ -19,7 +19,7 @@ class ExtPageParamsSchema(BaseModel, ABC):
     This is the base schema for common fields. Endpoints need to extend this class.
     """
     page: int | None = Field(Query(
-        default=EXT_MIN_PAGE, ge=EXT_MIN_PAGE, description="Page number - 0 index"
+        default=EXT_MIN_PAGE, ge=EXT_MIN_PAGE, description="Page number - 1 index"
     ))
     size: int | None = Field(Query(
         default=EXT_DEFAULT_PAGE_SIZE, ge=EXT_MIN_PAGE_SIZE, le=EXT_MAX_PAGE_SIZE, description="Number of records per page"

@@ -187,3 +187,18 @@ def __query_user_roles_by_app_privilege(db: Session, requester: RequesterSchema,
                 == requester.business_guid.upper(),
             )
     return q
+
+def get_application_by_app_client_id(db: Session, app_client_id: str):
+    """
+    Retrieve a FamApplication by its app_client_id (cognito_client_id).
+    :param db: SQLAlchemy session
+    :param app_client_id: The cognito_client_id
+    :return: FamApplication instance or None
+    """
+    stmt = (
+        select(models.FamApplication)
+        .join(models.FamApplicationClient, models.FamApplication.application_id == models.FamApplicationClient.application_id)
+        .where(models.FamApplicationClient.cognito_client_id == app_client_id)
+    )
+    result = db.execute(stmt).scalars().one_or_none()
+    return result
