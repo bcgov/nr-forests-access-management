@@ -31,15 +31,15 @@ class ExtUserSearchParamSchema(ExtPageParamsSchema):
 
 
 class ExtPageResultMetaSchema(BaseModel):
-    total: int = Field(description='Total records counts for query conditions')
+    total: int = Field(description='Total records counts for query conditions', default=0)
     page_count: int = Field(description='Total pages for query records', alias="pageCount")
-    page: int = Field(description='Current page number')
-    size: int = Field(description='Number of records per page')
+    page: int = Field(description='Current page number', ge=EXT_MIN_PAGE)
+    size: int = Field(description='Number of records per page', le=EXT_MAX_PAGE_SIZE)
 
 
 class ExtUserSearchPagedResultsSchema(BaseModel, Generic[T]):
     """
-    API pagination return schema.
+    External API pagination return schema.
     Use Python generice type for return type.
     """
     meta: ExtPageResultMetaSchema

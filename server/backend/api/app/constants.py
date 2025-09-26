@@ -105,6 +105,10 @@ class IDPType(str, Enum):
     BCEID = "BCEID" # Business BCeID
     BCSC = "BCSC" # BC Services Card
 
+
+class ScopeType(str, Enum):
+    FOREST_CLIENT = "FOREST_CLIENT"
+
 # -------------------------------- Schema Constants ------------------------------- #
 SYSTEM_ACCOUNT_NAME = "system"
 USER_NAME_MAX_LEN = 20
@@ -130,6 +134,8 @@ EXT_MAX_IDP_USERNAME_LEN = 20
 EXT_MAX_FIRST_NAME_LEN = 50
 EXT_MAX_LAST_NAME_LEN = 50
 EXT_MAX_ROLE_LEN = 25
+EXT_APPLICATION_NAME_MAX_LEN = 25
+EXT_ROLE_DISPLAY_NAME_MAX_LEN = 100
 
 # The intent is  to have "max=100" per page, however frontend is not ready, so if need to return "all records" found
 # and let frontend do the pagination, we could set it to 100000.

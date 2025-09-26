@@ -1,14 +1,12 @@
 import logging
 
 from api.app import database
-from api.app.crud import crud_application
 from api.app.routers.router_guards import (authorize_ext_api_by_app_role,
                                            get_current_requester)
-from api.app.schemas import FamApplicationUserRoleAssignmentGetSchema
-from api.app.schemas.ext.application_user_search import \
-    ApplicationUserSearchSchema
 from api.app.schemas.ext.pagination import (ExtUserSearchPagedResultsSchema,
                                             ExtUserSearchParamSchema)
+from api.app.schemas.ext.user_search import (ExtApplicationUserSearchGetSchema,
+                                             ExtApplicationUserSearchSchema)
 from api.app.schemas.fam_application import FamApplicationSchema
 from api.app.schemas.requester import RequesterSchema
 from fastapi import APIRouter, Depends
@@ -20,14 +18,14 @@ router = APIRouter()
 
 @router.get(
     "",
-    response_model=ExtUserSearchPagedResultsSchema[FamApplicationUserRoleAssignmentGetSchema],
+    response_model=ExtUserSearchPagedResultsSchema[ExtApplicationUserSearchGetSchema],
     status_code=200
 )
 def user_search(
     db: Session = Depends(database.get_db),
     requester: RequesterSchema = Depends(get_current_requester),
     page_params: ExtUserSearchParamSchema = Depends(),
-    filter_params: ApplicationUserSearchSchema = Depends(),
+    filter_params: ExtApplicationUserSearchSchema = Depends(),
     application: FamApplicationSchema = Depends(authorize_ext_api_by_app_role)
 ):
     """
