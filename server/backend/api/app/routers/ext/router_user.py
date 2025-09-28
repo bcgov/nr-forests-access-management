@@ -1,6 +1,7 @@
 import logging
 
 from api.app import database
+from api.app.crud.services import ext_app_user_search_service
 from api.app.routers.router_guards import (authorize_ext_api_by_app_role,
                                            get_current_requester)
 from api.app.schemas.ext.pagination import (ExtUserSearchPagedResultsSchema,
@@ -37,9 +38,16 @@ def user_search(
         f"and page_params: {page_params}, "
         f"by requester: {requester.user_name} (id: {requester.user_id})"
     )
-    # TODO... implement the search logic here.
-    # paged_results = crud_application.get_application_role_assignments(
-    #     db=db, application_id=application_id, requester=requester, page_params=page_params
-    # )
 
-    return None
+    service = ext_app_user_search_service.ExtAppUserSearchService(
+        db=db,
+        requester=requester,
+        application_id=application.application_id
+    )
+
+    paged_results = service.search_users(
+        page_params=page_params,
+        filter_params=filter_params
+    )
+
+    return paged_results

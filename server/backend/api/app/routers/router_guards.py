@@ -524,7 +524,7 @@ def authorize_ext_api_by_app_role(
         utils.raise_http_exception(
             status_code=HTTPStatus.FORBIDDEN,
             error_code=ERROR_PERMISSION_REQUIRED,
-            error_msg="No permission to call the external api.",
+            error_msg="No permission to call the external API.",
         )
 
     return application
