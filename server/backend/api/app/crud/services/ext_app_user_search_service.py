@@ -1,9 +1,10 @@
+import json
 import logging
+from email.policy import default
 from http import HTTPStatus
 
 from api.app.constants import (ERROR_CODE_INVALID_OPERATION, EXT_MIN_PAGE,
-                               EXT_MIN_PAGE_SIZE)
-from api.app.jwt_validation import ERROR_PERMISSION_REQUIRED
+                               EXT_MIN_PAGE_SIZE, IDPType, UserType)
 from api.app.models.model import FamRole, FamUser, FamUserRoleXref
 from api.app.schemas.ext.pagination import (ExtUserSearchPagedResultsSchema,
                                             ExtUserSearchParamSchema)
@@ -11,7 +12,7 @@ from api.app.schemas.ext.user_search import (ExtApplicationUserSearchGetSchema,
                                              ExtApplicationUserSearchSchema)
 from api.app.schemas.requester import RequesterSchema
 from api.app.utils.utils import raise_http_exception
-from sqlalchemy import func, select
+from sqlalchemy import and_, func, select
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy.sql.selectable import Select
 
@@ -69,7 +70,8 @@ class ExtAppUserSearchService(ExtAPIInterface):
             .offset((page - 1) * size)
             .limit(size)
         )
-        users: list[FamUser] = self.db.execute(paged_stmt).scalars().all()
+        users: list[FamUser] = self.db.execute(paged_stmt).unique().scalars().all()
+        LOGGER.debug(f"Found users: {[user.user_name for user in users]}")
 
         # Build results using helper
         results: list[ExtApplicationUserSearchGetSchema] = self._build_user_search_results(users)
@@ -83,12 +85,12 @@ class ExtAppUserSearchService(ExtAPIInterface):
         }
         return ExtUserSearchPagedResultsSchema[ExtApplicationUserSearchGetSchema](meta=meta, users=results)
 
-    def _apply_user_filters(self, user_role_stmt: Select, filter_params: ExtUserSearchParamSchema) -> Select:
+    def _apply_user_filters(self, user_role_stmt: Select, filter_params: ExtApplicationUserSearchSchema) -> Select:
         """
         Applies filtering to the base statement based on filter_params.
         """
         if filter_params.idp_type:
-            user_role_stmt = user_role_stmt.where(FamUser.user_type_code == filter_params.idp_type)
+            user_role_stmt = self._apply_user_type_code_filter(user_role_stmt, filter_params.idp_type)
         if filter_params.idp_username:
             user_role_stmt = user_role_stmt.where(FamUser.user_name.ilike(f"%{filter_params.idp_username}%"))
         if filter_params.first_name:
@@ -117,13 +119,48 @@ class ExtAppUserSearchService(ExtAPIInterface):
                     "scopeType": None,
                     "value": []
                 })
+
             user_schema = ExtApplicationUserSearchGetSchema(
                 firstName=user.first_name,
                 lastName=user.last_name,
                 idpUsername=user.user_name,
                 idpUserGuid=user.user_guid,
-                idpType=user.user_type_code,
+                idpType=self._map_user_type_code_to_idp_type(user.user_type_code),
                 roles=roles_schema
             )
             results.append(user_schema)
         return results
+
+    def _map_user_type_code_to_idp_type(self, user_type_code) -> IDPType:
+        """
+        Maps FamUser.user_type_code to IdpType enum for API response.
+        """
+        if user_type_code == UserType.IDIR:
+            return IDPType.IDIR
+        elif user_type_code == UserType.BCEID:
+            return IDPType.BCEID
+        else:
+            return IDPType.BCSC
+
+    def _apply_user_type_code_filter(self, user_role_stmt: Select, idp_type: IDPType) -> str:
+        """
+        Applies filtering to the statement based on the provided idp_type, maps to UserType for db filtering.
+        """
+        if idp_type is None:
+            return user_role_stmt
+
+        elif idp_type == IDPType.IDIR:
+            user_role_stmt = user_role_stmt.where(FamUser.user_type_code == UserType.IDIR)
+
+        elif idp_type == IDPType.BCEID:
+            user_role_stmt = user_role_stmt.where(FamUser.user_type_code == UserType.BCEID)
+
+        else:
+            user_role_stmt = user_role_stmt.where(
+                and_(
+                    FamUser.user_type_code != UserType.IDIR,
+                    FamUser.user_type_code != UserType.BCEID
+                )
+            )
+
+        return user_role_stmt
