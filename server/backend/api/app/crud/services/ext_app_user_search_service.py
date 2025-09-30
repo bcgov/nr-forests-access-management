@@ -66,7 +66,7 @@ class ExtAppUserSearchService(ExtAPIInterface):
         total = self.db.execute(select(func.count()).select_from(user_id_stmt.subquery())).scalar()
         page = page_params.page or EXT_MIN_PAGE
         size = page_params.size or EXT_MIN_PAGE_SIZE
-        page_count: int = (total + size - 1) // size if total > 0 else 1
+        page_count: int = (total + size - 1) // size
         LOGGER.debug(f"Total users found: {total}, Page count: {page_count}")
 
         # Fetch paginated users with roles
@@ -111,7 +111,7 @@ class ExtAppUserSearchService(ExtAPIInterface):
             user_role_stmt = user_role_stmt.where(FamUser.first_name.ilike(f"%{filter_params.first_name}%"))
         if filter_params.last_name:
             user_role_stmt = user_role_stmt.where(FamUser.last_name.ilike(f"%{filter_params.last_name}%"))
-        if filter_params.role:
+        if filter_params.role is not None and len(filter_params.role) > 0:
             user_role_stmt = user_role_stmt.where(FamRole.role_name.in_(filter_params.role))
         return user_role_stmt
 

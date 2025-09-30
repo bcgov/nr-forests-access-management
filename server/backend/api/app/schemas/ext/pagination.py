@@ -35,7 +35,7 @@ class ExtPageResultMetaSchema(BaseModel):
     Response metadata for external API pagination.
     """
     total: int = Field(description='Total records counts for query conditions', default=0)
-    page_count: int = Field(description='Total pages for query records', alias="pageCount")
+    page_count: int = Field(description='Total pages for query records', alias="pageCount", default=0)
     page: int = Field(description='Current page number', ge=EXT_MIN_PAGE)
     size: int = Field(description='Number of records per page', le=EXT_MAX_PAGE_SIZE, ge=EXT_MIN_PAGE_SIZE)
 
