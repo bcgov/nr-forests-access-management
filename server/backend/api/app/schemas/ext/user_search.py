@@ -15,6 +15,10 @@ from typing_extensions import Annotated
 
 
 class ExtApplicationUserSearchSchema(BaseModel):
+    """
+    External API request schema.
+    For user search.
+    """
     idp_type: Optional[IDPType] = Field(
         Query(default=None, description="Identity provider type. Available values: IDIR, BCEID, BCSC"),
         alias="idpType"
@@ -44,7 +48,7 @@ class ExtApplicationUserSearchSchema(BaseModel):
         alias="lastName"
     )
     role: Optional[List[str]] = Field(
-        Query(default=None, description=f"List of user roles to filter by (each max {EXT_MAX_ROLE_LEN} chars)"),
+        Query(default=None, description=f"List of user roles (code, e.g., 'ILCR_SUBMITTER') to filter by (each max {EXT_MAX_ROLE_LEN} chars)"),
         alias="role"
     )
 
@@ -65,6 +69,10 @@ class ExtApplicationUserSearchSchema(BaseModel):
 
 
 class ExtRoleWithScopeSchema(BaseModel):
+    """
+    External API response schema.
+    For returning user search results: role detail info.
+    """
     application_name: Optional[Annotated[str, StringConstraints(
         max_length=EXT_APPLICATION_NAME_MAX_LEN)]] = Field(default=None, alias="applicationName")
     role_name: Optional[Annotated[str, StringConstraints(
@@ -79,8 +87,9 @@ class ExtRoleWithScopeSchema(BaseModel):
 
 class ExtApplicationUserSearchGetSchema(BaseModel):
     """
-     Schema for returning user search results.
-     """
+    External API response schema.
+    For returning user search results: user detail and roles info.
+    """
     first_name: Optional[Annotated[str, StringConstraints(
         max_length=FIRST_NAME_MAX_LEN)]] = Field(default=None, alias="firstName")
     last_name: Optional[Annotated[str, StringConstraints(

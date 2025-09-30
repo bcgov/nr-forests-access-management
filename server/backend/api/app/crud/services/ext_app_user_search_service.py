@@ -23,6 +23,8 @@ LOGGER = logging.getLogger(__name__)
 class ExtAppUserSearchService(ExtAPIInterface):
     """
     Service to handle external application user search requests for external API calls.
+    The service only allows requesters with proper application role (with call_api permission)
+    to perform the search.
     Ref API spec at https://apps.nrs.gov.bc.ca/int/confluence/display/FSAST1/Users+Search+API
     """
 
@@ -34,9 +36,13 @@ class ExtAppUserSearchService(ExtAPIInterface):
         page_params: ExtUserSearchParamSchema,
         filter_params: ExtApplicationUserSearchSchema
     ) -> ExtUserSearchPagedResultsSchema:
+        """
+        For external Consumer API only.
+        Searches users associated with the application based on filter_params and paginates results based on page_params.
+        """
         if not self.is_request_allowed():
             error_msg = ("Programming error. This method is for external API only. "
-                         "Router should have already checked the requester API call permission.")
+                         "Router should have already checked the requester call API permission.")
             raise_http_exception(
                 status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
                 error_code=ERROR_CODE_INVALID_OPERATION,
@@ -81,7 +87,7 @@ class ExtAppUserSearchService(ExtAPIInterface):
         users: list[FamUser] = self.db.execute(paged_stmt).unique().scalars().all()
         LOGGER.debug(f"Found users: {[user.user_name for user in users]}")
 
-        # Build results
+        # Build results schema
         results: list[ExtApplicationUserSearchGetSchema] = self._build_user_search_results(users)
         LOGGER.debug(f"Returning {len(results)} users: {results}, for page {page}")
 
@@ -111,7 +117,7 @@ class ExtAppUserSearchService(ExtAPIInterface):
 
     def _build_user_search_results(self, users: list[FamUser]) -> list[ExtApplicationUserSearchGetSchema]:
         """
-        Converts a list of FamUser objects into list[ExtApplicationUserSearchGetSchema] objects.
+        Converts a list of FamUser model objects into list[ExtApplicationUserSearchGetSchema] objects.
         Example:
         "users": [{"firstName":"Ian","lastName":"Liu","idpUsername":"IANLIU","idpUserGuid":"A8888FAKEA999999FAKE123456789F",
                    "idpType":"IDIR","roles":[{"applicationName":"FOM_DEV","roleName":"FOM_ADMIN","roleDisplayName":"Admin",
@@ -174,9 +180,10 @@ class ExtAppUserSearchService(ExtAPIInterface):
                 })
         return roles_list
 
-    def _map_user_type_code_to_idp_type(self, user_type_code) -> IDPType:
+    def _map_user_type_code_to_idp_type(self, user_type_code: str) -> IDPType:
         """
         Maps FamUser.user_type_code to IdpType enum for API response.
+        Example: 'I'(db) -> 'IDIR'(for API)
         """
         if user_type_code == UserType.IDIR:
             return IDPType.IDIR
@@ -188,6 +195,7 @@ class ExtAppUserSearchService(ExtAPIInterface):
     def _apply_user_type_code_filter(self, user_role_stmt: Select, idp_type: IDPType) -> str:
         """
         Applies filtering to the statement based on the provided idp_type, maps to UserType for db filtering.
+        Example: 'IDIR'(for API) -> 'I'(db)  => where(FamUser.user_type_code == UserType.IDIR)
         """
         if idp_type is None:
             return user_role_stmt
