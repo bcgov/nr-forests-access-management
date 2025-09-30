@@ -99,6 +99,16 @@ class UserRoleSortByEnum(str, Enum):
     ROLE_DISPLAY_NAME = "role_display_name"
     FOREST_CLIENT_NUMBER = "forest_client_number"
 
+# -- external API constants
+class IDPType(str, Enum):
+    IDIR = "IDIR"
+    BCEID = "BCEID" # Business BCeID
+    BCSC = "BCSC" # BC Services Card
+
+
+class ScopeType(str, Enum):
+    FOREST_CLIENT = "FOREST_CLIENT"
+
 # -------------------------------- Schema Constants ------------------------------- #
 SYSTEM_ACCOUNT_NAME = "system"
 USER_NAME_MAX_LEN = 20
@@ -114,6 +124,18 @@ CREATE_USER_MAX_LEN = 100
 MIN_PAGE = 1
 DEFAULT_PAGE_SIZE = 50
 MIN_PAGE_SIZE = 10
+
+# -- external API constants
+EXT_MIN_PAGE = 1 # External API pagination is 1 index
+EXT_DEFAULT_PAGE_SIZE = 50
+EXT_MIN_PAGE_SIZE = 10
+EXT_MAX_PAGE_SIZE = 100
+EXT_MAX_IDP_USERNAME_LEN = 20
+EXT_MAX_FIRST_NAME_LEN = 50
+EXT_MAX_LAST_NAME_LEN = 50
+EXT_MAX_ROLE_LEN = 25
+EXT_APPLICATION_NAME_MAX_LEN = 25
+EXT_ROLE_DISPLAY_NAME_MAX_LEN = 100
 
 # The intent is  to have "max=100" per page, however frontend is not ready, so if need to return "all records" found
 # and let frontend do the pagination, we could set it to 100000.

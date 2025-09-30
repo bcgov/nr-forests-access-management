@@ -8,14 +8,14 @@ from api.app.jwt_validation import (ERROR_CLAIMS, ERROR_EXPIRED_TOKEN,
                                     ERROR_INVALID_CLIENT, ERROR_MISSING_KID,
                                     ERROR_NO_RSA_KEY, ERROR_TOKEN_DECODE,
                                     JWT_CLIENT_ID_KEY)
-from api.app.main import apiPrefix
+from api.app.main import internal_api_prefix
 from Crypto.PublicKey import RSA
 from testspg.constants import FAM_APPLICATION_ID
 from testspg.jwt_utils import (assert_error_response, create_jwt_claims,
                                create_jwt_token, headers)
 
 LOGGER = logging.getLogger(__name__)
-endPoint = f"{apiPrefix}/fam-applications/{FAM_APPLICATION_ID}/user-role-assignment"
+endPoint = f"{internal_api_prefix}/fam-applications/{FAM_APPLICATION_ID}/user-role-assignment"
 
 
 def test_get_application_user_role_assignment_success(

@@ -11,7 +11,7 @@ from api.app.constants import (CURRENT_TERMS_AND_CONDITIONS_VERSION,
                                ERROR_CODE_TERMS_CONDITIONS_REQUIRED, MIN_PAGE,
                                SortOrderEnum, UserRoleSortByEnum, UserType)
 from api.app.crud import crud_application
-from api.app.main import apiPrefix
+from api.app.main import internal_api_prefix
 from api.app.models.model import FamUserTermsConditions
 from api.app.routers.router_application import router
 from api.app.routers.router_guards import (
@@ -36,7 +36,7 @@ from testspg.test_data.app_user_roles_mock_data import \
     APP_USER_ROLE_PAGED_RESULT_2_RECORDS
 
 LOGGER = logging.getLogger(__name__)
-end_point = f"{apiPrefix}/fam-applications"
+end_point = f"{internal_api_prefix}/fam-applications"
 end_point_user_by_id = f"{end_point}/{{application_id}}/users/{{user_id}}"
 
 # GET enpoint for users' access grants.
@@ -101,7 +101,7 @@ def test_get_fam_application_user_role_assignment_concrete_role(
     # create
     token = jwt_utils.create_jwt_token(test_rsa_key, ACCESS_ROLES_FOM_DEV_ONLY)
     response = test_client_fixture.post(
-        f"{apiPrefix}/user-role-assignment",
+        f"{internal_api_prefix}/user-role-assignment",
         json=ACCESS_GRANT_FOM_DEV_CR_IDIR,
         headers=jwt_utils.headers(token),
     )
@@ -136,7 +136,7 @@ def test_get_fam_application_user_role_assignment_abstract_role(
     # create
     token = jwt_utils.create_jwt_token(test_rsa_key, ACCESS_ROLES_FOM_DEV_ONLY)
     response = test_client_fixture.post(
-        f"{apiPrefix}/user-role-assignment",
+        f"{internal_api_prefix}/user-role-assignment",
         json=ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID,
         headers=jwt_utils.headers(token),
     )

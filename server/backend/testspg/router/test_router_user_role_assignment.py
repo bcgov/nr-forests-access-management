@@ -15,7 +15,7 @@ from api.app.crud import crud_application, crud_role, crud_user, crud_user_role
 from api.app.crud.services.permission_audit_service import \
     PermissionAuditService
 from api.app.jwt_validation import ERROR_PERMISSION_REQUIRED
-from api.app.main import apiPrefix
+from api.app.main import internal_api_prefix
 from api.app.models.model import FamPrivilegeChangeAudit, FamUser
 from api.app.schemas.target_user import TargetUserSchema
 from fastapi import HTTPException
@@ -40,7 +40,7 @@ from testspg.constants import (ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID,
                                FOM_TEST_APPLICATION_ID)
 
 LOGGER = logging.getLogger(__name__)
-endPoint = f"{apiPrefix}/user-role-assignment"
+endPoint = f"{internal_api_prefix}/user-role-assignment"
 
 ERROR_DUPLICATE_USER_ROLE = "already assigned to user"
 
