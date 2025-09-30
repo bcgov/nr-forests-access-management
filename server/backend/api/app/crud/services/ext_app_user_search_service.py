@@ -66,6 +66,7 @@ class ExtAppUserSearchService(ExtAPIInterface):
         # Fetch paginated users with roles
         paged_stmt: Select = (
             user_role_stmt
+            .order_by(FamUser.user_name.asc())  # default sort by user_name ascending
             .options(
                 # Eager load relationships
                 joinedload(FamUser.fam_user_role_xref)
