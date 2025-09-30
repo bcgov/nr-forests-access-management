@@ -1,7 +1,7 @@
-import json
 import logging
 from email.policy import default
 from http import HTTPStatus
+from typing import List
 
 from api.app.constants import (ERROR_CODE_INVALID_OPERATION, EXT_MIN_PAGE,
                                EXT_MIN_PAGE_SIZE, IDPType, ScopeType, UserType)
@@ -9,7 +9,8 @@ from api.app.models.model import FamRole, FamUser, FamUserRoleXref
 from api.app.schemas.ext.pagination import (ExtUserSearchPagedResultsSchema,
                                             ExtUserSearchParamSchema)
 from api.app.schemas.ext.user_search import (ExtApplicationUserSearchGetSchema,
-                                             ExtApplicationUserSearchSchema)
+                                             ExtApplicationUserSearchSchema,
+                                             ExtRoleWithScopeSchema)
 from api.app.schemas.requester import RequesterSchema
 from api.app.utils.utils import raise_http_exception
 from sqlalchemy import and_, func, select
@@ -109,7 +110,7 @@ class ExtAppUserSearchService(ExtAPIInterface):
 
     def _build_user_search_results(self, users: list[FamUser]) -> list[ExtApplicationUserSearchGetSchema]:
         """
-        Converts a list of FamUser objects into ExtApplicationUserSearchGetSchema objects.
+        Converts a list of FamUser objects into list[ExtApplicationUserSearchGetSchema] objects.
         """
         results = []
         for user in users:
@@ -125,12 +126,12 @@ class ExtAppUserSearchService(ExtAPIInterface):
             results.append(user_schema)
         return results
 
-    def _build_user_roles_list(self, user: FamUser) -> list:
+    def _build_user_roles_list(self, user: FamUser) -> List[ExtRoleWithScopeSchema]:
         """
-        Builds the roles list for a given user, merging scope values for duplicate role names.
+        Builds the roles list schema for a given user.
         """
-        roles_list = []
-        role_index = {}
+        roles_list = []  # hold list of roles for the user in ExtRoleWithScopeSchema
+        role_index = {}  # dict to look up existing role in roles_list
         for xref in user.fam_user_role_xref:
             role: FamRole = xref.role
             if role.application_id != self.application_id:
@@ -139,28 +140,28 @@ class ExtAppUserSearchService(ExtAPIInterface):
             role_name = role.role_name
             display_name = role.display_name
             scope_type = None
-            scope_value = []
+            current_scope_value = None
             has_parent_role = role.parent_role is not None
             if has_parent_role:
-                role_name = role.parent_role.role_name
-                display_name = role.parent_role.display_name if hasattr(role.parent_role, 'display_name') else role.display_name
+                role_name = role.parent_role.role_name  # use parent's role name for child roles
+                display_name = role.parent_role.display_name  # use parent's display name for child roles
                 scope_type = ScopeType.FOREST_CLIENT  # FAM currently only has FOREST_CLIENT scope type
-                scope_value = [role.forest_client_relation.forest_client_number]
+                current_scope_value = role.forest_client_relation.forest_client_number
 
             # If role_name already exists, merge scope_value
             if role_name in role_index:
                 idx = role_index[role_name]
-                for val in scope_value:
-                    if val not in roles_list[idx]["value"]:
-                        roles_list[idx]["value"].append(val)
+                if current_scope_value not in roles_list[idx]["value"]:
+                    roles_list[idx]["value"].append(current_scope_value)
             else:
+                # add new role entry
                 role_index[role_name] = len(roles_list)
                 roles_list.append({
-                    "applicationName": None,  # Optionally fill from FamApplication if needed
+                    "applicationName": role.application.application_name,
                     "roleName": role_name,
                     "roleDisplayName": display_name,
                     "scopeType": scope_type,
-                    "value": scope_value.copy() if scope_value else []
+                    "value": [current_scope_value] if current_scope_value else []
                 })
         return roles_list
 
