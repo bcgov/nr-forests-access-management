@@ -1,5 +1,4 @@
 import logging
-from email.policy import default
 from http import HTTPStatus
 from typing import List
 
@@ -24,6 +23,7 @@ LOGGER = logging.getLogger(__name__)
 class ExtAppUserSearchService(ExtAPIInterface):
     """
     Service to handle external application user search requests for external API calls.
+    Ref API spec at https://apps.nrs.gov.bc.ca/int/confluence/display/FSAST1/Users+Search+API
     """
 
     def __init__(self, db: Session, requester: RequesterSchema, application_id: int, *args, **kwargs):
@@ -35,7 +35,7 @@ class ExtAppUserSearchService(ExtAPIInterface):
         filter_params: ExtApplicationUserSearchSchema
     ) -> ExtUserSearchPagedResultsSchema:
         if not self.is_request_allowed():
-            error_msg = ("Programming error occurred. This method is for external API only. "
+            error_msg = ("Programming error. This method is for external API only. "
                          "Router should have already checked the requester API call permission.")
             raise_http_exception(
                 status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
@@ -66,7 +66,6 @@ class ExtAppUserSearchService(ExtAPIInterface):
         # Fetch paginated users with roles
         paged_stmt: Select = (
             user_role_stmt
-            .order_by(FamUser.user_name.asc())  # default sort by user_name ascending
             .options(
                 # Eager load relationships
                 joinedload(FamUser.fam_user_role_xref)
@@ -74,6 +73,7 @@ class ExtAppUserSearchService(ExtAPIInterface):
                 .joinedload(FamRole.parent_role)
                 .joinedload(FamRole.forest_client_relation)
             )
+            .order_by(FamUser.user_name.asc())  # default sort by user_name ascending
             .distinct()
             .offset((page - 1) * size)
             .limit(size)
@@ -81,7 +81,7 @@ class ExtAppUserSearchService(ExtAPIInterface):
         users: list[FamUser] = self.db.execute(paged_stmt).unique().scalars().all()
         LOGGER.debug(f"Found users: {[user.user_name for user in users]}")
 
-        # Build results using helper
+        # Build results
         results: list[ExtApplicationUserSearchGetSchema] = self._build_user_search_results(users)
         LOGGER.debug(f"Returning {len(results)} users: {results}, for page {page}")
 
@@ -112,6 +112,10 @@ class ExtAppUserSearchService(ExtAPIInterface):
     def _build_user_search_results(self, users: list[FamUser]) -> list[ExtApplicationUserSearchGetSchema]:
         """
         Converts a list of FamUser objects into list[ExtApplicationUserSearchGetSchema] objects.
+        Example:
+        "users": [{"firstName":"Ian","lastName":"Liu","idpUsername":"IANLIU","idpUserGuid":"A8888FAKEA999999FAKE123456789F",
+                   "idpType":"IDIR","roles":[{"applicationName":"FOM_DEV","roleName":"FOM_ADMIN","roleDisplayName":"Admin",
+                   "scopeType":null,"value":[]}]}]
         """
         results = []
         for user in users:
@@ -130,6 +134,10 @@ class ExtAppUserSearchService(ExtAPIInterface):
     def _build_user_roles_list(self, user: FamUser) -> List[ExtRoleWithScopeSchema]:
         """
         Builds the roles list schema for a given user.
+        Example:
+        [{"applicationName":"FOM_DEV","roleName":"FOM_REVIEWER","roleDisplayName":"Reviewer","scopeType":null,"value":[]},
+         {"applicationName":"FOM_DEV","roleName":"FOM_SUBMITTER","roleDisplayName":"Submitter","scopeType":"FOREST_CLIENT",
+         "value":["00001011","00002011"]}]
         """
         roles_list = []  # hold list of roles for the user in ExtRoleWithScopeSchema
         role_index = {}  # dict to look up existing role in roles_list
