@@ -12,7 +12,7 @@ from api.app.schemas.ext.user_search import (ExtApplicationUserSearchGetSchema,
                                              ExtRoleWithScopeSchema)
 from api.app.schemas.requester import RequesterSchema
 from api.app.utils.utils import raise_http_exception
-from sqlalchemy import and_, func, select
+from sqlalchemy import and_, func, or_, select
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy.sql.selectable import Select
 
@@ -112,7 +112,8 @@ class ExtAppUserSearchService(ExtAPIInterface):
         if filter_params.last_name:
             user_role_stmt = user_role_stmt.where(FamUser.last_name.ilike(f"%{filter_params.last_name}%"))
         if filter_params.role is not None and len(filter_params.role) > 0:
-            user_role_stmt = user_role_stmt.where(FamRole.role_name.in_(filter_params.role))
+            role_conditions = [FamRole.role_name.ilike(f"{role}%") for role in filter_params.role]
+            user_role_stmt = user_role_stmt.where(or_(*role_conditions))
         return user_role_stmt
 
     def _build_user_search_results(self, users: list[FamUser]) -> list[ExtApplicationUserSearchGetSchema]:
