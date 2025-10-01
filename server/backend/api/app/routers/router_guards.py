@@ -124,10 +124,10 @@ def authorize(
 
 def authorize_by_app_id(
     application_id: int,
+    _enforce_fam_access_validated = Depends(enforce_fam_client_token),
     db: Session = Depends(database.get_db),
     access_roles=Depends(get_access_roles),
     requester: RequesterSchema = Depends(get_current_requester),
-    _enforce_fam_access_validated = Depends(enforce_fam_client_token),
 ):
     """
     This authorize_by_app_id method is used for the authorization check of a specific application,
@@ -188,11 +188,11 @@ async def get_request_role_from_id(
 def authorize_by_application_role(
     # Depends on "get_request_role_from_id()" to figure out
     # what id to use to get role from endpoint.
+    _enforce_fam_access_validated = Depends(enforce_fam_client_token),
     role: FamRole = Depends(get_request_role_from_id),
     db: Session = Depends(database.get_db),
     access_roles=Depends(get_access_roles),
     requester: RequesterSchema = Depends(get_current_requester),
-    _enforce_fam_access_validated = Depends(enforce_fam_client_token),
 ):
     """
     This authorize_by_application_role method is used for the authorization check of a specific application,
@@ -212,11 +212,11 @@ def authorize_by_application_role(
 
 async def authorize_by_privilege(
     request: Request,
+    _enforce_fam_access_validated = Depends(enforce_fam_client_token),
     role: FamRole = Depends(get_request_role_from_id),
     db: Session = Depends(database.get_db),
     access_roles=Depends(get_access_roles),
     requester: RequesterSchema = Depends(get_current_requester),
-    _enforce_fam_access_validated = Depends(enforce_fam_client_token),
 ):
     """
     This authorize_by_privilege method is used for checking if the requester has the privilege to grant/remove access of the role.
@@ -350,8 +350,8 @@ def authorize_by_user_type(
 
 
 def internal_only_action(
-    requester: RequesterSchema = Depends(get_current_requester),
     _enforce_fam_access_validated = Depends(enforce_fam_client_token),
+    requester: RequesterSchema = Depends(get_current_requester),
 ):
     if requester.user_type_code is not UserType.IDIR:
         utils.raise_http_exception(
@@ -362,8 +362,8 @@ def internal_only_action(
 
 
 def external_delegated_admin_only_action(
-    requester: RequesterSchema = Depends(get_current_requester),
     _enforce_fam_access_validated = Depends(enforce_fam_client_token),
+    requester: RequesterSchema = Depends(get_current_requester),
 ):
     if not requester.is_external_delegated_admin():
         utils.raise_http_exception(
@@ -374,9 +374,9 @@ def external_delegated_admin_only_action(
 
 
 def enforce_self_grant_guard(
+    _enforce_fam_access_validated = Depends(enforce_fam_client_token),
     requester: RequesterSchema = Depends(get_current_requester),
     target_user: TargetUserSchema = Depends(get_target_user_from_id),
-    _enforce_fam_access_validated = Depends(enforce_fam_client_token),
 ):
     """
     Verify logged on admin (RequesterSchema):
@@ -401,10 +401,10 @@ def enforce_self_grant_guard(
 
 
 def get_verified_target_user(
+    _enforce_fam_access_validated = Depends(enforce_fam_client_token),
     requester: RequesterSchema = Depends(get_current_requester),
     target_user: TargetUserSchema = Depends(get_target_user_from_id),
     role: FamRole = Depends(get_request_role_from_id),
-    _enforce_fam_access_validated = Depends(enforce_fam_client_token),
 ) -> TargetUserSchema:
     """
     Validate the target user by calling IDIM web service, and update business Guid for the found BCeID user
@@ -419,11 +419,11 @@ def get_verified_target_user(
 
 async def enforce_bceid_by_same_org_guard(
     # forbid business bceid user (requester) manage idir user's access
+    _enforce_fam_access_validated = Depends(enforce_fam_client_token),
     _enforce_user_type_auth: None = Depends(authorize_by_user_type),
     requester: RequesterSchema = Depends(get_current_requester),
     target_user: TargetUserSchema = Depends(get_target_user_from_id),
     role: FamRole = Depends(get_request_role_from_id),
-    _enforce_fam_access_validated = Depends(enforce_fam_client_token),
 ):
     """
     When requester is a BCeID user, enforce requester can only manage target user from the same organization.
@@ -482,8 +482,8 @@ async def enforce_bceid_by_same_org_guard(
 
 
 def enforce_bceid_terms_conditions_guard(
-    requester: RequesterSchema = Depends(get_current_requester),
     _enforce_fam_access_validated = Depends(enforce_fam_client_token),
+    requester: RequesterSchema = Depends(get_current_requester),
 ):
     if requester.requires_accept_tc:
         utils.raise_http_exception(
