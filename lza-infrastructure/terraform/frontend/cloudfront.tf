@@ -36,7 +36,7 @@ data "aws_api_gateway_rest_api" "fam_api_gateway_rest_api" {
 }
 
 resource "aws_cloudfront_distribution" "fam_distribution" {
-  # aliases             = ["${var.cloudfront_vanity_domain}"]
+  aliases             = ["${var.cloudfront_vanity_domain}"]
   enabled             = true
   is_ipv6_enabled     = true
   wait_for_deployment = false
@@ -49,8 +49,7 @@ resource "aws_cloudfront_distribution" "fam_distribution" {
     ssl_support_method = "sni-only"
     minimum_protocol_version = "TLSv1.2_2021"
 
-    # comment out default if using custom cert
-    cloudfront_default_certificate = true  # TODO: remove this after certificate is issued and in place and adjust above. Use AWS default for now.
+    # cloudfront_default_certificate = true  # TODO: remove this after certificate is issued and in place and adjust above. Use AWS default for now.
   }
 
   # web distribution S3 origin
