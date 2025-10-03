@@ -34,6 +34,7 @@ generate "tfvars" {
   if_exists         = "overwrite"
   disable_signature = true
   contents          = <<-EOF
+  licence_plate = "${ local.aws_license_plate }"
 EOF
 }
 
