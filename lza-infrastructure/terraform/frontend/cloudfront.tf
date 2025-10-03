@@ -127,7 +127,7 @@ resource "aws_cloudfront_function" "fam_api_viewer_request_function" {
   name    = "fam-${var.licence_plate}-${var.target_env}-api-viewer-request-rewriteApiPath-function" # needs global uniqueness
   runtime = "cloudfront-js-2.0"
 
-  comment = "Viewer request function for API Gateway origin to rewrite /api/... path to /${var.api_gateway_stage}/... path"
+  comment = "Viewer request function for API Gateway origin to rewrite /api/... path to /v1/... path"
 
   code = <<EOF
 function handler(event) {
