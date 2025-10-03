@@ -63,7 +63,7 @@ resource "aws_cloudfront_distribution" "fam_distribution" {
 
   # FAM API API Gateway origin
   origin {
-    domain_name = "${aws_api_gateway_rest_api.fam_api_gateway_rest_api.id}.execute-api.${data.aws_region.current.name}.amazonaws.com"
+    domain_name = "${data.aws_api_gateway_rest_api.fam_api_gateway_rest_api.id}.execute-api.${data.aws_region.current.name}.amazonaws.com"
     origin_id   = local.consumer_fam_api_origin_id
     custom_origin_config {
       https_port             = 443
