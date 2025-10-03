@@ -4,6 +4,8 @@ locals {
   consumer_fam_api_origin_id = "consumer_fam_api_gateway_origin"
 }
 
+data "aws_region" "current" {}
+
 resource "aws_s3_bucket" "web_distribution" {
   bucket = local.flyway_scripts_bucket_name
   #acl    = "public-read"
