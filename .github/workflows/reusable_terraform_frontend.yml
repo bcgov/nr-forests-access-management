@@ -65,6 +65,7 @@ jobs:
               run: |
                   # Run terraform
                   cat > github.auto.tfvars <<EOF
+                  licence_plate = "${{ secrets.licenceplate }}"
                   oidc_idir_idp_client_secret = "NA"
                   oidc_bceid_business_idp_client_secret = "NA"
                   db_cluster_snapshot_identifier = "NA"

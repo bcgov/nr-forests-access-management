@@ -3,6 +3,11 @@ variable "target_env" {
   type        = string
 }
 
+variable "licence_plate" {
+  description = "AWS project license plate"
+  type        = string
+}
+
 variable "cloudfront_vanity_domain" {
   description = "Alternate vanity domain to use for cloudfront distribution for frontend"
   type = string
