@@ -1,5 +1,7 @@
 locals {
   flyway_scripts_bucket_name = "fam-cloudfront-bucket-${var.licence_plate}-${var.target_env}"
+  web_distribution_origin_id = "web_distribution_origin"
+  consumer_fam_api_origin_id = "consumer_fam_api_gateway_origin"
 }
 
 resource "aws_s3_bucket" "web_distribution" {
@@ -44,11 +46,23 @@ resource "aws_cloudfront_distribution" "fam_distribution" {
     cloudfront_default_certificate = true  # TODO: remove this after certificate is issued and in place and adjust above. Use AWS default for now.
   }
 
+  # web distribution S3 origin
   origin {
     domain_name = aws_s3_bucket.web_distribution.bucket_regional_domain_name
-    origin_id   = "web_distribution_origin"
+    origin_id   = local.web_distribution_origin_id
     s3_origin_config {
       origin_access_identity = aws_cloudfront_origin_access_identity.web_distribution.cloudfront_access_identity_path
+    }
+  }
+
+  # FAM API API Gateway origin
+  origin {
+    domain_name = "${aws_api_gateway_rest_api.fam_api_gateway_rest_api.id}.execute-api.${data.aws_region.current.name}.amazonaws.com"
+    origin_id   = local.consumer_fam_api_origin_id
+    custom_origin_config {
+      https_port             = 443
+      origin_protocol_policy = "https-only"
+      origin_ssl_protocols   = ["TLSv1.2"]
     }
   }
 
@@ -63,7 +77,7 @@ resource "aws_cloudfront_distribution" "fam_distribution" {
   default_cache_behavior {
     allowed_methods  = ["GET", "HEAD", "OPTIONS"]
     cached_methods   = ["GET", "HEAD", "OPTIONS"]
-    target_origin_id = "web_distribution_origin"
+    target_origin_id = local.web_distribution_origin_id
 
     forwarded_values {
       query_string = true
@@ -77,8 +91,27 @@ resource "aws_cloudfront_distribution" "fam_distribution" {
     min_ttl                = 0
     default_ttl            = 300
     max_ttl                = 86400
+  }
 
+  # FAM Consumer API API Gateway origin behavior
+  ordered_cache_behavior {
+    # maps request URL path "/api/..." to API Gateway origin
+    path_pattern           = "/api/*"
+    target_origin_id       = local.consumer_fam_api_origin_id
 
+    viewer_protocol_policy = "https-only"
+    allowed_methods        = ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"]
+
+    # using AWS managed CachingDisabled policy (Recommended for API Gateway)
+    cache_policy_id    = "4135ea2d-6df8-44a3-9df3-4b5a84be39ad"
+
+    # using AWS managed AllViewerExceptHostHeader policy (Recommended for API Gateway)
+    origin_request_policy_id = "b689b0a8-53d0-40ab-baf2-68738e2966ac"
+
+    function_association {
+      event_type   = "viewer-request"
+      function_arn = aws_cloudfront_function.fam_api_viewer_request_function.arn
+    }
   }
 
   restrictions {
@@ -87,6 +120,31 @@ resource "aws_cloudfront_distribution" "fam_distribution" {
       locations        = ["CA", "US"]
     }
   }
+}
+
+resource "aws_cloudfront_function" "fam_api_viewer_request_function" {
+  # API Gateway stage name is 'v1', need to rewrite /api/... to /v1/... so API Gateway can catch and route it properly.
+  name    = "fam-${var.licence_plate}-${var.target_env}-api-viewer-request-rewriteApiPath-function" # needs global uniqueness
+  runtime = "cloudfront-js-2.0"
+
+  comment = "Viewer request function for API Gateway origin to rewrite /api/... path to /${var.api_gateway_stage}/... path"
+
+  code = <<EOF
+function handler(event) {
+  var request = event.request;
+  // Add custom headers
+  request.headers["x-system-distribute"] = { value: "FAM" };
+  request.headers["x-env"] = { value: "${var.target_env}" };
+  request.headers["x-request-id"] = { value: `${Math.random().toString(36).substring(2)}-${new Date().toISOString()}` };
+
+  // Rewrite /api/* to /v1/*
+  if (request.uri.startsWith("/api/")) {
+      request.uri = request.uri.replace("/api/", "/v1/");
+  }
+
+  return request;
+}
+EOF
 }
 
 locals {
