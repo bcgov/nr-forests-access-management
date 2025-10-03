@@ -64,6 +64,7 @@ resource "aws_cloudfront_distribution" "fam_distribution" {
     domain_name = "${data.aws_api_gateway_rest_api.fam_api_gateway_rest_api.id}.execute-api.${data.aws_region.current.name}.amazonaws.com"
     origin_id   = local.consumer_fam_api_origin_id
     custom_origin_config {
+      http_port              = 80
       https_port             = 443
       origin_protocol_policy = "https-only"
       origin_ssl_protocols   = ["TLSv1.2"]
