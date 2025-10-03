@@ -4,8 +4,6 @@ locals {
   consumer_fam_api_origin_id = "consumer_fam_api_gateway_origin"
 }
 
-data "aws_region" "current" {}
-
 resource "aws_s3_bucket" "web_distribution" {
   bucket = local.flyway_scripts_bucket_name
   #acl    = "public-read"
@@ -29,6 +27,12 @@ data "aws_iam_policy_document" "web_distribution" {
 resource "aws_s3_bucket_policy" "web_distribution" {
   bucket = aws_s3_bucket.web_distribution.id
   policy = data.aws_iam_policy_document.web_distribution.json
+}
+
+data "aws_region" "current" {}
+
+data "aws_api_gateway_rest_api" "fam_api_gateway_rest_api" {
+  name = "fam-api-lambda-tools-gateway"   # must match name in api-gateway.tf
 }
 
 resource "aws_cloudfront_distribution" "fam_distribution" {
