@@ -134,7 +134,7 @@ function handler(event) {
   // Add custom headers
   request.headers["x-system-distribute"] = { value: "FAM" };
   request.headers["x-env"] = { value: "${var.target_env}" };
-  request.headers["x-request-id"] = { value: `\$${Math.random().toString(36).substring(2)}-\$${new Date().toISOString()}` };
+  request.headers["x-request-id"] = { value: `$${Math.random().toString(36).substring(2)}-$${new Date().toISOString()}` };
 
   // Rewrite /api/* to /v1/*
   if (request.uri.startsWith("/api/")) {
