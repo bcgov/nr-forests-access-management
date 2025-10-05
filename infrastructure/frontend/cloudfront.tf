@@ -35,7 +35,7 @@ data "aws_api_gateway_rest_api" "fam_api_gateway_rest_api" {
   name = "fam-api-lambda-tools-gateway"   # must match name in api-gateway.tf
 }
 
-resource "aws_cloudfront_distribution" "fam_distribution" {
+resource "aws_cloudfront_distribution" "web_distribution" {
   aliases             = ["${var.cloudfront_vanity_domain}"]
   enabled             = true
   is_ipv6_enabled     = true
