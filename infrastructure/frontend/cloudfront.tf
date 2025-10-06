@@ -111,6 +111,11 @@ resource "aws_cloudfront_distribution" "web_distribution" {
   }
 
   # FAM Consumer API API Gateway origin behavior
+  /*
+  This maps request URL path "/api/..." to API Gateway origin.
+  Reference to https://apps.nrs.gov.bc.ca/int/confluence/display/FSAST1/Users+Search+API for external consumer API specs.
+  Consumer API uses custom domain with intended path "/api/*" mapping. E.g., /api/external/v1/users
+  */
   ordered_cache_behavior {
     # maps request URL path "/api/..." to API Gateway origin
     path_pattern           = "/api/*"
@@ -126,6 +131,7 @@ resource "aws_cloudfront_distribution" "web_distribution" {
     # using AWS managed AllViewerExceptHostHeader policy (Recommended for API Gateway)
     origin_request_policy_id = "b689b0a8-53d0-40ab-baf2-68738e2966ac"
 
+    # Link function to rewrite /api/... to /v1/... (API Gateway stage name is 'v1')
     function_association {
       event_type   = "viewer-request"
       function_arn = aws_cloudfront_function.fam_api_viewer_request_function.arn
@@ -145,8 +151,12 @@ resource "aws_cloudfront_distribution" "web_distribution" {
 
 }
 
+/*
+This is the CloudFront function for the FAM API Gateway viewer request.
+API Gateway stage name is 'v1', need to rewrite /api/... to /v1/...
+It rewrites the request path from /api/... to /v1/... so that the API Gateway can route it properly.
+*/
 resource "aws_cloudfront_function" "fam_api_viewer_request_function" {
-  # API Gateway stage name is 'v1', need to rewrite /api/... to /v1/... so API Gateway can catch and route it properly.
   name    = "fam-${var.licence_plate}-${var.target_env}-api-viewer-request-rewriteApiPath-function" # needs global uniqueness
   runtime = "cloudfront-js-2.0"
 
@@ -156,8 +166,7 @@ resource "aws_cloudfront_function" "fam_api_viewer_request_function" {
 function handler(event) {
   var request = event.request;
   // Add custom headers
-  request.headers["x-system-distribute"] = { value: "FAM" };
-  request.headers["x-env"] = { value: "${var.target_env}" };
+  request.headers["x-env"] = { value: "FAM_${var.target_env}" };
   request.headers["x-request-id"] = { value: `$${Math.random().toString(36).substring(2)}-$${new Date().toISOString()}` };
 
   // Rewrite /api/* to /v1/*
