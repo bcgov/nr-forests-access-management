@@ -127,6 +127,11 @@ resource "aws_cloudfront_distribution" "web_distribution" {
       locations        = ["CA", "US"]
     }
   }
+
+  lifecycle {
+    prevent_destroy = true
+  }
+
 }
 
 resource "aws_cloudfront_function" "fam_api_viewer_request_function" {
