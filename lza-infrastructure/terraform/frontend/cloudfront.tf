@@ -82,9 +82,7 @@ resource "aws_cloudfront_distribution" "web_distribution" {
       origin_protocol_policy = "https-only"
       origin_ssl_protocols   = ["TLSv1.2"]
 
-      connection_attempts      = 3        # default is 3
       origin_read_timeout      = 60      # default is 30, increase for cold starts
-      connection_timeout       = 15       # default is 10
       origin_keepalive_timeout = 15       # default is 5, increase for persistent connections
     }
   }
