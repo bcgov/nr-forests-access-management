@@ -35,6 +35,17 @@ data "aws_api_gateway_rest_api" "fam_api_gateway_rest_api" {
   name = "fam-api-lambda-tools-gateway"   # must match name in api-gateway.tf
 }
 
+/*
+This is the CloudFront distribution for the FAM web application and the FAM Consumer API (API Gateway).
+It has two origins:
+1. S3 bucket origin for the web application static files
+2. API Gateway origin for the FAM Consumer API
+
+Note! Initially the distribution was named "web_distribution" because it only had S3 origin for the web app.
+      Do not rename it to other distribution resource name as Terraform will destroy and recreate the distribution
+      resource (with new distribution domain name) and that will cause DNS (custom domain) entry to fail due to the
+      target distribution domain name change; and deployment will fail at frontend and distribution will be empty.
+*/
 resource "aws_cloudfront_distribution" "web_distribution" {
   # aliases             = ["${var.cloudfront_vanity_domain}"]
   enabled             = true
