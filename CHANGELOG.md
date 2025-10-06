@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.44.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.43.0...v1.44.0) (2025-09-24)
+
+
+### Features
+
+* [#1987](https://github.com/bcgov/nr-forests-access-management/issues/1987) Flyway to add new ILCR_PROD and roles. ([#1988](https://github.com/bcgov/nr-forests-access-management/issues/1988)) ([ddda312](https://github.com/bcgov/nr-forests-access-management/commit/ddda3129626260625c1b961f04fa7cb5b226eb56))
+
 ## [1.43.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.42.0...v1.43.0) (2025-09-19)
 
 
