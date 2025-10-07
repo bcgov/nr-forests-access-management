@@ -23,7 +23,7 @@ LOGGER = logging.getLogger(__name__)
 class ExtAppUserSearchService(ExtAPIInterface):
     """
     Service to handle external application user search requests for external API calls.
-    The service only allows requesters with proper application role (with call_api permission)
+    The service only allows requesters with proper application role (with call_api_flag permission)
     to perform the search.
     Ref API spec at https://apps.nrs.gov.bc.ca/int/confluence/display/FSAST1/Users+Search+API
     """
