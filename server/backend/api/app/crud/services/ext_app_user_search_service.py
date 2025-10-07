@@ -207,12 +207,19 @@ class ExtAppUserSearchService(ExtAPIInterface):
         elif idp_type == IDPType.BCEID:
             user_role_stmt = user_role_stmt.where(FamUser.user_type_code == UserType.BCEID)
 
-        else:
+        elif idp_type == IDPType.BCSC:
             user_role_stmt = user_role_stmt.where(
                 and_(
                     FamUser.user_type_code != UserType.IDIR,
                     FamUser.user_type_code != UserType.BCEID
                 )
+            )
+
+        else:
+            raise_http_exception(
+                status_code=HTTPStatus.BAD_REQUEST,
+                error_code=ERROR_CODE_INVALID_REQUEST_PARAMETER,
+                error_msg=f"Unsupported filter idp_type: {idp_type}"
             )
 
         return user_role_stmt
