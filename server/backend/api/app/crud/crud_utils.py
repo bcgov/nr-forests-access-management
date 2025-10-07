@@ -138,7 +138,7 @@ def allow_ext_call_api_permission(db: Session, application_id: int, user_name: s
     """
     This is used for external API call
     Returns True if the request(user) has permission to call the API for the given
-    application with permission call_api=True at associated roles.
+    application with permission call_api_flag=True at associated roles.
     :param db: SQLAlchemy session
     :param application_id: Application ID
     :param user_name: User name to check
@@ -151,6 +151,6 @@ def allow_ext_call_api_permission(db: Session, application_id: int, user_name: s
         .join(models.FamRole)
         .where(models.FamUser.user_name == user_name)
         .where(models.FamRole.application_id == application_id)
-        .where(models.FamRole.call_api == True)
+        .where(models.FamRole.call_api_flag == True)
     )
     return db.execute(select(exists(stmt))).scalar()

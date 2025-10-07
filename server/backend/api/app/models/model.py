@@ -630,7 +630,7 @@ class FamRole(Base):
         + "Users should only be assigned to roles where "
         + "role_type=concrete",
     )
-    call_api = Column(
+    call_api_flag = Column(
         Boolean,
         nullable=False,
         server_default=text('FALSE'),

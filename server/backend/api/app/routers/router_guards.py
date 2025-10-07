@@ -514,7 +514,7 @@ def authorize_ext_api_by_app_role(
         utils.raise_http_exception(
             status_code=HTTPStatus.FORBIDDEN,
             error_code=ERROR_CODE_INVALID_OPERATION,
-            error_msg=f"Token contains invalid application client id {app_client_id}.",
+            error_msg=f"Token contains invalid application client id {utils.mask_string(app_client_id, 5)}",
         )
 
     has_call_api_permission: bool = crud_utils.allow_ext_call_api_permission(
