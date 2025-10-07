@@ -1,4 +1,5 @@
 import logging
+import math
 from http import HTTPStatus
 from typing import List
 
@@ -66,7 +67,7 @@ class ExtAppUserSearchService(ExtAPIInterface):
         total = self.db.execute(select(func.count()).select_from(user_id_stmt.subquery())).scalar()
         page = page_params.page or EXT_MIN_PAGE
         size = page_params.size or EXT_MIN_PAGE_SIZE
-        page_count: int = (total + size - 1) // size
+        page_count: int = math.ceil(total / size)
         LOGGER.debug(f"Total users found: {total}, Page count: {page_count}")
 
         # Fetch paginated users with roles
