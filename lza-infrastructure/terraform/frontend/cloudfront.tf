@@ -150,6 +150,9 @@ resource "aws_cloudfront_distribution" "web_distribution" {
   }
 
   lifecycle {
+    # Prevent accidental deletion of the CloudFront distribution.
+    # DNS (custom domain) entry is associated with the distribution and will fail if
+    # the distribution is deleted and recreated.
     prevent_destroy = true
   }
 
