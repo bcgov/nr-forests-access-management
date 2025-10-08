@@ -32,7 +32,7 @@ resource "aws_s3_bucket_policy" "web_distribution" {
 data "aws_region" "current" {}
 
 data "aws_api_gateway_rest_api" "fam_api_gateway_rest_api" {
-  name = "fam-api-lambda-tools-gateway"   # must match name in api-gateway.tf
+  name = "fam-api-lambda-${var.target_env}-gateway" # must match name in api-gateway.tf; e.g., "fam-api-lambda-tools-gateway"
 }
 
 /*
