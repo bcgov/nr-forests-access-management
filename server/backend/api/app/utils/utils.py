@@ -66,3 +66,16 @@ def is_success_response(response: Response):
         HTTPStatus.OK, HTTPStatus.CREATED, HTTPStatus.ACCEPTED, HTTPStatus.NO_CONTENT
     ]
     return response.status_code in SUCCESS_LIST
+
+
+def mask_string(s, visible_length):
+    """
+    Just a simple utility function to mask the string with '*', for the
+    first n visible_length will be visible.
+
+    s             : string to be masked.
+    visible_length: first n length will be visible.
+    """
+    if len(s) <= visible_length:
+        return s
+    return s[:visible_length] + '*' * (len(s) - visible_length)

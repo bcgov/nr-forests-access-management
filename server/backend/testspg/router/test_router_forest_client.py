@@ -5,7 +5,7 @@ import pytest
 import starlette
 import testspg.jwt_utils as jwt_utils
 from api.app.constants import FamForestClientStatusType
-from api.app.main import apiPrefix
+from api.app.main import internal_api_prefix
 from api.app.schemas import FamForestClientSchema
 from fastapi.testclient import TestClient
 from testspg.constants import (FC_NUMBER_EXISTS_ACTIVE_00000001,
@@ -17,7 +17,7 @@ from testspg.constants import (FC_NUMBER_EXISTS_ACTIVE_00000001,
 
 LOGGER = logging.getLogger(__name__)
 dummy_test_application_id_search_param = FOM_DEV_APPLICATION_ID
-endPoint_search = f"{apiPrefix}/forest-clients/search?application_id={dummy_test_application_id_search_param}"
+endPoint_search = f"{internal_api_prefix}/forest-clients/search?application_id={dummy_test_application_id_search_param}"
 
 
 @pytest.mark.parametrize(
