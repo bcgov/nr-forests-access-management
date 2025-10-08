@@ -289,6 +289,7 @@
             <parent column="role_type_code" foreignKey="reffam_role_type" implied="false" onDeleteCascade="false" schema="app_fam" table="fam_role_type"/>
          </column>
          <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="display_name" nullable="true" remarks="Human redable name for the role" size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="false" digits="0" id="12" name="call_api_flag" nullable="true" remarks="Indicates whether the role has permission to call FAM external APIs." size="1" type="bool" typeCode="-7"/>
          <primaryKey column="role_id" sequenceNumberInPK="1"/>
          <index name="fam_rle_pk" unique="true">
             <column ascending="true" name="role_id"/>
