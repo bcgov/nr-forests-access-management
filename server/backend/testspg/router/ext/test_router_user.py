@@ -151,3 +151,64 @@ def test_user_search_query_params(
             response = test_client_fixture.get(endPoint, headers=auth_headers, params=invalid_params)
             assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
             assert "detail" in response.json()
+
+# ----------- Tests for filter_params parameter schema validation ----------- #
+
+def test_user_search_filter_params_schema_validation(
+    test_client_fixture: TestClient,
+    auth_headers,
+    override_depends__get_current_requester,
+):
+    override_depends__get_current_requester()
+    captured_args = {}
+
+    def capture_args(page_params, filter_params):
+        captured_args.update(filter_params.dict())
+        return {"meta": {"total": 0,"pageCount": 0, "page": 1, "size": 10}, "users": []}
+
+    with patched_user_search_service(mock_app) as MockService:
+        mock_service_instance = MockService.return_value
+        mock_service_instance.search_users.side_effect = capture_args
+
+        # Valid: all fields
+        params = {
+            "idpType": "IDIR",
+            "idpUsername": "bobuser",
+            "firstName": "Bob",
+            "lastName": "Johnson",
+            "role": "FOM_SUBMITTER"
+        }
+        response = test_client_fixture.get(endPoint, headers=auth_headers, params=params)
+        assert response.status_code == status.HTTP_200_OK
+        assert captured_args["idp_type"] == "IDIR"
+        assert captured_args["idp_username"] == "bobuser"
+        assert captured_args["first_name"] == "Bob"
+        assert captured_args["last_name"] == "Johnson"
+        assert captured_args["role"] == ["FOM_SUBMITTER"]
+
+        # Valid: single role
+        params = {"role": "FOM_SUBMITTER"}
+        response = test_client_fixture.get(endPoint, headers=auth_headers, params=params)
+        assert response.status_code == status.HTTP_200_OK
+        assert captured_args["role"] == ["FOM_SUBMITTER"]
+
+        # Valid: no filter params
+        response = test_client_fixture.get(endPoint, headers=auth_headers)
+        assert response.status_code == status.HTTP_200_OK
+
+    # Invalid scenarios (should return 422)
+    invalid_filter_params_list = [
+        {"idpType": "INVALID"},  # not in allowed values
+        {"idpType": "BCEIDEXTRA"},  # too long
+        {"idpUsername": "a" * 21},  # too long
+        {"firstName": "a" * 51},  # too long
+        {"lastName": "a" * 51},  # too long
+        {"role": "AAAAAAAAAAAAAAAAAAAAAAAAAA"},  # role name too long
+        {"role": ",".join([f"ROLE{i}" for i in range(6)])},  # too many roles
+    ]
+    for invalid_params in invalid_filter_params_list:
+        with patched_user_search_service(mock_app) as MockService:
+            mock_service_instance = MockService.return_value
+            mock_service_instance.search_users.side_effect = capture_args
+            response = test_client_fixture.get(endPoint, headers=auth_headers, params=invalid_params)
+            assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
