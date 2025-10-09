@@ -85,14 +85,6 @@ resource "aws_cloudfront_distribution" "web_distribution" {
     }
   }
 
-  # Required for SPA application to redirect requests to deep links to root, which loads index.html, which loads the Vue app
-  # and then the Vue router properly resolves the deep link.
-  custom_error_response {
-    error_code = 403
-    response_code = 200
-    response_page_path = "/"
-  }
-
   # Web distribution behaviors
   default_cache_behavior {
     allowed_methods  = ["GET", "HEAD", "OPTIONS"]
