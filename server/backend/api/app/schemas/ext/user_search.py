@@ -5,7 +5,8 @@ from typing import List, Optional
 from api.app.constants import (EXT_APPLICATION_NAME_MAX_LEN,
                                EXT_MAX_FIRST_NAME_LEN,
                                EXT_MAX_IDP_USERNAME_LEN, EXT_MAX_LAST_NAME_LEN,
-                               EXT_MAX_ROLE_LEN, EXT_ROLE_DISPLAY_NAME_MAX_LEN,
+                               EXT_MAX_ROLE_LEN, EXT_MAX_ROLE_LIST_LEN,
+                               EXT_ROLE_DISPLAY_NAME_MAX_LEN,
                                FIRST_NAME_MAX_LEN, LAST_NAME_MAX_LEN,
                                USER_NAME_MAX_LEN, IDPType, ScopeType)
 from fastapi import Query
@@ -48,7 +49,10 @@ class ExtApplicationUserSearchSchema(BaseModel):
         alias="lastName"
     )
     role: Optional[List[str]] = Field(
-        Query(default=None, description=f"List of user roles (code, e.g., 'ILCR_SUBMITTER') to filter by (each max {EXT_MAX_ROLE_LEN} chars)"),
+        Query(
+            default=None,
+            max_length=EXT_MAX_ROLE_LIST_LEN,
+            description=f"List of user roles (code, e.g., 'ILCR_SUBMITTER') to filter by (each max {EXT_MAX_ROLE_LEN} chars)"),
         alias="role"
     )
 

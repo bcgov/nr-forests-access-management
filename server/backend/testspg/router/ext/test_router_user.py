@@ -204,7 +204,7 @@ def test_user_search_filter_params_schema_validation(
         {"firstName": "a" * 51},  # too long
         {"lastName": "a" * 51},  # too long
         {"role": "AAAAAAAAAAAAAAAAAAAAAAAAAA"},  # role name too long
-        {"role": ",".join([f"ROLE{i}" for i in range(6)])},  # too many roles
+        {"role": [f"ROLE{i}" for i in range(6)]},  # too many roles, multiple roles: send as list for query param
     ]
     for invalid_params in invalid_filter_params_list:
         with patched_user_search_service(mock_app) as MockService:
