@@ -39,9 +39,9 @@ def setup_users_and_roles_for_ext_user_search_tests(db_pg_session):
     app_id = FOM_DEV_APPLICATION_ID
 
     # Create roles
-    role_admin = create_role(db_pg_session, app_id, "ADMIN", "Admin")
-    role_submitter = create_role(db_pg_session, app_id, "SUBMITTER", "Submitter")
-    role_reviewer = create_role(db_pg_session, app_id, "REVIEWER", "Reviewer")
+    role_admin = create_role(db_pg_session, app_id, "TEST_ADMIN", "Admin")
+    role_submitter = create_role(db_pg_session, app_id, "TEST_SUBMITTER", "Submitter")
+    role_reviewer = create_role(db_pg_session, app_id, "TEST_REVIEWER", "Reviewer")
     # Create users with username ext_search_user[n]
     user1 = create_user(db_pg_session, "ext_search_user1", "Alice", "Smith", UserType.IDIR, "GUID1", [role_admin])
     user2 = create_user(db_pg_session, "ext_search_user2", "Bob", "Jones", UserType.BCEID, "GUID2", [role_submitter])
@@ -266,11 +266,12 @@ def test_search_users_idp_type_filter_invalid_type_exception(mocker, db_pg_sessi
         # Last name exact
         (dict(idp_type=None, role=None, idp_username=None, first_name=None, last_name="Smith"), 2, lambda result: all(u.last_name.lower() == "smith" for u in result.users)),
         # Single role
-        (dict(idp_type=None, role=["ADMIN"], idp_username=None, first_name=None, last_name=None), 2, lambda result: True),
+        (dict(idp_type=None, role=["TEST_ADMIN"], idp_username=None, first_name=None, last_name=None), 2, lambda result: True),
         # Multiple roles
-        (dict(idp_type=None, role=["ADMIN", "SUBMITTER"], idp_username=None, first_name=None, last_name=None), 3, lambda result: True),
+        (dict(idp_type=None, role=["TEST_ADMIN", "TEST_SUBMITTER"], idp_username=None, first_name=None, last_name=None), 3, lambda result: True),
         # Combined fields
-        (dict(idp_type=IDPType.IDIR, role=["ADMIN"], idp_username=None, first_name="alice", last_name=None), 2, lambda result: all(u.idP_type == IDPType.IDIR for u in result.users) and all("alice" in u.first_name.lower() for u in result.users) and all(any(getattr(r, "role_name", None) == "ADMIN" for r in u.roles) for u in result.users)),
+        (dict(idp_type=IDPType.IDIR, role=["TEST_ADMIN"], idp_username=None, first_name="alice", last_name=None), 2,
+         lambda result: all(u.idP_type == IDPType.IDIR for u in result.users) and all("alice" in u.first_name.lower() for u in result.users) and all(any(getattr(r, "role_name", None) == "TEST_ADMIN" for r in u.roles) for u in result.users)),
         # Empty role list returns all
         (dict(idp_type=None, role=[], idp_username=None, first_name=None, last_name=None), 4, lambda result: True),
         # No filters returns all
