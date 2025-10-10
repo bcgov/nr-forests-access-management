@@ -98,7 +98,7 @@ class ExtApplicationUserSearchGetSchema(BaseModel):
         max_length=FIRST_NAME_MAX_LEN)]] = Field(default=None, alias="firstName")
     last_name: Optional[Annotated[str, StringConstraints(
         max_length=LAST_NAME_MAX_LEN)]] = Field(default=None, alias="lastName")
-    idp_user_name: Optional[Annotated[str, StringConstraints(
+    idp_username: Optional[Annotated[str, StringConstraints(
         max_length=USER_NAME_MAX_LEN)]] = Field(default=None, alias="idpUsername")
     idp_user_guid: Optional[str] = Field(default=None, alias="idpUserGuid")
     idP_type: Optional[IDPType] = Field(default=None, alias="idpType")
