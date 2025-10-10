@@ -115,7 +115,7 @@ def get_root_path():
 _client_id = None
 
 
-def get_oidc_client_id():
+def get_fam_oidc_client_id():
 
     # Outside of AWS, you can set COGNITO_CLIENT_ID
     # Inside AWS, you have to get this value from an AWS Secret

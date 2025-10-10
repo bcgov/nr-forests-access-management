@@ -49,7 +49,7 @@ def create_user_role_assignment_many(
     role_assignment_request: FamUserRoleAssignmentCreateSchema,
     request: Request,
     db: Session = Depends(database.get_db),
-    token_claims: dict = Depends(jwt_validation.validate_token),
+    token_claims: dict = Depends(jwt_validation.enforce_fam_client_token),
     requester: RequesterSchema = Depends(get_current_requester),
     target_user: TargetUserSchema = Depends(get_verified_target_user),
 ):
