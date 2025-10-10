@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.45.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.44.0...v1.45.0) (2025-10-10)
+
+
+### Features
+
+* [#1985](https://github.com/bcgov/nr-forests-access-management/issues/1985) Consumer Api - User Search  ([#1990](https://github.com/bcgov/nr-forests-access-management/issues/1990)) ([b302c7e](https://github.com/bcgov/nr-forests-access-management/commit/b302c7ed94d2c2cd228c2463d6185408c657439a))
+* [#1993](https://github.com/bcgov/nr-forests-access-management/issues/1993) New CloudFront Origin - Terraform ([#1995](https://github.com/bcgov/nr-forests-access-management/issues/1995)) ([9ef1c54](https://github.com/bcgov/nr-forests-access-management/commit/9ef1c549bd8c56c259de25fd87e2c0d380ce9e7f))
+
 ## [1.44.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.43.0...v1.44.0) (2025-09-24)
 
 
