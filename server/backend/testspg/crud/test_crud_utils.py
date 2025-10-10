@@ -1,10 +1,14 @@
 import logging
-import pytest
+
 import api.app.models.model as model
-from api.app.schemas import FamUserSchema
+import pytest
+from api.app.constants import UserType
 from api.app.crud import crud_user, crud_utils
+from api.app.models.model import FamApplication, FamRole, FamUserRoleXref
+from api.app.schemas import FamUserSchema
 from sqlalchemy.orm import Session
-from testspg.constants import TEST_NEW_USER
+from testspg.constants import (FOM_DEV_APPLICATION_ID, TEST_CREATOR,
+                               TEST_NEW_USER, TEST_USER_GUID_IDIR)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -86,3 +90,47 @@ def test_get_next(db_pg_session: Session):
 
     next_value_after = crud_utils.get_next(db=db_pg_session, model=fam_user_model)
     assert next_value_after > next_value_before
+
+
+def test_allow_ext_call_api_permission_true(db_pg_session, setup_new_user):
+    """
+    Test that allow_ext_call_api_permission returns True when user has a role with call_api_flag=True for the application.
+    """
+
+    # Setup: create application, role with call_api_flag=True, and assign to user
+    app = db_pg_session.query(FamApplication).filter_by(application_id=FOM_DEV_APPLICATION_ID).first()
+    user = setup_new_user(**{ "user_type": UserType.IDIR,  "user_name": "test_user", "user_guid": TEST_USER_GUID_IDIR })
+    role = FamRole(
+        role_name="TEST_ROLE",
+        application_id=app.application_id,
+        role_type_code="C",
+        call_api_flag=True,
+        create_user=TEST_CREATOR,
+    )
+    db_pg_session.add(role)
+    db_pg_session.flush()
+    xref = FamUserRoleXref(user_id=user.user_id, role_id=role.role_id, create_user=TEST_CREATOR)
+    db_pg_session.add(xref)
+    db_pg_session.flush()
+
+    # Should return True
+    assert crud_utils.allow_ext_call_api_permission(db_pg_session, app.application_id, user.user_name) is True
+
+
+def test_allow_ext_call_api_permission_false(db_pg_session, setup_new_user):
+    app = db_pg_session.query(FamApplication).filter_by(application_id=FOM_DEV_APPLICATION_ID).first()
+    user = setup_new_user(**{ "user_type": UserType.IDIR,  "user_name": "test_user", "user_guid": TEST_USER_GUID_IDIR })
+    role = FamRole(
+        role_name="TEST_ROLE",
+        application_id=app.application_id,
+        role_type_code="C",
+        call_api_flag=False,
+        create_user=TEST_CREATOR,
+    )
+    db_pg_session.add(role)
+    db_pg_session.flush()
+    xref = FamUserRoleXref(user_id=user.user_id, role_id=role.role_id, create_user=TEST_CREATOR)
+    db_pg_session.add(xref)
+    db_pg_session.flush()
+    # Should return False
+    assert crud_utils.allow_ext_call_api_permission(db_pg_session, app.application_id, user.user_name) is False
