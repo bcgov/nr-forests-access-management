@@ -78,7 +78,7 @@ def contains_any_insensitive(obj, search_attributes: List[str], keyword: str) ->
         for attr_name in search_attributes)
     return is_any
 
-def create_user(db, user_name, first_name, last_name, user_type_code, user_guid, roles):
+def create_user(db_pg_session, user_name, first_name, last_name, user_type_code, user_guid, roles):
     user = FamUser(
         user_name=user_name,
         first_name=first_name,
@@ -87,16 +87,16 @@ def create_user(db, user_name, first_name, last_name, user_type_code, user_guid,
         user_guid=user_guid,
         create_user=TEST_CREATOR
     )
-    db.add(user)
-    db.flush()
+    db_pg_session.add(user)
+    db_pg_session.flush()
     for role in roles:
         xref = FamUserRoleXref(user_id=user.user_id, role_id=role.role_id, create_user=TEST_CREATOR)
-        db.add(xref)
-    db.flush()
-    user.fam_user_role_xref = db.query(FamUserRoleXref).filter_by(user_id=user.user_id).all()
+        db_pg_session.add(xref)
+    db_pg_session.flush()
+    user.fam_user_role_xref = db_pg_session.query(FamUserRoleXref).filter_by(user_id=user.user_id).all()
     return user
 
-def create_role(db, application_id, role_name, display_name, parent_role=None, forest_client_number=None):
+def create_role(db_pg_session, application_id, role_name, display_name, parent_role=None, forest_client_number=None):
     role = FamRole(
         application_id=application_id,
         role_name=role_name,
@@ -106,8 +106,8 @@ def create_role(db, application_id, role_name, display_name, parent_role=None, f
         create_user=TEST_CREATOR,
         role_type_code=RoleType.ROLE_TYPE_CONCRETE
     )
-    db.add(role)
-    db.flush()
+    db_pg_session.add(role)
+    db_pg_session.flush()
     if forest_client_number:
         from unittest.mock import MagicMock
         role.forest_client_relation = MagicMock()

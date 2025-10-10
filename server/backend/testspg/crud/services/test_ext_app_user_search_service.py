@@ -74,6 +74,8 @@ def test_is_request_allowed_false(mocker, db_pg_session):
 # -- Tests search_users function.
 
 def test_search_users_permission_denied(mocker, db_pg_session):
+    """
+    Test that search_users raises an exception when permission is denied to call the API."""
     #  Patch is_request_allowed to return False
     mocker.patch.object(ExtAppUserSearchService, "is_request_allowed", return_value=False)
     requester = MagicMock()
@@ -81,18 +83,20 @@ def test_search_users_permission_denied(mocker, db_pg_session):
     page_params = MagicMock()
     filter_params = MagicMock()
 
-    # Act & Assert: Expect raise_http_exception to be called
     with pytest.raises(Exception) as exc_info:
         service.search_users(page_params, filter_params)
-    # Check exception message and status code
+
     assert ERROR_CODE_INVALID_OPERATION in str(exc_info.value)
     assert str(HTTPStatus.INTERNAL_SERVER_ERROR) in str(exc_info.value)
 
 
 def test_search_users_page_and_size_defaults(mocker, db_pg_session, allow_api_request):
+    """
+    Test that search_users applies default page and size when None is provided."""
     # Patch db.execute to return mocked total count
+    total_count = 15
     mock_execute = MagicMock()
-    mock_execute.scalar.return_value = 15
+    mock_execute.scalar.return_value = total_count
     mocker.patch.object(db_pg_session, "execute", return_value=mock_execute)
 
     mocker.patch.object(ExtAppUserSearchService, "_build_user_search_results", return_value=[]) # dummy, not testing this
@@ -112,10 +116,9 @@ def test_search_users_page_and_size_defaults(mocker, db_pg_session, allow_api_re
     service = ExtAppUserSearchService(db_pg_session, requester=MagicMock(), application_id=123)
     result = service.search_users(page_params, filter_params)
 
-    # EXT_MIN_PAGE and EXT_MIN_PAGE_SIZE are imported from constants
-    expected_page_count = math.ceil(15 / EXT_MIN_PAGE_SIZE)
+    expected_page_count = math.ceil(total_count / EXT_MIN_PAGE_SIZE)
 
-    assert result.meta.total== 15
+    assert result.meta.total == total_count
     assert result.meta.page_count == expected_page_count
     assert result.meta.page == EXT_MIN_PAGE
     assert result.meta.size == EXT_MIN_PAGE_SIZE
@@ -136,6 +139,9 @@ def test_search_users_page_and_size_defaults(mocker, db_pg_session, allow_api_re
     ]
 )
 def test_search_users_page_count_calculation(mocker, db_pg_session, allow_api_request, total, size, expected_page_count):
+    """
+    Test that search_users calculates page_count correctly based on total and size.
+    """
     # Patch db.execute to return mocked total count
     mock_execute = MagicMock()
     mock_execute.scalar.return_value = total
@@ -176,6 +182,8 @@ def test_search_users_page_count_calculation(mocker, db_pg_session, allow_api_re
     ]
 )
 def test_search_users_paged_scenarios(mocker, db_pg_session, allow_api_request, total_users, page, size, expected_user_count):
+    """
+    Test that search_users returns correct number of users for various paging scenarios."""
     # Patch db.execute for total count
     mock_execute_total = MagicMock()
     mock_execute_total.scalar.return_value = total_users
@@ -221,7 +229,15 @@ def test_search_users_paged_scenarios(mocker, db_pg_session, allow_api_request, 
         ("INVALID_TYPE", True, ERROR_CODE_INVALID_REQUEST_PARAMETER, "Unsupported filter idp_type"),  # invalid type, should raise
     ]
 )
-def test_search_users_idp_type_filter_invalid_type_exception(mocker, db_pg_session, allow_api_request,idp_type, should_raise, error_code, error_msg):
+def test_search_users_idp_type_filter_invalid_type_exception(
+    mocker,
+    db_pg_session,
+    allow_api_request,
+    idp_type,
+    should_raise,
+    error_code,
+    error_msg
+):
     # Patch db.execute to return mocked total count
     mock_execute = MagicMock()
     mock_execute.scalar.return_value = 0
@@ -283,12 +299,16 @@ def test_search_users_idp_type_filter_invalid_type_exception(mocker, db_pg_sessi
     (dict(idp_type=None, role=None, idp_username=None, first_name=None, last_name=None), 9, lambda result: True),
     ]
 )
-def test_ext_app_user_search_filters(
+def test_ext_app_user_search_filtering(
     db_pg_session,
     allow_api_request,
     setup_users_and_roles_for_ext_user_search_tests,
     filter_kwargs, expected_count, extra_asserts
 ):
+    """
+    Test that various filter combinations return expected user counts and attributes.
+    The test uses fake db inserted users and roles from setup fixture (rolled back after each test).
+    """
     def run_search(db_pg_session, requester, application_id, page, size, filter_params):
         service = ExtAppUserSearchService(db_pg_session, requester=requester, application_id=application_id)
         page_params = ExtUserSearchParamSchema(page=page, size=size)
@@ -298,6 +318,6 @@ def test_ext_app_user_search_filters(
     for k, v in filter_kwargs.items():
         setattr(filter_params, k, v)
 
-    result = run_search(db_pg_session, DummyRequester(), 2, 1, EXT_MIN_PAGE_SIZE, filter_params)
+    result = run_search(db_pg_session, DummyRequester(), FOM_DEV_APPLICATION_ID, 1, EXT_MIN_PAGE_SIZE, filter_params)
     assert len(result.users) == expected_count
     assert extra_asserts(result)
