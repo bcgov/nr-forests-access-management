@@ -1,4 +1,3 @@
-# Always allow request for search_users except permission tests
 import math
 from http import HTTPStatus
 from unittest.mock import MagicMock
@@ -10,13 +9,14 @@ from api.app.constants import (ERROR_CODE_INVALID_OPERATION,
                                UserType)
 from api.app.crud.services.ext_app_user_search_service import \
     ExtAppUserSearchService
-from api.app.models.model import FamRole, FamUser, FamUserRoleXref
 from api.app.schemas.ext.pagination import ExtUserSearchParamSchema
 from api.app.schemas.ext.user_search import ExtApplicationUserSearchSchema
+from testspg.constants import FOM_DEV_APPLICATION_ID
+from testspg.utils import create_role, create_user
 
 
 # Dynamically generate mock users for this test case
-def make_fam_user(idx):
+def make_fam_mock_user(idx):
     user = MagicMock()
     user.first_name = f"First{idx}"
     user.last_name = f"Last{idx}"
@@ -29,49 +29,13 @@ class DummyRequester:
     user_name = "test_user"
 
 @pytest.fixture()
-def always_allow_request(mocker):
+def allow_api_request(mocker):
     mocker.patch.object(ExtAppUserSearchService, "is_request_allowed", return_value=True)
 
-def create_user(db, user_name, first_name, last_name, user_type_code, user_guid, roles):
-    user = FamUser(
-        user_name=user_name,
-        first_name=first_name,
-        last_name=last_name,
-        user_type_code=user_type_code,
-        user_guid=user_guid,
-        create_user="test"
-    )
-    db.add(user)
-    db.flush()
-    for role in roles:
-        xref = FamUserRoleXref(user_id=user.user_id, role_id=role.role_id, create_user="test")
-        db.add(xref)
-    db.flush()
-    user.fam_user_role_xref = db.query(FamUserRoleXref).filter_by(user_id=user.user_id).all()
-    return user
-
-def create_role(db, application_id, role_name, display_name, parent_role=None, forest_client_number=None):
-    from api.app.constants import RoleType
-    role = FamRole(
-        application_id=application_id,
-        role_name=role_name,
-        display_name=display_name,
-        parent_role=parent_role,
-        forest_client_relation=None,
-        create_user="test",
-        role_type_code=RoleType.ROLE_TYPE_CONCRETE
-    )
-    db.add(role)
-    db.flush()
-    if forest_client_number:
-        role.forest_client_relation = MagicMock()
-        role.forest_client_relation.forest_client_number = forest_client_number
-    return role
 
 @pytest.fixture(scope="function")
-def setup_users_and_roles(db_pg_session):
+def setup_users_and_roles_for_ext_user_search_tests(db_pg_session):
     # Use FOM_DEV_APPLICATION_ID for application_id
-    from testspg.constants import FOM_DEV_APPLICATION_ID
     app_id = FOM_DEV_APPLICATION_ID
 
     # Create roles
@@ -120,7 +84,7 @@ def test_search_users_permission_denied(mocker, db_pg_session):
     assert str(HTTPStatus.INTERNAL_SERVER_ERROR) in str(exc_info.value)
 
 
-def test_search_users_page_and_size_defaults(mocker, db_pg_session, always_allow_request):
+def test_search_users_page_and_size_defaults(mocker, db_pg_session, allow_api_request):
     # Patch db.execute to return mocked total count
     mock_execute = MagicMock()
     mock_execute.scalar.return_value = 15
@@ -166,7 +130,7 @@ def test_search_users_page_and_size_defaults(mocker, db_pg_session, always_allow
         (100, 25, 4),                   # 100 users, page size 25, page count 4
     ]
 )
-def test_search_users_page_count_calculation(mocker, db_pg_session, always_allow_request, total, size, expected_page_count):
+def test_search_users_page_count_calculation(mocker, db_pg_session, allow_api_request, total, size, expected_page_count):
     # Patch db.execute to return mocked total count
     mock_execute = MagicMock()
     mock_execute.scalar.return_value = total
@@ -206,11 +170,11 @@ def test_search_users_page_count_calculation(mocker, db_pg_session, always_allow
         (10, 1, 10, 10),   # Page size equal to total users, all users returned
     ]
 )
-def test_search_users_paged_scenarios(mocker, db_pg_session, always_allow_request, total_users, page, size, expected_user_count):
+def test_search_users_paged_scenarios(mocker, db_pg_session, allow_api_request, total_users, page, size, expected_user_count):
     # Patch db.execute for total count
     mock_execute_total = MagicMock()
     mock_execute_total.scalar.return_value = total_users
-    mock_users = [make_fam_user(i) for i in range(1, total_users + 1)]
+    mock_users = [make_fam_mock_user(i) for i in range(1, total_users + 1)]
 
     def execute_side_effect(stmt, *args, **kwargs):
         if hasattr(stmt, "scalar"):
@@ -252,7 +216,7 @@ def test_search_users_paged_scenarios(mocker, db_pg_session, always_allow_reques
         ("INVALID_TYPE", True, ERROR_CODE_INVALID_REQUEST_PARAMETER, "Unsupported filter idp_type"),  # invalid type, should raise
     ]
 )
-def test_search_users_idp_type_filter_invalid_type_exception(mocker, db_pg_session, always_allow_request,idp_type, should_raise, error_code, error_msg):
+def test_search_users_idp_type_filter_invalid_type_exception(mocker, db_pg_session, allow_api_request,idp_type, should_raise, error_code, error_msg):
     # Patch db.execute to return mocked total count
     mock_execute = MagicMock()
     mock_execute.scalar.return_value = 0
@@ -288,15 +252,6 @@ def test_search_users_idp_type_filter_invalid_type_exception(mocker, db_pg_sessi
         assert result.meta.total == 0
         assert result.users == []
 
-def run_search(db_pg_session, requester, application_id, page, size, filter_params):
-    service = ExtAppUserSearchService(db_pg_session, requester=requester, application_id=application_id)
-    page_params = ExtUserSearchParamSchema(page=page, size=size)
-    return service.search_users(page_params, filter_params)
-
-
-import operator
-
-
 @pytest.mark.parametrize(
     "filter_kwargs, expected_count, extra_asserts",
     [
@@ -322,10 +277,21 @@ import operator
         (dict(idp_type=None, role=None, idp_username=None, first_name=None, last_name=None), 4, lambda result: True),
     ]
 )
-def test_ext_app_user_search_filters(db_pg_session, always_allow_request, setup_users_and_roles, filter_kwargs, expected_count, extra_asserts):
+def test_ext_app_user_search_filters(
+    db_pg_session,
+    allow_api_request,
+    setup_users_and_roles_for_ext_user_search_tests,
+    filter_kwargs, expected_count, extra_asserts
+):
+    def run_search(db_pg_session, requester, application_id, page, size, filter_params):
+        service = ExtAppUserSearchService(db_pg_session, requester=requester, application_id=application_id)
+        page_params = ExtUserSearchParamSchema(page=page, size=size)
+        return service.search_users(page_params, filter_params)
+
     filter_params = ExtApplicationUserSearchSchema()
     for k, v in filter_kwargs.items():
         setattr(filter_params, k, v)
+
     result = run_search(db_pg_session, DummyRequester(), 2, 1, EXT_MIN_PAGE_SIZE, filter_params)
     assert len(result.users) == expected_count
     assert extra_asserts(result)

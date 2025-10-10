@@ -1,12 +1,13 @@
-
 import operator
 from datetime import datetime
 from typing import List
 
-from api.app.constants import SortOrderEnum
+from api.app.constants import RoleType, SortOrderEnum
 from api.app.models import model as models
+from api.app.models.model import FamRole, FamUser, FamUserRoleXref
 from sqlalchemy import not_, select
 from sqlalchemy.orm import Session
+from testspg.constants import TEST_CREATOR
 
 
 def get_user_role_by_cognito_user_id_and_role_id(
@@ -76,3 +77,39 @@ def contains_any_insensitive(obj, search_attributes: List[str], keyword: str) ->
         contains_keyword_insensitive(operator.attrgetter(attr_name)(obj), keyword)
         for attr_name in search_attributes)
     return is_any
+
+def create_user(db, user_name, first_name, last_name, user_type_code, user_guid, roles):
+    user = FamUser(
+        user_name=user_name,
+        first_name=first_name,
+        last_name=last_name,
+        user_type_code=user_type_code,
+        user_guid=user_guid,
+        create_user=TEST_CREATOR
+    )
+    db.add(user)
+    db.flush()
+    for role in roles:
+        xref = FamUserRoleXref(user_id=user.user_id, role_id=role.role_id, create_user=TEST_CREATOR)
+        db.add(xref)
+    db.flush()
+    user.fam_user_role_xref = db.query(FamUserRoleXref).filter_by(user_id=user.user_id).all()
+    return user
+
+def create_role(db, application_id, role_name, display_name, parent_role=None, forest_client_number=None):
+    role = FamRole(
+        application_id=application_id,
+        role_name=role_name,
+        display_name=display_name,
+        parent_role=parent_role,
+        forest_client_relation=None,
+        create_user=TEST_CREATOR,
+        role_type_code=RoleType.ROLE_TYPE_CONCRETE
+    )
+    db.add(role)
+    db.flush()
+    if forest_client_number:
+        from unittest.mock import MagicMock
+        role.forest_client_relation = MagicMock()
+        role.forest_client_relation.forest_client_number = forest_client_number
+    return role
