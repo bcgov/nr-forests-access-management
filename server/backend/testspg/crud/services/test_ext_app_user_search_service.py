@@ -47,7 +47,12 @@ def setup_users_and_roles_for_ext_user_search_tests(db_pg_session):
     user2 = create_user(db_pg_session, "ext_search_user2", "Bob", "Jones", UserType.BCEID, "GUID2", [role_submitter])
     user3 = create_user(db_pg_session, "ext_search_user3", "Charlie", "Brown", "CD", "GUID3", [role_reviewer]) # CD is one of BCSC type in db.
     user4 = create_user(db_pg_session, "ext_search_user4", "alice", "SMITH", UserType.IDIR, "GUID4", [role_admin, role_submitter])
-    return [user1, user2, user3, user4], [role_admin, role_submitter, role_reviewer]
+    user5 = create_user(db_pg_session, "ext_search_user5", "David", "Lee", UserType.BCEID, "GUID5", [role_admin])
+    user6 = create_user(db_pg_session, "ext_search_user6", "Eva", "Green", UserType.IDIR, "GUID6", [role_submitter])
+    user7 = create_user(db_pg_session, "ext_search_user7", "Frank", "White", "CD", "GUID7", [role_reviewer])
+    user8 = create_user(db_pg_session, "ext_search_user8", "Grace", "Black", UserType.IDIR, "GUID8", [role_admin, role_submitter])
+    user9 = create_user(db_pg_session, "ext_search_user9", "Helen", "Stone", UserType.BCEID, "GUID9", [role_submitter])
+    return [user1, user2, user3, user4, user5, user6, user7, user8, user9], [role_admin, role_submitter, role_reviewer]
 
 # ------------ Tests cases below ------------
 
@@ -255,27 +260,27 @@ def test_search_users_idp_type_filter_invalid_type_exception(mocker, db_pg_sessi
 @pytest.mark.parametrize(
     "filter_kwargs, expected_count, extra_asserts",
     [
-        # IDIR type
-        (dict(idp_type=IDPType.IDIR, role=None, idp_username=None, first_name=None, last_name=None), 2, lambda result: all(u.idP_type == IDPType.IDIR for u in result.users)),
-        # BCEID type
-        (dict(idp_type=IDPType.BCEID, role=None, idp_username=None, first_name=None, last_name=None), 1, lambda result: all(u.idP_type == IDPType.BCEID for u in result.users)),
-        # Username partial
-        (dict(idp_type=None, role=None, idp_username="ext_search_user", first_name=None, last_name=None), 4, lambda result: all("ext_search_user" in u.idp_username for u in result.users)),
-        # First name partial
-        (dict(idp_type=None, role=None, idp_username=None, first_name="ali", last_name=None), 2, lambda result: all("ali" in u.first_name.lower() for u in result.users)),
-        # Last name exact
-        (dict(idp_type=None, role=None, idp_username=None, first_name=None, last_name="Smith"), 2, lambda result: all(u.last_name.lower() == "smith" for u in result.users)),
-        # Single role
-        (dict(idp_type=None, role=["TEST_ADMIN"], idp_username=None, first_name=None, last_name=None), 2, lambda result: True),
-        # Multiple roles
-        (dict(idp_type=None, role=["TEST_ADMIN", "TEST_SUBMITTER"], idp_username=None, first_name=None, last_name=None), 3, lambda result: True),
-        # Combined fields
-        (dict(idp_type=IDPType.IDIR, role=["TEST_ADMIN"], idp_username=None, first_name="alice", last_name=None), 2,
-         lambda result: all(u.idP_type == IDPType.IDIR for u in result.users) and all("alice" in u.first_name.lower() for u in result.users) and all(any(getattr(r, "role_name", None) == "TEST_ADMIN" for r in u.roles) for u in result.users)),
-        # Empty role list returns all
-        (dict(idp_type=None, role=[], idp_username=None, first_name=None, last_name=None), 4, lambda result: True),
-        # No filters returns all
-        (dict(idp_type=None, role=None, idp_username=None, first_name=None, last_name=None), 4, lambda result: True),
+    # IDIR type
+    (dict(idp_type=IDPType.IDIR, role=None, idp_username=None, first_name=None, last_name=None), 4, lambda result: all(u.idP_type == IDPType.IDIR for u in result.users)),
+    # BCEID type
+    (dict(idp_type=IDPType.BCEID, role=None, idp_username=None, first_name=None, last_name=None), 3, lambda result: all(u.idP_type == IDPType.BCEID for u in result.users)),
+    # Username partial
+    (dict(idp_type=None, role=None, idp_username="ext_search_user", first_name=None, last_name=None), 9, lambda result: all("ext_search_user" in u.idp_username for u in result.users)),
+    # First name partial
+    (dict(idp_type=None, role=None, idp_username=None, first_name="ali", last_name=None), 2, lambda result: all("ali" in u.first_name.lower() for u in result.users)),
+    # Last name exact
+    (dict(idp_type=None, role=None, idp_username=None, first_name=None, last_name="Smith"), 2, lambda result: all(u.last_name.lower() == "smith" for u in result.users)),
+    # Single role
+    (dict(idp_type=None, role=["TEST_ADMIN"], idp_username=None, first_name=None, last_name=None), 4, lambda result: True),
+    # Multiple roles
+    (dict(idp_type=None, role=["TEST_ADMIN", "TEST_SUBMITTER"], idp_username=None, first_name=None, last_name=None), 7, lambda result: True),
+    # Combined fields
+    (dict(idp_type=IDPType.IDIR, role=["TEST_ADMIN"], idp_username=None, first_name="alice", last_name=None), 2,
+     lambda result: all(u.idP_type == IDPType.IDIR for u in result.users) and all("alice" in u.first_name.lower() for u in result.users) and all(any(getattr(r, "role_name", None) == "TEST_ADMIN" for r in u.roles) for u in result.users)),
+    # Empty role list returns all
+    (dict(idp_type=None, role=[], idp_username=None, first_name=None, last_name=None), 9, lambda result: True),
+    # No filters returns all
+    (dict(idp_type=None, role=None, idp_username=None, first_name=None, last_name=None), 9, lambda result: True),
     ]
 )
 def test_ext_app_user_search_filters(
