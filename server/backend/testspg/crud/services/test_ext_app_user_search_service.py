@@ -10,6 +10,19 @@ from api.app.crud.services.ext_app_user_search_service import \
     ExtAppUserSearchService
 
 
+# Dynamically generate mock users for this test case
+def make_fam_user(idx):
+    user = MagicMock()
+    user.first_name = f"First{idx}"
+    user.last_name = f"Last{idx}"
+    user.user_name = f"user{idx}"
+    user.user_guid = f"GUID{idx}"
+    user.user_type_code = "IDIR" if idx % 2 == 0 else "BCEID"
+    user.fam_user_role_xref = []
+    return user
+
+# ------------ Tests cases below ------------
+
 # -- Tests interface function: is_request_allowed.
 def test_is_request_allowed_true(mocker, db_pg_session):
     # Mock allow_ext_call_api_permission to return True
@@ -123,6 +136,54 @@ def test_search_users_page_count_calculation(mocker, db_pg_session, total, size,
     assert result.meta.page == 1
     assert result.meta.size == size
     assert result.users == []
+
+@pytest.mark.parametrize(
+    "total_users,page,size,expected_user_count",
+    [
+        (25, 1, 10, 10),   # First page, 10 users per page
+        (25, 3, 10, 5),    # Last page, 5 users left
+        (25, 4, 10, 0),    # Beyond last page, no users
+        (8, 1, 20, 8),     # Page size larger than total users, all users returned
+        (10, 1, 10, 10),   # Page size equal to total users, all users returned
+    ]
+)
+def test_search_users_paged_scenarios(mocker, db_pg_session, total_users, page, size, expected_user_count):
+    mocker.patch.object(ExtAppUserSearchService, "is_request_allowed", return_value=True)
+
+    # Patch db.execute for total count
+    mock_execute_total = MagicMock()
+    mock_execute_total.scalar.return_value = total_users
+    mock_users = [make_fam_user(i) for i in range(1, total_users + 1)]
+
+    def execute_side_effect(stmt, *args, **kwargs):
+        if hasattr(stmt, "scalar"):
+            return mock_execute_total
+        # Simulate paged results
+        offset = (page - 1) * size
+        paged_users = mock_users[offset:offset + size]
+        mock_paged = MagicMock()
+        mock_paged.unique.return_value = mock_paged
+        mock_paged.scalars.return_value = mock_paged
+        mock_paged.all.return_value = paged_users
+        return mock_paged
+    mocker.patch.object(db_pg_session, "execute", side_effect=execute_side_effect)
+
+    # Patch _apply_user_filters to return dummy select
+    mocker.patch.object(ExtAppUserSearchService, "_apply_user_filters", side_effect=lambda stmt, params: stmt)
+    # Patch joinedload (accepts any arguments, but always returns None.)
+    mocker.patch("sqlalchemy.orm.joinedload", lambda *a, **kw: None)
+    # _build_user_search_results will be called as normal, since input users now have correct attributes
+
+    page_params = MagicMock()
+    page_params.page = page
+    page_params.size = size
+    filter_params = MagicMock()
+
+    service = ExtAppUserSearchService(db_pg_session, requester=MagicMock(), application_id=123)
+    result = service.search_users(page_params, filter_params)
+
+    assert len(result.users) == expected_user_count
+
 
 @pytest.mark.parametrize(
     "idp_type,should_raise,error_code,error_msg",
