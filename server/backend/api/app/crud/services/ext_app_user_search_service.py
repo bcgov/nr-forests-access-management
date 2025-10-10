@@ -3,8 +3,10 @@ import math
 from http import HTTPStatus
 from typing import List
 
-from api.app.constants import (ERROR_CODE_INVALID_OPERATION, EXT_MIN_PAGE,
-                               EXT_MIN_PAGE_SIZE, IDPType, ScopeType, UserType)
+from api.app.constants import (ERROR_CODE_INVALID_OPERATION,
+                               ERROR_CODE_INVALID_REQUEST_PARAMETER,
+                               EXT_MIN_PAGE, EXT_MIN_PAGE_SIZE, IDPType,
+                               ScopeType, UserType)
 from api.app.models.model import FamRole, FamUser, FamUserRoleXref
 from api.app.schemas.ext.pagination import (ExtUserSearchPagedResultsSchema,
                                             ExtUserSearchParamSchema)

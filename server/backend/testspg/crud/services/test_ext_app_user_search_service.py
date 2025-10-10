@@ -3,8 +3,9 @@ from http import HTTPStatus
 from unittest.mock import MagicMock
 
 import pytest
-from api.app.constants import (ERROR_CODE_INVALID_OPERATION, EXT_MIN_PAGE,
-                               EXT_MIN_PAGE_SIZE)
+from api.app.constants import (ERROR_CODE_INVALID_OPERATION,
+                               ERROR_CODE_INVALID_REQUEST_PARAMETER,
+                               EXT_MIN_PAGE, EXT_MIN_PAGE_SIZE)
 from api.app.crud.services.ext_app_user_search_service import \
     ExtAppUserSearchService
 
@@ -123,3 +124,51 @@ def test_search_users_page_count_calculation(mocker, db_pg_session, total, size,
     assert result.meta.size == size
     assert result.users == []
 
+@pytest.mark.parametrize(
+    "idp_type,should_raise,error_code,error_msg",
+    [
+        (None, False, None, None),  # idp_type not set, should not raise
+        ("IDIR", False, None, None),  # valid type, should not raise
+        ("BCEID", False, None, None),  # valid type, should not raise
+        ("BCSC", False, None, None),  # valid type, should not raise
+        ("INVALID_TYPE", True, ERROR_CODE_INVALID_REQUEST_PARAMETER, "Unsupported filter idp_type"),  # invalid type, should raise
+    ]
+)
+def test_search_users_idp_type_filter_invalid_type_exception(mocker, db_pg_session, idp_type, should_raise, error_code, error_msg):
+    # Patch is_request_allowed to return True
+    mocker.patch.object(ExtAppUserSearchService, "is_request_allowed", return_value=True)
+
+    # Patch db.execute to return mocked total count
+    mock_execute = MagicMock()
+    mock_execute.scalar.return_value = 0
+    mocker.patch.object(db_pg_session, "execute", return_value=mock_execute)
+
+    # Patch _build_user_search_results to return empty list
+    mocker.patch.object(ExtAppUserSearchService, "_build_user_search_results", return_value=[])
+
+    # Patch joinedload and other SQLAlchemy methods to avoid actual DB calls
+    mocker.patch("sqlalchemy.orm.joinedload", lambda *a, **kw: None)
+
+    # Prepare filter_params mock
+    filter_params = MagicMock()
+    filter_params.idp_type = idp_type
+    filter_params.idp_username = None
+    filter_params.first_name = None
+    filter_params.last_name = None
+    filter_params.role = None
+
+    page_params = MagicMock()
+    page_params.page = 1
+    page_params.size = EXT_MIN_PAGE_SIZE
+
+    service = ExtAppUserSearchService(db_pg_session, requester=MagicMock(), application_id=123)
+
+    if should_raise:
+        with pytest.raises(Exception) as exc_info:
+            service.search_users(page_params, filter_params)
+        assert error_code in str(exc_info.value)
+        assert error_msg in str(exc_info.value)
+    else:
+        result = service.search_users(page_params, filter_params)
+        assert result.meta.total == 0
+        assert result.users == []
