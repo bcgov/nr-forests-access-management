@@ -104,6 +104,12 @@ resource "aws_cloudfront_distribution" "web_distribution" {
     min_ttl                = 0
     default_ttl            = 300
     max_ttl                = 86400
+
+    # Link function to handle unmatched SPA routes (e.g., /authCallback) to rewrite to index.html
+    function_association {
+      event_type   = "viewer-request"
+      function_arn = aws_cloudfront_function.fam_web_viewer_request_function.arn
+    }
   }
 
   # FAM Consumer API API Gateway origin behavior
@@ -148,6 +154,48 @@ resource "aws_cloudfront_distribution" "web_distribution" {
     prevent_destroy = true
   }
 
+}
+
+/*
+This is the CloudFront function for the FAM web application viewer request.
+It handles unmatched SPA routes (e.g., /authCallback) to rewrite to index.html on initial load.
+Previously this was done by using CloudFront Custom Error Response (on distribution level) for 403 error
+rewrite to index.html, but that caused issues with API Gateway origin returning 403 errors for
+unauthorized requests. So it was changed to use this viewer request function to handle unmatched
+routes for SPA.
+*/
+resource "aws_cloudfront_function" "fam_web_viewer_request_function" {
+  name    = "fam-${var.licence_plate}-${var.target_env}-web-viewer-request-rewrite403-function" # needs global uniqueness
+  runtime = "cloudfront-js-2.0"
+  comment = "Rewrites unmatched Web/SPA routes to index.html" # to resolve initial 403 errors with /authCallback request to S3 origin.
+  publish = true
+
+  code = <<-EOF
+    function handler(event) {
+      var request = event.request;
+      var uri = request.uri;
+      var headers = request.headers;
+
+      // Skip API requests
+      if (uri.startsWith('/api/')) {
+        return request;
+      }
+
+      // Skip static assets (requests with file extensions)
+      var lastSegment = uri.split('/').pop();
+      if (lastSegment.includes('.')) {
+        return request;
+      }
+
+      // Rewrite browser navigations (HTML requests) to /index.html
+      var acceptHeader = headers['accept'] && headers['accept'].value || '';
+      if (acceptHeader.includes('text/html') || acceptHeader.includes('*/*')) {
+        request.uri = '/index.html';
+      }
+
+      return request;
+    }
+  EOF
 }
 
 /*
