@@ -2,6 +2,8 @@ locals {
   flyway_scripts_bucket_name = "fam-cloudfront-bucket-${var.target_env}"
   web_distribution_origin_id = "web_distribution_origin"
   consumer_fam_api_origin_id = "consumer_fam_api_gateway_origin"
+  api_origin_behavior_path_pattern = "/api"
+  api_gateway_stage_name = "v1"
 }
 
 resource "aws_s3_bucket" "web_distribution" {
@@ -119,7 +121,7 @@ resource "aws_cloudfront_distribution" "web_distribution" {
   */
   ordered_cache_behavior {
     # maps request URL path "/api/..." to API Gateway origin
-    path_pattern           = "/api/*"
+    path_pattern           = "${local.api_origin_behavior_path_pattern}/*"
     target_origin_id       = local.consumer_fam_api_origin_id
 
     viewer_protocol_policy = "https-only"
@@ -176,7 +178,7 @@ resource "aws_cloudfront_function" "fam_web_viewer_request_function" {
       var headers = request.headers;
 
       // Skip API requests
-      if (uri.startsWith('/api/')) {
+      if (uri.startsWith('${local.api_origin_behavior_path_pattern}/')) {
         return request;
       }
 
@@ -216,8 +218,8 @@ function handler(event) {
   request.headers["x-request-id"] = { value: `$${Math.random().toString(36).substring(2)}-$${new Date().toISOString()}` };
 
   // Rewrite /api/* to /v1/*
-  if (request.uri.startsWith("/api/")) {
-      request.uri = request.uri.replace("/api/", "/v1/");
+  if (request.uri.startsWith("${local.api_origin_behavior_path_pattern}/")) {
+      request.uri = request.uri.replace("${local.api_origin_behavior_path_pattern}/", "/${local.api_gateway_stage_name}/");
   }
 
   return request;
