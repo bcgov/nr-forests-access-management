@@ -2,6 +2,8 @@ locals {
   flyway_scripts_bucket_name = "fam-cloudfront-bucket-${var.target_env}"
   web_distribution_origin_id = "web_distribution_origin"
   consumer_fam_api_origin_id = "consumer_fam_api_gateway_origin"
+  api_origin_behavior_path_pattern = "/api"
+  api_gateway_stage_name = "v1"
 }
 
 resource "aws_s3_bucket" "web_distribution" {
@@ -103,6 +105,12 @@ resource "aws_cloudfront_distribution" "web_distribution" {
     min_ttl                = 0
     default_ttl            = 300
     max_ttl                = 86400
+
+    # Link function to handle unmatched SPA routes (e.g., /authCallback) to rewrite to index.html
+    function_association {
+      event_type   = "viewer-request"
+      function_arn = aws_cloudfront_function.fam_web_viewer_request_function.arn
+    }
   }
 
   # FAM Consumer API API Gateway origin behavior
@@ -113,7 +121,7 @@ resource "aws_cloudfront_distribution" "web_distribution" {
   */
   ordered_cache_behavior {
     # maps request URL path "/api/..." to API Gateway origin
-    path_pattern           = "/api/*"
+    path_pattern           = "${local.api_origin_behavior_path_pattern}/*"
     target_origin_id       = local.consumer_fam_api_origin_id
 
     viewer_protocol_policy = "https-only"
@@ -150,6 +158,48 @@ resource "aws_cloudfront_distribution" "web_distribution" {
 }
 
 /*
+This is the CloudFront function for the FAM web application viewer request.
+It handles unmatched SPA routes (e.g., /authCallback) to rewrite to index.html on initial load.
+Previously this was done by using CloudFront Custom Error Response (on distribution level) for 403 error
+rewrite to index.html, but that caused issues with API Gateway origin returning 403 errors for
+unauthorized requests. So it was changed to use this viewer request function to handle unmatched
+routes for SPA.
+*/
+resource "aws_cloudfront_function" "fam_web_viewer_request_function" {
+  name    = "fam-${var.licence_plate}-${var.target_env}-web-viewer-request-rewrite403-function" # needs global uniqueness
+  runtime = "cloudfront-js-2.0"
+  comment = "Rewrites unmatched Web/SPA routes to index.html" # to resolve initial 403 errors with /authCallback request to S3 origin.
+  publish = true
+
+  code = <<-EOF
+    function handler(event) {
+      var request = event.request;
+      var uri = request.uri;
+      var headers = request.headers;
+
+      // Skip API requests
+      if (uri.startsWith('${local.api_origin_behavior_path_pattern}/')) {
+        return request;
+      }
+
+      // Skip static assets (requests with file extensions)
+      var lastSegment = uri.split('/').pop();
+      if (lastSegment.includes('.')) {
+        return request;
+      }
+
+      // Rewrite browser navigations (HTML requests) to /index.html
+      var acceptHeader = headers['accept'] && headers['accept'].value || '';
+      if (acceptHeader.includes('text/html') || acceptHeader.includes('*/*')) {
+        request.uri = '/index.html';
+      }
+
+      return request;
+    }
+  EOF
+}
+
+/*
 This is the CloudFront function for the FAM API Gateway viewer request.
 API Gateway stage name is 'v1', need to rewrite /api/... to /v1/...
 It rewrites the request path from /api/... to /v1/... so that the API Gateway can route it properly.
@@ -157,8 +207,8 @@ It rewrites the request path from /api/... to /v1/... so that the API Gateway ca
 resource "aws_cloudfront_function" "fam_api_viewer_request_function" {
   name    = "fam-${var.licence_plate}-${var.target_env}-api-viewer-request-rewriteApiPath-function" # needs global uniqueness
   runtime = "cloudfront-js-2.0"
-
   comment = "Viewer request function for API Gateway origin to rewrite /api/... path to /v1/... path"
+  publish = true
 
   code = <<EOF
 function handler(event) {
@@ -168,8 +218,8 @@ function handler(event) {
   request.headers["x-request-id"] = { value: `$${Math.random().toString(36).substring(2)}-$${new Date().toISOString()}` };
 
   // Rewrite /api/* to /v1/*
-  if (request.uri.startsWith("/api/")) {
-      request.uri = request.uri.replace("/api/", "/v1/");
+  if (request.uri.startsWith("${local.api_origin_behavior_path_pattern}/")) {
+      request.uri = request.uri.replace("${local.api_origin_behavior_path_pattern}/", "/${local.api_gateway_stage_name}/");
   }
 
   return request;
