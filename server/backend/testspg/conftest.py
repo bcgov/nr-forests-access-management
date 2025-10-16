@@ -32,7 +32,7 @@ from api.app.schemas.fam_user import FamUserSchema
 from api.app.schemas.pagination import UserRolePageParamsSchema
 from testspg.constants import (ACCESS_GRANT_FOM_DEV_CR_IDIR,
                                FOM_DEV_ADMIN_ROLE, FOM_TEST_ADMIN_ROLE,
-                               TEST_CREATOR)
+                               TEST_BCEID_REQUESTER_DICT, TEST_CREATOR)
 
 LOGGER = logging.getLogger(__name__)
 # the folder contains test docker-compose.yml, ours in the root directory
@@ -188,6 +188,19 @@ def get_current_requester_by_token(db_pg_session):
         return requester
 
     return _get_current_requester_by_token
+
+
+@pytest.fixture(scope="function")
+def override_depends__get_current_requester(test_client_fixture):
+    # Override FastAPI dependency "get_current_requester".
+    # Return mocked Requester for function's needs.
+    def _override_get_current_requester(mocked_data=TEST_BCEID_REQUESTER_DICT):
+        app = test_client_fixture.app
+        app.dependency_overrides[get_current_requester] = lambda: RequesterSchema(
+            **mocked_data
+        )
+
+    return _override_get_current_requester
 
 
 @pytest.fixture(scope="function")
