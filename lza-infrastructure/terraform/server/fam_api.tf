@@ -130,7 +130,6 @@ resource "aws_lambda_function" "fam-api-function" {
       BCSC_KEY_ID              = "${aws_kms_key.bcsc_key.id}"
 
       API_GATEWAY_STAGE_NAME   = "${var.api_gateway_stage_name}"
-      # COGNITO_CLIENT_ID        = "3hv7q2mct0okt12m5i3p5v4phu"
 
       ALLOW_ORIGIN = "${var.front_end_redirect_path}"
 
