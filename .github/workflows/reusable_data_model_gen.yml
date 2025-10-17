@@ -1,4 +1,7 @@
 name: Data Model Generator
+permissions:
+  contents: read
+  pages: write
 
 on:
   workflow_dispatch:
