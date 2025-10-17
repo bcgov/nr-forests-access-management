@@ -49,7 +49,7 @@ Note! Initially the distribution was named "web_distribution" because it only ha
       target distribution domain name change; and deployment will fail at frontend and distribution will be empty.
 */
 resource "aws_cloudfront_distribution" "web_distribution" {
-  aliases             = ["${var.cloudfront_vanity_domain}"]
+  # aliases             = ["${var.cloudfront_vanity_domain}"]
   enabled             = true
   is_ipv6_enabled     = true
   wait_for_deployment = false
