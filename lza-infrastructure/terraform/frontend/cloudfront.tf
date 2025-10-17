@@ -58,11 +58,11 @@ resource "aws_cloudfront_distribution" "web_distribution" {
   web_acl_id          = "${aws_wafv2_web_acl.fam_waf_cloudfront.arn}"
 
   viewer_certificate {
-    acm_certificate_arn = "${var.cloudfront_certificate_arn}"
-    ssl_support_method = "sni-only"
-    minimum_protocol_version = "TLSv1.2_2021"
+    # acm_certificate_arn = "${var.cloudfront_certificate_arn}"
+    # ssl_support_method = "sni-only"
+    # minimum_protocol_version = "TLSv1.2_2021"
 
-    # cloudfront_default_certificate = true  # TODO: remove this after certificate is issued and in place and adjust above. Use AWS default for now.
+    cloudfront_default_certificate = true  # TODO: remove this after certificate is issued and in place and adjust above. Use AWS default for now.
   }
 
   # web distribution S3 origin
