@@ -1,5 +1,7 @@
 # For just deploying frontend.
 name: DEPLOY Development Frontend
+permissions:
+  contents: read
 
 on:
   workflow_dispatch:

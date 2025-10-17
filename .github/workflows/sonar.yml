@@ -1,4 +1,6 @@
 name: SonarCloud analysis
+permissions:
+    contents: read
 
 on:
     pull_request:
@@ -159,23 +161,24 @@ jobs:
                       -Dsonar.tests=tests
                       -Dsonar.exclusions=**/tests/**/*,**/test_*.py,config.py
 
-    ci-frontend:
-        runs-on: ubuntu-latest
-        steps:
-            - uses: bcgov/action-test-and-analyse@v1.2.1
-              with:
-                  commands: |
-                      npm run install-frontend
-                      npm run build
-                      npm run test-coverage
-                  dir: frontend
-                  node_version: "18"
-                  sonar_args: >
-                      -Dsonar.exclusions=**/coverage/**,**/node_modules/**,**/*spec.ts
-                      -Dsonar.organization=bcgov-sonarcloud
-                      -Dsonar.project.monorepo.enabled=true
-                      -Dsonar.projectKey=nr-forests-access-management_frontend
-                      -Dsonar.sources=src
-                      -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
-                  sonar_token: ${{ secrets.SONAR_TOKEN_FRONTEND }}
-                  triggers: ("frontend" "terraform-frontend/")
+    # Temporarily disabled frontend sonar test coverage as there is no frontend tests
+    # ci-frontend:
+    #     runs-on: ubuntu-latest
+    #     steps:
+    #         - uses: bcgov/action-test-and-analyse@v1.2.1
+    #           with:
+    #               commands: |
+    #                   npm run install-frontend
+    #                   npm run build
+    #                   npm run test-coverage
+    #               dir: frontend
+    #               node_version: "18"
+    #               sonar_args: >
+    #                   -Dsonar.exclusions=**/coverage/**,**/node_modules/**,**/*spec.ts
+    #                   -Dsonar.organization=bcgov-sonarcloud
+    #                   -Dsonar.project.monorepo.enabled=true
+    #                   -Dsonar.projectKey=nr-forests-access-management_frontend
+    #                   -Dsonar.sources=src
+    #                   -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+    #               sonar_token: ${{ secrets.SONAR_TOKEN_FRONTEND }}
+    #               triggers: ("frontend" "terraform-frontend/")

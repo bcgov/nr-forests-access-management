@@ -1,4 +1,6 @@
 name: Auth function artifact
+permissions:
+  contents: read
 on:
   push:
     branches:
