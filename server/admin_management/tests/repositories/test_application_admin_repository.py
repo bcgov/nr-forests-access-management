@@ -4,6 +4,7 @@ import pytest
 from api.app.repositories.application_admin_repository import \
     ApplicationAdminRepository
 from api.app.repositories.user_repository import UserRepository
+from api.app.schemas.schemas import FamUserDto
 from sqlalchemy.exc import IntegrityError
 from tests.constants import (ERROR_VOLIATE_UNIQUE_CONSTRAINT,
                              TEST_ANOTHER_CREATER,
@@ -170,3 +171,43 @@ def test_get_user_app_admin_grants(
     assert len(admin_grants) == 1
     granted_app = admin_grants[0]
     assert granted_app.application_id == TEST_APPLICATION_ID_FOM_DEV
+
+
+def test_get_application_admins_by_application_id(
+    application_admin_repo: ApplicationAdminRepository,
+    user_repo: UserRepository
+):
+    # Prepare a new user1
+    user1 = user_repo.create_user(FamUserDto(**{**TEST_NEW_IDIR_USER.model_dump(), "user_name": "user1", "user_guid": "A"*32}))
+    user2 = user_repo.create_user(FamUserDto(**{**TEST_NEW_IDIR_USER.model_dump(), "user_name": "user2", "user_guid": "B"*32}))
+    user3 = user_repo.create_user(FamUserDto(**{**TEST_NEW_IDIR_USER.model_dump(), "user_name": "user3", "user_guid": "C"*32}))
+
+    # Create two admins for the same application
+    admin1 = application_admin_repo.create_application_admin(
+        TEST_APPLICATION_ADMIN_APPLICATION_ID, user1.user_id, TEST_CREATOR
+    )
+    admin2 = application_admin_repo.create_application_admin(
+        TEST_APPLICATION_ADMIN_APPLICATION_ID, user2.user_id, TEST_CREATOR
+    )
+    # Create an admin for a different application
+    admin_other = application_admin_repo.create_application_admin(
+        TEST_APPLICATION_ID_FAM, user3.user_id, TEST_CREATOR
+    )
+
+    # Get all admins for TEST_APPLICATION_ADMIN_APPLICATION_ID
+    admins = application_admin_repo.get_application_admins_by_application_id(
+        TEST_APPLICATION_ADMIN_APPLICATION_ID
+    )
+    user_ids = [a.user_id for a in admins]
+    assert set(user_ids) == {user1.user_id, user2.user_id}
+
+    # Exclude user1
+    admins_exclude = application_admin_repo.get_application_admins_by_application_id(
+        TEST_APPLICATION_ADMIN_APPLICATION_ID, user_id=user1.user_id
+    )
+    user_ids_exclude = [a.user_id for a in admins_exclude]
+    assert set(user_ids_exclude) == {user2.user_id}
+
+    # Should not return admins for other applications
+    for a in admins:
+        assert a.application_id == TEST_APPLICATION_ADMIN_APPLICATION_ID

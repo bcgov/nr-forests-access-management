@@ -1,9 +1,10 @@
 import datetime
 from typing import List, Optional
 
-from sqlalchemy import (BigInteger, Column, ForeignKey, ForeignKeyConstraint,
-                        Identity, Index, Integer, PrimaryKeyConstraint, String,
-                        UniqueConstraint, func)
+from sqlalchemy import (BigInteger, Boolean, Column, ForeignKey,
+                        ForeignKeyConstraint, Identity, Index, Integer,
+                        PrimaryKeyConstraint, String, UniqueConstraint, func,
+                        text)
 from sqlalchemy.dialects.postgresql import JSONB, TIMESTAMP
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import (Mapped, declarative_base, mapped_column,
@@ -628,6 +629,12 @@ class FamRole(Base):
         comment="Identifies if the role is an abstract or concrete role. "
         + "Users should only be assigned to roles where "
         + "role_type=concrete",
+    )
+    call_api_flag = Column(
+        Boolean,
+        nullable=False,
+        server_default=text('FALSE'),
+        comment="Indicates whether the role has permission to call FAM external APIs.",
     )
 
     application: Mapped[FamApplication] = relationship(

@@ -20,6 +20,7 @@ from .routers import (router_application, router_bcsc_proxy,
                       router_permission_audit, router_smoke_test, router_user,
                       router_user_role_assignment,
                       router_user_terms_conditions)
+from .routers.ext import router_user as router_user_external
 
 logConfigFile = os.path.join(
     os.path.dirname(__file__), "..", "config", "logging.config"
@@ -93,57 +94,64 @@ def main():
     return RedirectResponse(url="/docs/")
 
 
-apiPrefix = ""
+internal_api_prefix = ""
 app.include_router(
     router_application.router,
-    prefix=apiPrefix + "/fam-applications",
+    prefix=internal_api_prefix + "/fam-applications",
     tags=["FAM Applications"],
 )
 app.include_router(
     router_user_role_assignment.router,
-    prefix=apiPrefix + "/user-role-assignment",
+    prefix=internal_api_prefix + "/user-role-assignment",
     tags=["FAM User Role Assignment"],
 )
 app.include_router(
     router_forest_client.router,
-    prefix=apiPrefix + "/forest-clients",
+    prefix=internal_api_prefix + "/forest-clients",
     dependencies=[Depends(router_guards.authorize)],
     tags=["FAM Forest Clients"],
 )
 app.include_router(
     router_idim_proxy.router,
-    prefix=apiPrefix + "/identity-search",
+    prefix=internal_api_prefix + "/identity-search",
     dependencies=[Depends(router_guards.authorize)],
     tags=["IDIR/BCeID Proxy"],
 )
 app.include_router(
     router_user_terms_conditions.router,
-    prefix=apiPrefix + "/user-terms-conditions",
+    prefix=internal_api_prefix + "/user-terms-conditions",
     dependencies=[Depends(router_guards.authorize)],
     tags=["FAM User Terms and Conditions"],
 )
 app.include_router(
     router_user.router,
-    prefix=apiPrefix + "/users",
+    prefix=internal_api_prefix + "/users",
     tags=["FAM User"],
 )
 app.include_router(
     router_permission_audit.router,
-    prefix=apiPrefix + "/permission-audit-history",
+    prefix=internal_api_prefix + "/permission-audit-history",
     dependencies=[Depends(router_guards.authorize)],
     tags=["Permission Audit"],
 )
 
-
-
 # This router is used to proxy the BCSC userinfo endpoint
 
 app.include_router(
-    router_bcsc_proxy.router, prefix=apiPrefix + "/bcsc", tags=["BCSC Proxy"]
+    router_bcsc_proxy.router, prefix=internal_api_prefix + "/bcsc", tags=["BCSC Proxy"]
 )
 
 app.include_router(
-    router_smoke_test.router, prefix=apiPrefix + "/smoke_test", tags=["Smoke Test"]
+    router_smoke_test.router, prefix=internal_api_prefix + "/smoke_test", tags=["Smoke Test"]
+)
+
+# --- External APIs ----------
+external_v1_api_prefix = "/external/v1"
+
+app.include_router(
+    router_user_external.router,
+    prefix=external_v1_api_prefix + "/users",
+    tags=["External - FAM User Search"],
 )
 
 # If we initialize this in main then it doesn't call Cognito on every api call

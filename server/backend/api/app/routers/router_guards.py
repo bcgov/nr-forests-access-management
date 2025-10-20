@@ -14,16 +14,18 @@ from api.app.constants import (CURRENT_TERMS_AND_CONDITIONS_VERSION,
                                ERROR_CODE_SELF_GRANT_PROHIBITED,
                                ERROR_CODE_TERMS_CONDITIONS_REQUIRED,
                                ERROR_CODE_UNKNOWN_STATE, RoleType, UserType)
-from api.app.crud import (crud_access_control_privilege, crud_role, crud_user,
-                          crud_user_role, crud_utils)
+from api.app.crud import (crud_access_control_privilege, crud_application,
+                          crud_role, crud_user, crud_user_role, crud_utils)
 from api.app.crud.validator.target_user_validator import TargetUserValidator
 from api.app.jwt_validation import (ERROR_GROUPS_REQUIRED,
                                     ERROR_PERMISSION_REQUIRED, JWT_GROUPS_KEY,
-                                    get_access_roles,
+                                    enforce_fam_client_token, get_access_roles,
+                                    get_request_app_client_id,
                                     get_request_cognito_user_id,
                                     validate_token)
 from api.app.models.model import FamRole, FamUser
 from api.app.schemas import RequesterSchema, TargetUserSchema
+from api.app.schemas.fam_application import FamApplicationSchema
 from api.app.utils import utils
 from api.config import config
 from fastapi import Depends, Request, Security
@@ -100,7 +102,7 @@ def _parse_custom_requester_fields(fam_user: FamUser):
 
 
 def authorize(
-    claims: dict = Depends(validate_token),
+    claims: dict = Depends(enforce_fam_client_token),
     requester: RequesterSchema = Depends(get_current_requester),
 ):
     """
@@ -122,6 +124,7 @@ def authorize(
 
 def authorize_by_app_id(
     application_id: int,
+    _enforce_fam_access_validated = Depends(enforce_fam_client_token),
     db: Session = Depends(database.get_db),
     access_roles=Depends(get_access_roles),
     requester: RequesterSchema = Depends(get_current_requester),
@@ -185,6 +188,7 @@ async def get_request_role_from_id(
 def authorize_by_application_role(
     # Depends on "get_request_role_from_id()" to figure out
     # what id to use to get role from endpoint.
+    _enforce_fam_access_validated = Depends(enforce_fam_client_token),
     role: FamRole = Depends(get_request_role_from_id),
     db: Session = Depends(database.get_db),
     access_roles=Depends(get_access_roles),
@@ -208,6 +212,7 @@ def authorize_by_application_role(
 
 async def authorize_by_privilege(
     request: Request,
+    _enforce_fam_access_validated = Depends(enforce_fam_client_token),
     role: FamRole = Depends(get_request_role_from_id),
     db: Session = Depends(database.get_db),
     access_roles=Depends(get_access_roles),
@@ -345,6 +350,7 @@ def authorize_by_user_type(
 
 
 def internal_only_action(
+    _enforce_fam_access_validated = Depends(enforce_fam_client_token),
     requester: RequesterSchema = Depends(get_current_requester),
 ):
     if requester.user_type_code is not UserType.IDIR:
@@ -356,6 +362,7 @@ def internal_only_action(
 
 
 def external_delegated_admin_only_action(
+    _enforce_fam_access_validated = Depends(enforce_fam_client_token),
     requester: RequesterSchema = Depends(get_current_requester),
 ):
     if not requester.is_external_delegated_admin():
@@ -367,6 +374,7 @@ def external_delegated_admin_only_action(
 
 
 def enforce_self_grant_guard(
+    _enforce_fam_access_validated = Depends(enforce_fam_client_token),
     requester: RequesterSchema = Depends(get_current_requester),
     target_user: TargetUserSchema = Depends(get_target_user_from_id),
 ):
@@ -393,6 +401,7 @@ def enforce_self_grant_guard(
 
 
 def get_verified_target_user(
+    _enforce_fam_access_validated = Depends(enforce_fam_client_token),
     requester: RequesterSchema = Depends(get_current_requester),
     target_user: TargetUserSchema = Depends(get_target_user_from_id),
     role: FamRole = Depends(get_request_role_from_id),
@@ -410,10 +419,11 @@ def get_verified_target_user(
 
 async def enforce_bceid_by_same_org_guard(
     # forbid business bceid user (requester) manage idir user's access
+    _enforce_fam_access_validated = Depends(enforce_fam_client_token),
     _enforce_user_type_auth: None = Depends(authorize_by_user_type),
     requester: RequesterSchema = Depends(get_current_requester),
     target_user: TargetUserSchema = Depends(get_target_user_from_id),
-    role: FamRole = Depends(get_request_role_from_id)
+    role: FamRole = Depends(get_request_role_from_id),
 ):
     """
     When requester is a BCeID user, enforce requester can only manage target user from the same organization.
@@ -472,6 +482,7 @@ async def enforce_bceid_by_same_org_guard(
 
 
 def enforce_bceid_terms_conditions_guard(
+    _enforce_fam_access_validated = Depends(enforce_fam_client_token),
     requester: RequesterSchema = Depends(get_current_requester),
 ):
     if requester.requires_accept_tc:
@@ -487,3 +498,33 @@ def verify_api_key_for_update_user_info(x_api_key: str = Security(x_api_key)):
             status_code=HTTPStatus.UNAUTHORIZED,
             error_msg="Request needs api key.",
         )
+
+
+def authorize_ext_api_by_app_role(
+    requester: RequesterSchema = Depends(get_current_requester),
+    app_client_id: str = Depends(get_request_app_client_id),
+    db: Session = Depends(database.get_db),
+) -> FamApplicationSchema:
+    """
+    This method is used for the external api authorization check.
+    The requester must have the permission to call the external api for the application.
+    """
+    application: FamApplicationSchema = crud_application.get_application_by_app_client_id(db, app_client_id)
+    if not application:
+        utils.raise_http_exception(
+            status_code=HTTPStatus.FORBIDDEN,
+            error_code=ERROR_CODE_INVALID_OPERATION,
+            error_msg=f"Token contains invalid application client id {utils.mask_string(app_client_id, 5)}",
+        )
+
+    has_call_api_permission: bool = crud_utils.allow_ext_call_api_permission(
+        db, application.application_id, requester.user_name
+    )
+    if not has_call_api_permission:
+        utils.raise_http_exception(
+            status_code=HTTPStatus.FORBIDDEN,
+            error_code=ERROR_PERMISSION_REQUIRED,
+            error_msg="No permission to call the external API.",
+        )
+
+    return application

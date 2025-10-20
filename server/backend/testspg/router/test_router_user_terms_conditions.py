@@ -5,10 +5,10 @@ import starlette.testclient
 import testspg.jwt_utils as jwt_utils
 from api.app.constants import ERROR_CODE_INVALID_OPERATION
 from api.app.jwt_validation import ERROR_GROUPS_REQUIRED
-from api.app.main import apiPrefix
+from api.app.main import internal_api_prefix
 
 LOGGER = logging.getLogger(__name__)
-end_point = f"{apiPrefix}/user-terms-conditions"
+end_point = f"{internal_api_prefix}/user-terms-conditions"
 validation_endpoint = f"{end_point}/user:validate"
 COGNITO_USER_ID_LOAD_3_TEST = (
     "test-bceidbusiness_532905de0aa24923ae535428mangledf171bf13@bceidbusiness"

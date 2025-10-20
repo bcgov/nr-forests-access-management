@@ -132,3 +132,25 @@ def use_api_instance_by_app(application: models.FamApplication) -> ApiInstanceEn
 
     LOGGER.info(f"Use api instance environment -- {api_instance_env}")
     return api_instance_env
+
+
+def allow_ext_call_api_permission(db: Session, application_id: int, user_name: str) -> bool:
+    """
+    This is used for external API call
+    Returns True if the request(user) has permission to call the API for the given
+    application with permission call_api_flag=True at associated roles.
+    :param db: SQLAlchemy session
+    :param application_id: Application ID
+    :param user_name: User name to check
+    :return: True if allowed, False otherwise
+    """
+    from sqlalchemy import exists, select
+    stmt = (
+        select(models.FamUserRoleXref)
+        .join(models.FamUser)
+        .join(models.FamRole)
+        .where(models.FamUser.user_name == user_name)
+        .where(models.FamRole.application_id == application_id)
+        .where(models.FamRole.call_api_flag == True)
+    )
+    return db.execute(select(exists(stmt))).scalar()

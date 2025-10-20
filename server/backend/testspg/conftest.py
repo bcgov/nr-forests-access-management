@@ -22,7 +22,7 @@ from api.app.constants import (COGNITO_USERNAME_KEY, DEFAULT_PAGE_SIZE,
                                ERROR_CODE_TERMS_CONDITIONS_REQUIRED, MIN_PAGE,
                                UserType)
 from api.app.crud import crud_user, crud_utils
-from api.app.main import apiPrefix, app
+from api.app.main import app, internal_api_prefix
 from api.app.models.model import FamUser
 from api.app.routers.router_guards import (
     enforce_bceid_terms_conditions_guard, get_current_requester,
@@ -32,7 +32,7 @@ from api.app.schemas.fam_user import FamUserSchema
 from api.app.schemas.pagination import UserRolePageParamsSchema
 from testspg.constants import (ACCESS_GRANT_FOM_DEV_CR_IDIR,
                                FOM_DEV_ADMIN_ROLE, FOM_TEST_ADMIN_ROLE,
-                               TEST_CREATOR)
+                               TEST_BCEID_REQUESTER_DICT, TEST_CREATOR)
 
 LOGGER = logging.getLogger(__name__)
 # the folder contains test docker-compose.yml, ours in the root directory
@@ -191,6 +191,19 @@ def get_current_requester_by_token(db_pg_session):
 
 
 @pytest.fixture(scope="function")
+def override_depends__get_current_requester(test_client_fixture):
+    # Override FastAPI dependency "get_current_requester".
+    # Return mocked Requester for function's needs.
+    def _override_get_current_requester(mocked_data=TEST_BCEID_REQUESTER_DICT):
+        app = test_client_fixture.app
+        app.dependency_overrides[get_current_requester] = lambda: RequesterSchema(
+            **mocked_data
+        )
+
+    return _override_get_current_requester
+
+
+@pytest.fixture(scope="function")
 def override_depends__get_verified_target_user(test_client_fixture):
     # Override FastAPI dependency "get_verified_target_user".
     # Mock the return result for idim validation of the target user, to avoid calling external idim-proxy
@@ -264,7 +277,7 @@ def create_test_user_role_assignment(
     test_client_fixture: starlette.testclient.TestClient, token, request_body
 ):
     response = test_client_fixture.post(
-        f"{apiPrefix}/user-role-assignment",
+        f"{internal_api_prefix}/user-role-assignment",
         json=request_body,
         headers=jwt_utils.headers(token),
     )

@@ -1,5 +1,102 @@
 # Changelog
 
+## [1.45.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.44.0...v1.45.0) (2025-10-16)
+
+
+### Features
+
+* [#1985](https://github.com/bcgov/nr-forests-access-management/issues/1985) Consumer Api - User Search  ([#1990](https://github.com/bcgov/nr-forests-access-management/issues/1990)) ([b302c7e](https://github.com/bcgov/nr-forests-access-management/commit/b302c7ed94d2c2cd228c2463d6185408c657439a))
+* [#1985](https://github.com/bcgov/nr-forests-access-management/issues/1985) Consumer API Add Tests ([#1996](https://github.com/bcgov/nr-forests-access-management/issues/1996)) ([6de0f78](https://github.com/bcgov/nr-forests-access-management/commit/6de0f78a5bff67eec0891b4ff3621984aa857eb9))
+* [#1993](https://github.com/bcgov/nr-forests-access-management/issues/1993) New CloudFront Origin - Terraform ([#1995](https://github.com/bcgov/nr-forests-access-management/issues/1995)) ([9ef1c54](https://github.com/bcgov/nr-forests-access-management/commit/9ef1c549bd8c56c259de25fd87e2c0d380ce9e7f))
+
+
+### Bug Fixes
+
+* [#1993](https://github.com/bcgov/nr-forests-access-management/issues/1993) Viewer Request Lambda for Handling SPA Web Origin 403 ([#1997](https://github.com/bcgov/nr-forests-access-management/issues/1997)) ([8b0e877](https://github.com/bcgov/nr-forests-access-management/commit/8b0e877e2fef507a5766744f0c6cea852adee42b))
+
+## [1.44.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.43.0...v1.44.0) (2025-09-24)
+
+
+### Features
+
+* [#1987](https://github.com/bcgov/nr-forests-access-management/issues/1987) Flyway to add new ILCR_PROD and roles. ([#1988](https://github.com/bcgov/nr-forests-access-management/issues/1988)) ([ddda312](https://github.com/bcgov/nr-forests-access-management/commit/ddda3129626260625c1b961f04fa7cb5b226eb56))
+
+## [1.43.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.42.0...v1.43.0) (2025-09-19)
+
+
+### Features
+
+* [#1972](https://github.com/bcgov/nr-forests-access-management/issues/1972) FOM PROD admin role ([#1973](https://github.com/bcgov/nr-forests-access-management/issues/1973)) ([574fd00](https://github.com/bcgov/nr-forests-access-management/commit/574fd007cd822c02196cc7eb3134c0de78c70841))
+* [#1976](https://github.com/bcgov/nr-forests-access-management/issues/1976) Adjust Wast redirect url ([#1977](https://github.com/bcgov/nr-forests-access-management/issues/1977)) ([cf90612](https://github.com/bcgov/nr-forests-access-management/commit/cf90612b4f6db7557c2c1e2ebbffd8308f5d2360))
+
+## [1.42.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.41.0...v1.42.0) (2025-09-15)
+
+
+### Features
+
+* [#1944](https://github.com/bcgov/nr-forests-access-management/issues/1944) WASTE PLUS App Onboarding to FAM ([#1968](https://github.com/bcgov/nr-forests-access-management/issues/1968)) ([76940c0](https://github.com/bcgov/nr-forests-access-management/commit/76940c0fc40cd6da3605d1bdd82ecf495dd317cf))
+* Add default cloudfront callback url for LZA PROD. ([#1965](https://github.com/bcgov/nr-forests-access-management/issues/1965)) ([02daebf](https://github.com/bcgov/nr-forests-access-management/commit/02daebff45ed6ee6f0482606344eccb79d7aa20a))
+
+## [1.40.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.39.0...v1.40.0) (2025-09-11)
+
+
+### Features
+
+* [#1933](https://github.com/bcgov/nr-forests-access-management/issues/1933) LZA migration - dev deployment ([#1945](https://github.com/bcgov/nr-forests-access-management/issues/1945)) ([ff8dd34](https://github.com/bcgov/nr-forests-access-management/commit/ff8dd347681778f7c33caaafa1c2c5ce83d1711c))
+* [#1933](https://github.com/bcgov/nr-forests-access-management/issues/1933) LZA migration dev deployment add default redirect path ([#1947](https://github.com/bcgov/nr-forests-access-management/issues/1947)) ([93746ae](https://github.com/bcgov/nr-forests-access-management/commit/93746ae26a81a42af83ad4a735324553ec02109b))
+* [#1950](https://github.com/bcgov/nr-forests-access-management/issues/1950) Add default cloudfront callback url for LZA test. ([#1960](https://github.com/bcgov/nr-forests-access-management/issues/1960)) ([6913bf7](https://github.com/bcgov/nr-forests-access-management/commit/6913bf7643db8b3d138db65414677733597ce7cd))
+* [#1950](https://github.com/bcgov/nr-forests-access-management/issues/1950) LZA TEST Workflow and Terragrunt Configuration. ([#1959](https://github.com/bcgov/nr-forests-access-management/issues/1959)) ([b95d212](https://github.com/bcgov/nr-forests-access-management/commit/b95d2120a3264b406c2ad67fc62e50f08bc484df))
+* [#1962](https://github.com/bcgov/nr-forests-access-management/issues/1962) Prod LZA workflow and Terragrunt config ([#1963](https://github.com/bcgov/nr-forests-access-management/issues/1963)) ([1fc43d6](https://github.com/bcgov/nr-forests-access-management/commit/1fc43d632c226aa3578a06f822e5ace6ef503e51))
+
+## [1.39.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.38.0...v1.39.0) (2025-08-27)
+
+
+### Features
+
+* add Application Admins tab feature ([#1923](https://github.com/bcgov/nr-forests-access-management/issues/1923)) ([be023a4](https://github.com/bcgov/nr-forests-access-management/commit/be023a420219e5f0c73583e2c430c09d1db04d04))
+* laz migration ([#1904](https://github.com/bcgov/nr-forests-access-management/issues/1904)) ([ae9c78c](https://github.com/bcgov/nr-forests-access-management/commit/ae9c78ccd085b7e14f98b98c9fbf3c2c81136f6d))
+
+
+### Bug Fixes
+
+* Rename "Admin" to "Application Admin" in My Permissions table ([#1914](https://github.com/bcgov/nr-forests-access-management/issues/1914)) ([d782514](https://github.com/bcgov/nr-forests-access-management/commit/d7825149c7af31fb3f59a1939f01613ee0c5598e))
+
+## [1.38.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.37.0...v1.38.0) (2025-08-01)
+
+
+### Features
+
+* [#1880](https://github.com/bcgov/nr-forests-access-management/issues/1880) add new legacy application ilcr to fam ([#1910](https://github.com/bcgov/nr-forests-access-management/issues/1910)) ([926b9fa](https://github.com/bcgov/nr-forests-access-management/commit/926b9facd8424fc7e10aa65c672fa1802f46e5a3))
+
+## [1.37.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.36.0...v1.37.0) (2025-07-31)
+
+
+### Features
+
+* [#1880](https://github.com/bcgov/nr-forests-access-management/issues/1880) add ilcr OIDC client ([#1906](https://github.com/bcgov/nr-forests-access-management/issues/1906)) ([728881b](https://github.com/bcgov/nr-forests-access-management/commit/728881bd567f6bc95a96537c93f2d9eaee8b01ef))
+
+
+### Bug Fixes
+
+* 1880 fix flyway terraform missing comma ([#1908](https://github.com/bcgov/nr-forests-access-management/issues/1908)) ([ff786b3](https://github.com/bcgov/nr-forests-access-management/commit/ff786b3330e86557f5d1123c8f5041b9d98a7bfa))
+* fix another comma ([#1909](https://github.com/bcgov/nr-forests-access-management/issues/1909)) ([d8c8701](https://github.com/bcgov/nr-forests-access-management/commit/d8c870173c0138a836487c0ce89454b5985becef))
+
+## [1.36.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.35.3...v1.36.0) (2025-06-30)
+
+
+### Features
+
+* **flyway:** [#1855](https://github.com/bcgov/nr-forests-access-management/issues/1855),[#1857](https://github.com/bcgov/nr-forests-access-management/issues/1857) Added role for fam clients ([#1859](https://github.com/bcgov/nr-forests-access-management/issues/1859)) ([ee1bf7b](https://github.com/bcgov/nr-forests-access-management/commit/ee1bf7b4a82f08f2a63696388573fbd9aeaedc66))
+
+
+### Bug Fixes
+
+* [#1846](https://github.com/bcgov/nr-forests-access-management/issues/1846) added terraform required provider version ([#1852](https://github.com/bcgov/nr-forests-access-management/issues/1852)) ([b1c973e](https://github.com/bcgov/nr-forests-access-management/commit/b1c973e26ed2aa7999a92399e7c0ba00713de0fe))
+* **deps:** [#1839](https://github.com/bcgov/nr-forests-access-management/issues/1839) Update the openapitool package in code gen ([#1843](https://github.com/bcgov/nr-forests-access-management/issues/1843)) ([55783c7](https://github.com/bcgov/nr-forests-access-management/commit/55783c7a29b07b9e081669cd521a5dbfe00e7234))
+* **deps:** [#1839](https://github.com/bcgov/nr-forests-access-management/issues/1839) Update vite related packages for frontend ([#1844](https://github.com/bcgov/nr-forests-access-management/issues/1844)) ([aae4d6f](https://github.com/bcgov/nr-forests-access-management/commit/aae4d6f5c33d06540b2c01a4acf06e5b6ab49dc8))
+* **deps:** [#1839](https://github.com/bcgov/nr-forests-access-management/issues/1839) Upgrade aws-amplify to v6 ([#1840](https://github.com/bcgov/nr-forests-access-management/issues/1840)) ([0df1504](https://github.com/bcgov/nr-forests-access-management/commit/0df1504a8fcf8693db2ac53c20909b19f8d24fa6))
+* **deps:** update dependency axios to v1.8.2 [security] ([#1772](https://github.com/bcgov/nr-forests-access-management/issues/1772)) ([8c2da0a](https://github.com/bcgov/nr-forests-access-management/commit/8c2da0a3d1207be68dd81b28c85adf43d76c86f6))
+
 ## [1.35.2](https://github.com/bcgov/nr-forests-access-management/compare/v1.35.1...v1.35.2) (2025-05-27)
 
 
