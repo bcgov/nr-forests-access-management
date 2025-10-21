@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.46.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.45.0...v1.46.0) (2025-10-21)
+
+
+### Features
+
+* [#2000](https://github.com/bcgov/nr-forests-access-management/issues/2000) ATP3 Onboarding to FAM ([#2007](https://github.com/bcgov/nr-forests-access-management/issues/2007)) ([569cc25](https://github.com/bcgov/nr-forests-access-management/commit/569cc251fdf68a050bcde92c87add0fa97c3325d))
+
+
+### Bug Fixes
+
+* [#1998](https://github.com/bcgov/nr-forests-access-management/issues/1998) code scanning alert: Workflow does not contain permissions ([#2003](https://github.com/bcgov/nr-forests-access-management/issues/2003)) ([df59995](https://github.com/bcgov/nr-forests-access-management/commit/df599950b5cb0605ef248052ec95f5d91f856312))
+* [#1998](https://github.com/bcgov/nr-forests-access-management/issues/1998) Dependabot alerts ([#2004](https://github.com/bcgov/nr-forests-access-management/issues/2004)) ([9a79b96](https://github.com/bcgov/nr-forests-access-management/commit/9a79b96f8dd097f43561a1d2650e105d79b11cce))
+* [#1998](https://github.com/bcgov/nr-forests-access-management/issues/1998) Dependabot fix for form-data and axios ([#2001](https://github.com/bcgov/nr-forests-access-management/issues/2001)) ([9032801](https://github.com/bcgov/nr-forests-access-management/commit/9032801ff7a3d6150448940d60062fbfdb287523))
+* [#1998](https://github.com/bcgov/nr-forests-access-management/issues/1998) secret scanning ([#1999](https://github.com/bcgov/nr-forests-access-management/issues/1999)) ([d376026](https://github.com/bcgov/nr-forests-access-management/commit/d376026008fc8d8654c9a1a99dff896f5d25e6d6))
+
 ## [1.45.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.44.0...v1.45.0) (2025-10-16)
 
 
