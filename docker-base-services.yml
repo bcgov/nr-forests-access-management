@@ -63,5 +63,8 @@ services:
             - FLYWAY_PLACEHOLDERS_client_id_dev_waste_plus_oidc_client="flywayplaceholder"
             - FLYWAY_PLACEHOLDERS_client_id_test_waste_plus_oidc_client="flywayplaceholder"
             - FLYWAY_PLACEHOLDERS_client_id_prod_waste_plus_oidc_client="flywayplaceholder"
+            - FLYWAY_PLACEHOLDERS_client_id_dev_apt3_oidc_client="flywayplaceholder"
+            - FLYWAY_PLACEHOLDERS_client_id_test_apt3_oidc_client="flywayplaceholder"
+            - FLYWAY_PLACEHOLDERS_client_id_prod_apt3_oidc_client="flywayplaceholder"
         networks:
             - fam
