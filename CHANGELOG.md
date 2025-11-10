@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.46.0...v2.0.0) (2025-11-10)
+
+
+### ⚠ BREAKING CHANGES
+
+* #1952 Migration production to LZA AWS from ASEA AWS ([#2016](https://github.com/bcgov/nr-forests-access-management/issues/2016))
+
+### Features
+
+* [#1952](https://github.com/bcgov/nr-forests-access-management/issues/1952) Migration production to LZA AWS from ASEA AWS ([#2016](https://github.com/bcgov/nr-forests-access-management/issues/2016)) ([58dd093](https://github.com/bcgov/nr-forests-access-management/commit/58dd093eca477174cab84bdbb17ed84ce731e066))
+
 ## [1.46.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.45.0...v1.46.0) (2025-10-21)
 
 
