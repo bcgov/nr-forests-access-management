@@ -1,22 +1,22 @@
 <script setup lang="ts">
-import { ref, provide, onMounted, onBeforeUnmount, readonly } from "vue";
-import axios from "axios";
-import {
-    signInWithRedirect,
-    signOut,
-    getCurrentUser,
-    fetchAuthSession,
-    decodeJWT,
-} from "aws-amplify/auth";
-import type { AuthSession } from "aws-amplify/auth";
-import type { IdpTypes, AuthContext, FamLoginUser } from "@/types/AuthTypes";
-import { AUTH_KEY } from "@/constants/InjectionKeys";
-import { ONE_SECOND, THREE_MINUTES, HALF_HOUR } from "@/constants/TimeUnits";
-import { IdpProvider } from "@/enum/IdpEnum";
-import { EnvironmentSettings } from "@/services/EnvironmentSettings";
-import { authState } from "@/providers/authState";
-import { useRouter } from "vue-router";
 import Spinner from "@/components/UI/Spinner.vue";
+import { AUTH_KEY } from "@/constants/InjectionKeys";
+import { HALF_HOUR, ONE_SECOND, THREE_MINUTES } from "@/constants/TimeUnits";
+import { IdpProvider } from "@/enum/IdpEnum";
+import { authState } from "@/providers/authState";
+import { setupAxiosInterceptor } from "@/services/axiosInterceptor";
+import { EnvironmentSettings } from "@/services/EnvironmentSettings";
+import type { AuthContext, FamLoginUser, IdpTypes } from "@/types/AuthTypes";
+import type { AuthSession } from "aws-amplify/auth";
+import {
+    decodeJWT,
+    fetchAuthSession,
+    signInWithRedirect,
+    signOut
+} from "aws-amplify/auth";
+import axios from "axios";
+import { onBeforeUnmount, onMounted, provide, readonly, ref } from "vue";
+import { useRouter } from "vue-router";
 
 const environmentSettings = new EnvironmentSettings();
 const REFRESH_INTERVAL = THREE_MINUTES;
@@ -201,7 +201,7 @@ const startSilentRefresh = () => {
         try {
             if (!isRefreshing) {
                 isRefreshing = true;
-                loadUser();
+                await loadUser(); // Fixed: Added await to properly catch errors
             }
         } catch (error) {
             console.error("Silent refresh failed:", error);
@@ -273,11 +273,15 @@ const debouncedResetInactivityTimeout = debounce(
 
 /**
  * Lifecycle hook that runs when the component is mounted.
+ * - Configures Axios response interceptor to handle 401/403 errors globally
  * - Adds event listeners for user activity (mousemove and keydown) to reset inactivity timeout.
  * - Checks the current path. If the user is on the `/authCallback` path, it handles the login process.
  * - If not on the `/authCallback` path, it attempts to restore the user's session.
  */
 onMounted(() => {
+    // Setup Axios interceptor to catch 401/403 errors and trigger logout
+    setupAxiosInterceptor(logout);
+
     window.addEventListener("mousemove", debouncedResetInactivityTimeout);
     window.addEventListener("keydown", debouncedResetInactivityTimeout);
     window.addEventListener("click", debouncedResetInactivityTimeout);
