@@ -215,7 +215,6 @@ export const setupAxiosInterceptor = (logout: () => Promise<void>) => {
 
 /**
  * Removes the axios interceptor (useful for cleanup or testing).
- * Resets all state variables to prevent memory leaks.
  */
 export const removeAxiosInterceptor = () => {
     // Clear state
@@ -225,24 +224,4 @@ export const removeAxiosInterceptor = () => {
     failedRequestsQueue = [];
 
     console.log('[Axios Interceptor] Response interceptor removed');
-};
-
-/**
- * Request interceptor for logging (optional - currently disabled)
- * Useful for debugging but not critical for production
- */
-export const setupRequestInterceptor = () => {
-    axios.interceptors.request.use(
-        (config: InternalAxiosRequestConfig) => {
-            // Log outgoing requests in development
-            if (import.meta.env.DEV) {
-                console.debug(`[Axios] ${config.method?.toUpperCase()} ${config.url}`);
-            }
-            return config;
-        },
-        (error) => {
-            console.error('[Axios Request] Error:', error);
-            return Promise.reject(error);
-        }
-    );
 };

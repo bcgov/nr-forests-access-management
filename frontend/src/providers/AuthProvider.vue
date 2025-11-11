@@ -4,7 +4,7 @@ import { AUTH_KEY } from "@/constants/InjectionKeys";
 import { HALF_HOUR, ONE_SECOND, THREE_MINUTES } from "@/constants/TimeUnits";
 import { IdpProvider } from "@/enum/IdpEnum";
 import { authState } from "@/providers/authState";
-import { setupAxiosInterceptor } from "@/services/axiosInterceptor";
+import { removeAxiosInterceptor, setupAxiosInterceptor } from "@/services/axiosInterceptor";
 import { EnvironmentSettings } from "@/services/EnvironmentSettings";
 import type { AuthContext, FamLoginUser, IdpTypes } from "@/types/AuthTypes";
 import type { AuthSession } from "aws-amplify/auth";
@@ -297,11 +297,13 @@ onMounted(() => {
 /**
  * Lifecycle hook that runs when the component is about to be unmounted.
  * - Stops the silent token refresh process.
+ * - Removes Axios response interceptor.
  * - Clears the inactivity timeout if it's set.
  * - Removes event listeners for user activity (mousemove and keydown) to prevent memory leaks.
  */
 onBeforeUnmount(() => {
     stopSilentRefresh();
+    removeAxiosInterceptor();
 
     if (inactivityTimeoutId) {
         clearTimeout(inactivityTimeoutId);
