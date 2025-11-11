@@ -92,115 +92,122 @@ const refreshAccessToken = async (): Promise<string> => {
 };
 
 /**
+ * Handles authentication errors (401/403) with retry logic and token refresh
+ * @param error - The Axios error object
+ * @returns Promise resolving to the response or rejecting with error
+ */
+const handleAuthError = async (error: AxiosError): Promise<any> => {
+    const originalRequest = error.config as InternalAxiosRequestConfig & { _retryCount?: number };
+    const status = error.response?.status;
+
+    // Initialize retry count if not present
+    if (!originalRequest._retryCount) {
+        originalRequest._retryCount = 0;
+    }
+
+    // Handle 401 Unauthorized and 403 Forbidden
+    if ((status === 401 || status === 403) && originalRequest && originalRequest._retryCount < MAX_RETRY_ATTEMPTS) {
+        const attemptNumber = originalRequest._retryCount + 1;
+        console.warn(`[Axios Interceptor] Detected ${status} error. Attempting token refresh and retry (attempt ${attemptNumber}/${MAX_RETRY_ATTEMPTS}).`);
+
+        // If a refresh is already in progress, queue this request
+        if (isRefreshing) {
+            console.log('[Axios Interceptor] Token refresh in progress, queuing request...');
+
+            return new Promise((resolve, reject) => {
+                failedRequestsQueue.push({
+                    resolve: (token: string) => {
+                        originalRequest.headers['Authorization'] = `Bearer ${token}`;
+                        resolve(axios(originalRequest));
+                    },
+                    reject: (err: any) => {
+                        reject(err);
+                    },
+                });
+            });
+        }
+
+        // Increment retry count
+        originalRequest._retryCount = attemptNumber;
+        isRefreshing = true;
+
+        try {
+            // Attempt to refresh the token
+            const newToken = await refreshAccessToken();
+
+            // Process any queued requests with the new token
+            processQueue(null, newToken);
+
+            // Retry the original request with new token
+            originalRequest.headers['Authorization'] = `Bearer ${newToken}`;
+            console.log(`[Axios Interceptor] Retrying original request with new token (attempt ${attemptNumber}/${MAX_RETRY_ATTEMPTS})`);
+
+            return axios(originalRequest);
+
+        } catch (refreshError) {
+            console.error('[Axios Interceptor] Token refresh failed, initiating logout');
+
+            // Reject all queued requests
+            processQueue(refreshError, null);
+
+            // Trigger logout
+            if (!isLoggingOut && logoutCallback) {
+                isLoggingOut = true;
+
+                try {
+                    await logoutCallback();
+                } catch (logoutError) {
+                    console.error('[Axios Interceptor] Logout failed:', logoutError);
+                } finally {
+                    isLoggingOut = false;
+                }
+            }
+
+            return Promise.reject(refreshError);
+
+        } finally {
+            isRefreshing = false;
+        }
+    }
+
+    // If max retries exceeded, log and logout
+    if ((status === 401 || status === 403) && originalRequest && originalRequest._retryCount >= MAX_RETRY_ATTEMPTS) {
+        console.error(`[Axios Interceptor] Max retry attempts (${MAX_RETRY_ATTEMPTS}) reached. Logging out.`);
+
+        if (!isLoggingOut && logoutCallback) {
+            isLoggingOut = true;
+
+            try {
+                await logoutCallback();
+            } catch (logoutError) {
+                console.error('[Axios Interceptor] Logout failed:', logoutError);
+            } finally {
+                isLoggingOut = false;
+            }
+        }
+    }
+
+    // For other errors or retries that still fail, reject the promise
+    return Promise.reject(error);
+};
+
+/**
  * Initializes the Axios response interceptor.
  * Should be called once during app initialization (in AuthProvider onMounted).
  *
- * @param onUnauthorized - Callback function to execute when recovery fails
- *                         This should be the logout function from AuthProvider
+ * @param logout - Callback function to execute when recovery fails
+ *                 This should be the logout function from AuthProvider
  */
-export const setupAxiosInterceptor = (onUnauthorized: () => Promise<void>) => {
-    logoutCallback = onUnauthorized;
+export const setupAxiosInterceptor = (logout: () => Promise<void>) => {
+    logoutCallback = logout;
 
     // Response interceptor
     axios.interceptors.response.use(
         // Success handler - pass through successful responses
         (response: AxiosResponse) => response,
 
-        // Error handler - catch and process errors
-        async (error: AxiosError) => {
-            const originalRequest = error.config as InternalAxiosRequestConfig & { _retryCount?: number };
-            const status = error.response?.status;
-
-            // Initialize retry count if not present
-            if (!originalRequest._retryCount) {
-                originalRequest._retryCount = 0;
-            }
-
-            // Handle 401 Unauthorized and 403 Forbidden
-            if ((status === 401 || status === 403) && originalRequest && originalRequest._retryCount < MAX_RETRY_ATTEMPTS) {
-                const attemptNumber = originalRequest._retryCount + 1;
-                console.warn(`[Axios Interceptor] Detected ${status} error. Attempting token refresh and retry (attempt ${attemptNumber}/${MAX_RETRY_ATTEMPTS}).`);
-
-                // If a refresh is already in progress, queue this request
-                if (isRefreshing) {
-                    console.log('[Axios Interceptor] Token refresh in progress, queuing request...');
-
-                    return new Promise((resolve, reject) => {
-                        failedRequestsQueue.push({
-                            resolve: (token: string) => {
-                                originalRequest.headers['Authorization'] = `Bearer ${token}`;
-                                resolve(axios(originalRequest));
-                            },
-                            reject: (err: any) => {
-                                reject(err);
-                            },
-                        });
-                    });
-                }
-
-                // Increment retry count
-                originalRequest._retryCount = attemptNumber;
-                isRefreshing = true;
-
-                try {
-                    // Attempt to refresh the token
-                    const newToken = await refreshAccessToken();
-
-                    // Process any queued requests with the new token
-                    processQueue(null, newToken);
-
-                    // Retry the original request with new token
-                    originalRequest.headers['Authorization'] = `Bearer ${newToken}`;
-                    console.log(`[Axios Interceptor] Retrying original request with new token (attempt ${attemptNumber}/${MAX_RETRY_ATTEMPTS})`);
-
-                    return axios(originalRequest);
-
-                } catch (refreshError) {
-                    console.error('[Axios Interceptor] Token refresh failed, initiating logout');
-
-                    // Reject all queued requests
-                    processQueue(refreshError, null);
-
-                    // Trigger logout
-                    if (!isLoggingOut && logoutCallback) {
-                        isLoggingOut = true;
-
-                        try {
-                            await logoutCallback();
-                        } catch (logoutError) {
-                            console.error('[Axios Interceptor] Logout failed:', logoutError);
-                        } finally {
-                            isLoggingOut = false;
-                        }
-                    }
-
-                    return Promise.reject(refreshError);
-
-                } finally {
-                    isRefreshing = false;
-                }
-            }
-
-            // If max retries exceeded, log and logout
-            if ((status === 401 || status === 403) && originalRequest && originalRequest._retryCount >= MAX_RETRY_ATTEMPTS) {
-                console.error(`[Axios Interceptor] Max retry attempts (${MAX_RETRY_ATTEMPTS}) reached. Logging out.`);
-
-                if (!isLoggingOut && logoutCallback) {
-                    isLoggingOut = true;
-
-                    try {
-                        await logoutCallback();
-                    } catch (logoutError) {
-                        console.error('[Axios Interceptor] Logout failed:', logoutError);
-                    } finally {
-                        isLoggingOut = false;
-                    }
-                }
-            }
-
-            // For other errors or retries that still fail, reject the promise
-            return Promise.reject(error);
-        }
+        // Error handler - delegate to handleAuthError
+        handleAuthError
     );
 
     console.log('[Axios Interceptor] Response interceptor with retry logic configured successfully');
