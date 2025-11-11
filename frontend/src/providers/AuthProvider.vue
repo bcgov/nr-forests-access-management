@@ -4,13 +4,12 @@ import { AUTH_KEY } from "@/constants/InjectionKeys";
 import { HALF_HOUR, ONE_SECOND, THREE_MINUTES } from "@/constants/TimeUnits";
 import { IdpProvider } from "@/enum/IdpEnum";
 import { authState } from "@/providers/authState";
-import { removeAxiosInterceptor, setupAxiosInterceptor } from "@/services/axiosInterceptor";
+import { refreshTokens, removeAxiosInterceptor, setupAxiosInterceptor } from "@/services/axiosInterceptor";
 import { EnvironmentSettings } from "@/services/EnvironmentSettings";
 import type { AuthContext, FamLoginUser, IdpTypes } from "@/types/AuthTypes";
-import type { AuthSession } from "aws-amplify/auth";
+import type { AuthTokens } from "aws-amplify/auth";
 import {
     decodeJWT,
-    fetchAuthSession,
     signInWithRedirect,
     signOut
 } from "aws-amplify/auth";
@@ -164,12 +163,9 @@ const restoreSession = async () => {
 };
 
 const loadUser = async (): Promise<any> => {
-    // forceRefresh to retrieve the latest user attributes after they are changed
-    // bypass the local cache without needing the user to sign out and sign back in, similar as bypassCache in v5
-    const session: AuthSession = await fetchAuthSession({ forceRefresh: true });
-
-    const accessToken = session.tokens?.accessToken;
-    const idToken = session.tokens?.idToken;
+    const tokens: AuthTokens = await refreshTokens();
+    const accessToken = tokens?.accessToken;
+    const idToken = tokens?.idToken;
 
     if (!accessToken || !idToken) {
         throw new Error("The user is not authenticated");

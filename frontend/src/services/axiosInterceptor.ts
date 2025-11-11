@@ -1,5 +1,5 @@
-import { fetchAuthSession } from 'aws-amplify/auth';
-import axios, { AxiosError, type AxiosResponse, type InternalAxiosRequestConfig } from 'axios';
+import { fetchAuthSession, type AuthTokens } from 'aws-amplify/auth';
+import axios, { AxiosError, HttpStatusCode, type AxiosResponse, type InternalAxiosRequestConfig } from 'axios';
 
 /**
  * Axios Response Interceptor Configuration
@@ -41,52 +41,49 @@ let logoutCallback: (() => Promise<void>) | null = null;
 
 // Queue to hold requests waiting for token refresh
 interface PendingRequest {
-    resolve: (token: string) => void;
+    resolve: () => void;
     reject: (error: any) => void;
 }
 let failedRequestsQueue: PendingRequest[] = [];
 
 /**
  * Processes the queue of failed requests after token refresh completes
- * @param error - If present, rejects all queued requests; otherwise resolves with new token
- * @param newToken - The refreshed access token to use for retrying requests
+ * @param error - If present, rejects all queued requests
  */
-const processQueue = (error: any = null, newToken: string | null = null) => {
+const processQueue = (error: any = null) => {
     failedRequestsQueue.forEach((promise) => {
         if (error) {
             promise.reject(error);
-        } else if (newToken) {
-            promise.resolve(newToken);
+        } else {
+            // No need to pass token - refreshTokens() already updated axios.defaults
+            promise.resolve();
         }
     });
     failedRequestsQueue = [];
 };
 
 /**
- * Attempts to refresh the access token using AWS Amplify
- * @returns Promise resolving to the new access token string
+ * Attempts to refresh the JWT tokens using AWS Amplify
+ * @returns Promise resolving to the new tokens
  * @throws Error if token refresh fails
  */
-const refreshAccessToken = async (): Promise<string> => {
-    console.log('[Axios Interceptor] Attempting to refresh access token...');
+export const refreshTokens = async (): Promise<AuthTokens> => {
+    console.log('Attempting to refresh JWT tokens...');
 
     try {
         const session = await fetchAuthSession({ forceRefresh: true });
-        const accessToken = session.tokens?.accessToken;
-
-        if (!accessToken) {
-            throw new Error('Failed to obtain new access token');
+        const newJWTTTokens = session.tokens;
+        if (!newJWTTTokens) {
+            throw new Error('Failed to obtain new token');
         }
 
-        const tokenString = accessToken.toString();
-
         // Update the default Axios Authorization header
-        axios.defaults.headers.common['Authorization'] = `Bearer ${tokenString}`;
+        axios.defaults.headers.common['Authorization'] = `Bearer ${newJWTTTokens.accessToken.toString()}`;
 
-        console.log('[Axios Interceptor] Token refresh successful');
-        return tokenString;
+        console.log('Token refresh successful');
+        return newJWTTTokens;
     } catch (error) {
-        console.error('[Axios Interceptor] Token refresh failed:', error);
+        console.error('Token refresh failed:', error);
         throw error;
     }
 };
@@ -105,10 +102,11 @@ const handleAuthError = async (error: AxiosError): Promise<any> => {
         originalRequest._retryCount = 0;
     }
 
-    // Handle 401 Unauthorized and 403 Forbidden
-    if ((status === 401 || status === 403) && originalRequest && originalRequest._retryCount < MAX_RETRY_ATTEMPTS) {
+    if (isRetryConditionMet(originalRequest, status)) {
         const attemptNumber = originalRequest._retryCount + 1;
-        console.warn(`[Axios Interceptor] Detected ${status} error. Attempting token refresh and retry (attempt ${attemptNumber}/${MAX_RETRY_ATTEMPTS}).`);
+        console.warn(`[Axios Interceptor] Detected ${status} error.
+            Attempting token refresh and retry (attempt ${attemptNumber}/${MAX_RETRY_ATTEMPTS}).`
+        );
 
         // If a refresh is already in progress, queue this request
         if (isRefreshing) {
@@ -116,8 +114,7 @@ const handleAuthError = async (error: AxiosError): Promise<any> => {
 
             return new Promise((resolve, reject) => {
                 failedRequestsQueue.push({
-                    resolve: (token: string) => {
-                        originalRequest.headers['Authorization'] = `Bearer ${token}`;
+                    resolve: () => {
                         resolve(axios(originalRequest));
                     },
                     reject: (err: any) => {
@@ -133,13 +130,12 @@ const handleAuthError = async (error: AxiosError): Promise<any> => {
 
         try {
             // Attempt to refresh the token
-            const newToken = await refreshAccessToken();
+            const newTokens = await refreshTokens();
 
             // Process any queued requests with the new token
-            processQueue(null, newToken);
+            processQueue(null);
 
             // Retry the original request with new token
-            originalRequest.headers['Authorization'] = `Bearer ${newToken}`;
             console.log(`[Axios Interceptor] Retrying original request with new token (attempt ${attemptNumber}/${MAX_RETRY_ATTEMPTS})`);
 
             return axios(originalRequest);
@@ -148,7 +144,7 @@ const handleAuthError = async (error: AxiosError): Promise<any> => {
             console.error('[Axios Interceptor] Token refresh failed, initiating logout');
 
             // Reject all queued requests
-            processQueue(refreshError, null);
+            processQueue(refreshError);
 
             // Trigger logout
             if (!isLoggingOut && logoutCallback) {
@@ -192,6 +188,28 @@ const handleAuthError = async (error: AxiosError): Promise<any> => {
 };
 
 /**
+ * Verify if retry conditions are met:
+ * - 401/403
+ * - 400 for AWS Cognito endpoint error, specifically
+ *   "UnexpectedLambdaException: PreTokenGeneration invocation failed"
+ * - and under max retries
+ * @returns boolean when retry conditions are satisfied
+ */
+const isRetryConditionMet = (
+    originalRequest: InternalAxiosRequestConfig & { _retryCount?: number },
+    reqStatus: number | undefined
+): boolean => {
+    const AWS_COGNITO_IDP_ENDPOINT = "https://cognito-idp.ca-central-1.amazonaws.com/"
+    console.log(`baseURL: ${originalRequest.baseURL}`);
+    const retryCount = originalRequest._retryCount ?? 0;
+    return (
+        reqStatus === HttpStatusCode.Unauthorized // 401
+        || reqStatus === HttpStatusCode.Forbidden // 403
+        || (reqStatus === HttpStatusCode.BadRequest && originalRequest.baseURL === AWS_COGNITO_IDP_ENDPOINT)
+    ) && originalRequest && retryCount < MAX_RETRY_ATTEMPTS;
+}
+
+/**
  * Initializes the Axios response interceptor.
  * Should be called once during app initialization (in AuthProvider onMounted).
  *
@@ -210,7 +228,7 @@ export const setupAxiosInterceptor = (logout: () => Promise<void>) => {
         handleAuthError
     );
 
-    console.log('[Axios Interceptor] Response interceptor with retry logic configured successfully');
+    console.log('[Axios Response Interceptor] configured successfully');
 };
 
 /**
