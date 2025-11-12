@@ -4,6 +4,7 @@ import { AUTH_KEY } from "@/constants/InjectionKeys";
 import { HALF_HOUR, ONE_SECOND, THREE_MINUTES } from "@/constants/TimeUnits";
 import { IdpProvider } from "@/enum/IdpEnum";
 import { authState } from "@/providers/authState";
+import { oidcCallbackPath } from "@/router/routes";
 import { refreshTokens, removeAxiosInterceptor, setupAxiosInterceptor } from "@/services/axiosInterceptor";
 import { EnvironmentSettings } from "@/services/EnvironmentSettings";
 import type { AuthContext, FamLoginUser, IdpTypes } from "@/types/AuthTypes";
@@ -197,7 +198,7 @@ const startSilentRefresh = () => {
         try {
             if (!isRefreshing) {
                 isRefreshing = true;
-                await loadUser(); // Fixed: Added await to properly catch errors
+                await loadUser();
             }
         } catch (error) {
             console.error("Silent refresh failed:", error);
@@ -283,7 +284,7 @@ onMounted(() => {
     window.addEventListener("click", debouncedResetInactivityTimeout);
 
     const currentPath = window.location.pathname;
-    if (currentPath === "/authCallback") {
+    if (currentPath === oidcCallbackPath) {
         handlePostLogin();
     } else {
         restoreSession();

@@ -5,13 +5,16 @@
  3. Add the new route constant to the `routeItems` array below.
  4. Each route must have a name defined.
 */
-import type { RouteRecordRaw } from "vue-router";
 import type { AddAppPermissionRouteProps } from "@/types/RouteTypes";
+import type { RouteRecordRaw } from "vue-router";
 
 const protectedLayoutMeta = { layout: "ProtectedLayout" };
 
+export const oidcCallbackPath = "/authCallback";
+export const rootPath = "/";
+
 export const LandingRoute: RouteRecordRaw = {
-    path: "/",
+    path: rootPath,
     name: "Landing",
     component: () => import("@/views/LandingView"),
 };

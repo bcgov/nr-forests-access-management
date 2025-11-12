@@ -67,11 +67,11 @@ const processQueue = (error: any = null) => {
  * @returns Promise resolving to the new tokens
  * @throws Error if token refresh fails
  */
-export const refreshTokens = async (): Promise<AuthTokens> => {
+export const refreshTokens = async (forceRefresh: boolean = false): Promise<AuthTokens> => {
     console.log('Attempting to refresh JWT tokens...');
 
     try {
-        const session = await fetchAuthSession({ forceRefresh: true });
+        const session = await fetchAuthSession({ forceRefresh });
         const newJWTTTokens = session.tokens;
         if (!newJWTTTokens) {
             throw new Error('Failed to obtain new token');
@@ -130,7 +130,7 @@ const handleAuthError = async (error: AxiosError): Promise<any> => {
 
         try {
             // Attempt to refresh the token
-            const newTokens = await refreshTokens();
+            const newTokens = await refreshTokens(true); // force token refresh from Cognito for auth errrors.
 
             // Process any queued requests with the new token
             processQueue(null);
