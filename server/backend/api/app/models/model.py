@@ -753,6 +753,11 @@ class FamUserRoleXref(Base):
         onupdate=func.now(),
         comment="The date and time the record was created or last updated.",
     )
+    expiry_date = Column(
+        TIMESTAMP(timezone=True, precision=6),
+        nullable=True,
+        comment="The date and time when the user role assignment expires. NULL means no expiry.",
+    )
 
     role: Mapped[FamRole] = relationship("FamRole", back_populates="fam_user_role_xref", lazy="joined")
     user: Mapped[FamUser] = relationship("FamUser", back_populates="fam_user_role_xref", lazy="joined")
