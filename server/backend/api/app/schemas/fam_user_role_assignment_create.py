@@ -6,6 +6,7 @@ from typing import List, Optional, Union
 from zoneinfo import ZoneInfo
 
 from api.app.constants import UserType
+from api.app.datetime_format import BC_TIMEZONE, DATE_FORMAT_YYYY_MM_DD
 from pydantic import (BaseModel, ConfigDict, PrivateAttr, StringConstraints,
                       field_validator, model_validator)
 from typing_extensions import Annotated
@@ -41,9 +42,9 @@ class FamUserRoleAssignmentCreateSchema(BaseModel):
     def validate_expiry_date_date(cls, v):
         if v is None:
             return v
-        bc_tz = ZoneInfo('America/Vancouver')
+        bc_tz = ZoneInfo(BC_TIMEZONE)
         try:
-            d = datetime.strptime(v, '%Y-%m-%d').date()
+            d = datetime.strptime(v, DATE_FORMAT_YYYY_MM_DD).date()
         except Exception:
             raise ValueError('expiry_date_date must be a valid YYYY-MM-DD string')
         dt = datetime.combine(d, time(0, 0, 0)).replace(tzinfo=bc_tz)
@@ -56,8 +57,8 @@ class FamUserRoleAssignmentCreateSchema(BaseModel):
     @model_validator(mode="after")
     def set_expiry_date(self):
         if self.expiry_date_date:
-            bc_tz = ZoneInfo('America/Vancouver')
-            d = datetime.strptime(self.expiry_date_date, '%Y-%m-%d').date()
+            bc_tz = ZoneInfo(BC_TIMEZONE)
+            d = datetime.strptime(self.expiry_date_date, DATE_FORMAT_YYYY_MM_DD).date()
             self._expiry_date = datetime.combine(d, time(0, 0, 0)).replace(tzinfo=bc_tz)
         else:
             self._expiry_date = None
