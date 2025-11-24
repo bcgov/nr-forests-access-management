@@ -1,6 +1,7 @@
 import logging
+from datetime import datetime
 from http import HTTPStatus
-from typing import List
+from typing import List, Optional
 
 from api.app import constants as famConstants
 from api.app.crud import crud_forest_client, crud_role, crud_user, crud_utils
@@ -165,9 +166,8 @@ def create_user_role_assignment_many(
 
     return new_user_permission_granted_list
 
-
 def create_user_role_assignment(
-    db: Session, user: models.FamUser, role: models.FamRole, requester_cognito_user_id: str, expiry_date=None
+    db: Session, user: models.FamUser, role: models.FamRole, requester_cognito_user_id: str, expiry_date: Optional[datetime] = None
 ):
     new_user_role_assginment_res = None
     fam_user_role_xref = get_use_role_by_user_id_and_role_id(
@@ -216,7 +216,7 @@ def delete_fam_user_role_assignment(db: Session, requester: RequesterSchema, use
     db.flush()
 
 
-def create(db: Session, user_id: int, role_id: int, requester_cognito_user_id: str, expiry_date=None):
+def create(db: Session, user_id: int, role_id: int, requester_cognito_user_id: str, expiry_date: Optional[datetime] = None):
     LOGGER.debug(
         f"FamUserRoleXref - 'create' with user_id: {user_id}, " + f"role_id: {role_id}."
     )
