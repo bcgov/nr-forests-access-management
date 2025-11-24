@@ -1,11 +1,12 @@
 
+
 from datetime import datetime, time, timezone
 from typing import List, Optional, Union
 from zoneinfo import ZoneInfo
 
 from api.app.constants import UserType
-from pydantic import (BaseModel, ConfigDict, GetCoreSchemaHandler,
-                      StringConstraints, field_validator)
+from pydantic import (BaseModel, ConfigDict, PrivateAttr, StringConstraints,
+                      field_validator)
 from typing_extensions import Annotated
 
 
@@ -14,7 +15,7 @@ class FamUserRoleAssignmentCreateSchema(BaseModel):
     """
     Request schema for assigning a user to a role, with optional expiry date.
     - expiry_date_date: The expiry date as a string (YYYY-MM-DD), BC timezone.
-    - expiry_date: Internal use, timezone-aware datetime, derived from expiry_date_date.
+    - _expiry_date: Internal use only, timezone-aware datetime, derived from expiry_date_date.
     """
     user_name: Annotated[
         str, StringConstraints(min_length=3, max_length=20)
@@ -27,15 +28,10 @@ class FamUserRoleAssignmentCreateSchema(BaseModel):
     ] = None
     requires_send_user_email: bool = False
     expiry_date_date: Optional[str] = None  # e.g. '2025-12-31', BC timezone.
-    expiry_date: Optional[datetime] = None  # internal use only.
+    # Internal use only, not exposed in OpenAPI or request/response bodies
+    _expiry_date: Optional[datetime] = PrivateAttr(default=None)
 
-    @classmethod
-    def __get_pydantic_core_schema__(cls, *args, **kwargs):
-        schema = super().__get_pydantic_core_schema__(*args, **kwargs)
-        if hasattr(schema, 'fields'):
-            # Hide expiry_date from OpenAPI/Swagger. We use this field internally only.
-            schema.fields.pop('expiry_date', None)
-        return schema
+
 
 
     @field_validator('expiry_date_date')
@@ -60,9 +56,9 @@ class FamUserRoleAssignmentCreateSchema(BaseModel):
         if obj.expiry_date_date:
             bc_tz = ZoneInfo('America/Vancouver')
             d = datetime.strptime(obj.expiry_date_date, '%Y-%m-%d').date()
-            obj.expiry_date = datetime.combine(d, time(0, 0, 0)).replace(tzinfo=bc_tz)
+            obj._expiry_date = datetime.combine(d, time(0, 0, 0)).replace(tzinfo=bc_tz)
         else:
-            obj.expiry_date = None
+            obj._expiry_date = None
         return obj
 
     model_config = ConfigDict(from_attributes=True)
