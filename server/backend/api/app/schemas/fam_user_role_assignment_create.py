@@ -1,14 +1,16 @@
 
 
+import logging
 from datetime import datetime, time, timezone
 from typing import List, Optional, Union
 from zoneinfo import ZoneInfo
 
 from api.app.constants import UserType
 from pydantic import (BaseModel, ConfigDict, PrivateAttr, StringConstraints,
-                      field_validator)
+                      field_validator, model_validator)
 from typing_extensions import Annotated
 
+LOGGER = logging.getLogger(__name__)
 
 # Role assignment with one role at a time for the user.
 class FamUserRoleAssignmentCreateSchema(BaseModel):
@@ -50,15 +52,16 @@ class FamUserRoleAssignmentCreateSchema(BaseModel):
             raise ValueError('expiry_date_date must not be in the past (BC timezone)')
         return v
 
-    @classmethod
-    def model_validate(cls, value, *args, **kwargs):
-        obj = super().model_validate(value, *args, **kwargs)
-        if obj.expiry_date_date:
+
+    @model_validator(mode="after")
+    def set_expiry_date(self):
+        if self.expiry_date_date:
             bc_tz = ZoneInfo('America/Vancouver')
-            d = datetime.strptime(obj.expiry_date_date, '%Y-%m-%d').date()
-            obj._expiry_date = datetime.combine(d, time(0, 0, 0)).replace(tzinfo=bc_tz)
+            d = datetime.strptime(self.expiry_date_date, '%Y-%m-%d').date()
+            self._expiry_date = datetime.combine(d, time(0, 0, 0)).replace(tzinfo=bc_tz)
         else:
-            obj._expiry_date = None
-        return obj
+            self._expiry_date = None
+        LOGGER.debug(f"Set internal _expiry_date to: {self._expiry_date}")
+        return self
 
     model_config = ConfigDict(from_attributes=True)
