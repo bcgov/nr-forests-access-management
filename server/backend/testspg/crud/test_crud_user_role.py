@@ -1,8 +1,11 @@
 import copy
+import datetime
 import logging
+from zoneinfo import ZoneInfo
 
 import pytest
 from api.app.crud import crud_role, crud_user_role
+from api.app.datetime_format import BC_TIMEZONE, DATE_FORMAT_YYYY_MM_DD
 from api.app.schemas import FamUserRoleAssignmentCreateSchema, TargetUserSchema
 from api.app.schemas.requester import RequesterSchema
 from fastapi import HTTPException
@@ -125,3 +128,59 @@ def test_find_or_create_forest_client_child_role(db_pg_session: Session):
     child_role_two = crud_role.get_role(db_pg_session, result.role_id)
     assert child_role_two.role_id == result.role_id
     assert child_role_two.role_name == "FOM_REVIEWER_" + TEST_FOREST_CLIENT_NUMBER
+
+
+# ------------------- Expiry Date Unit Tests ------------------- #
+
+def test_user_role_expiry_date_valid_future():
+    """Assign a user role with a valid future expiry date string."""
+    user_role = copy.deepcopy(ACCESS_GRANT_FOM_DEV_CR_IDIR)
+    bc = ZoneInfo(BC_TIMEZONE)
+    future_date = (datetime.datetime.now(bc) + datetime.timedelta(days=10)).date()
+    user_role["expiry_date_date"] = future_date.strftime(DATE_FORMAT_YYYY_MM_DD)
+    schema = FamUserRoleAssignmentCreateSchema(**user_role)
+    # Should be midnight BC time, converted to UTC
+    expected_bc = datetime.datetime(future_date.year, future_date.month, future_date.day, 0, 0, 0, tzinfo=bc)
+    assert schema._expiry_date is not None
+    assert schema._expiry_date.astimezone(bc) == expected_bc
+
+
+def test_user_role_expiry_date_none():
+    """Assign a user role without providing an expiry date."""
+    user_role = copy.deepcopy(ACCESS_GRANT_FOM_DEV_CR_IDIR)
+    if "expiry_date_date" in user_role:
+        del user_role["expiry_date_date"]
+    schema = FamUserRoleAssignmentCreateSchema(**user_role)
+    assert schema._expiry_date is None
+
+
+def test_user_role_expiry_date_past():
+    """Attempt to assign a user role with a past expiry date."""
+    user_role = copy.deepcopy(ACCESS_GRANT_FOM_DEV_CR_IDIR)
+    bc = ZoneInfo(BC_TIMEZONE)
+    yesterday = (datetime.datetime.now(bc) - datetime.timedelta(days=1)).date()
+    user_role["expiry_date_date"] = yesterday.strftime(DATE_FORMAT_YYYY_MM_DD)
+    with pytest.raises(ValidationError) as e:
+        FamUserRoleAssignmentCreateSchema(**user_role)
+    assert "must not be in the past" in str(e.value)
+
+
+def test_user_role_expiry_date_invalid_format():
+    """Attempt to assign a user role with an invalid date string."""
+    user_role = copy.deepcopy(ACCESS_GRANT_FOM_DEV_CR_IDIR)
+    user_role["expiry_date_date"] = "31-12-2025"
+    with pytest.raises(ValidationError) as e:
+        FamUserRoleAssignmentCreateSchema(**user_role)
+    assert "expiry_date_date must be a valid YYYY-MM-DD string" in str(e.value)
+
+
+def test_user_role_expiry_date_utc_storage():
+    """Assign a user role with an expiry date and verify UTC storage."""
+    user_role = copy.deepcopy(ACCESS_GRANT_FOM_DEV_CR_IDIR)
+    user_role["expiry_date_date"] = "2025-12-31"
+    schema = FamUserRoleAssignmentCreateSchema(**user_role)
+    # Should be stored as UTC
+    assert schema._expiry_date.tzinfo is not None
+    from zoneinfo import ZoneInfo as _ZoneInfo
+    utc = _ZoneInfo("UTC")
+    assert schema._expiry_date.astimezone(utc).utcoffset().total_seconds() == 0
