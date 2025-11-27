@@ -250,6 +250,23 @@
                                     </td>
                                     <td><p>Automatically generated key used to identify the uniqueness of a FamUserRoleXref within the FAM Application</p></td>
                                 </tr>
+                                <tr>
+                                    <td><span id="expiry_date">expiry_date</span></td>
+                                    <td>timestamptz</td>
+                                    <td>35,6</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>The date and time when the user role assignment is expired. NULL means no expiry.</p></td>
+                                </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -327,7 +344,7 @@
                                 <div class="tab-content no-padding">
                                     <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="fam_user_role_xref.html" target="_top" title="fam_user_role_xref" alt="" coords="235,85,572,360">
+<area shape="rect" id="node1" href="fam_user_role_xref.html" target="_top" title="fam_user_role_xref" alt="" coords="235,85,572,389">
 <area shape="rect" id="node2" href="fam_role.html" target="_top" title="fam_role" alt="" coords="5,199,191,463">
 <area shape="rect" id="node3" href="fam_user.html" target="_top" title="fam_user" alt="" coords="12,5,184,181">
 </map>
@@ -335,19 +352,19 @@
                                     </div>
                                     <div class="chart tab-pane " id="twodegreesDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
-<area shape="rect" id="node1" href="fam_access_control_privilege.html" target="_top" title="fam_access_control_privilege" alt="" coords="531,403,841,491">
-<area shape="rect" id="node2" href="fam_role.html" target="_top" title="fam_role" alt="" coords="288,197,473,461">
-<area shape="rect" id="node3" href="fam_user.html" target="_top" title="fam_user" alt="" coords="295,611,467,787">
-<area shape="rect" id="node5" href="fam_application.html" target="_top" title="fam_application" alt="" coords="21,508,228,596">
-<area shape="rect" id="node8" href="fam_forest_client.html" target="_top" title="fam_forest_client" alt="" coords="16,280,233,368">
-<area shape="rect" id="node9" href="fam_role_type.html" target="_top" title="fam_role_type" alt="" coords="29,385,220,473">
-<area shape="rect" id="node10" href="fam_user_type_code.html" target="_top" title="fam_user_type_code" alt="" coords="5,672,244,760">
-<area shape="rect" id="node4" href="fam_application_admin.html" target="_top" title="fam_application_admin" alt="" coords="553,508,819,596">
+<area shape="rect" id="node1" href="fam_access_control_privilege.html" target="_top" title="fam_access_control_privilege" alt="" coords="531,432,841,520">
+<area shape="rect" id="node2" href="fam_role.html" target="_top" title="fam_role" alt="" coords="288,212,473,476">
+<area shape="rect" id="node3" href="fam_user.html" target="_top" title="fam_user" alt="" coords="295,640,467,816">
+<area shape="rect" id="node5" href="fam_application.html" target="_top" title="fam_application" alt="" coords="21,537,228,625">
+<area shape="rect" id="node8" href="fam_forest_client.html" target="_top" title="fam_forest_client" alt="" coords="16,295,233,383">
+<area shape="rect" id="node9" href="fam_role_type.html" target="_top" title="fam_role_type" alt="" coords="29,400,220,488">
+<area shape="rect" id="node10" href="fam_user_type_code.html" target="_top" title="fam_user_type_code" alt="" coords="5,701,244,789">
+<area shape="rect" id="node4" href="fam_application_admin.html" target="_top" title="fam_application_admin" alt="" coords="553,537,819,625">
 <area shape="rect" id="node6" href="fam_group_role_xref.html" target="_top" title="fam_group_role_xref" alt="" coords="565,5,807,93">
-<area shape="rect" id="node7" href="fam_privilege_change_audit.html" target="_top" title="fam_privilege_change_audit" alt="" coords="537,824,835,912">
-<area shape="rect" id="node11" href="fam_user_group_xref.html" target="_top" title="fam_user_group_xref" alt="" coords="563,613,809,701">
-<area shape="rect" id="node12" href="fam_user_role_xref.html" target="_top" title="fam_user_role_xref" alt="" coords="517,111,855,385">
-<area shape="rect" id="node13" href="fam_user_terms_conditions.html" target="_top" title="fam_user_terms_conditions" alt="" coords="537,719,835,807">
+<area shape="rect" id="node7" href="fam_privilege_change_audit.html" target="_top" title="fam_privilege_change_audit" alt="" coords="537,853,835,941">
+<area shape="rect" id="node11" href="fam_user_group_xref.html" target="_top" title="fam_user_group_xref" alt="" coords="563,643,809,731">
+<area shape="rect" id="node12" href="fam_user_role_xref.html" target="_top" title="fam_user_role_xref" alt="" coords="517,111,855,415">
+<area shape="rect" id="node13" href="fam_user_terms_conditions.html" target="_top" title="fam_user_terms_conditions" alt="" coords="537,748,835,836">
 </map>
                                         <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/fam_user_role_xref.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><database name="fam" schema="app_fam" type="PostgreSQL - 14.17">
+<?xml version="1.0" encoding="UTF-8"?><database name="fam" schema="app_fam" type="PostgreSQL - 16.6">
    <tables>
       <table name="alembic_version" remarks="" schema="app_fam" type="TABLE">
          <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="version_num" nullable="false" remarks="" size="32" type="varchar" typeCode="12"/>
@@ -390,6 +390,7 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="update_user" nullable="true" remarks="The user or proxy account that created or last updated the record." size="100" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="5" name="update_date" nullable="false" remarks="The date and time the record was created or last updated." size="35" type="timestamptz" typeCode="93"/>
          <column autoUpdated="true" defaultValue="null" digits="0" id="6" name="user_role_xref_id" nullable="false" remarks="Automatically generated key used to identify the uniqueness of a FamUserRoleXref within the FAM Application" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="expiry_date" nullable="true" remarks="The date and time when the user role assignment is expired. NULL means no expiry." size="35" type="timestamptz" typeCode="93"/>
          <primaryKey column="user_role_xref_id" sequenceNumberInPK="1"/>
          <index name="fam_usr_rle_pk" unique="true">
             <column ascending="true" name="user_role_xref_id"/>
