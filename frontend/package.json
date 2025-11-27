@@ -3,9 +3,9 @@
     "version": "0.0.0",
     "type": "module",
     "scripts": {
-        "install-app-access-control-api-client": "cd ../client-code-gen/gen/app-access-control-api && npm ci",
-        "install-admin-management-api-client": "cd ../client-code-gen/gen/admin-management-api && npm ci",
-        "install-frontend": "(npm run -s install-app-access-control-api-client & npm run -s install-admin-management-api-client) && npm ci",
+        "install-app-access-control-api-client": "cd ../client-code-gen/gen/app-access-control-api && npm ci --ignore-scripts",
+        "install-admin-management-api-client": "cd ../client-code-gen/gen/admin-management-api && npm ci --ignore-scripts",
+        "install-frontend": "(npm run -s install-app-access-control-api-client & npm run -s install-admin-management-api-client) && npm ci --ignore-scripts",
         "dev": "vite",
         "dev-host": "vite --host",
         "build": "run-p type-check build-only",
