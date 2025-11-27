@@ -47,7 +47,7 @@ or for Windows(CMD/Powershell), use script
 >>(npm run dockergen-admin-management-api-win)
 
 With CLI:
->> npm install
+>> npm install --ignore-scripts
 >> npm run gen-admin-management-api
 ```
 
@@ -85,7 +85,7 @@ The generated api client code (under /gen directory) can be used in frontend (lo
   "fam-admin-mgmt-api": "file:../client-code-gen/gen/admin-management-api"
   ```
 
-* Before runing `npm ci --ignore-scripts` or `npm install` for fronend dependencies, run:
+* Before runing `npm ci --ignore-scripts` or `npm install --ignore-scripts` for fronend dependencies, run:
   ```
   cd ../client-code-gen/gen/admin-management-api
   npm install
