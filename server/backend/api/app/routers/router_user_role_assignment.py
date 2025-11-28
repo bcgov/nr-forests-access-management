@@ -68,6 +68,7 @@ def create_user_role_assignment_many(
         event_outcome=AuditEventOutcome.SUCCESS,
     )
 
+
     try:
         role = crud_role.get_role(db, role_assignment_request.role_id)
 
@@ -75,14 +76,21 @@ def create_user_role_assignment_many(
         audit_event_log.application = role.application
         audit_event_log.requesting_user = requester
 
-        response = FamUserRoleAssignmentRes(
-            assignments_detail=crud_user_role.create_user_role_assignment_many(
-                db,
-                role_assignment_request,
-                target_user,
-                requester,
-            )
+        # Create the assignment(s)
+        assignments_detail = crud_user_role.create_user_role_assignment_many(
+            db,
+            role_assignment_request,
+            target_user,
+            requester,
         )
+        response = FamUserRoleAssignmentRes(assignments_detail=assignments_detail)
+
+        # Set expiry date for audit log (use first assignment if multiple)
+        if assignments_detail and hasattr(assignments_detail[0].detail, "expiry_date"):
+            expiry = assignments_detail[0].detail.expiry_date
+            audit_event_log.role_assignment_expiry_date = expiry.isoformat() if expiry else None
+        else:
+            audit_event_log.role_assignment_expiry_date = None
 
         # get target user from database, so for existing user, we can get the cognito user id
         audit_event_log.target_user = crud_user.get_user_by_domain_and_guid(
@@ -156,6 +164,7 @@ def delete_user_role_assignment(
         event_outcome=AuditEventOutcome.SUCCESS,
     )
 
+
     try:
         user_role = crud_user_role.find_by_id(db, user_role_xref_id)
 
@@ -163,6 +172,8 @@ def delete_user_role_assignment(
         audit_event_log.target_user = user_role.user
         audit_event_log.application = user_role.role.application
         audit_event_log.requesting_user = requester
+        expiry = user_role.expiry_date
+        audit_event_log.role_assignment_expiry_date = expiry.isoformat() if expiry else None
 
         crud_user_role.delete_fam_user_role_assignment(db, requester, user_role_xref_id)
 
