@@ -16,11 +16,15 @@ class PrivilegeDetailsScopeSchema(BaseModel):
     client_name: Optional[
         Annotated[str, StringConstraints(max_length=CLIENT_NAME_MAX_LEN)]
     ] = None
+    # Optional expiry date for 'scopped role' assignments
+    role_assignment_expiry_date: Optional[str] = None
 
 
 class PrivilegeDetailsRoleSchema(BaseModel):
     role: Annotated[str, StringConstraints(max_length=ROLE_NAME_MAX_LEN)]
     scopes: Optional[List[PrivilegeDetailsScopeSchema]] = None
+    # Optional expiry date for 'role without scopes' assignments
+    role_assignment_expiry_date: Optional[str] = None
 
 
 class PrivilegeDetailsSchema(BaseModel):
