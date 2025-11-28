@@ -42,6 +42,8 @@ class FamUserRoleAssignmentCreateSchema(BaseModel):
     def validate_expiry_date_date(cls, v):
         if v is None:
             return v
+        if isinstance(v, str) and v.strip() == "":
+            return None
         bc_tz = ZoneInfo(BC_TIMEZONE)
         try:
             d = datetime.strptime(v, DATE_FORMAT_YYYY_MM_DD).date()
