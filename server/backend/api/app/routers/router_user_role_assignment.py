@@ -76,7 +76,6 @@ def create_user_role_assignment_many(
         audit_event_log.application = role.application
         audit_event_log.requesting_user = requester
 
-        # Create the assignment(s)
         assignments_detail = crud_user_role.create_user_role_assignment_many(
             db,
             role_assignment_request,
@@ -85,12 +84,9 @@ def create_user_role_assignment_many(
         )
         response = FamUserRoleAssignmentRes(assignments_detail=assignments_detail)
 
-        # Set expiry date for audit log (use first assignment if multiple)
-        if assignments_detail and hasattr(assignments_detail[0].detail, "expiry_date"):
-            expiry = assignments_detail[0].detail.expiry_date
-            audit_event_log.role_assignment_expiry_date = expiry.isoformat() if expiry else None
-        else:
-            audit_event_log.role_assignment_expiry_date = None
+        # Set expiry date for audit log
+        expiry = assignments_detail[0].detail.expiry_date
+        audit_event_log.role_assignment_expiry_date = expiry.isoformat() if expiry else None
 
         # get target user from database, so for existing user, we can get the cognito user id
         audit_event_log.target_user = crud_user.get_user_by_domain_and_guid(
