@@ -8,13 +8,13 @@ resource "aws_cognito_user_pool_client" "dev_results_exam_oidc_client" {
       var.oidc_sso_playground_url,
       "http://localhost:3000/dashboard"
     ],
-    [for i in range("${var.dev_pr_url_count}") : "https://nr-results-exam-${i}-frontend.apps.silver.devops.gov.bc.ca/dashboard"])
+    [for i in range("${var.dev_pr_url_count}") : "https://nr-results-exam-${i}.apps.silver.devops.gov.bc.ca/dashboard"])
   logout_urls                                   = concat(
     [
       var.oidc_sso_playground_url,
       "${var.cognito_app_client_logout_chain_url.dev}http://localhost:3000/"
     ],
-    [for i in range("${var.dev_pr_url_count}") : "${var.cognito_app_client_logout_chain_url.dev}https://nr-results-exam-${i}-frontend.apps.silver.devops.gov.bc.ca/"])
+    [for i in range("${var.dev_pr_url_count}") : "${var.cognito_app_client_logout_chain_url.dev}https://nr-results-exam-${i}.apps.silver.devops.gov.bc.ca/"])
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
   explicit_auth_flows                           = ["ALLOW_REFRESH_TOKEN_AUTH"]
@@ -46,12 +46,12 @@ resource "aws_cognito_user_pool_client" "test_results_exam_oidc_client" {
   callback_urls                                 = [
     var.oidc_sso_playground_url,
     "http://localhost:3000/dashboard",
-    "https://nr-results-exam-test-frontend.apps.silver.devops.gov.bc.ca/dashboard"
+    "https://nr-results-exam-test.apps.silver.devops.gov.bc.ca/dashboard"
   ]
   logout_urls                                   = [
     var.oidc_sso_playground_url,
     "${var.cognito_app_client_logout_chain_url.test}http://localhost:3000/",
-    "${var.cognito_app_client_logout_chain_url.test}https://nr-results-exam-test-frontend.apps.silver.devops.gov.bc.ca/"
+    "${var.cognito_app_client_logout_chain_url.test}https://nr-results-exam-test.apps.silver.devops.gov.bc.ca/"
   ]
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
@@ -71,7 +71,6 @@ resource "aws_cognito_user_pool_client" "test_results_exam_oidc_client" {
     id_token      = "minutes"
     refresh_token = "hours"
   }
-
   user_pool_id     = aws_cognito_user_pool.fam_user_pool.id
   write_attributes = var.minimum_oidc_attribute_list
 }
@@ -84,10 +83,12 @@ resource "aws_cognito_user_pool_client" "prod_results_exam_oidc_client" {
   callback_urls                                 = [
     var.oidc_sso_playground_url,
     "https://nr-results-exam-prod-frontend.apps.silver.devops.gov.bc.ca/dashboard",
+    "https://results-exam.apps.silver.devops.gov.bc.ca/dashboard"
   ]
   logout_urls                                   = [
     var.oidc_sso_playground_url,
-    "${var.cognito_app_client_logout_chain_url.prod}https://nr-results-exam-prod-frontend.apps.silver.devops.gov.bc.ca/"
+    "${var.cognito_app_client_logout_chain_url.prod}https://nr-results-exam-prod-frontend.apps.silver.devops.gov.bc.ca/",
+    "${var.cognito_app_client_logout_chain_url.prod}https://results-exam.apps.silver.devops.gov.bc.ca/"
   ]
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
