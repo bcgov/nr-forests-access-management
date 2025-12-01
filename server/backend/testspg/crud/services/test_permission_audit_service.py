@@ -1,5 +1,6 @@
 import copy
 import logging
+from datetime import datetime
 from http import HTTPStatus
 from typing import List
 
@@ -308,18 +309,53 @@ def verify_end_user_granted_privilege_details(
 	granted_role = mock_user_permission_granted_list[0].detail.role
 	assert audit_role["role"] == granted_role.display_name
 	audit_scopes = audit_role.get("scopes")
-	if granted_role.forest_client is None:
-		# "scopes" attribute is not present if the granted role has no scopes.
-		assert audit_scopes is None
 
+	# --- Expiry assertions ---
+	if granted_role.forest_client is None:
+		assert audit_scopes is None
+		expected_expiry = mock_user_permission_granted_list[0].detail.expiry_date
+		audit_expiry = audit_role.get("role_assignment_expiry_date")
+		if expected_expiry:
+			if audit_expiry is not None:
+				if isinstance(audit_expiry, str):
+					audit_expiry_dt = datetime.fromisoformat(audit_expiry)
+				else:
+					audit_expiry_dt = audit_expiry
+				assert audit_expiry_dt == expected_expiry, (
+					f"Expected role_assignment_expiry_date {expected_expiry}, got {audit_expiry_dt} (raw: {audit_expiry})"
+				)
+			else:
+				assert False, "Expected expiry date at role level, but none found."
+		else:
+			assert "role_assignment_expiry_date" not in audit_role or audit_role["role_assignment_expiry_date"] is None
 	else:
+		assert "role_assignment_expiry_date" not in audit_role, (
+			f"role_assignment_expiry_date should not be present at role level for scoped role, got {audit_role.get('role_assignment_expiry_date')}"
+		)
 		assert len(audit_scopes) == len(mock_user_permission_granted_list)
 		org_id_list = list(map(
 			lambda item: item.detail.role.forest_client.forest_client_number, mock_user_permission_granted_list
 		))
-		for scope in audit_scopes:
-			scope.get("scope_type") == PrivilegeDetailsScopeTypeEnum.CLIENT  # Current FAM supports 'CLIENT' type only, more in future.
-			scope.get("client_id") in org_id_list
+		expected_expiry = mock_user_permission_granted_list[0].detail.expiry_date
+		for idx, scope in enumerate(audit_scopes):
+			# Scope structure assertions
+			assert scope.get("scope_type") == PrivilegeDetailsScopeTypeEnum.CLIENT  # Current FAM supports 'CLIENT' type only, more in future.
+			assert scope.get("client_id") in org_id_list
+			# Scope-level expiry assertion: should match mock data expiry_date
+			scope_expiry = scope.get("role_assignment_expiry_date")
+			if expected_expiry:
+				if scope_expiry is not None:
+					if isinstance(scope_expiry, str):
+						scope_expiry_dt = datetime.fromisoformat(scope_expiry)
+					else:
+						scope_expiry_dt = scope_expiry
+					assert scope_expiry_dt == expected_expiry, (
+						f"Expected scope role_assignment_expiry_date {expected_expiry}, got {scope_expiry_dt} (raw: {scope_expiry})"
+					)
+				else:
+					assert False, "Expected expiry date at scope level, but none found."
+			else:
+				assert "role_assignment_expiry_date" not in scope or scope["role_assignment_expiry_date"] is None
 
 
 def verify_end_user_revoked_privilege_details(

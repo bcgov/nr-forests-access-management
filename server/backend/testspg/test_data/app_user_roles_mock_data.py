@@ -105,35 +105,37 @@ APP_USER_ROLE_PAGED_RESULT_2_RECORDS = PagedResultsSchema[FamApplicationUserRole
 
 # sample end user permission granted response - role with no scope
 sample_end_user_permission_granted_no_scope_details = FamUserRoleAssignmentCreateRes(
-	**{'status_code': HTTPStatus.OK,
-		'detail': FamApplicationUserRoleAssignmentGetSchema(
-		user_role_xref_id=999, user_id=9, role_id=4,
-		user=FamUserInfoSchema(user_name='enduser', first_name='first', last_name='last', email='a@b.com',
-			user_type_relation=FamUserTypeSchema(user_type_code=UserType.BCEID, description='BCEID')),
-		role=FamRoleWithClientSchema(role_name='FOM_REVIEWER', role_type_code='C',
-		application=FamApplicationSchema(application_id=2, application_name='FOM_DEV', application_description='Forest Operations Map (DEV)'),
-		role_id=999, display_name='Reviewer', role_purpose='Provides the privilege to review all FOMs in the system', forest_client_relation=None, parent_role=None),
-		create_date=datetime(2024, 11, 1, 19, 44, 47)),
-		'error_message': None
-	}
+  **{'status_code': HTTPStatus.OK,
+    'detail': FamApplicationUserRoleAssignmentGetSchema(
+    user_role_xref_id=999, user_id=9, role_id=4,
+    user=FamUserInfoSchema(user_name='enduser', first_name='first', last_name='last', email='a@b.com',
+      user_type_relation=FamUserTypeSchema(user_type_code=UserType.BCEID, description='BCEID')),
+    role=FamRoleWithClientSchema(role_name='FOM_REVIEWER', role_type_code='C',
+    application=FamApplicationSchema(application_id=2, application_name='FOM_DEV', application_description='Forest Operations Map (DEV)'),
+    role_id=999, display_name='Reviewer', role_purpose='Provides the privilege to review all FOMs in the system', forest_client_relation=None, parent_role=None),
+    create_date=datetime(2024, 11, 1, 19, 44, 47),
+    expiry_date=datetime(2025, 12, 31, 23, 59, 59)),
+    'error_message': None
+  }
  )
 
 # sample end user permission granted response - role with forest_client scope
 sample_end_user_permission_granted_with_scope_details = FamUserRoleAssignmentCreateRes(
-	**{'status_code': HTTPStatus.OK,
-		'detail': FamApplicationUserRoleAssignmentGetSchema(
-		user_role_xref_id=888, user_id=9, role_id=127,
-		user=FamUserInfoSchema(user_name='enduser', first_name='first', last_name='last', email='a@b.com',
-			user_type_relation=FamUserTypeSchema(user_type_code=UserType.BCEID, description='BCEID')),
-		role=FamRoleWithClientSchema(role_name='FOM_SUBMITTER_00001012', role_type_code='C',
-		application=FamApplicationSchema(application_id=2, application_name='FOM_DEV', application_description='Forest Operations Map (DEV)'),
-		role_id=127, display_name='Submitter', role_purpose='Provides the privilege to submit a FOM (on behalf of a specific forest client)',
-		forest_client_relation=FamForestClientSchema(client_name=None, forest_client_number="00001012", status=None),
-		parent_role=FamRoleMinSchema(role_name="FOM_SUBMITTER", role_type_code="A",
-			application=FamApplicationSchema(application_id=2, application_name='FOM_DEV', application_description='Forest Operations Map (DEV)'))),
-		create_date=datetime(2024, 11, 1, 19, 44, 47)),
-		'error_message': None
-	}
+  **{'status_code': HTTPStatus.OK,
+    'detail': FamApplicationUserRoleAssignmentGetSchema(
+    user_role_xref_id=888, user_id=9, role_id=127,
+    user=FamUserInfoSchema(user_name='enduser', first_name='first', last_name='last', email='a@b.com',
+      user_type_relation=FamUserTypeSchema(user_type_code=UserType.BCEID, description='BCEID')),
+    role=FamRoleWithClientSchema(role_name='FOM_SUBMITTER_00001012', role_type_code='C',
+    application=FamApplicationSchema(application_id=2, application_name='FOM_DEV', application_description='Forest Operations Map (DEV)'),
+    role_id=127, display_name='Submitter', role_purpose='Provides the privilege to submit a FOM (on behalf of a specific forest client)',
+    forest_client_relation=FamForestClientSchema(client_name=None, forest_client_number="00001012", status=None),
+    parent_role=FamRoleMinSchema(role_name="FOM_SUBMITTER", role_type_code="A",
+      application=FamApplicationSchema(application_id=2, application_name='FOM_DEV', application_description='Forest Operations Map (DEV)'))),
+    create_date=datetime(2024, 11, 1, 19, 44, 47),
+    expiry_date=datetime(2025, 6, 30, 12, 0, 0)),
+    'error_message': None
+  }
  )
 
 sameple_user_role_with_no_client_revoked_record = FamUserRoleXref(**{
