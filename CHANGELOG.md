@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.1.0](https://github.com/bcgov/nr-forests-access-management/compare/v2.0.0...v2.1.0) (2025-12-01)
+
+
+### Features
+
+* [#2023](https://github.com/bcgov/nr-forests-access-management/issues/2023) user role expiry new columns ([#2027](https://github.com/bcgov/nr-forests-access-management/issues/2027)) ([09b31f2](https://github.com/bcgov/nr-forests-access-management/commit/09b31f2ecc7a0bba890b5d9f05ee42ccca9790f7))
+
+
+### Bug Fixes
+
+* [#2030](https://github.com/bcgov/nr-forests-access-management/issues/2030) Add npm option to prevent Shai Hulud 2 attack ([#2031](https://github.com/bcgov/nr-forests-access-management/issues/2031)) ([eb5c3d1](https://github.com/bcgov/nr-forests-access-management/commit/eb5c3d12af08aa541a2c61d7c6feff942130faac))
+
 ## [2.0.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.46.0...v2.0.0) (2025-11-10)
 
 
