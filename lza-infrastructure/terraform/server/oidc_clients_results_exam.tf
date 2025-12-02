@@ -46,7 +46,7 @@ resource "aws_cognito_user_pool_client" "test_results_exam_oidc_client" {
   callback_urls                                 = [
     var.oidc_sso_playground_url,
     "http://localhost:3000/dashboard",
-    "https://nr-results-exam-test.apps.silver.devops.gov.bc.ca/dashboard"
+    "https://results-exam-test.apps.silver.devops.gov.bc.ca/dashboard"
   ]
   logout_urls                                   = [
     var.oidc_sso_playground_url,
@@ -82,7 +82,6 @@ resource "aws_cognito_user_pool_client" "prod_results_exam_oidc_client" {
   allowed_oauth_scopes                          = ["openid", "profile", "email"]
   callback_urls                                 = [
     var.oidc_sso_playground_url,
-    "https://nr-results-exam-prod-frontend.apps.silver.devops.gov.bc.ca/dashboard",
     "https://results-exam.apps.silver.devops.gov.bc.ca/dashboard"
   ]
   logout_urls                                   = [
