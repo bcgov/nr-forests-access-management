@@ -164,7 +164,7 @@ def test_user_role_expiry_date_past():
     user_role["expiry_date_date"] = yesterday.strftime(DATE_FORMAT_YYYY_MM_DD)
     with pytest.raises(ValidationError) as e:
         FamUserRoleAssignmentCreateSchema(**user_role)
-    assert "must not be in the past" in str(e.value)
+    assert "must be in the future" in str(e.value)
 
 
 def test_user_role_expiry_date_invalid_format():

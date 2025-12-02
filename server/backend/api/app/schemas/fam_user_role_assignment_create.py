@@ -1,7 +1,5 @@
 
-
-import logging
-from datetime import datetime, time, timezone
+from datetime import datetime, time
 from typing import List, Optional, Union
 from zoneinfo import ZoneInfo
 
@@ -11,7 +9,6 @@ from pydantic import (BaseModel, ConfigDict, PrivateAttr, StringConstraints,
                       field_validator, model_validator)
 from typing_extensions import Annotated
 
-LOGGER = logging.getLogger(__name__)
 
 # Role assignment with one role at a time for the user.
 class FamUserRoleAssignmentCreateSchema(BaseModel):
@@ -35,8 +32,6 @@ class FamUserRoleAssignmentCreateSchema(BaseModel):
     _expiry_date: Optional[datetime] = PrivateAttr(default=None)
 
 
-
-
     @field_validator('expiry_date_date')
     @classmethod
     def validate_expiry_date_date(cls, v):
@@ -46,13 +41,12 @@ class FamUserRoleAssignmentCreateSchema(BaseModel):
             return None
         bc_tz = ZoneInfo(BC_TIMEZONE)
         try:
-            d = datetime.strptime(v, DATE_FORMAT_YYYY_MM_DD).date()
+            dv = datetime.strptime(v, DATE_FORMAT_YYYY_MM_DD).date()
         except Exception:
             raise ValueError('expiry_date_date must be a valid YYYY-MM-DD string')
-        dt = datetime.combine(d, time(0, 0, 0)).replace(tzinfo=bc_tz)
-        now_bc = datetime.now(bc_tz)
-        if dt < now_bc:
-            raise ValueError('expiry_date_date must not be in the past (BC timezone)')
+        now_bc = datetime.now(bc_tz).date()
+        if dv <= now_bc:
+            raise ValueError('expiry_date_date must be in the future (BC timezone)')
         return v
 
 
@@ -64,7 +58,6 @@ class FamUserRoleAssignmentCreateSchema(BaseModel):
             self._expiry_date = datetime.combine(d, time(0, 0, 0)).replace(tzinfo=bc_tz)
         else:
             self._expiry_date = None
-        LOGGER.debug(f"Set internal _expiry_date to: {self._expiry_date}")
         return self
 
     model_config = ConfigDict(from_attributes=True)
