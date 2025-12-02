@@ -143,12 +143,15 @@ class PermissionAuditService:
     def to_enduser_privliege_revoked_details(
         delete_record: FamUserRoleXref
     ) -> PrivilegeDetailsSchema:
+        """
+        Note:
+        - role_assignment_expiry_date: when role is without scope, the expiry date is saved at role level.
+          When role is with scope(s), role assignment expiry date is saved at each scope.
+        """
         revoked_permission_role = delete_record.role
-        is_forest_client_scoped_role = revoked_permission_role.client_number_id
-        forest_client_number = None
-        forest_client_name = None
         expiry_date = delete_record.expiry_date.isoformat() if delete_record.expiry_date else None
-        # Search forest client name for storing audit record. Current FAM does not store forest client name in db.
+        is_forest_client_scoped_role = revoked_permission_role.client_number_id
+
         if is_forest_client_scoped_role:
             forest_client_number = revoked_permission_role.forest_client_relation.forest_client_number
             api_instance_env = crud_utils.use_api_instance_by_app(revoked_permission_role.application)
@@ -156,7 +159,6 @@ class PermissionAuditService:
             fc_search_result = forest_client_integration_service.search(
                 ForestClientIntegrationSearchParmsSchema(forest_client_numbers=[forest_client_number])
             )
-            # Forest Client search is an exact search.
             if len(fc_search_result) == 1:
                 forest_client_name = fc_search_result[0]["clientName"]
             else:
@@ -173,19 +175,15 @@ class PermissionAuditService:
                         "description": error_msg
                     }
                 )
-
-        if is_forest_client_scoped_role:
-            revoke_privilege_details_scopes = [PrivilegeDetailsScopeSchema(
-                scope_type=PrivilegeDetailsScopeTypeEnum.CLIENT,
-                client_id=forest_client_number,
-                client_name=forest_client_name,
-                role_assignment_expiry_date=expiry_date
-            )]
             privilege_detail_role = PrivilegeDetailsRoleSchema(
                 role=revoked_permission_role.display_name,
-                scopes=revoke_privilege_details_scopes
+                scopes=[PrivilegeDetailsScopeSchema(
+                    scope_type=PrivilegeDetailsScopeTypeEnum.CLIENT,
+                    client_id=forest_client_number,
+                    client_name=forest_client_name,
+                    role_assignment_expiry_date=expiry_date
+                )]
             )
-
         else:
             privilege_detail_role = PrivilegeDetailsRoleSchema(
                 role=revoked_permission_role.display_name,
