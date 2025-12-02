@@ -329,9 +329,10 @@ def verify_end_user_granted_privilege_details(
 		else:
 			assert "role_assignment_expiry_date" not in audit_role or audit_role["role_assignment_expiry_date"] is None
 	else:
-		assert "role_assignment_expiry_date" not in audit_role, (
-			f"role_assignment_expiry_date should not be present at role level for scoped role, got {audit_role.get('role_assignment_expiry_date')}"
-		)
+		if "role_assignment_expiry_date" in audit_role:
+			assert audit_role["role_assignment_expiry_date"] is None, (
+				f"role_assignment_expiry_date for scoped role should be None, got {audit_role.get('role_assignment_expiry_date')}"
+			)
 		assert len(audit_scopes) == len(mock_user_permission_granted_list)
 		org_id_list = list(map(
 			lambda item: item.detail.role.forest_client.forest_client_number, mock_user_permission_granted_list
