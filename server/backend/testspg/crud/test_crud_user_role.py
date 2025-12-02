@@ -141,8 +141,8 @@ def test_user_role_expiry_date_valid_future():
     future_date = (datetime.datetime.now(bc) + datetime.timedelta(days=10)).date()
     user_role["expiry_date_date"] = future_date.strftime(DATE_FORMAT_YYYY_MM_DD)
     schema = FamUserRoleAssignmentCreateSchema(**user_role)
-    # Should be midnight BC time, converted to UTC
-    expected_bc = datetime.datetime(future_date.year, future_date.month, future_date.day, 0, 0, 0, tzinfo=bc)
+    # Should be end of day BC time, converted to UTC
+    expected_bc = datetime.datetime(future_date.year, future_date.month, future_date.day, 23, 59, 59, tzinfo=bc)
     assert schema._expiry_date is not None
     assert schema._expiry_date.astimezone(bc) == expected_bc
 

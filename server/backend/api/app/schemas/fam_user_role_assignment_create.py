@@ -55,7 +55,8 @@ class FamUserRoleAssignmentCreateSchema(BaseModel):
         if self.expiry_date_date:
             bc_tz = ZoneInfo(BC_TIMEZONE)
             d = datetime.strptime(self.expiry_date_date, DATE_FORMAT_YYYY_MM_DD).date()
-            self._expiry_date = datetime.combine(d, time(0, 0, 0)).replace(tzinfo=bc_tz)
+            # Set expiry to end of day: 23:59:59
+            self._expiry_date = datetime.combine(d, time(23, 59, 59)).replace(tzinfo=bc_tz)
         else:
             self._expiry_date = None
         return self
