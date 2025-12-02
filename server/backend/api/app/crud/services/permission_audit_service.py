@@ -121,7 +121,7 @@ class PermissionAuditService:
 
         is_forest_client_scoped_role = enduser_privliege_list[0].detail.role.forest_client is not None
         if is_forest_client_scoped_role:
-            scopes = list(map(__map_to_privilege_role_scope, enduser_privliege_list)) if is_forest_client_scoped_role else None
+            scopes = list(map(__map_to_privilege_role_scope, enduser_privliege_list))
             privilege_details_role = PrivilegeDetailsRoleSchema(
                 role=enduser_privliege_list[0].detail.role.display_name,
                 scopes=scopes
