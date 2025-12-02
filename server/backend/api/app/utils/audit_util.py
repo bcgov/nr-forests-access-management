@@ -1,7 +1,7 @@
 import json
 import logging
 from enum import Enum
-from typing import List
+from typing import List, Optional
 
 from api.app.models import model as models
 from api.app.schemas import RequesterSchema
@@ -30,7 +30,7 @@ class AuditEventLog:
     requesting_user: RequesterSchema
     target_user: models.FamUser
     exception: Exception
-    role_assignment_expiry_date: str = None
+    role_assignment_expiry_date: Optional[str] = None
 
     def __init__(
         self,
