@@ -1,5 +1,6 @@
 
 from datetime import datetime
+from zoneinfo import ZoneInfo
 from http import HTTPStatus
 
 from api.app.constants import UserType
@@ -114,7 +115,7 @@ sample_end_user_permission_granted_no_scope_details = FamUserRoleAssignmentCreat
     application=FamApplicationSchema(application_id=2, application_name='FOM_DEV', application_description='Forest Operations Map (DEV)'),
     role_id=999, display_name='Reviewer', role_purpose='Provides the privilege to review all FOMs in the system', forest_client_relation=None, parent_role=None),
     create_date=datetime(2024, 11, 1, 19, 44, 47),
-    expiry_date=datetime(2025, 12, 31, 23, 59, 59)),
+    expiry_date=datetime(2025, 12, 31, 23, 59, 59, tzinfo=ZoneInfo("America/Vancouver"))),
     'error_message': None
   }
  )
@@ -133,7 +134,7 @@ sample_end_user_permission_granted_with_scope_details = FamUserRoleAssignmentCre
     parent_role=FamRoleMinSchema(role_name="FOM_SUBMITTER", role_type_code="A",
       application=FamApplicationSchema(application_id=2, application_name='FOM_DEV', application_description='Forest Operations Map (DEV)'))),
     create_date=datetime(2024, 11, 1, 19, 44, 47),
-    expiry_date=datetime(2025, 6, 30, 12, 0, 0)),
+    expiry_date=datetime(2025, 6, 30, 23, 59, 59, tzinfo=ZoneInfo("America/Vancouver"))),
     'error_message': None
   }
  )
