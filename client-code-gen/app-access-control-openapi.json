@@ -1638,7 +1638,8 @@
                 "type": "null"
               }
             ],
-            "title": "Expiry Date Date"
+            "title": "Expiry Date Date",
+            "description": "The expiry date as a string (YYYY-MM-DD), BC timezone. If provided, the role is valid until the end of this day."
           }
         },
         "type": "object",

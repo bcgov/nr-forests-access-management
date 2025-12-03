@@ -6,8 +6,8 @@ from zoneinfo import ZoneInfo
 
 from api.app.constants import UserType
 from api.app.datetime_format import BC_TIMEZONE, DATE_FORMAT_YYYY_MM_DD
-from pydantic import (BaseModel, ConfigDict, PrivateAttr, StringConstraints,
-                      field_validator, model_validator)
+from pydantic import (BaseModel, ConfigDict, Field, PrivateAttr,
+                      StringConstraints, field_validator, model_validator)
 from typing_extensions import Annotated
 
 LOGGER = logging.getLogger(__name__)
@@ -29,7 +29,10 @@ class FamUserRoleAssignmentCreateSchema(BaseModel):
         List[Annotated[str, StringConstraints(min_length=1, max_length=8)]], None
     ] = None
     requires_send_user_email: bool = False
-    expiry_date_date: Optional[str] = None  # e.g. '2025-12-31', BC timezone.
+    expiry_date_date: Optional[str] = Field( # e.g. '2025-12-31', BC timezone.
+        default=None,
+        description="The expiry date as a string (YYYY-MM-DD), BC timezone. If provided, the role is valid until the end of this day."
+    )
     # Internal use only, not exposed in OpenAPI or request/response bodies
     _expiry_date: Optional[datetime] = PrivateAttr(default=None)
 
