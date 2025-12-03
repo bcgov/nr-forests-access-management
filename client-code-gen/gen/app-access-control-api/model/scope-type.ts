@@ -14,14 +14,17 @@
 
 
 
-export * from './api/bcscproxy-api';
-export * from './api/external-famuser-search-api';
-export * from './api/famapplications-api';
-export * from './api/famforest-clients-api';
-export * from './api/famuser-api';
-export * from './api/famuser-role-assignment-api';
-export * from './api/famuser-terms-and-conditions-api';
-export * from './api/idirbce-idproxy-api';
-export * from './api/permission-audit-api';
-export * from './api/smoke-test-api';
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+
+export const ScopeType = {
+    ForestClient: 'FOREST_CLIENT'
+} as const;
+
+export type ScopeType = typeof ScopeType[keyof typeof ScopeType];
+
+
 
