@@ -128,7 +128,10 @@ class PermissionAuditService:
             )
 
         else:
-            expiry_date = enduser_privliege_list[0].detail.expiry_date.isoformat() if enduser_privliege_list[0].detail.expiry_date else None
+            expiry_date = (
+                enduser_privliege_list[0].detail.expiry_date.isoformat() if
+                enduser_privliege_list[0].detail.expiry_date else None
+            )
             privilege_details_role = PrivilegeDetailsRoleSchema(
                 role=enduser_privliege_list[0].detail.role.display_name,
                 role_assignment_expiry_date=expiry_date

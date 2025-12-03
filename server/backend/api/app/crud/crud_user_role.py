@@ -167,8 +167,10 @@ def create_user_role_assignment_many(
     return new_user_permission_granted_list
 
 def create_user_role_assignment(
-    db: Session, user: models.FamUser, role: models.FamRole, requester_cognito_user_id: str, expiry_date: Optional[datetime] = None
+    db: Session, user: models.FamUser, role: models.FamRole,
+    requester_cognito_user_id: str, expiry_date: Optional[datetime] = None
 ):
+    LOGGER.debug(f"Creating user role assignment for user {user.user_name} and role {role.role_name} with expiry_date {expiry_date}.")
     new_user_role_assginment_res = None
     fam_user_role_xref = get_use_role_by_user_id_and_role_id(
         db, user.user_id, role.role_id

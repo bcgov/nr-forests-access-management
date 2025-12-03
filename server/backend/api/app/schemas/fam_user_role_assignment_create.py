@@ -1,4 +1,5 @@
 
+import logging
 from datetime import datetime, time
 from typing import List, Optional, Union
 from zoneinfo import ZoneInfo
@@ -9,6 +10,7 @@ from pydantic import (BaseModel, ConfigDict, PrivateAttr, StringConstraints,
                       field_validator, model_validator)
 from typing_extensions import Annotated
 
+LOGGER = logging.getLogger(__name__)
 
 # Role assignment with one role at a time for the user.
 class FamUserRoleAssignmentCreateSchema(BaseModel):
@@ -45,8 +47,8 @@ class FamUserRoleAssignmentCreateSchema(BaseModel):
         except Exception:
             raise ValueError('expiry_date_date must be a valid YYYY-MM-DD string')
         now_bc = datetime.now(bc_tz).date()
-        if dv <= now_bc:
-            raise ValueError('expiry_date_date must be in the future (BC timezone)')
+        if dv < now_bc:
+            raise ValueError('expiry_date_date must be today or in the future (BC timezone)')
         return v
 
 
@@ -55,8 +57,9 @@ class FamUserRoleAssignmentCreateSchema(BaseModel):
         if self.expiry_date_date:
             bc_tz = ZoneInfo(BC_TIMEZONE)
             d = datetime.strptime(self.expiry_date_date, DATE_FORMAT_YYYY_MM_DD).date()
-            # Set expiry to end of day: 23:59:59
+            # Set expiry to end of day (23:59:59) in BC timezone
             self._expiry_date = datetime.combine(d, time(23, 59, 59)).replace(tzinfo=bc_tz)
+            LOGGER.debug(f"Set internal _expiry_date to {self._expiry_date} based on expiry_date_date {self.expiry_date_date}")
         else:
             self._expiry_date = None
         return self
