@@ -1,4 +1,5 @@
 import datetime
+from datetime import timedelta
 from http import HTTPStatus
 from zoneinfo import ZoneInfo
 
@@ -16,9 +17,7 @@ def test_create_user_role_assignment_with_future_expiry_date(
     test_client_fixture: TestClient,
     db_pg_session,
     fom_dev_access_admin_token,
-    get_current_requester_by_token,
-    override_depends__get_verified_target_user,
-    default_app_role_assignment_page_Params
+    override_depends__get_verified_target_user
 ):
     """
     Test assigning a role with an expiry date.
@@ -52,12 +51,14 @@ def test_create_user_role_assignment_with_future_expiry_date(
     expiry_date_str = found[0]["expiry_date"]
     assert isinstance(expiry_date_str, str)
     assert (
-        expiry_date_str.endswith("T08:00:00+00:00")
-        or expiry_date_str.endswith("T07:00:00+00:00")
-        or expiry_date_str.endswith("T08:00:00Z")
-        or expiry_date_str.endswith("T07:00:00Z")
+        expiry_date_str.endswith("T07:59:59+00:00")
+        or expiry_date_str.endswith("T06:59:59+00:00")
+        or expiry_date_str.endswith("T07:59:59Z")
+        or expiry_date_str.endswith("T06:59:59Z")
     )
-    assert expiry_date_str.startswith(future_date.strftime(DATE_FORMAT_YYYY_MM_DD))
+    # Expect expiry string to start with the day after future_date
+    utc_day = future_date + timedelta(days=1)
+    assert expiry_date_str.startswith(utc_day.strftime(DATE_FORMAT_YYYY_MM_DD))
 
 def test_create_user_role_assignment_without_expiry_date(
     test_client_fixture: TestClient,
@@ -146,7 +147,7 @@ def test_create_user_role_assignment_with_today_as_expiry_date(
     override_depends__get_verified_target_user,
 ):
     """
-    Test assigning a role with expiry date as today (should be rejected).
+    Test assigning a role with expiry date as today (should be accepted, valid until midnight BC time).
     """
     BC_TODAY = datetime.datetime.now(BC_TZ).date()
     request_data = {
@@ -159,7 +160,26 @@ def test_create_user_role_assignment_with_today_as_expiry_date(
         json=request_data,
         headers=jwt_utils.headers(fom_dev_access_admin_token),
     )
-    assert response.status_code in (HTTPStatus.UNPROCESSABLE_ENTITY, HTTPStatus.BAD_REQUEST)
+    assert response.status_code == HTTPStatus.OK
+    data = response.json().get("assignments_detail")
+    assert len(data) == 1
+    detail = data[0]["detail"]
+    assert "user_role_xref_id" in detail
+    assert detail["expiry_date"] is not None
+    # Check expiry is today at 23:59:59 BC time (UTC)
+    expiry_date_str = detail["expiry_date"]
+    assert isinstance(expiry_date_str, str)
+    # The UTC date will be the next day at 07:59:59+00:00 or 06:59:59+00:00 depending on DST
+    utc_day = BC_TODAY + timedelta(days=1)
+    assert (
+        expiry_date_str.startswith(utc_day.strftime(DATE_FORMAT_YYYY_MM_DD))
+        and (
+            expiry_date_str.endswith("T07:59:59+00:00")
+            or expiry_date_str.endswith("T06:59:59+00:00")
+            or expiry_date_str.endswith("T07:59:59Z")
+            or expiry_date_str.endswith("T06:59:59Z")
+        )
+    )
 
 
 def test_create_user_role_assignment_with_tomorrow_just_before_midnight(

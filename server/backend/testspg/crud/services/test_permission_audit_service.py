@@ -3,6 +3,7 @@ import logging
 from datetime import datetime
 from http import HTTPStatus
 from typing import List
+from zoneinfo import ZoneInfo
 
 import pytest
 from api.app.constants import (ERROR_CODE_UNKNOWN_STATE,
@@ -311,13 +312,17 @@ def verify_end_user_granted_privilege_details(
 	audit_scopes = audit_role.get("scopes")
 
 	expected_expiry = mock_user_permission_granted_list[0].detail.expiry_date
+	bc_tz = ZoneInfo("America/Vancouver")
 
 	def assert_expiry(audit_value, expected_value, context):
 		if expected_value:
 			assert audit_value is not None, f"Expected expiry date at {context} level, but none found."
 			audit_dt = datetime.fromisoformat(audit_value) if isinstance(audit_value, str) else audit_value
-			assert audit_dt == expected_value, (
-				f"Expected {context} role_assignment_expiry_date {expected_value}, got {audit_dt} (raw: {audit_value})"
+			# Convert both to BC timezone for comparison
+			audit_dt_bc = audit_dt.astimezone(bc_tz)
+			expected_bc = expected_value.astimezone(bc_tz) if expected_value.tzinfo else expected_value.replace(tzinfo=bc_tz)
+			assert audit_dt_bc == expected_bc, (
+				f"Expected {context} role_assignment_expiry_date {expected_bc}, got {audit_dt_bc} (raw: {audit_value})"
 			)
 		else:
 			assert audit_value is None or audit_value == '', f"Did not expect expiry at {context} level, but got {audit_value}"
