@@ -6,12 +6,16 @@ resource "aws_cognito_user_pool_client" "dev_apt_oidc_client" {
   callback_urls                                 = [
     var.oidc_sso_playground_url,
     "http://localhost:8080/apt2/callback",
-    "https://dlvrapps.nrs.gov.bc.ca/int/apt2/callback"
+    "https://dlvrapps.nrs.gov.bc.ca/int/apt2/callback",
+    "http://localhost:3000/",
+    "https://dlvrapps.nrs.gov.bc.ca/int/apt2"
   ]
   logout_urls                                   = [
     var.oidc_sso_playground_url,
     "${var.cognito_app_client_logout_chain_url.dev}http://localhost:8080/",
-    "${var.cognito_app_client_logout_chain_url.dev}https://dlvrapps.nrs.gov.bc.ca/int/apt2"
+    "${var.cognito_app_client_logout_chain_url.dev}https://dlvrapps.nrs.gov.bc.ca/int/apt2",
+    "${var.cognito_app_client_logout_chain_url.dev}http://localhost:3000/logout",
+    "${var.cognito_app_client_logout_chain_url.dev}https://dlvrapps.nrs.gov.bc.ca/int/apt2/logout
   ]
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
