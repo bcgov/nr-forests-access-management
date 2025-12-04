@@ -18,7 +18,7 @@
 import { UserType } from './user-type';
 
 /**
- * 
+ * Request schema for assigning a user to a role, with optional expiry date. - expiry_date_date: The expiry date as a string (YYYY-MM-DD), BC timezone. - _expiry_date: Internal use only, timezone-aware datetime, derived from expiry_date_date.
  * @export
  * @interface FamUserRoleAssignmentCreateSchema
  */
@@ -59,6 +59,12 @@ export interface FamUserRoleAssignmentCreateSchema {
      * @memberof FamUserRoleAssignmentCreateSchema
      */
     'requires_send_user_email'?: boolean;
+    /**
+     * 
+     * @type {string}
+     * @memberof FamUserRoleAssignmentCreateSchema
+     */
+    'expiry_date_date'?: string | null;
 }
 
 

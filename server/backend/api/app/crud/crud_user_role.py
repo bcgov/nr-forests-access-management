@@ -1,6 +1,7 @@
 import logging
+from datetime import datetime
 from http import HTTPStatus
-from typing import List
+from typing import List, Optional
 
 from api.app import constants as famConstants
 from api.app.crud import crud_forest_client, crud_role, crud_user, crud_utils
@@ -143,7 +144,7 @@ def create_user_role_assignment_many(
             )
             # Create user/role assignment
             new_user_role_assginment_res = create_user_role_assignment(
-                db, fam_user, child_role, requester.cognito_user_id,
+                db, fam_user, child_role, requester.cognito_user_id, expiry_date=request._expiry_date
             )
 
             # Update response object for Forest Client Name from the forest_client_search.
@@ -153,7 +154,7 @@ def create_user_role_assignment_many(
     else:
         # Create user/role assignment
         new_user_role_assginment_res = create_user_role_assignment(
-            db, fam_user, fam_role, requester.cognito_user_id,
+            db, fam_user, fam_role, requester.cognito_user_id, expiry_date=request._expiry_date
         )
         new_user_permission_granted_list.append(new_user_role_assginment_res)
     LOGGER.info(f"User/Role assignment executed successfully: {new_user_permission_granted_list}")
@@ -165,10 +166,11 @@ def create_user_role_assignment_many(
 
     return new_user_permission_granted_list
 
-
 def create_user_role_assignment(
-    db: Session, user: models.FamUser, role: models.FamRole, requester_cognito_user_id: str
+    db: Session, user: models.FamUser, role: models.FamRole,
+    requester_cognito_user_id: str, expiry_date: Optional[datetime] = None
 ):
+    LOGGER.debug(f"Creating user role assignment for user {user.user_name} and role {role.role_name} with expiry_date {expiry_date}.")
     new_user_role_assginment_res = None
     fam_user_role_xref = get_use_role_by_user_id_and_role_id(
         db, user.user_id, role.role_id
@@ -186,7 +188,7 @@ def create_user_role_assignment(
             }
         )
     else:
-        fam_user_role_xref = create(db, user.user_id, role.role_id, requester_cognito_user_id)
+        fam_user_role_xref = create(db, user.user_id, role.role_id, requester_cognito_user_id, expiry_date=expiry_date)
         new_user_role_assginment_res = FamUserRoleAssignmentCreateRes(
             **{
                 "status_code": HTTPStatus.OK,
@@ -216,7 +218,7 @@ def delete_fam_user_role_assignment(db: Session, requester: RequesterSchema, use
     db.flush()
 
 
-def create(db: Session, user_id: int, role_id: int, requester_cognito_user_id: str):
+def create(db: Session, user_id: int, role_id: int, requester_cognito_user_id: str, expiry_date: Optional[datetime] = None):
     LOGGER.debug(
         f"FamUserRoleXref - 'create' with user_id: {user_id}, " + f"role_id: {role_id}."
     )
@@ -226,6 +228,7 @@ def create(db: Session, user_id: int, role_id: int, requester_cognito_user_id: s
             "user_id": user_id,
             "role_id": role_id,
             "create_user": requester_cognito_user_id,
+            "expiry_date": expiry_date,
         }
     )
     db.add(new_fam_user_role)
