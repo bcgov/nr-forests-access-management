@@ -15,31 +15,45 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { PrivilegeDetailsScopeSchema } from './privilege-details-scope-schema';
+import { ScopeType } from './scope-type';
 
 /**
- * 
+ * External API response schema. For returning user search results: role detail info.
  * @export
- * @interface PrivilegeDetailsRoleSchema
+ * @interface ExtRoleWithScopeSchema
  */
-export interface PrivilegeDetailsRoleSchema {
+export interface ExtRoleWithScopeSchema {
     /**
      * 
      * @type {string}
-     * @memberof PrivilegeDetailsRoleSchema
+     * @memberof ExtRoleWithScopeSchema
      */
-    'role': string;
-    /**
-     * 
-     * @type {Array<PrivilegeDetailsScopeSchema>}
-     * @memberof PrivilegeDetailsRoleSchema
-     */
-    'scopes'?: Array<PrivilegeDetailsScopeSchema> | null;
+    'applicationName'?: string | null;
     /**
      * 
      * @type {string}
-     * @memberof PrivilegeDetailsRoleSchema
+     * @memberof ExtRoleWithScopeSchema
      */
-    'role_assignment_expiry_date'?: string | null;
+    'roleName'?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof ExtRoleWithScopeSchema
+     */
+    'roleDisplayName'?: string | null;
+    /**
+     * 
+     * @type {ScopeType}
+     * @memberof ExtRoleWithScopeSchema
+     */
+    'scopeType'?: ScopeType | null;
+    /**
+     * 
+     * @type {Array<string>}
+     * @memberof ExtRoleWithScopeSchema
+     */
+    'value'?: Array<string>;
 }
+
+
 
