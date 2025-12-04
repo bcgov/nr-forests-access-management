@@ -15,7 +15,7 @@ resource "aws_cognito_user_pool_client" "dev_apt_oidc_client" {
     "${var.cognito_app_client_logout_chain_url.dev}http://localhost:8080/",
     "${var.cognito_app_client_logout_chain_url.dev}https://dlvrapps.nrs.gov.bc.ca/int/apt2",
     "${var.cognito_app_client_logout_chain_url.dev}http://localhost:3000/logout",
-    "${var.cognito_app_client_logout_chain_url.dev}https://dlvrapps.nrs.gov.bc.ca/int/apt2/logout
+    "${var.cognito_app_client_logout_chain_url.dev}https://dlvrapps.nrs.gov.bc.ca/int/apt2/logout"
   ]
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
