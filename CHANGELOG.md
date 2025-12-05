@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.2.0](https://github.com/bcgov/nr-forests-access-management/compare/v2.1.0...v2.2.0) (2025-12-05)
+
+
+### Features
+
+* [#2024](https://github.com/bcgov/nr-forests-access-management/issues/2024) User Role Expiry Backend ([#2033](https://github.com/bcgov/nr-forests-access-management/issues/2033)) ([9391365](https://github.com/bcgov/nr-forests-access-management/commit/9391365ec1be3f657b9efe8880839e5f745a5ba5))
+
+
+### Bug Fixes
+
+* [#2038](https://github.com/bcgov/nr-forests-access-management/issues/2038) APT2 DEV Cognito Config Change ([#2039](https://github.com/bcgov/nr-forests-access-management/issues/2039)) ([dde7f4e](https://github.com/bcgov/nr-forests-access-management/commit/dde7f4e495a27fb28d80c78a28bebc1413f09e10))
+
 ## [2.1.0](https://github.com/bcgov/nr-forests-access-management/compare/v2.0.0...v2.1.0) (2025-12-01)
 
 
