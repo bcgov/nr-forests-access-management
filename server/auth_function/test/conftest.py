@@ -149,27 +149,27 @@ def initial_user(db_pg_transaction, cognito_event, test_user_properties):
 
 @pytest.fixture(scope="function")
 def create_test_fam_role(db_pg_transaction):
-    # Set up expected role in DB
-    cursor = db_pg_transaction.cursor()
-    raw_query = """
-    insert into app_fam.fam_role
-        (role_name,
-         role_purpose,
-         application_id,
-         role_type_code,
-         create_user,
-         update_user)
-    values
-        (%s,
-        'just for testing',
-        (select application_id from app_fam.fam_application
-            where application_name = 'FAM'),
-        'C',
-        CURRENT_USER,
-        CURRENT_USER)
-    """
-    # For Insert statement, pass parameters as .execute()'s second arguments so they get proper sanitization.
-    cursor.execute(raw_query, [TEST_ROLE_NAME])
+    def _create_test_fam_role(role_name=TEST_ROLE_NAME):
+        cursor = db_pg_transaction.cursor()
+        raw_query = """
+        insert into app_fam.fam_role
+            (role_name,
+             role_purpose,
+             application_id,
+             role_type_code,
+             create_user,
+             update_user)
+        values
+            (%s,
+            'just for testing',
+            (select application_id from app_fam.fam_application
+                where application_name = 'FAM'),
+            'C',
+            CURRENT_USER,
+            CURRENT_USER)
+        """
+        cursor.execute(raw_query, [role_name])
+    return _create_test_fam_role
 
 
 def get_insert_role_sql(role_name, role_type, parent_role_id=None):
@@ -223,33 +223,37 @@ def create_test_fam_cognito_client(db_pg_transaction, cognito_event):
 
 @pytest.fixture(scope="function")
 def create_user_role_xref_record(db_pg_transaction, test_user_properties):
-    initial_user = test_user_properties
-    cursor = db_pg_transaction.cursor()
-    raw_query = """
-    insert into app_fam.fam_user_role_xref
-        (user_id,
-        role_id,
-        create_user,
-        update_user)
-    VALUES (
-        (select user_id from app_fam.fam_user where
-            user_name = %s
-            and user_type_code = %s),
-        (select role_id from app_fam.fam_role where
-            role_name = %s),
-        CURRENT_USER,
-        CURRENT_USER
-    )
-    """
-    # For Insert statement, pass parameters as .execute()'s second arguments so they get proper sanitization.
-    cursor.execute(
-        raw_query,
-        (
-            initial_user.get("idp_username"),
-            initial_user.get("idp_type_code"),
-            TEST_ROLE_NAME,
-        ),
-    )
+    def _create_user_role_xref_record(role_name=TEST_ROLE_NAME, expiry_date=None):
+        initial_user = test_user_properties
+        cursor = db_pg_transaction.cursor()
+        raw_query = """
+        insert into app_fam.fam_user_role_xref
+            (user_id,
+            role_id,
+            expiry_date,
+            create_user,
+            update_user)
+        VALUES (
+            (select user_id from app_fam.fam_user where
+                user_name = %s
+                and user_type_code = %s),
+            (select role_id from app_fam.fam_role where
+                role_name = %s),
+            %s,
+            CURRENT_USER,
+            CURRENT_USER
+        )
+        """
+        cursor.execute(
+            raw_query,
+            (
+                initial_user.get("idp_username"),
+                initial_user.get("idp_type_code"),
+                role_name,
+                expiry_date,
+            ),
+        )
+    return _create_user_role_xref_record
 
 @pytest.fixture(scope="function")
 def create_fam_application_admin_record(db_pg_transaction, test_user_properties):

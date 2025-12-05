@@ -239,6 +239,7 @@ def handle_event(db_connection, event) -> event_type.Event:
             application.application_id = client.application_id
         JOIN app_fam.fam_user_role_xref role_assignment ON
             role.role_id = role_assignment.role_id
+            AND (role_assignment.expiry_date IS NULL OR role_assignment.expiry_date >= CURRENT_TIMESTAMP)
         JOIN app_fam.fam_user user_assigned ON
             role_assignment.user_id = user_assigned.user_id
     WHERE
