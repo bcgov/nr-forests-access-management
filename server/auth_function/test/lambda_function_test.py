@@ -1,7 +1,10 @@
+import copy
+import datetime
 import logging
 import os
 import pprint
 import sys
+from zoneinfo import ZoneInfo
 
 import pytest
 from constant import TEST_ADMIN_ROLE_NAME, TEST_ROLE_NAME
@@ -240,6 +243,9 @@ def test_direct_role_assignment(
     """role doesn't have childreen (ie no forest client roles associated
     and the user is getting assigned directly to the role"""
 
+    # setup user-role assignment
+    create_test_fam_role()
+    create_user_role_xref_record()
     # execute
     result = lambda_function.lambda_handler(cognito_event, cognito_context)
 
@@ -277,6 +283,8 @@ def test_parent_role_assignment(
     to the child role that has a forest client
     """
 
+    # setup user-role assignment
+    create_user_role_xref_record()
     result = lambda_function.lambda_handler(cognito_event, cognito_context)
     groups = result["response"]["claimsOverrideDetails"]["groupOverrideDetails"][
         "groupsToOverride"
@@ -326,13 +334,144 @@ def test_exception_with_wrong_cognito_event(
     """
     if runs into any problem or errors, can catch the exception and print in the log
     """
-    temp_cognito_event = cognito_event
+    temp_cognito_event = copy.deepcopy(cognito_event)
     del temp_cognito_event["callerContext"]
     with pytest.raises(Exception) as exc:
         lambda_function.lambda_handler(temp_cognito_event, cognito_context)
     assert exc is not None
 
 
-# FUTURE TESTS:
-# next some sad case scenarios / db fails / roles not found / multiple roles
-# found for user login with user but wrong user is setup.
+# --- Expiry Logic Tests ---
+@pytest.mark.parametrize(
+    "cognito_event",
+    [
+        "login_event.json",
+    ],
+    indirect=True,
+)
+def test_expired_role_not_returned(
+    db_pg_transaction,
+    cognito_event,
+    cognito_context,
+    initial_user,
+    create_test_fam_role,
+    create_test_fam_cognito_client,
+    create_user_role_xref_record,
+):
+    # Assign role with expiry_date in the past
+    bc_tz = ZoneInfo("America/Vancouver")
+    expired_date = datetime.datetime.now(bc_tz) - datetime.timedelta(days=5)
+    create_test_fam_role()
+    create_user_role_xref_record(expiry_date=expired_date)
+    result = lambda_function.lambda_handler(cognito_event, cognito_context)
+    groups = result["response"]["claimsOverrideDetails"]["groupOverrideDetails"]["groupsToOverride"]
+    assert TEST_ROLE_NAME not in groups
+
+
+@pytest.mark.parametrize(
+    "cognito_event",
+    [
+        "login_event.json",
+    ],
+    indirect=True,
+)
+def test_non_expired_role_returned(
+    db_pg_transaction,
+    cognito_event,
+    cognito_context,
+    initial_user,
+    create_test_fam_role,
+    create_test_fam_cognito_client,
+    create_user_role_xref_record,
+):
+    # Assign role with expiry_date in the future
+    bc_tz = ZoneInfo("America/Vancouver")
+    future_date = datetime.datetime.now(bc_tz) + datetime.timedelta(days=1)
+    create_test_fam_role()
+    create_user_role_xref_record(expiry_date=future_date)
+    result = lambda_function.lambda_handler(cognito_event, cognito_context)
+    groups = result["response"]["claimsOverrideDetails"]["groupOverrideDetails"]["groupsToOverride"]
+    assert TEST_ROLE_NAME in groups
+
+@pytest.mark.parametrize(
+    "cognito_event",
+    [
+        "login_event.json",
+    ],
+    indirect=True,
+)
+def test_null_expiry_role_returned(
+    db_pg_transaction,
+    cognito_event,
+    cognito_context,
+    initial_user,
+    create_test_fam_role,
+    create_test_fam_cognito_client,
+    create_user_role_xref_record,
+):
+    # Assign role with expiry_date=None (should be returned)
+    create_test_fam_role()
+    create_user_role_xref_record(expiry_date=None)
+    result = lambda_function.lambda_handler(cognito_event, cognito_context)
+    groups = result["response"]["claimsOverrideDetails"]["groupOverrideDetails"]["groupsToOverride"]
+    assert TEST_ROLE_NAME in groups
+
+@pytest.mark.parametrize(
+    "cognito_event",
+    [
+        "login_event.json",
+    ],
+    indirect=True,
+)
+def test_mixed_expiry_roles(
+    db_pg_transaction,
+    cognito_event,
+    cognito_context,
+    initial_user,
+    create_test_fam_role,
+    create_test_fam_cognito_client,
+    create_user_role_xref_record,
+):
+    bc_tz = ZoneInfo("America/Vancouver")
+    expired_date = datetime.datetime.now(bc_tz) - datetime.timedelta(days=1)
+    future_date = datetime.datetime.now(bc_tz) + datetime.timedelta(days=1)
+    expired_role_name = TEST_ROLE_NAME + "_EXPIRED"
+    # Create expired role in DB
+    create_test_fam_role(role_name=expired_role_name)
+    # Create valid role in DB
+    create_test_fam_role()
+    # Assign expired role to user
+    create_user_role_xref_record(role_name=expired_role_name, expiry_date=expired_date)
+    # Assign valid role to user
+    create_user_role_xref_record(role_name=TEST_ROLE_NAME, expiry_date=future_date)
+
+    result = lambda_function.lambda_handler(cognito_event, cognito_context)
+    groups = result["response"]["claimsOverrideDetails"]["groupOverrideDetails"]["groupsToOverride"]
+    assert TEST_ROLE_NAME in groups
+    assert expired_role_name not in groups
+
+
+    @pytest.mark.parametrize(
+        "cognito_event",
+        [
+            "login_event.json",
+        ],
+        indirect=True,
+    )
+    def test_today_expiry_role_returned(
+        db_pg_transaction,
+        cognito_event,
+        cognito_context,
+        initial_user,
+        create_test_fam_role,
+        create_test_fam_cognito_client,
+        create_user_role_xref_record,
+    ):
+        # Assign role with expiry_date set to today (should be returned)
+        bc_tz = ZoneInfo("America/Vancouver")
+        now = datetime.datetime.now(bc_tz)
+        create_test_fam_role()
+        create_user_role_xref_record(expiry_date=now)
+        result = lambda_function.lambda_handler(cognito_event, cognito_context)
+        groups = result["response"]["claimsOverrideDetails"]["groupOverrideDetails"]["groupsToOverride"]
+        assert TEST_ROLE_NAME in groups
