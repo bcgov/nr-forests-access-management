@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.3.0](https://github.com/bcgov/nr-forests-access-management/compare/v2.2.0...v2.3.0) (2025-12-10)
+
+
+### Features
+
+* [#1882](https://github.com/bcgov/nr-forests-access-management/issues/1882) Oboarding REPT ([#2047](https://github.com/bcgov/nr-forests-access-management/issues/2047)) ([7b58762](https://github.com/bcgov/nr-forests-access-management/commit/7b58762c767c259e65c3178185338ea107e4b025))
+* [#2036](https://github.com/bcgov/nr-forests-access-management/issues/2036) auth lambda filter expired roles ([#2041](https://github.com/bcgov/nr-forests-access-management/issues/2041)) ([4f12ee4](https://github.com/bcgov/nr-forests-access-management/commit/4f12ee454b1a8136bffe07afceb6efb53cf4041b))
+
 ## [2.2.0](https://github.com/bcgov/nr-forests-access-management/compare/v2.1.0...v2.2.0) (2025-12-05)
 
 
