@@ -23,8 +23,8 @@ INSERT INTO app_fam.fam_role (
     create_user,
     create_date
 )
-VALUES ('REPT_ADMIN', 'Admin', 'Users have full admin access to REPT.', (select application_id from app_fam.fam_application where application_name = 'REPT_DEV'), 'C', CURRENT_USER, CURRENT_DATE),
-       ('REPT_VIEWER', 'Viewer', 'Users have view-only access to REPT.', (select application_id from app_fam.fam_application where application_name = 'REPT_DEV'), 'C', CURRENT_USER, CURRENT_DATE)
+VALUES ('REPT_ADMIN', 'Admin', 'Full administrative privileges across the REPT application — create/read/update/delete projects and reports, trigger and download Jasper reports, manage application settings, and perform administrative user operations.', (select application_id from app_fam.fam_application where application_name = 'REPT_DEV'), 'C', CURRENT_USER, CURRENT_DATE),
+       ('REPT_VIEWER', 'Viewer', 'View only privileges across the REPT application — read projects and reports, trigger and download Jasper reports.', (select application_id from app_fam.fam_application where application_name = 'REPT_DEV'), 'C', CURRENT_USER, CURRENT_DATE)
 ;
 
 -- Add roles for REPT_TEST
@@ -37,8 +37,8 @@ INSERT INTO app_fam.fam_role (
     create_user,
     create_date
 )
-VALUES ('REPT_ADMIN', 'Admin', 'Users have full admin access to REPT.', (select application_id from app_fam.fam_application where application_name = 'REPT_TEST'), 'C', CURRENT_USER, CURRENT_DATE),
-       ('REPT_VIEWER', 'Viewer', 'Users have view-only access to REPT.', (select application_id from app_fam.fam_application where application_name = 'REPT_TEST'), 'C', CURRENT_USER, CURRENT_DATE)
+VALUES ('REPT_ADMIN', 'Admin', 'Full administrative privileges across the REPT application — create/read/update/delete projects and reports, trigger and download Jasper reports, manage application settings, and perform administrative user operations.', (select application_id from app_fam.fam_application where application_name = 'REPT_TEST'), 'C', CURRENT_USER, CURRENT_DATE),
+       ('REPT_VIEWER', 'Viewer', 'View only privileges across the REPT application — read projects and reports, trigger and download Jasper reports.', (select application_id from app_fam.fam_application where application_name = 'REPT_TEST'), 'C', CURRENT_USER, CURRENT_DATE)
 ;
 
 -- Add roles for REPT_PROD
@@ -51,8 +51,8 @@ INSERT INTO app_fam.fam_role (
     create_user,
     create_date
 )
-VALUES ('REPT_ADMIN', 'Admin', 'Users have full admin access to REPT.', (select application_id from app_fam.fam_application where application_name = 'REPT_PROD'), 'C', CURRENT_USER, CURRENT_DATE),
-       ('REPT_VIEWER', 'Viewer', 'Users have view-only access to REPT.', (select application_id from app_fam.fam_application where application_name = 'REPT_PROD'), 'C', CURRENT_USER, CURRENT_DATE)
+VALUES ('REPT_ADMIN', 'Admin', 'Full administrative privileges across the REPT application — create/read/update/delete projects and reports, trigger and download Jasper reports, manage application settings, and perform administrative user operations.', (select application_id from app_fam.fam_application where application_name = 'REPT_PROD'), 'C', CURRENT_USER, CURRENT_DATE),
+       ('REPT_VIEWER', 'Viewer', 'View only privileges across the REPT application — read projects and reports, trigger and download Jasper reports.', (select application_id from app_fam.fam_application where application_name = 'REPT_PROD'), 'C', CURRENT_USER, CURRENT_DATE)
 ;
 
 -- Create dev, test and prod Cognito app clients for REPT
