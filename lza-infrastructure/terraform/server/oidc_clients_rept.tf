@@ -7,12 +7,16 @@ resource "aws_cognito_user_pool_client" "dev_rept_oidc_client" {
     var.oidc_sso_playground_url,
     "http://localhost:3000/dashboard",
     "http://localhost:3000/int/rept/dashboard",
+    "http://localhost:8080/dashboard",
+    "http://localhost:8080/int/rept/dashboard",
     "https://dlvrapps.nrs.gov.bc.ca/int/rept/dashboard"
   ]
   logout_urls                                   = [
     var.oidc_sso_playground_url,
     "${var.cognito_app_client_logout_chain_url.dev}http://localhost:3000",
     "${var.cognito_app_client_logout_chain_url.dev}http://localhost:3000/int/rept",
+    "${var.cognito_app_client_logout_chain_url.dev}http://localhost:8080",
+    "${var.cognito_app_client_logout_chain_url.dev}http://localhost:8080/int/rept",
     "${var.cognito_app_client_logout_chain_url.dev}https://dlvrapps.nrs.gov.bc.ca/int/rept"
   ]
   enable_propagate_additional_user_context_data = "false"
