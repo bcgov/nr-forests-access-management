@@ -8,9 +8,9 @@ INSERT INTO app_fam.fam_application (
     create_user,
     create_date
 )
-VALUES ('REPT_DEV', 'Reporting (DEV)', 'DEV', CURRENT_USER, CURRENT_DATE),
-       ('REPT_TEST', 'Reporting (TEST)', 'TEST', CURRENT_USER, CURRENT_DATE),
-       ('REPT_PROD', 'Reporting (PROD)', 'PROD', CURRENT_USER, CURRENT_DATE)
+VALUES ('REPT_DEV', 'Real Estate Project Tracking (DEV)', 'DEV', CURRENT_USER, CURRENT_DATE),
+       ('REPT_TEST', 'Real Estate Project Tracking (TEST)', 'TEST', CURRENT_USER, CURRENT_DATE),
+       ('REPT_PROD', 'Real Estate Project Tracking (PROD)', 'PROD', CURRENT_USER, CURRENT_DATE)
 ;
 
 -- Add roles for REPT_DEV
