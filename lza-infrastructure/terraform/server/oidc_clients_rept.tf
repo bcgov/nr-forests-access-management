@@ -5,11 +5,14 @@ resource "aws_cognito_user_pool_client" "dev_rept_oidc_client" {
   allowed_oauth_scopes                          = ["openid", "profile", "email"]
   callback_urls                                 = [
     var.oidc_sso_playground_url,
-    "http://localhost:3000/"
+    "http://localhost:3000/dashboard",
+    "http://localhost:3000/int/rept/dashboard",
+    "https://dlvrapps.nrs.gov.bc.ca/int/rept/dashboard"
   ]
   logout_urls                                   = [
     var.oidc_sso_playground_url,
-    "${var.cognito_app_client_logout_chain_url.dev}http://localhost:3000/logout"
+    "${var.cognito_app_client_logout_chain_url.dev}http://localhost:3000",
+    "${var.cognito_app_client_logout_chain_url.dev}http://localhost:3000/int/rept"
   ]
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
@@ -40,11 +43,15 @@ resource "aws_cognito_user_pool_client" "test_rept_oidc_client" {
   allowed_oauth_scopes                          = ["openid", "profile", "email"]
   callback_urls                                 = [
     var.oidc_sso_playground_url,
-    "http://localhost:3000/"
+    "http://localhost:3000/dashboard",
+    "http://localhost:3000/int/rept/dashboard",
+    "https://testapps.nrs.gov.bc.ca/int/rept/dashboard"
   ]
   logout_urls                                   = [
     var.oidc_sso_playground_url,
-    "${var.cognito_app_client_logout_chain_url.test}http://localhost:3000/logout"
+    "${var.cognito_app_client_logout_chain_url.test}http://localhost:3000",
+    "${var.cognito_app_client_logout_chain_url.test}http://localhost:3000/int/rept",
+    "${var.cognito_app_client_logout_chain_url.test}https://testapps.nrs.gov.bc.ca/int/rept"
   ]
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
@@ -75,11 +82,11 @@ resource "aws_cognito_user_pool_client" "prod_rept_oidc_client" {
   allowed_oauth_scopes                          = ["openid", "profile", "email"]
   callback_urls                                 = [
     var.oidc_sso_playground_url,
-    # ---   Pending adjustment until the app team is clear on production callback URLs   ---
+    "https://apps.nrs.gov.bc.ca/int/rept/dashboard"
   ]
   logout_urls                                   = [
     var.oidc_sso_playground_url,
-    # ---   Pending adjustment until the app team is clear on production logout URLs   ---
+    "${var.cognito_app_client_logout_chain_url.prod}https://apps.nrs.gov.bc.ca/int/rept"
   ]
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
