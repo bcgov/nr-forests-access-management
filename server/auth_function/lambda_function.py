@@ -310,6 +310,13 @@ def handle_event(db_connection, event) -> event_type.Event:
         }
     }
 
+    claims_to_add = {
+        "idpUsername": event["request"]["userAttributes"].get("custom:idp_user_id", ""),
+        "idProviderName": event["request"]["userAttributes"].get("custom:idp_name", "")
+    }
+
+    event["response"]["claimsOverrideDetails"]["claimsToAddOrOverride"] = claims_to_add
+
     LOGGER.debug(f"'handle_event' user's access roles are appended for the token: (access roles: {role_list}).")
 
     return event
