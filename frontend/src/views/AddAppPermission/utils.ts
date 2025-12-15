@@ -39,6 +39,7 @@ export type AppPermissionFormType = {
         isVerifying: boolean;
     };
     isAddingDelegatedAdmin: boolean;
+    expiryDate?: string | null; // Optional expiry date for permissions
 };
 
 export type AppPermissionQueryErrorType = {
@@ -60,6 +61,7 @@ const defaultFormData: AppPermissionFormType = {
         isVerifying: false,
     },
     isAddingDelegatedAdmin: false,
+    expiryDate: null,
 };
 
 export const getDefaultFormData = (
@@ -124,6 +126,7 @@ export const generatePayload = (
         (fc) => fc.forest_client_number
     ),
     requires_send_user_email: formData.sendUserEmail,
+    expiry_date_date: formData.expiryDate ?? null,
 });
 
 export const getRolesByAppId = (data: FamGrantDetailDto[], appId: number) => {
