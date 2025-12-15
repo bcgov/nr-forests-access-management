@@ -2,21 +2,21 @@
  * DatePicker Component
  *
  * Purpose:
- * Provides a interface for selecting dates using the PrimeVue Calendar component.
- * It supports features for customizable titles and descriptions.
+ * Provides an interface for selecting dates using the PrimeVue Calendar component.
  *
- * Usage and Props:
- * - `modelValue` (String, optional): Bind this prop to enable two-way data binding. Represents the selected date in `YYYY-MM-DD` format.
+ * Props:
  * - `title` (String, optional): Title displayed above the date picker to provide context.
  * - `description` (String, optional): Description displayed below the title to explain the purpose of the date picker.
+ * - `initialDate` (Date, optional): Sets the initial selected date. Defaults to `null`.
+ * - `minDate` (Date, optional): The earliest selectable date. Defaults to `null` (no restriction).
+ * - `maxDate` (Date, optional): The latest selectable date. Defaults to `null` (no restriction).
  *
  * Events:
- * - `update:modelValue`: Emitted when the selected date changes, providing the new date in `YYYY-MM-DD` format.
+ * - `update:datePickerValue`: Emitted when the selected date changes, providing the new date in `YYYY-MM-DD` format.
  *
  * Special Handling:
- * - Ensures the selected date cannot be earlier than the current date.
- * - Dates are formatted using Luxon for consistency.
- * - `minDate` is dynamically set to the current date in the BC timezone (America/Vancouver).
+ * - Ensures the selected date is formatted using Luxon for consistency.
+ * - Dynamically handles `minDate` and `maxDate` restrictions if provided.
  */
 
 <script setup lang="ts">
