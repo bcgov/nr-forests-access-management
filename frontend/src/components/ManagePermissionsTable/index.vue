@@ -68,12 +68,12 @@ import {
     deleteAppUserRoleNotificationContext,
     deleteDelegatedAdminNotificationContext,
     deleteFamPermissionNotificationContext,
-    filterList,
+    formatExpiryDate,
     getHeaders,
     getTableHeaderDescription,
     getTableHeaderTitle,
     NEW_ACCESS_STYLE_IN_TABLE,
-    type ConfirmTextType,
+    type ConfirmTextType
 } from "./utils";
 
 type TableRowType =
@@ -823,6 +823,17 @@ const downloadManagePermissionsCSVData = () => {
                         <span>
                             {{ utcToLocalDate(data.create_date) }}
                         </span>
+                    </template>
+                </Column>
+
+                <Column
+                    v-if="!isFamAppAdminTable && !isApplicationAdminTable"
+                    header="Expiry Date"
+                    field="expiry_date"
+                    sortable
+                >
+                    <template #body="{ data }">
+                        <span>{{ formatExpiryDate(data.expiry_date) }}</span>
                     </template>
                 </Column>
 

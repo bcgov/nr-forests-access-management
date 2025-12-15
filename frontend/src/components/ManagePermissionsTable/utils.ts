@@ -7,6 +7,7 @@ import type { PermissionNotificationType } from "@/types/NotificationTypes";
 import { Severity } from "@/types/NotificationTypes";
 import type { PaginationType } from "@/types/PaginationTypes";
 import { formatAxiosError } from "@/utils/ApiUtils";
+import { utcToLocalDate } from "@/utils/DateUtils";
 import { formatForestClientDisplayName } from "@/utils/ForestClientUtils";
 import { formatUserNameAndId } from "@/utils/UserUtils";
 import { isAxiosError, type AxiosResponse } from "axios";
@@ -356,4 +357,23 @@ export const downloadCsvFromResponse = async (
         document.body.appendChild(link);
         link.click();
     }
+};
+
+/**
+ * Formats the expiry date for display purposes.
+ * - If the date is in the future or today, it converts the date from UTC to the local timezone.
+ * - If the date is in the past, it returns "Expired".
+ * - If there is no date, it returns "Never expires".
+ * @param {string | null} expiryDate - The expiry date as a string, or null if not set.
+ * @returns {string} - The formatted expiry date string.
+ */
+export const formatExpiryDate = (expiryDate: string | null): string => {
+    if (!expiryDate) {
+        return "Never expires";
+    }
+
+    const expiry = new Date(expiryDate);
+    const today = new Date();
+
+    return expiry >= today ? utcToLocalDate(expiryDate) : "Expired";
 };
