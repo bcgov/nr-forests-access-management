@@ -26,7 +26,7 @@ import Calendar from "primevue/calendar";
 import { ref, watch } from "vue";
 
 const selectedDate = ref<Date | null>(null);
-const minDate = ref(currentDateInBCTimezone());
+const PRIMEVUE_DATE_FORMAT = "yy-mm-dd";  // YYYY-MM-DD format for PrimeVue Calendar
 
 const props = defineProps({
   title: {
@@ -86,7 +86,7 @@ if (props.initialDate) {
         :placeholder="DATE_FORMAT_YYYY_MM_DD"
         :minDate="minDate || undefined"
         :maxDate="maxDate || undefined"
-        dateFormat="yy-mm-dd"
+        :dateFormat="PRIMEVUE_DATE_FORMAT"
         showIcon
         iconDisplay="input"
         inputId="icondisplay"

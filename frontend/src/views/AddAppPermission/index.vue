@@ -2,6 +2,7 @@
 import RoleSelectTable from "@/components/AddPermissions/RoleSelectTable.vue";
 import UserDomainSelect from "@/components/AddPermissions/UserDomainSelect.vue";
 import UserNameInput from "@/components/AddPermissions/UserNameSection.vue";
+import DatePicker from "@/components/DatePicker.vue";
 import BoolCheckbox from "@/components/UI/BoolCheckbox.vue";
 import BreadCrumbs from "@/components/UI/BreadCrumbs.vue";
 import Button from "@/components/UI/Button.vue";
@@ -20,6 +21,7 @@ import { activeTabIndex } from "@/store/ApplicationState";
 import type { BreadCrumbType } from "@/types/BreadCrumbTypes";
 import type { AddAppPermissionRouteProps } from "@/types/RouteTypes";
 import { isUserDelegatedAdminOnly } from "@/utils/AuthUtils";
+import { currentDateInBCTimezone } from "@/utils/DateUtils";
 import {
     AddAppUserPermissionErrorQuerykey,
     AddAppUserPermissionSuccessQuerykey,
@@ -343,6 +345,7 @@ const getUserNameInputHelperText = () =>
                             @update:datePickerValue="formData.expiryDate = $event"
                             title="Expiry date (optional)"
                             description="By default, this role does not expire. Set an expiry date if you want the permission to end automatically."
+                            :minDate="currentDateInBCTimezone()"
                         />
                     </StepContainer>
                     <StepContainer :divider="false">
