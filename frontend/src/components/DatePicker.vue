@@ -21,7 +21,7 @@
 
 <script setup lang="ts">
 import { DATE_FORMAT_YYYY_MM_DD } from "@/constants/DateFormats";
-import { currentDateInBCTimezone, formatDateToYYYYMMDD } from "@/utils/DateUtils";
+import { formatDateToYYYYMMDD } from "@/utils/DateUtils";
 import Calendar from "primevue/calendar";
 import { ref, watch } from "vue";
 
@@ -40,7 +40,7 @@ const props = defineProps({
     default: "By default, this role does not expire. Set an expiry date if you want the permission to end automatically.",
   },
   initialDate: {
-    type: String,
+    type: Date,
     required: false,
     default: null,
   },
@@ -68,9 +68,7 @@ watch(
   }
 );
 
-if (props.initialDate) {
-  selectedDate.value = new Date(props.initialDate);
-}
+selectedDate.value = props.initialDate;
 </script>
 
 <template>
