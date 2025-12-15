@@ -1,0 +1,44 @@
+@use "@/assets/styles/design-tokens" as tokens;
+
+// Utility SCSS Mixins
+
+// ---------------------------
+// Mixin for Responsive Gap
+// ---------------------------
+@mixin responsive-gap($two-col-gap-min, $two-col-gap-max) {
+  gap: clamp(#{$two-col-gap-min}, 4vw, #{$two-col-gap-max});
+}
+
+// ---------------------------
+// Mixin for responsive Two-Column Containers
+// Note: To use this, the parent container must have container queries enabled.
+//       Example: "container-type: inline-size"
+// ---------------------------
+@mixin two-column-container-responsive(
+  $two-col-left-min-width: tokens.$two-col-left-min-width,
+  $two-col-right-min-width: tokens.$two-col-right-min-width,
+  $container-stack-breakpoint: tokens.$breakpoint-sm,
+  $two-col-gap-min: tokens.$two-col-gap-min,
+  $two-col-gap-max: tokens.$two-col-gap-max
+) {
+  display: flex;
+  flex-direction: row;           // Side-by-side by default
+  align-items: flex-end;         // Mirrors original
+  @include responsive-gap($two-col-gap-min, $two-col-gap-max);
+
+  > :nth-child(1) { flex: 0 1 60%; min-width: $two-col-left-min-width; }
+  > :nth-child(2) { flex: 0 1 40%; min-width: $two-col-right-min-width; }
+
+  @container (max-width: #{$container-stack-breakpoint}) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: clamp(0.75rem, 2.5vw, #{$two-col-gap-min});
+
+    > :nth-child(1),
+    > :nth-child(2) {
+      flex: 1 1 100%;
+      min-width: 0;
+      width: 100%;
+    }
+  }
+}
