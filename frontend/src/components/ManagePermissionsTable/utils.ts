@@ -361,7 +361,7 @@ export const downloadCsvFromResponse = async (
 
 /**
  * Formats the expiry date for display purposes.
- * - If the date is in the future or today, it converts the date from UTC to the local timezone.
+ * - If the date is in the future or today, shows the date in local timezone.
  * - If the date is in the past, it returns "Expired".
  * - If there is no date, it returns "Never expires".
  * @param {string | null} expiryDate - The expiry date as a string, or null if not set.
@@ -372,8 +372,5 @@ export const formatExpiryDate = (expiryDate: string | null): string => {
         return "Never expires";
     }
 
-    const expiry = new Date(expiryDate);
-    const today = new Date();
-
-    return expiry >= today ? utcToLocalDate(expiryDate) : "Expired";
+    return new Date(expiryDate) >= new Date() ? utcToLocalDate(expiryDate) : "Expired";
 };
