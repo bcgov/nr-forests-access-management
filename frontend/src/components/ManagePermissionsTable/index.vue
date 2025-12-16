@@ -827,7 +827,7 @@ const downloadManagePermissionsCSVData = () => {
                 </Column>
 
                 <Column
-                    v-if="!isFamAppAdminTable && !isApplicationAdminTable"
+                    v-if="!isFamAppAdminTable && !isApplicationAdminTable && !isDelegatedTable"
                     header="Expiry Date"
                     field="expiry_date"
                     sortable
