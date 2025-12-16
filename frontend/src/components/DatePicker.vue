@@ -20,13 +20,12 @@
  */
 
 <script setup lang="ts">
-import { DATE_FORMAT_YYYY_MM_DD } from "@/constants/DateFormats";
+import { PRIMEVUE_DATE_FORMAT_MM_DD_YY } from "@/constants/DateFormats";
 import { formatDateToYYYYMMDD } from "@/utils/DateUtils";
 import Calendar from "primevue/calendar";
 import { ref, watch } from "vue";
 
 const selectedDate = ref<Date | null>(null);
-const PRIMEVUE_DATE_FORMAT = "yy-mm-dd";  // YYYY-MM-DD format for PrimeVue Calendar
 
 const props = defineProps({
   title: {
@@ -74,19 +73,19 @@ selectedDate.value = props.initialDate;
 
 <template>
   <div class="date-picker-container">
-    <div v-if="title && description" class="title-description-area">
-      <div class="title">{{ title }}</div>
-      <div class="description">{{ description }}</div>
+    <div v-if="props.title && props.description" class="title-description-area">
+      <div class="title">{{ props.title }}</div>
+      <div class="description">{{ props.description }}</div>
     </div>
 
     <div class="date-picker-area">
-      <div class="picker-title" v-if="title">Expiry date:</div>
+      <div class="picker-title" v-if="props.title">Expiry date:</div>
       <Calendar
         v-model="selectedDate"
-        :placeholder="DATE_FORMAT_YYYY_MM_DD"
-        :minDate="minDate || undefined"
-        :maxDate="maxDate || undefined"
-        :dateFormat="PRIMEVUE_DATE_FORMAT"
+        :placeholder="'mm/dd/yyyy'"
+        :minDate="props.minDate || undefined"
+        :maxDate="props.maxDate || undefined"
+        :dateFormat="PRIMEVUE_DATE_FORMAT_MM_DD_YY"
         showIcon
         iconDisplay="input"
         inputId="icondisplay"
