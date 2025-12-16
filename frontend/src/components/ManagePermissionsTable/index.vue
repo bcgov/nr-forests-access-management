@@ -828,10 +828,17 @@ const downloadManagePermissionsCSVData = () => {
 
                 <Column
                     v-if="!isFamAppAdminTable && !isApplicationAdminTable && !isDelegatedTable"
-                    header="Expiry Date"
                     field="expiry_date"
                     sortable
                 >
+                    <template #header>
+                        <span v-tooltip.left="{
+                            value: 'Access is available until midnight Pacific Standard Time on the expiry date.',
+                            class: 'custom-tooltip' }"
+                        >
+                            Expiry Date
+                        </span>
+                    </template>
                     <template #body="{ data }">
                         <span>{{ formatExpiryDate(data.expiry_date) }}</span>
                     </template>
@@ -916,5 +923,11 @@ const downloadManagePermissionsCSVData = () => {
             border-color: #dfdfe1;
         }
     }
+}
+
+.custom-tooltip {
+    max-width: 320px; /* Set the desired width */
+    white-space: normal;
+    word-wrap: break-word;
 }
 </style>
