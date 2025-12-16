@@ -1,4 +1,4 @@
-import { DATE_FORMAT, DATE_TIME_FORMAT, LUXON_DATE_FORMAT_YYYY_MM_DD } from "@/constants/DateFormats";
+import { BC_TIMEZONE, DATE_FORMAT, DATE_TIME_FORMAT, LUXON_DATE_FORMAT_YYYY_MM_DD } from "@/constants/DateFormats";
 import { DateTime } from "luxon";
 
 /**
@@ -25,7 +25,7 @@ export const utcToLocalDate = (utcDate: string): string =>
  * @returns {Date} A Date object representing the current date and time in the BC timezone.
  */
 export const currentDateInBCTimezone = (): Date => {
-    return DateTime.now().setZone("America/Vancouver").toJSDate();
+    return DateTime.now().setZone(BC_TIMEZONE).toJSDate();
 };
 
 /**

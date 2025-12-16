@@ -20,3 +20,5 @@ export const DATE_FORMAT = "MMM dd, yyyy";
 export const DATE_FORMAT_YYYY_MM_DD = 'YYYY-MM-DD';
 
 export const LUXON_DATE_FORMAT_YYYY_MM_DD = "yyyy-MM-dd";
+
+export const BC_TIMEZONE = "America/Vancouver";
