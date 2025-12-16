@@ -101,14 +101,12 @@ selectedDate.value = props.initialDate;
 @use "@/assets/styles/design-tokens" as tokens;
 @use "@/assets/styles/utility-mixins" as mixins;
 
-// ---------------------------
-// Apply mixin to the component
-// ---------------------------
+
 .date-picker-container {
+  // Apply the two-column responsive container mixin
   @include mixins.two-column-container-responsive();
 }
 
-// Left column specifics
 .date-picker-container > .title-description-area {
   .title {
     font-family: BC Sans;
@@ -119,13 +117,12 @@ selectedDate.value = props.initialDate;
   }
 }
 
-// Right column specifics
 .date-picker-container > .date-picker-area {
   width: 100%; // ensure inner controls fill the flex item
 }
 
 .date-picker-container > .title-description-area:empty {
-  display: none; // prevents empty column
+  display: none;
 }
 
 .description {
