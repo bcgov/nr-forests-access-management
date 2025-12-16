@@ -339,7 +339,11 @@ const getUserNameInputHelperText = () =>
                             forest-clients-field-id="forestClients"
                         />
                     </StepContainer>
-                    <StepContainer title="User expiry date" divider>
+                    <StepContainer
+                        title="User expiry date"
+                        divider
+                        v-if="!formData?.isAddingDelegatedAdmin"
+                    >
                         <DatePicker
                             :modelValue="formData.expiryDate"
                             @update:datePickerValue="formData.expiryDate = $event"
