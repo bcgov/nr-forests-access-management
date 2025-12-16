@@ -71,12 +71,14 @@ watch(
 selectedDate.value = props.initialDate;
 </script>
 
+
 <template>
   <div class="date-picker-container">
     <div v-if="title && description" class="title-description-area">
       <div class="title">{{ title }}</div>
       <div class="description">{{ description }}</div>
     </div>
+
     <div class="date-picker-area">
       <div class="picker-title" v-if="title">Expiry date:</div>
       <Calendar
@@ -90,21 +92,25 @@ selectedDate.value = props.initialDate;
         inputId="icondisplay"
         :style="{ width: '100%' }"
         :showInput="false"
-      ></Calendar>
+      />
     </div>
   </div>
 </template>
 
-<style scoped>
+
+<style lang="scss" scoped>
+@use "@/assets/styles/design-tokens" as tokens;
+@use "@/assets/styles/utility-mixins" as mixins;
+
+// ---------------------------
+// Apply mixin to the component
+// ---------------------------
 .date-picker-container {
-  display: flex;
-  flex-direction: row;
-  gap: 4.5rem;
-  align-items: flex-end;
+  @include mixins.two-column-container-responsive();
 }
 
+// Left column specifics
 .date-picker-container > .title-description-area {
-  flex: 1 1 60%;
   .title {
     font-family: BC Sans;
     font-weight: 700;
@@ -114,12 +120,13 @@ selectedDate.value = props.initialDate;
   }
 }
 
+// Right column specifics
 .date-picker-container > .date-picker-area {
-  flex: 1 1 40%;
+  width: 100%; // ensure inner controls fill the flex item
 }
 
 .date-picker-container > .title-description-area:empty {
-  display: none;
+  display: none; // prevents empty column
 }
 
 .description {
@@ -129,14 +136,10 @@ selectedDate.value = props.initialDate;
   color: #6c757d;
 }
 
-.date-picker-area {
-  flex: 1;
-}
-
 .picker-title {
-    font-weight: 400;
-    font-size: 12px;
-    line-height: 16px;
-    letter-spacing: 0.32px;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0.32px;
 }
 </style>
