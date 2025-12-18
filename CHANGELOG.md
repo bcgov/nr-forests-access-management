@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.4.0](https://github.com/bcgov/nr-forests-access-management/compare/v2.3.0...v2.4.0) (2025-12-18)
+
+
+### Features
+
+* [#2035](https://github.com/bcgov/nr-forests-access-management/issues/2035) User role expiry frontend ([#2049](https://github.com/bcgov/nr-forests-access-management/issues/2049)) ([980d499](https://github.com/bcgov/nr-forests-access-management/commit/980d499c805fd064cbc91ae45649e1ff1202891b))
+
+
+### Bug Fixes
+
+* # Rename APT3 APP Description. ([#2051](https://github.com/bcgov/nr-forests-access-management/issues/2051)) ([acb3559](https://github.com/bcgov/nr-forests-access-management/commit/acb3559d9376d7ffbc66f93b1650f1e7bd253a3d))
+
 ## [2.3.0](https://github.com/bcgov/nr-forests-access-management/compare/v2.2.0...v2.3.0) (2025-12-10)
 
 
