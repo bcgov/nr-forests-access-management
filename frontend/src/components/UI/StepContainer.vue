@@ -23,6 +23,8 @@ defineProps<{
 
 <style lang="scss">
 .step-container {
+    container-type: inline-size; // Enables container queries for child components
+
     .step-content {
         margin-top: 1.5rem;
     }

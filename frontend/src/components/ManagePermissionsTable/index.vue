@@ -68,12 +68,12 @@ import {
     deleteAppUserRoleNotificationContext,
     deleteDelegatedAdminNotificationContext,
     deleteFamPermissionNotificationContext,
-    filterList,
+    formatExpiryDate,
     getHeaders,
     getTableHeaderDescription,
     getTableHeaderTitle,
     NEW_ACCESS_STYLE_IN_TABLE,
-    type ConfirmTextType,
+    type ConfirmTextType
 } from "./utils";
 
 type TableRowType =
@@ -826,6 +826,24 @@ const downloadManagePermissionsCSVData = () => {
                     </template>
                 </Column>
 
+                <Column
+                    v-if="!isFamAppAdminTable && !isApplicationAdminTable && !isDelegatedTable"
+                    field="expiry_date"
+                    sortable
+                >
+                    <template #header>
+                        <span v-tooltip.left="{
+                            value: 'Access is available until midnight Pacific Standard Time on the expiry date.',
+                            class: 'custom-tooltip' }"
+                        >
+                            Expiry Date
+                        </span>
+                    </template>
+                    <template #body="{ data }">
+                        <span>{{ formatExpiryDate(data.expiry_date) }}</span>
+                    </template>
+                </Column>
+
                 <Column header="Action" class="action-col">
                     <template #body="{ data }">
                         <div class="nowrap-cell action-button-group">
@@ -905,5 +923,11 @@ const downloadManagePermissionsCSVData = () => {
             border-color: #dfdfe1;
         }
     }
+}
+
+.custom-tooltip {
+    max-width: 320px; /* Set the desired width */
+    white-space: normal;
+    word-wrap: break-word;
 }
 </style>

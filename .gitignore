@@ -102,3 +102,6 @@ terraform/tools/output.txt
 
 # Ds Store files
 .DS_Store
+
+# Copilot instructions
+**/*[-.]instructions.md

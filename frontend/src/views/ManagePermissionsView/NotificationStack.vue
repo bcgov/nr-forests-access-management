@@ -28,7 +28,8 @@ defineProps<{
 </template>
 
 <style lang="scss" scoped>
-@import "@/assets/styles/styles.scss";
+@use "@/assets/styles/styles";
+
 .notification-stack {
     margin-bottom: 1.5rem;
 

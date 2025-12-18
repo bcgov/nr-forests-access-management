@@ -24,7 +24,7 @@
         "@tanstack/vue-query": "^5.56.2",
         "aws-amplify": "^6.15.0",
         "axios": "^1.12.2",
-        "bootstrap": "^5.3.3",
+        "bootstrap": "^5.3.8",
         "fam-admin-mgmt-api": "file:../client-code-gen/gen/admin-management-api",
         "fam-app-acsctl-api": "file:../client-code-gen/gen/app-access-control-api",
         "luxon": "^3.5.0",

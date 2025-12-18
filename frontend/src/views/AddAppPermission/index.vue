@@ -2,27 +2,34 @@
 import RoleSelectTable from "@/components/AddPermissions/RoleSelectTable.vue";
 import UserDomainSelect from "@/components/AddPermissions/UserDomainSelect.vue";
 import UserNameInput from "@/components/AddPermissions/UserNameSection.vue";
+import DatePicker from "@/components/DatePicker.vue";
 import BoolCheckbox from "@/components/UI/BoolCheckbox.vue";
 import BreadCrumbs from "@/components/UI/BreadCrumbs.vue";
 import Button from "@/components/UI/Button.vue";
 import PageTitle from "@/components/UI/PageTitle.vue";
 import StepContainer from "@/components/UI/StepContainer.vue";
 import useAuth from "@/composables/useAuth";
+import { APP_PERMISSION_FORM_KEY } from "@/constants/InjectionKeys";
+import { IdpProvider } from "@/enum/IdpEnum";
 import { ManagePermissionsRoute } from "@/router/routes";
 import {
     AdminMgmtApiService,
     AppActlApiService,
 } from "@/services/ApiServiceFactory";
+import { EnvironmentSettings } from "@/services/EnvironmentSettings";
+import { activeTabIndex } from "@/store/ApplicationState";
 import type { BreadCrumbType } from "@/types/BreadCrumbTypes";
 import type { AddAppPermissionRouteProps } from "@/types/RouteTypes";
+import { isUserDelegatedAdminOnly } from "@/utils/AuthUtils";
+import { currentDateInBCTimezone } from "@/utils/DateUtils";
 import {
     AddAppUserPermissionErrorQuerykey,
     AddAppUserPermissionSuccessQuerykey,
     AddDelegatedAdminErrorQuerykey,
     AddDelegatedAdminSuccessQuerykey,
     generatePayload,
-    getRolesByAppId,
     getDefaultFormData,
+    getRolesByAppId,
     isAbstractRoleSelected,
     NewAppAdminQueryParamKey,
     NewDelegatedAddminQueryParamKey,
@@ -44,11 +51,6 @@ import { useConfirm } from "primevue/useconfirm";
 import { Form } from "vee-validate";
 import { computed, provide, ref, watch } from "vue";
 import { useRouter } from "vue-router";
-import { APP_PERMISSION_FORM_KEY } from "@/constants/InjectionKeys";
-import { EnvironmentSettings } from "@/services/EnvironmentSettings";
-import { isUserDelegatedAdminOnly } from "@/utils/AuthUtils";
-import { IdpProvider } from "@/enum/IdpEnum";
-import { activeTabIndex } from "@/store/ApplicationState";
 
 const router = useRouter();
 const auth = useAuth();
@@ -138,7 +140,7 @@ const handleUserVerification = (
 
 const queryClient = useQueryClient();
 
-const appAdminMutation = useMutation({
+const assignUserRoles = useMutation({
     mutationFn: (payload: FamUserRoleAssignmentCreateSchema) =>
         AppActlApiService.userRoleAssignmentApi.createUserRoleAssignmentMany(
             payload
@@ -235,7 +237,7 @@ const onSubmit = () => {
         const payload = generatePayload(formData.value);
         if (!formData.value.isAddingDelegatedAdmin) {
             isSubmitting.value = true;
-            appAdminMutation.mutate(payload);
+            assignUserRoles.mutate(payload);
         } else {
             confirm.require({
                 group: "addDelegatedAdmin",
@@ -335,6 +337,19 @@ const getUserNameInputHelperText = () =>
                             "
                             role-field-id="role"
                             forest-clients-field-id="forestClients"
+                        />
+                    </StepContainer>
+                    <StepContainer
+                        title="User expiry date"
+                        divider
+                        v-if="!formData?.isAddingDelegatedAdmin"
+                    >
+                        <DatePicker
+                            :modelValue="formData.expiryDate"
+                            @update:datePickerValue="formData.expiryDate = $event"
+                            title="Expiry date (optional)"
+                            description="By default, this role does not expire. Set an expiry date if you want the permission to end automatically."
+                            :minDate="currentDateInBCTimezone()"
                         />
                     </StepContainer>
                     <StepContainer :divider="false">
