@@ -171,11 +171,13 @@ resource "aws_cognito_user_pool" "fam_user_pool" {
   }
 
   lambda_config {
-    pre_token_generation = aws_lambda_function.fam-auth-function.arn
+    pre_token_generation_config {
+      lambda_arn    = aws_lambda_function.fam-auth-function.arn
 
-    # FAM Cognito is with "Essential" Feature Plan.
-    # We can set the pre-token generation event version to V2_0 (for better feature support)
-    lambda_version = "V2_0"
+      # FAM Cognito is with "Essential" Feature Plan.
+      # We can set the pre-token generation event version to V2_0 (for better feature support)
+      lambda_version = "V2_0"
+    }
   }
 
   depends_on = [
