@@ -10,6 +10,7 @@ import config
 import event_type
 import psycopg2
 from psycopg2 import sql
+from psycopg2.extensions import connection
 
 # seeing as a simple lambda function, use a simple fileconfig for the audit logging
 # config, and setting up manually if the function is called directly
@@ -220,10 +221,19 @@ def populate_user_if_necessary(db_connection, event) -> None:
 
 
 def handle_event(db_connection, event) -> event_type.Event:
-    """Queries the auth database for the roles associated with the user
-    that is described in the cognito event, the function then populates
-    the roles into the event object and returns it."""
+    # Currently, only access token customization is needed.
+    event = access_token_groups_override(db_connection, event)
+    event = access_token_custom_claims_override(event)
 
+    return event
+
+
+def access_token_groups_override(db_connection: connection, event: event_type.Event) -> event_type.Event:
+    """ Custom user groups to be added to access token.
+    :param db_connection: Database connection object
+    :param event: The cognito event
+    :return: Updated event with groups overridden
+    """
     cursor = db_connection.cursor()
     query = """
     SELECT
@@ -252,9 +262,6 @@ def handle_event(db_connection, event) -> event_type.Event:
         event["request"]["userAttributes"]["custom:idp_name"]
     ]
     cognito_client_id = event["callerContext"]["clientId"]
-
-    LOGGER.debug(f"'handle_event' with user's attributes: (user_guid: {user_guid}, user_type_code: {user_type_code}, "
-                 f"cognito_client_id: {cognito_client_id}) to get access roles for the user.")
 
     sql_query = sql.SQL(query).format(
         user_guid=sql.Literal(user_guid),
@@ -302,14 +309,23 @@ def handle_event(db_connection, event) -> event_type.Event:
             for record in cursor:
                 role_list.append(f"{record[0]}_ADMIN")
 
-    event["response"]["claimsOverrideDetails"] = {
-        "groupOverrideDetails": {
-            "groupsToOverride": role_list,
-            "iamRolesToOverride": [],
-            "preferredRole": "",
-        }
+    event["response"]["claimsAndScopeOverrideDetails"]["groupOverrideDetails"]["groupsToOverride"] = role_list
+
+    LOGGER.debug(f"'access_token_groups_override' user's access roles are appended for the token: (access roles: {role_list}).")
+    return event
+
+
+def access_token_custom_claims_override(event: event_type.Event) -> event_type.Event:
+    """ Custom user attributes to be added to access token.
+    :param event ('event_type.Event'): the cognito event
+    :return ('event_type.Event'): returns the event as is
+    """
+    # Extract custom user attributes
+    idp_username = event["request"]["userAttributes"]["custom:idp_username"]
+    idp_name = event["request"]["userAttributes"]["custom:idp_name"]
+
+    event["response"]["claimsAndScopeOverrideDetails"]["accessTokenGeneration"]["claimsToAddOrOverride"] = {
+        "custom:idp_username": idp_username,
+        "custom:idp_name": idp_name
     }
-
-    LOGGER.debug(f"'handle_event' user's access roles are appended for the token: (access roles: {role_list}).")
-
     return event
