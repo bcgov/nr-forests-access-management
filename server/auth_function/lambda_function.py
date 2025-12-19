@@ -135,7 +135,7 @@ def lambda_handler(event: event_type.Event, context: Any) -> event_type.Event:
     All applications should be configured with user attributes: "custom:idp_name", "custom:idp_user_id", "custom:idp_username"
     """
     LOGGER.debug(f"context: {context}")
-    LOGGER.debug(f"event: {event}")
+    LOGGER.debug(f"event - {event.get("version", "V1_0")}: {event}")
 
     db_connection = obtain_db_connection()
     populate_user_if_necessary(db_connection, event)
