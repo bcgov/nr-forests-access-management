@@ -309,22 +309,22 @@ def access_token_groups_override(db_connection: connection, event: event_type.Ev
                 role_list.append(f"{record[0]}_ADMIN")
 
     if event["response"].get("claimsAndScopeOverrideDetails") is None:
-        claimsAndScopeOverrideDetails = {}
+        claims_and_scope_override_details = {}
     else:
-        claimsAndScopeOverrideDetails = event["response"]["claimsAndScopeOverrideDetails"]
+        claims_and_scope_override_details = event["response"]["claimsAndScopeOverrideDetails"]
 
-    if "groupOverrideDetails" not in claimsAndScopeOverrideDetails:
-        claimsAndScopeOverrideDetails["groupOverrideDetails"] = {
+    if "groupOverrideDetails" not in claims_and_scope_override_details:
+        claims_and_scope_override_details["groupOverrideDetails"] = {
             "groupsToOverride": role_list,
             "iamRolesToOverride": [],
             "preferredRole": ""
         }
     else:
-        claimsAndScopeOverrideDetails["groupOverrideDetails"]["groupsToOverride"] = role_list
+        claims_and_scope_override_details["groupOverrideDetails"]["groupsToOverride"] = role_list
 
-    event["response"]["claimsAndScopeOverrideDetails"] = claimsAndScopeOverrideDetails
+    event["response"]["claimsAndScopeOverrideDetails"] = claims_and_scope_override_details
 
-    LOGGER.debug(f"'access_token_groups_override' user's access roles are appended for the token: ({claimsAndScopeOverrideDetails}).")
+    LOGGER.debug(f"'access_token_groups_override' user's access roles are appended for the token: ({claims_and_scope_override_details}).")
     return event
 
 
@@ -342,24 +342,24 @@ def access_token_custom_claims_override(event: event_type.Event) -> event_type.E
     idp_name = event["request"]["userAttributes"]["custom:idp_name"]
 
     if event["response"].get("claimsAndScopeOverrideDetails") is None:
-        claimsAndScopeOverrideDetails = {}
+        claims_and_scope_override_details = {}
     else:
-        claimsAndScopeOverrideDetails = event["response"]["claimsAndScopeOverrideDetails"]
+        claims_and_scope_override_details = event["response"]["claimsAndScopeOverrideDetails"]
 
-    if "accessTokenGeneration" not in claimsAndScopeOverrideDetails:
-        claimsAndScopeOverrideDetails["accessTokenGeneration"] = {
+    if "accessTokenGeneration" not in claims_and_scope_override_details:
+        claims_and_scope_override_details["accessTokenGeneration"] = {
             "claimsToAddOrOverride": {
                 "custom:idp_username": idp_username,
                 "custom:idp_name": idp_name
             }
         }
     else:
-        claimsAndScopeOverrideDetails["accessTokenGeneration"]["claimsToAddOrOverride"] = {
+        claims_and_scope_override_details["accessTokenGeneration"]["claimsToAddOrOverride"] = {
             "custom:idp_username": idp_username,
             "custom:idp_name": idp_name
         }
 
-    event["response"]["claimsAndScopeOverrideDetails"] = claimsAndScopeOverrideDetails
+    event["response"]["claimsAndScopeOverrideDetails"] = claims_and_scope_override_details
 
-    LOGGER.debug(f"'access_token_custom_claims_override' custom claims are appended for the token: ({claimsAndScopeOverrideDetails}).")
+    LOGGER.debug(f"'access_token_custom_claims_override' custom claims are appended for the token: ({claims_and_scope_override_details}).")
     return event
