@@ -308,6 +308,9 @@ def access_token_groups_override(db_connection: connection, event: event_type.Ev
             for record in cursor:
                 role_list.append(f"{record[0]}_ADMIN")
 
+    LOGGER.debug(f"access_token_groups_override event: {event}")
+    LOGGER.debug(f"access_token_groups_override event.request: {event['request']}")
+    LOGGER.debug(f"access_token_groups_override event.response before groups override: {event['response']}")
     claimsAndScopeOverrideDetails = event["response"].get("claimsAndScopeOverrideDetails", {})
     if "groupOverrideDetails" not in claimsAndScopeOverrideDetails:
         claimsAndScopeOverrideDetails["groupOverrideDetails"] = {
