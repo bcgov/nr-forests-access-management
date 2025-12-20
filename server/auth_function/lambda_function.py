@@ -115,15 +115,9 @@ def audit_log(original_func):
 @audit_log
 def lambda_handler(event: event_type.Event, context: Any) -> event_type.Event:
     """recieves a cognito event object, checks to see if the user associated
-    with the event exists in the database.  If not it gets added.  Finally
+    with the event exists in the database. If not it gets added. Finally
     the roles associated with the user are retrieved and used to populate the
-    cognito event objects property:
-
-    response.claimsOverrideDetails.groupOverrideDetails {
-        groupsToOverride: [<role are injected here>]
-        iamRolesToOverride: [],
-        preferredRole": ""
-    }
+    cognito event objects property.
 
     :param event: the cognito event
     :type event: event_type.Event
@@ -230,6 +224,11 @@ def handle_event(db_connection, event) -> event_type.Event:
 
 def access_token_groups_override(db_connection: connection, event: event_type.Event) -> event_type.Event:
     """ Custom user groups to be added to access token.
+
+    In AWS Lambda version V2_0, the property to override in the response object for groups is:
+    - claimsAndScopeOverrideDetails.groupOverrideDetails.groupsToOverride
+    - ref: https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-pre-token-generation.html
+
     :param db_connection: Database connection object
     :param event: The cognito event
     :return: Updated event with groups overridden
@@ -309,7 +308,17 @@ def access_token_groups_override(db_connection: connection, event: event_type.Ev
             for record in cursor:
                 role_list.append(f"{record[0]}_ADMIN")
 
-    event["response"]["claimsAndScopeOverrideDetails"]["groupOverrideDetails"]["groupsToOverride"] = role_list
+    claimsAndScopeOverrideDetails = event["response"].get("claimsAndScopeOverrideDetails", {})
+    if "groupOverrideDetails" not in claimsAndScopeOverrideDetails:
+        claimsAndScopeOverrideDetails["groupOverrideDetails"] = {
+            "groupsToOverride": role_list,
+            "iamRolesToOverride": [],
+            "preferredRole": ""
+        }
+    else:
+        claimsAndScopeOverrideDetails["groupOverrideDetails"]["groupsToOverride"] = role_list
+
+    event["response"]["claimsAndScopeOverrideDetails"] = claimsAndScopeOverrideDetails
 
     LOGGER.debug(f"'access_token_groups_override' user's access roles are appended for the token: (access roles: {role_list}).")
     return event
@@ -317,6 +326,10 @@ def access_token_groups_override(db_connection: connection, event: event_type.Ev
 
 def access_token_custom_claims_override(event: event_type.Event) -> event_type.Event:
     """ Custom user attributes to be added to access token.
+    In AWS Lambda version V2_0, the property to override in the response object from custom claims is:
+    - claimsAndScopeOverrideDetails.accessTokenGeneration.claimsToAddOrOverride
+    - ref: https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-pre-token-generation.html
+
     :param event ('event_type.Event'): the cognito event
     :return ('event_type.Event'): returns the event as is
     """
@@ -324,8 +337,20 @@ def access_token_custom_claims_override(event: event_type.Event) -> event_type.E
     idp_username = event["request"]["userAttributes"]["custom:idp_username"]
     idp_name = event["request"]["userAttributes"]["custom:idp_name"]
 
-    event["response"]["claimsAndScopeOverrideDetails"]["accessTokenGeneration"]["claimsToAddOrOverride"] = {
-        "custom:idp_username": idp_username,
-        "custom:idp_name": idp_name
-    }
+    claimsAndScopeOverrideDetails = event["response"].get("claimsAndScopeOverrideDetails", {})
+    if "accessTokenGeneration" not in claimsAndScopeOverrideDetails:
+        claimsAndScopeOverrideDetails["accessTokenGeneration"] = {
+            "claimsToAddOrOverride": {
+                "custom:idp_username": idp_username,
+                "custom:idp_name": idp_name
+            }
+        }
+    else:
+        claimsAndScopeOverrideDetails["accessTokenGeneration"]["claimsToAddOrOverride"] = {
+            "custom:idp_username": idp_username,
+            "custom:idp_name": idp_name
+        }
+
+    event["response"]["claimsAndScopeOverrideDetails"] = claimsAndScopeOverrideDetails
+
     return event
