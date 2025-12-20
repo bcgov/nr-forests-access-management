@@ -87,7 +87,7 @@ def audit_log(original_func):
                 audit_event_log["requestingUser"]["businessGuid"] = event["request"][
                     "userAttributes"].get("custom:idp_business_id")
             else:
-                # for bc service card login, there is no custom:idp_username mapped, use display name instead, and it is optinal
+                # For BC Service Card login, there is no custom:idp_username mapped, use display name instead, and it is optional
                 audit_event_log["requestingUser"]["idpDisplayName"] = event["request"][
                     "userAttributes"].get("custom:idp_display_name")
 
@@ -95,9 +95,9 @@ def audit_log(original_func):
 
             func_return = original_func(*args, **kwargs)
 
-            # original_function execution was successful, log the change in Cognito event 'groupsToOverride' for user's access roles.
-            audit_event_log["requestingUser"]["accessRoles"] = func_return["response"]["claimsOverrideDetails"][
-                "groupOverrideDetails"]["groupsToOverride"]
+            claims_and_scope = func_return["response"].get("claimsAndScopeOverrideDetails", {})
+            group_override_details = claims_and_scope.get("groupOverrideDetails", {})
+            audit_event_log["requestingUser"]["accessRoles"] = group_override_details.get("groupsToOverride", [])
 
             return func_return
 
