@@ -308,10 +308,11 @@ def access_token_groups_override(db_connection: connection, event: event_type.Ev
             for record in cursor:
                 role_list.append(f"{record[0]}_ADMIN")
 
-    LOGGER.debug(f"access_token_groups_override event: {event}")
-    LOGGER.debug(f"access_token_groups_override event.request: {event['request']}")
-    LOGGER.debug(f"access_token_groups_override event.response before groups override: {event['response']}")
-    claimsAndScopeOverrideDetails = event["response"].get("claimsAndScopeOverrideDetails", {})
+    if event["response"].get("claimsAndScopeOverrideDetails") is None:
+        claimsAndScopeOverrideDetails = {}
+    else:
+        claimsAndScopeOverrideDetails = event["response"]["claimsAndScopeOverrideDetails"]
+
     if "groupOverrideDetails" not in claimsAndScopeOverrideDetails:
         claimsAndScopeOverrideDetails["groupOverrideDetails"] = {
             "groupsToOverride": role_list,
@@ -323,7 +324,7 @@ def access_token_groups_override(db_connection: connection, event: event_type.Ev
 
     event["response"]["claimsAndScopeOverrideDetails"] = claimsAndScopeOverrideDetails
 
-    LOGGER.debug(f"'access_token_groups_override' user's access roles are appended for the token: (access roles: {role_list}).")
+    LOGGER.debug(f"'access_token_groups_override' user's access roles are appended for the token: ({claimsAndScopeOverrideDetails}).")
     return event
 
 
@@ -340,7 +341,11 @@ def access_token_custom_claims_override(event: event_type.Event) -> event_type.E
     idp_username = event["request"]["userAttributes"]["custom:idp_username"]
     idp_name = event["request"]["userAttributes"]["custom:idp_name"]
 
-    claimsAndScopeOverrideDetails = event["response"].get("claimsAndScopeOverrideDetails", {})
+    if event["response"].get("claimsAndScopeOverrideDetails") is None:
+        claimsAndScopeOverrideDetails = {}
+    else:
+        claimsAndScopeOverrideDetails = event["response"]["claimsAndScopeOverrideDetails"]
+
     if "accessTokenGeneration" not in claimsAndScopeOverrideDetails:
         claimsAndScopeOverrideDetails["accessTokenGeneration"] = {
             "claimsToAddOrOverride": {
@@ -356,4 +361,5 @@ def access_token_custom_claims_override(event: event_type.Event) -> event_type.E
 
     event["response"]["claimsAndScopeOverrideDetails"] = claimsAndScopeOverrideDetails
 
+    LOGGER.debug(f"'access_token_custom_claims_override' custom claims are appended for the token: ({claimsAndScopeOverrideDetails}).")
     return event
