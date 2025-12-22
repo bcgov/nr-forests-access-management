@@ -175,7 +175,8 @@ resource "aws_cognito_user_pool" "fam_user_pool" {
       lambda_arn    = aws_lambda_function.fam-auth-function.arn
 
       # FAM Cognito is with "Essential" Feature Plan.
-      # We can set the pre-token generation event version to V2_0 (for better feature support)
+      # V2_0 pre-token generation event version is included in Essential plan with better features.
+      # (e.g., access token customization support)
       lambda_version = "V2_0"
     }
   }
