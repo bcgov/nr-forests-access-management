@@ -229,6 +229,15 @@ def access_token_groups_override(db_connection: connection, event: event_type.Ev
     - claimsAndScopeOverrideDetails.groupOverrideDetails.groupsToOverride
     - ref: https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-pre-token-generation.html
 
+    Roles are fetched from FAM database based on the user info from the event.
+    Roles to be added:
+    1. Standard User Roles:
+       - Source Table: `app_fam.fam_user_role_xref` and `app_fam.fam_role`.
+    2. Admin Roles:
+       If the user logs in through FAM application, check if the user is FAM application admin,
+       if yes, add "FAM_ADMIN" role to the role list.
+       - Source Table: `app_fam.fam_application_admin`.
+
     :param db_connection: Database connection object
     :param event: The cognito event
     :return: Updated event with groups overridden
@@ -324,7 +333,10 @@ def access_token_groups_override(db_connection: connection, event: event_type.Ev
 
     event["response"]["claimsAndScopeOverrideDetails"] = claims_and_scope_override_details
 
-    LOGGER.debug(f"'access_token_groups_override' user's access roles are appended for the token: ({claims_and_scope_override_details}).")
+    LOGGER.debug(
+        "'access_token_groups_override' user's access roles are appended for the token: "
+        f"({claims_and_scope_override_details})."
+    )
     return event
 
 
@@ -333,6 +345,10 @@ def access_token_custom_claims_override(event: event_type.Event) -> event_type.E
     In AWS Lambda version V2_0, the property to override in the response object from custom claims is:
     - claimsAndScopeOverrideDetails.accessTokenGeneration.claimsToAddOrOverride
     - ref: https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-pre-token-generation.html
+
+    Custom claims to be added:
+    - custom:idp_username (e.g., IDIR username and BCEID username, Note: BCSC login has no username)
+    - custom:idp_name (e.g., idir, bceidbusiness, Note, for BCSC, example value - ca.bc.gov.flnr.fam.dev)
 
     :param event ('event_type.Event'): the cognito event
     :return ('event_type.Event'): returns the event as is
@@ -361,5 +377,8 @@ def access_token_custom_claims_override(event: event_type.Event) -> event_type.E
 
     event["response"]["claimsAndScopeOverrideDetails"] = claims_and_scope_override_details
 
-    LOGGER.debug(f"'access_token_custom_claims_override' custom claims are appended for the token: ({claims_and_scope_override_details}).")
+    LOGGER.debug(
+        "'access_token_custom_claims_override' custom claims are appended for the token: "
+        f"({claims_and_scope_override_details})."
+    )
     return event
