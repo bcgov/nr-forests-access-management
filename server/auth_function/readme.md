@@ -34,7 +34,7 @@ during the test run. You need to have dockerd started on your computer.
 sudo dockerd
 cd server/auth_function
 . ./venv/bin/activate
-set -o allexport; source .env.test; set +o allexport
+set -o allexport; source .env.local; set +o allexport
 pytest
 ```
 Note: We need to use master db user(postgres) to run the tests.

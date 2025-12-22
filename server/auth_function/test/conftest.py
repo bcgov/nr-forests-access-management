@@ -32,7 +32,7 @@ def db_pg_container():
 
 def get_local_db_string():
     # read the env file if it exists
-    env_file = os.path.join(os.path.dirname(__file__), "..", "backend", ".env")
+    env_file = os.path.join(os.path.dirname(__file__), ".env")
     if os.path.exists(env_file):
         dotenv.load_dotenv(env_file)
 

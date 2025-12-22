@@ -96,9 +96,9 @@ terraform/tools/output.txt
 # VSCode
 .vscode/
 
-# No env files
+# Ignore all environment files
 *.env
-*.env.bat
+*.env.*
 
 # Ds Store files
 .DS_Store
