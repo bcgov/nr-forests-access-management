@@ -213,6 +213,28 @@ def populate_user_if_necessary(db_connection, event) -> None:
 
 
 def handle_event(db_connection, event) -> event_type.Event:
+    """
+    Will handle the Cognito event and alters the response object as needed for
+    JWT token customization.
+
+    Summary of the v2_0 Cognito Pre-Token Generation trigger event "response"'s override (
+    not all the properties are shown here, only the relevant ones for FAM):
+    {
+        "claimsAndScopeOverrideDetails": {
+            "groupOverrideDetails": {
+                "groupsToOverride": []
+            },
+            "accessTokenGeneration": {
+                "claimsToAddOrOverride": {}
+            }
+        }
+    }
+    Refer to: https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-pre-token-generation.html
+
+    :param db_connection: Database connection object
+    :param event: The cognito event
+    :return: Updated event with necessary overrides
+    """
     # Currently, only access token customization is needed.
     event = access_token_groups_override(db_connection, event)
     event = access_token_custom_claims_override(event)
