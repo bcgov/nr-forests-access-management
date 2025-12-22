@@ -373,9 +373,9 @@ def access_token_custom_claims_override(event: event_type.Event) -> event_type.E
     :param event ('event_type.Event'): the cognito event
     :return ('event_type.Event'): returns the event as is
     """
-    # Extract custom user attributes
-    idp_username = event["request"]["userAttributes"].get("custom:idp_username", "")
-    idp_name = event["request"]["userAttributes"].get("custom:idp_name", "")
+    # Extract custom user attributes with default to empty string
+    idp_username = event["request"]["userAttributes"].get("custom:idp_username", "") or ""
+    idp_name = event["request"]["userAttributes"].get("custom:idp_name", "") or ""
 
     if event["response"].get("claimsAndScopeOverrideDetails") is None:
         claims_and_scope_override_details = {}

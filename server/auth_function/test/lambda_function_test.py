@@ -163,6 +163,7 @@ def test_update_user_if_already_exists(
             {"email": test_email},
         )
 
+
 def __verify_user_with_primary_attributes_found(
     db_pg_transaction,
     test_idp_type_code,
@@ -393,6 +394,7 @@ def test_non_expired_role_returned(
     groups = result["response"]["claimsAndScopeOverrideDetails"]["groupOverrideDetails"]["groupsToOverride"]
     assert TEST_ROLE_NAME in groups
 
+
 @pytest.mark.parametrize(
     "cognito_event",
     [
@@ -415,6 +417,7 @@ def test_null_expiry_role_returned(
     result = lambda_function.lambda_handler(cognito_event, cognito_context)
     groups = result["response"]["claimsAndScopeOverrideDetails"]["groupOverrideDetails"]["groupsToOverride"]
     assert TEST_ROLE_NAME in groups
+
 
 @pytest.mark.parametrize(
     "cognito_event",
@@ -451,27 +454,81 @@ def test_mixed_expiry_roles(
     assert expired_role_name not in groups
 
 
-    @pytest.mark.parametrize(
-        "cognito_event",
-        [
-            "login_event.json",
-        ],
-        indirect=True,
-    )
-    def test_today_expiry_role_returned(
-        db_pg_transaction,
-        cognito_event,
-        cognito_context,
-        initial_user,
-        create_test_fam_role,
-        create_test_fam_cognito_client,
-        create_user_role_xref_record,
-    ):
-        # Assign role with expiry_date set to today (should be returned)
-        bc_tz = ZoneInfo("America/Vancouver")
-        now = datetime.datetime.now(bc_tz)
-        create_test_fam_role()
-        create_user_role_xref_record(expiry_date=now)
-        result = lambda_function.lambda_handler(cognito_event, cognito_context)
-        groups = result["response"]["claimsAndScopeOverrideDetails"]["groupOverrideDetails"]["groupsToOverride"]
-        assert TEST_ROLE_NAME in groups
+@pytest.mark.parametrize(
+    "cognito_event",
+    [
+        "login_event.json",
+    ],
+    indirect=True,
+)
+def test_today_expiry_role_returned(
+    db_pg_transaction,
+    cognito_event,
+    cognito_context,
+    initial_user,
+    create_test_fam_role,
+    create_test_fam_cognito_client,
+    create_user_role_xref_record,
+):
+    # Assign role with expiry_date set to today (should be returned)
+    bc_tz = ZoneInfo("America/Vancouver")
+    now = datetime.datetime.now(bc_tz)
+    create_test_fam_role()
+    create_user_role_xref_record(expiry_date=now)
+    result = lambda_function.lambda_handler(cognito_event, cognito_context)
+    groups = result["response"]["claimsAndScopeOverrideDetails"]["groupOverrideDetails"]["groupsToOverride"]
+    assert TEST_ROLE_NAME in groups
+
+
+@pytest.mark.parametrize(
+    "idp_name, idp_username, expected_claims",
+    [
+        # Test case for IDIR
+        (
+            "idir",
+            "IDIR\\username",
+            {
+                "custom:idp_username": "IDIR\\username",
+                "custom:idp_name": "idir",
+            },
+        ),
+        # Test case for BCeID
+        (
+            "bceidbusiness",
+            "BCEID\\username",
+            {
+                "custom:idp_username": "BCEID\\username",
+                "custom:idp_name": "bceidbusiness",
+            },
+        ),
+        # Test case for BCSC (DEV)
+        (
+            "ca.bc.gov.flnr.fam.dev",
+            None,
+            {
+                "custom:idp_username": "",  # Ensure empty string for idp_username
+                "custom:idp_name": "ca.bc.gov.flnr.fam.dev"
+            },
+        )
+    ],
+)
+def test_access_token_custom_claims_override(idp_name, idp_username, expected_claims):
+    # Mock event
+    event = {
+        "request": {
+            "userAttributes": {
+                "custom:idp_name": idp_name,
+                "custom:idp_username": idp_username,
+            }
+        },
+        "response": {
+            "claimsAndScopeOverrideDetails": {}
+        },
+    }
+
+    updated_event = lambda_function.access_token_custom_claims_override(event)
+
+    # Extract the claims from the response
+    claims = updated_event["response"]["claimsAndScopeOverrideDetails"]["accessTokenGeneration"]["claimsToAddOrOverride"]
+
+    assert claims == expected_claims
