@@ -251,7 +251,7 @@ def test_direct_role_assignment(
 
     # validate that there is one user in the database with the properties from
     # the incoming event
-    override_groups = result["response"]["claimsOverrideDetails"][
+    override_groups = result["response"]["claimsAndScopeOverrideDetails"][
         "groupOverrideDetails"
     ]["groupsToOverride"]
     LOGGER.debug(f"override groups: {override_groups}")
@@ -286,7 +286,7 @@ def test_parent_role_assignment(
     # setup user-role assignment
     create_user_role_xref_record()
     result = lambda_function.lambda_handler(cognito_event, cognito_context)
-    groups = result["response"]["claimsOverrideDetails"]["groupOverrideDetails"][
+    groups = result["response"]["claimsAndScopeOverrideDetails"]["groupOverrideDetails"][
         "groupsToOverride"
     ]
     LOGGER.debug(f"result: {groups}")
@@ -310,7 +310,7 @@ def test_new_user_has_no_roles(db_pg_transaction, cognito_event, cognito_context
     by the migrations.  Should not contain any roles in the result
     """
     result = lambda_function.lambda_handler(cognito_event, cognito_context)
-    groups = result["response"]["claimsOverrideDetails"]["groupOverrideDetails"][
+    groups = result["response"]["claimsAndScopeOverrideDetails"]["groupOverrideDetails"][
         "groupsToOverride"
     ]
     LOGGER.debug(f"groups: {groups}")
@@ -364,7 +364,7 @@ def test_expired_role_not_returned(
     create_test_fam_role()
     create_user_role_xref_record(expiry_date=expired_date)
     result = lambda_function.lambda_handler(cognito_event, cognito_context)
-    groups = result["response"]["claimsOverrideDetails"]["groupOverrideDetails"]["groupsToOverride"]
+    groups = result["response"]["claimsAndScopeOverrideDetails"]["groupOverrideDetails"]["groupsToOverride"]
     assert TEST_ROLE_NAME not in groups
 
 
@@ -390,7 +390,7 @@ def test_non_expired_role_returned(
     create_test_fam_role()
     create_user_role_xref_record(expiry_date=future_date)
     result = lambda_function.lambda_handler(cognito_event, cognito_context)
-    groups = result["response"]["claimsOverrideDetails"]["groupOverrideDetails"]["groupsToOverride"]
+    groups = result["response"]["claimsAndScopeOverrideDetails"]["groupOverrideDetails"]["groupsToOverride"]
     assert TEST_ROLE_NAME in groups
 
 @pytest.mark.parametrize(
@@ -413,7 +413,7 @@ def test_null_expiry_role_returned(
     create_test_fam_role()
     create_user_role_xref_record(expiry_date=None)
     result = lambda_function.lambda_handler(cognito_event, cognito_context)
-    groups = result["response"]["claimsOverrideDetails"]["groupOverrideDetails"]["groupsToOverride"]
+    groups = result["response"]["claimsAndScopeOverrideDetails"]["groupOverrideDetails"]["groupsToOverride"]
     assert TEST_ROLE_NAME in groups
 
 @pytest.mark.parametrize(
@@ -446,7 +446,7 @@ def test_mixed_expiry_roles(
     create_user_role_xref_record(role_name=TEST_ROLE_NAME, expiry_date=future_date)
 
     result = lambda_function.lambda_handler(cognito_event, cognito_context)
-    groups = result["response"]["claimsOverrideDetails"]["groupOverrideDetails"]["groupsToOverride"]
+    groups = result["response"]["claimsAndScopeOverrideDetails"]["groupOverrideDetails"]["groupsToOverride"]
     assert TEST_ROLE_NAME in groups
     assert expired_role_name not in groups
 
@@ -473,5 +473,5 @@ def test_mixed_expiry_roles(
         create_test_fam_role()
         create_user_role_xref_record(expiry_date=now)
         result = lambda_function.lambda_handler(cognito_event, cognito_context)
-        groups = result["response"]["claimsOverrideDetails"]["groupOverrideDetails"]["groupsToOverride"]
+        groups = result["response"]["claimsAndScopeOverrideDetails"]["groupOverrideDetails"]["groupsToOverride"]
         assert TEST_ROLE_NAME in groups
