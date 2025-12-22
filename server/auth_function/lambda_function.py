@@ -74,16 +74,14 @@ def audit_log(original_func):
             event = args[0]  # First argument is the event
             audit_event_log["cognitoApplicationId"] = event["callerContext"]["clientId"]
             audit_event_log["requestingUser"]["userGuid"] = event["request"]["userAttributes"]["custom:idp_user_id"]
-            audit_event_log["requestingUser"]["userType"] = USER_TYPE_CODE_DICT[
-                event["request"]["userAttributes"]["custom:idp_name"]
-            ]
+            audit_event_log["requestingUser"]["userType"] = USER_TYPE_CODE_DICT.get(
+                event["request"]["userAttributes"].get("custom:idp_name", ""), ""
+            )
 
             if audit_event_log["requestingUser"]["userType"] == USER_TYPE_IDIR:
-                audit_event_log["requestingUser"]["idpUserName"] = event["request"]["userAttributes"][
-                    "custom:idp_username"]
+                audit_event_log["requestingUser"]["idpUserName"] = event["request"]["userAttributes"].get("custom:idp_username", "")
             elif audit_event_log["requestingUser"]["userType"] == USER_TYPE_BCEID_BUSINESS:
-                audit_event_log["requestingUser"]["idpUserName"] = event["request"]["userAttributes"][
-                    "custom:idp_username"]
+                audit_event_log["requestingUser"]["idpUserName"] = event["request"]["userAttributes"].get("custom:idp_username", "")
                 audit_event_log["requestingUser"]["businessGuid"] = event["request"][
                     "userAttributes"].get("custom:idp_business_id")
             else:
@@ -158,7 +156,7 @@ def populate_user_if_necessary(db_connection, event) -> None:
     in the authZ database.  If the user does not exist then the user is
     added to the database"""
 
-    user_type = event["request"]["userAttributes"]["custom:idp_name"]
+    user_type = event["request"]["userAttributes"].get("custom:idp_name", "")
     user_guid = event["request"]["userAttributes"]["custom:idp_user_id"]
     business_guid = event["request"]["userAttributes"].get(
         "custom:idp_business_id"
@@ -170,7 +168,7 @@ def populate_user_if_necessary(db_connection, event) -> None:
     if user_type_code in [USER_TYPE_BCSC_DEV, USER_TYPE_BCSC_TEST, USER_TYPE_BCSC_PROD]:
         user_name = user_guid
     else:
-        user_name = event["request"]["userAttributes"]["custom:idp_username"]
+        user_name = event["request"]["userAttributes"].get("custom:idp_username", "")
 
     LOGGER.debug(f"'populate_user_if_necessary': (user_name: {user_name}, user_type_code: {user_type_code}, "
                  f"user_guid: {user_guid}, business_guid: {business_guid}, email: {email})")
@@ -266,9 +264,9 @@ def access_token_groups_override(db_connection: connection, event: event_type.Ev
         AND client.cognito_client_id = {cognito_client_id};
     """
     user_guid = event["request"]["userAttributes"]["custom:idp_user_id"]
-    user_type_code = USER_TYPE_CODE_DICT[
-        event["request"]["userAttributes"]["custom:idp_name"]
-    ]
+    user_type_code = USER_TYPE_CODE_DICT.get(
+        event["request"]["userAttributes"].get("custom:idp_name", ""), ""
+    )
     cognito_client_id = event["callerContext"]["clientId"]
 
     sql_query = sql.SQL(query).format(
@@ -354,8 +352,8 @@ def access_token_custom_claims_override(event: event_type.Event) -> event_type.E
     :return ('event_type.Event'): returns the event as is
     """
     # Extract custom user attributes
-    idp_username = event["request"]["userAttributes"]["custom:idp_username"]
-    idp_name = event["request"]["userAttributes"]["custom:idp_name"]
+    idp_username = event["request"]["userAttributes"].get("custom:idp_username", "")
+    idp_name = event["request"]["userAttributes"].get("custom:idp_name", "")
 
     if event["response"].get("claimsAndScopeOverrideDetails") is None:
         claims_and_scope_override_details = {}
