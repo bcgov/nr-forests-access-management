@@ -29,10 +29,19 @@
         }
     },
     "response": {
-        "claimsOverrideDetails": null
+        "claimsAndScopeOverrideDetails": {
+            "groupOverrideDetails": {
+                "groupsToOverride": [],
+                "iamRolesToOverride": [],
+                "preferredRole": ""
+            },
+            "accessTokenGeneration": {
+                "claimsToAddOrOverride": {}
+            }
+        }
     },
     "triggerSource": "TokenGeneration_HostedAuth",
     "userName": "idir_b5ecdb094dfb4149a6a8445a0mangled@idir",
     "userPoolId": "ca-central-1_ixb69p4hq",
-    "version": "1"
+    "version": "2"
 }

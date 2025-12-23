@@ -10,6 +10,7 @@ import config
 import event_type
 import psycopg2
 from psycopg2 import sql
+from psycopg2.extensions import connection
 
 # seeing as a simple lambda function, use a simple fileconfig for the audit logging
 # config, and setting up manually if the function is called directly
@@ -73,20 +74,18 @@ def audit_log(original_func):
             event = args[0]  # First argument is the event
             audit_event_log["cognitoApplicationId"] = event["callerContext"]["clientId"]
             audit_event_log["requestingUser"]["userGuid"] = event["request"]["userAttributes"]["custom:idp_user_id"]
-            audit_event_log["requestingUser"]["userType"] = USER_TYPE_CODE_DICT[
-                event["request"]["userAttributes"]["custom:idp_name"]
-            ]
+            audit_event_log["requestingUser"]["userType"] = USER_TYPE_CODE_DICT.get(
+                event["request"]["userAttributes"].get("custom:idp_name", ""), ""
+            )
 
             if audit_event_log["requestingUser"]["userType"] == USER_TYPE_IDIR:
-                audit_event_log["requestingUser"]["idpUserName"] = event["request"]["userAttributes"][
-                    "custom:idp_username"]
+                audit_event_log["requestingUser"]["idpUserName"] = event["request"]["userAttributes"].get("custom:idp_username", "")
             elif audit_event_log["requestingUser"]["userType"] == USER_TYPE_BCEID_BUSINESS:
-                audit_event_log["requestingUser"]["idpUserName"] = event["request"]["userAttributes"][
-                    "custom:idp_username"]
+                audit_event_log["requestingUser"]["idpUserName"] = event["request"]["userAttributes"].get("custom:idp_username", "")
                 audit_event_log["requestingUser"]["businessGuid"] = event["request"][
                     "userAttributes"].get("custom:idp_business_id")
             else:
-                # for bc service card login, there is no custom:idp_username mapped, use display name instead, and it is optinal
+                # For BC Service Card login, there is no custom:idp_username mapped, use display name instead, and it is optional
                 audit_event_log["requestingUser"]["idpDisplayName"] = event["request"][
                     "userAttributes"].get("custom:idp_display_name")
 
@@ -94,9 +93,9 @@ def audit_log(original_func):
 
             func_return = original_func(*args, **kwargs)
 
-            # original_function execution was successful, log the change in Cognito event 'groupsToOverride' for user's access roles.
-            audit_event_log["requestingUser"]["accessRoles"] = func_return["response"]["claimsOverrideDetails"][
-                "groupOverrideDetails"]["groupsToOverride"]
+            claims_and_scope = func_return["response"].get("claimsAndScopeOverrideDetails", {})
+            group_override_details = claims_and_scope.get("groupOverrideDetails", {})
+            audit_event_log["requestingUser"]["accessRoles"] = group_override_details.get("groupsToOverride", [])
 
             return func_return
 
@@ -114,15 +113,9 @@ def audit_log(original_func):
 @audit_log
 def lambda_handler(event: event_type.Event, context: Any) -> event_type.Event:
     """recieves a cognito event object, checks to see if the user associated
-    with the event exists in the database.  If not it gets added.  Finally
+    with the event exists in the database. If not it gets added. Finally
     the roles associated with the user are retrieved and used to populate the
-    cognito event objects property:
-
-    response.claimsOverrideDetails.groupOverrideDetails {
-        groupsToOverride: [<role are injected here>]
-        iamRolesToOverride: [],
-        preferredRole": ""
-    }
+    cognito event objects property.
 
     :param event: the cognito event
     :type event: event_type.Event
@@ -135,7 +128,7 @@ def lambda_handler(event: event_type.Event, context: Any) -> event_type.Event:
     All applications should be configured with user attributes: "custom:idp_name", "custom:idp_user_id", "custom:idp_username"
     """
     LOGGER.debug(f"context: {context}")
-    LOGGER.debug(f"event: {event}")
+    LOGGER.debug(f"event - {event.get("version", "V1_0")}: {event}")
 
     db_connection = obtain_db_connection()
     populate_user_if_necessary(db_connection, event)
@@ -163,7 +156,7 @@ def populate_user_if_necessary(db_connection, event) -> None:
     in the authZ database.  If the user does not exist then the user is
     added to the database"""
 
-    user_type = event["request"]["userAttributes"]["custom:idp_name"]
+    user_type = event["request"]["userAttributes"].get("custom:idp_name", "")
     user_guid = event["request"]["userAttributes"]["custom:idp_user_id"]
     business_guid = event["request"]["userAttributes"].get(
         "custom:idp_business_id"
@@ -175,7 +168,7 @@ def populate_user_if_necessary(db_connection, event) -> None:
     if user_type_code in [USER_TYPE_BCSC_DEV, USER_TYPE_BCSC_TEST, USER_TYPE_BCSC_PROD]:
         user_name = user_guid
     else:
-        user_name = event["request"]["userAttributes"]["custom:idp_username"]
+        user_name = event["request"]["userAttributes"].get("custom:idp_username", "")
 
     LOGGER.debug(f"'populate_user_if_necessary': (user_name: {user_name}, user_type_code: {user_type_code}, "
                  f"user_guid: {user_guid}, business_guid: {business_guid}, email: {email})")
@@ -220,10 +213,55 @@ def populate_user_if_necessary(db_connection, event) -> None:
 
 
 def handle_event(db_connection, event) -> event_type.Event:
-    """Queries the auth database for the roles associated with the user
-    that is described in the cognito event, the function then populates
-    the roles into the event object and returns it."""
+    """
+    Will handle the Cognito event and alters the response object as needed for
+    JWT token customization.
 
+    Summary of the v2_0 Cognito Pre-Token Generation trigger event "response"'s override (
+    not all the properties are shown here, only the relevant ones for FAM):
+    {
+        "claimsAndScopeOverrideDetails": {
+            "groupOverrideDetails": {
+                "groupsToOverride": []
+            },
+            "accessTokenGeneration": {
+                "claimsToAddOrOverride": {}
+            }
+        }
+    }
+    Refer to: https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-pre-token-generation.html
+
+    :param db_connection: Database connection object
+    :param event: The cognito event
+    :return: Updated event with necessary overrides
+    """
+    # Currently, only access token customization is needed.
+    event = access_token_groups_override(db_connection, event)
+    event = access_token_custom_claims_override(event)
+
+    return event
+
+
+def access_token_groups_override(db_connection: connection, event: event_type.Event) -> event_type.Event:
+    """ Custom user groups to be added to access token.
+
+    In AWS Lambda version V2_0, the property to override in the response object for groups is:
+    - claimsAndScopeOverrideDetails.groupOverrideDetails.groupsToOverride
+    - ref: https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-pre-token-generation.html
+
+    Roles are fetched from FAM database based on the user info from the event.
+    Roles to be added:
+    1. Standard User Roles:
+       - Source Table: `app_fam.fam_user_role_xref` and `app_fam.fam_role`.
+    2. Admin Roles:
+       If the user logs in through FAM application, check if the user is FAM application admin,
+       if yes, add "FAM_ADMIN" role to the role list.
+       - Source Table: `app_fam.fam_application_admin`.
+
+    :param db_connection: Database connection object
+    :param event: The cognito event
+    :return: Updated event with groups overridden
+    """
     cursor = db_connection.cursor()
     query = """
     SELECT
@@ -248,13 +286,10 @@ def handle_event(db_connection, event) -> event_type.Event:
         AND client.cognito_client_id = {cognito_client_id};
     """
     user_guid = event["request"]["userAttributes"]["custom:idp_user_id"]
-    user_type_code = USER_TYPE_CODE_DICT[
-        event["request"]["userAttributes"]["custom:idp_name"]
-    ]
+    user_type_code = USER_TYPE_CODE_DICT.get(
+        event["request"]["userAttributes"].get("custom:idp_name", ""), ""
+    )
     cognito_client_id = event["callerContext"]["clientId"]
-
-    LOGGER.debug(f"'handle_event' with user's attributes: (user_guid: {user_guid}, user_type_code: {user_type_code}, "
-                 f"cognito_client_id: {cognito_client_id}) to get access roles for the user.")
 
     sql_query = sql.SQL(query).format(
         user_guid=sql.Literal(user_guid),
@@ -302,14 +337,68 @@ def handle_event(db_connection, event) -> event_type.Event:
             for record in cursor:
                 role_list.append(f"{record[0]}_ADMIN")
 
-    event["response"]["claimsOverrideDetails"] = {
-        "groupOverrideDetails": {
+    if event["response"].get("claimsAndScopeOverrideDetails") is None:
+        claims_and_scope_override_details = {}
+    else:
+        claims_and_scope_override_details = event["response"]["claimsAndScopeOverrideDetails"]
+
+    if "groupOverrideDetails" not in claims_and_scope_override_details:
+        claims_and_scope_override_details["groupOverrideDetails"] = {
             "groupsToOverride": role_list,
             "iamRolesToOverride": [],
-            "preferredRole": "",
+            "preferredRole": ""
         }
-    }
+    else:
+        claims_and_scope_override_details["groupOverrideDetails"]["groupsToOverride"] = role_list
 
-    LOGGER.debug(f"'handle_event' user's access roles are appended for the token: (access roles: {role_list}).")
+    event["response"]["claimsAndScopeOverrideDetails"] = claims_and_scope_override_details
 
+    LOGGER.debug(
+        "'access_token_groups_override' user's access roles are appended for the token: "
+        f"({claims_and_scope_override_details})."
+    )
+    return event
+
+
+def access_token_custom_claims_override(event: event_type.Event) -> event_type.Event:
+    """ Custom user attributes to be added to access token.
+    In AWS Lambda version V2_0, the property to override in the response object from custom claims is:
+    - claimsAndScopeOverrideDetails.accessTokenGeneration.claimsToAddOrOverride
+    - ref: https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-pre-token-generation.html
+
+    Custom claims to be added:
+    - custom:idp_username (e.g., IDIR username and BCEID username, Note: BCSC login has no username)
+    - custom:idp_name (e.g., idir, bceidbusiness, Note, for BCSC, example value - ca.bc.gov.flnr.fam.dev)
+
+    :param event ('event_type.Event'): the cognito event
+    :return ('event_type.Event'): returns the event as is
+    """
+    # Extract custom user attributes with default to empty string
+    idp_username = event["request"]["userAttributes"].get("custom:idp_username", "") or ""
+    idp_name = event["request"]["userAttributes"].get("custom:idp_name", "") or ""
+
+    if event["response"].get("claimsAndScopeOverrideDetails") is None:
+        claims_and_scope_override_details = {}
+    else:
+        claims_and_scope_override_details = event["response"]["claimsAndScopeOverrideDetails"]
+
+    if "accessTokenGeneration" not in claims_and_scope_override_details:
+        claims_and_scope_override_details["accessTokenGeneration"] = {
+            "claimsToAddOrOverride": {
+                "custom:idp_username": idp_username,
+                "custom:idp_name": idp_name
+            }
+        }
+    else:
+        claims_and_scope_override_details["accessTokenGeneration"]["claimsToAddOrOverride"] = {
+            "custom:idp_username": idp_username,
+            "custom:idp_name": idp_name
+        }
+
+    event["response"]["claimsAndScopeOverrideDetails"] = claims_and_scope_override_details
+
+    LOGGER.debug(
+        "'access_token_custom_claims_override' custom claims are appended for the token: "
+        f"({claims_and_scope_override_details})."
+    )
     return event

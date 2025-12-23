@@ -22,10 +22,19 @@
         }
     },
     "response": {
-        "claimsOverrideDetails": null
+        "claimsAndScopeOverrideDetails": {
+            "groupOverrideDetails": {
+                "groupsToOverride": [],
+                "iamRolesToOverride": [],
+                "preferredRole": ""
+            },
+            "accessTokenGeneration": {
+                "claimsToAddOrOverride": {}
+            }
+        }
     },
     "triggerSource": "TokenGeneration_HostedAuth",
     "userName": "test-bceidbusiness_81069F39B35B4861BCD01058mangled2B63B112@bceidbusiness",
     "userPoolId": "ca-central-1_p8X8GdjKW",
-    "version": "1"
+    "version": "2"
 }

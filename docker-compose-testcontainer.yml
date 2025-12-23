@@ -9,9 +9,9 @@ services:
       service: fam-database
     container_name: fam-postgres-testcontainer
     environment:
-      - PGPORT=${POSTGRES_PORT_TESTCONTAINER}  # the easiest way to change postgres db default port from '5432' to PGPORT.
+      - PGPORT=${POSTGRES_PORT_TESTCONTAINER:-5433}  # the easiest way to change postgres db default port from '5432' to PGPORT.
     ports:
-      - "${POSTGRES_PORT_TESTCONTAINER}:${POSTGRES_PORT_TESTCONTAINER}"  # use host-port: POSTGRES_PORT_TESTCONTAINER ='5433' for testcontainer db instance than '5432' for main db.
+      - "${POSTGRES_PORT_TESTCONTAINER:-5433}:${POSTGRES_PORT_TESTCONTAINER:-5433}"  # use host-port: POSTGRES_PORT_TESTCONTAINER ='5433' for testcontainer db instance than '5432' for main db.
 
   fam-flyway-testcontainer:
     extends:
