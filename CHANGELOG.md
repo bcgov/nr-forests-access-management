@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.5.0](https://github.com/bcgov/nr-forests-access-management/compare/v2.4.0...v2.5.0) (2025-12-23)
+
+
+### Features
+
+* [#2037](https://github.com/bcgov/nr-forests-access-management/issues/2037) Access Token Enhancement ([#2055](https://github.com/bcgov/nr-forests-access-management/issues/2055)) ([eaaed96](https://github.com/bcgov/nr-forests-access-management/commit/eaaed9638ba7141fa80bab43345bc41bd664e37c))
+
 ## [2.4.0](https://github.com/bcgov/nr-forests-access-management/compare/v2.3.0...v2.4.0) (2025-12-18)
 
 
