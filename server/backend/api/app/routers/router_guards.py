@@ -1,3 +1,4 @@
+from api.app.validators.target_user_validators import validate_verified_target_users
 import logging
 from http import HTTPStatus
 from typing import List
@@ -281,72 +282,85 @@ async def authorize_by_privilege(
 # that need this). Specifically: "user_role_xref_id" and
 # "user_name/user_type_code".
 # Very likely in future might have "cognito_user_id" case.
-async def get_target_user_from_id(
+async def get_target_users_from_ids(
     request: Request, db: Session = Depends(database.get_db)
-) -> TargetUserSchema:
+) -> list[TargetUserSchema]:
     """
-    This is used as FastAPI sub-dependency to find target_user for guard purpose.
-    Please note that the TargetUserSchema inputs hasn't been validated yet. Need to call get_verified_target_user to validate the TargetUserSchema.
-    For RequesterSchema, use "get_current_requester()" above.
+    FastAPI dependency to extract target users for guard purposes.
+    Note, it will call IDIM service to verify user existence for each target user.
+    For Requesting user, use "get_current_requester" dependency.
+
+    Request field convention:
+    - For a single user: request body should be a dict with keys 'user_name', 'user_type_code', 'user_guid'.
+    - For multiple users: request body should contain a 'target_users' key with a list of user dicts.
+      Example:
+          {
+              "target_users": [
+                  {"user_name": "jdoe", "user_type_code": "IDIR", "user_guid": "abc-123"},
+                  {"user_name": "asmith", "user_type_code": "BCEID", "user_guid": "def-456"}
+              ]
+          }
+    The method will always return a list of TargetUserSchema objects.
     """
-    # from path_param - "user_role_xref_id"; should exists already in db.
+    target_users = []
+    # from path_param - "user_role_xref_id"; should exist already in db.
     if "user_role_xref_id" in request.path_params:
         urxid = request.path_params["user_role_xref_id"]
         LOGGER.debug(
-            "Dependency 'get_target_user_from_id' called with "
+            "Dependency 'get_target_users_from_ids' called with "
             + f"request containing user_role_xref_id path param {urxid}."
         )
         user_role = crud_user_role.find_by_id(db, urxid)
         if user_role is not None:
             found_target_user = TargetUserSchema.model_validate(user_role.user)
-            return found_target_user
+            target_users.append(found_target_user)
         else:
             error_msg = "Parameter 'user_role_xref_id' is missing or invalid."
             utils.raise_http_exception(
                 error_code=ERROR_CODE_INVALID_REQUEST_PARAMETER, error_msg=error_msg
             )
-
     else:
-        # from request body - {user_name/user_type_code}
+        # from request body - support single or multiple users
         rbody = await request.json()
         LOGGER.debug(
-            "Dependency 'get_target_user_from_id' called with "
+            "Dependency 'get_target_users_from_ids' called with "
             + f"request body {rbody}."
         )
-        target_new_user = TargetUserSchema.model_validate(
-            {
-                "user_name": rbody["user_name"],
-                "user_type_code": rbody["user_type_code"],
-                "user_guid": rbody["user_guid"],
-            }
-        )
-        return target_new_user
+        # Accept either a single user dict or a list of user dicts
+        user_items = rbody.get("target_users") or [rbody]
+        for user_item in user_items:
+            target_user = TargetUserSchema.model_validate({
+                "user_name": user_item["user_name"],
+                "user_type_code": user_item["user_type_code"],
+                "user_guid": user_item["user_guid"],
+            })
+            target_users.append(target_user)
+    return target_users
 
 
 def authorize_by_user_type(
     requester: RequesterSchema = Depends(get_current_requester),
-    target_user: TargetUserSchema = Depends(get_target_user_from_id),
+    target_users: list[TargetUserSchema] = Depends(get_target_users_from_ids),
 ):
     """
-    This authorize_by_user_type method is used to forbidden business bceid user manage idir user's access
+    This authorize_by_user_type method is used to forbid business bceid user managing idir user's access.
     """
     if requester.user_type_code == UserType.BCEID:
-        target_user_type_code = target_user.user_type_code
-
-        if not target_user_type_code:
-            error_msg = "Operation encountered unexpected error. Target user user_type code is missing."
-            utils.raise_http_exception(
-                status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
-                error_code=ERROR_CODE_MISSING_KEY_ATTRIBUTE,
-                error_msg=error_msg,
-            )
-
-        if target_user_type_code == UserType.IDIR:
-            utils.raise_http_exception(
-                status_code=HTTPStatus.FORBIDDEN,
-                error_code=ERROR_PERMISSION_REQUIRED,
-                error_msg="Business BCEID requester has no privilege to grant this access to IDIR user.",
-            )
+        for target_user in target_users:
+            target_user_type_code = target_user.user_type_code
+            if not target_user_type_code:
+                error_msg = "Operation encountered unexpected error. Target user user_type code is missing."
+                utils.raise_http_exception(
+                    status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+                    error_code=ERROR_CODE_MISSING_KEY_ATTRIBUTE,
+                    error_msg=error_msg,
+                )
+            if target_user_type_code == UserType.IDIR:
+                utils.raise_http_exception(
+                    status_code=HTTPStatus.FORBIDDEN,
+                    error_code=ERROR_PERMISSION_REQUIRED,
+                    error_msg="Business BCEID requester has no privilege to grant this access to IDIR user.",
+                )
 
 
 def internal_only_action(
@@ -376,45 +390,44 @@ def external_delegated_admin_only_action(
 def enforce_self_grant_guard(
     _enforce_fam_access_validated = Depends(enforce_fam_client_token),
     requester: RequesterSchema = Depends(get_current_requester),
-    target_user: TargetUserSchema = Depends(get_target_user_from_id),
+    target_users: list[TargetUserSchema] = Depends(get_target_users_from_ids),
 ):
     """
     Verify logged on admin (RequesterSchema):
         Self granting/removing privilege currently isn't allowed.
+        Supports multi-user: checks all target users in the list.
     """
     LOGGER.debug(f"enforce_self_grant_guard: requester - {requester}")
-    LOGGER.debug(f"enforce_self_grant_guard: target_user - {target_user}")
+    LOGGER.debug(f"enforce_self_grant_guard: target_users - {target_users}")
 
-    if (
-        requester.user_type_code == target_user.user_type_code
-        and requester.user_guid == target_user.user_guid
-    ):
-        LOGGER.debug(
-            f"User '{requester.user_name}' should not "
-            f"grant/remove permission privilege to self."
-        )
-        utils.raise_http_exception(
-            status_code=HTTPStatus.FORBIDDEN,
-            error_code=ERROR_CODE_SELF_GRANT_PROHIBITED,
-            error_msg="Altering permission privilege to self is not allowed.",
-        )
+    for target_user in target_users:
+        if (
+            requester.user_type_code == target_user.user_type_code
+            and requester.user_guid == target_user.user_guid
+        ):
+            LOGGER.debug(
+                f"User '{requester.user_name}' should not "
+                f"grant/remove permission privilege to self."
+            )
+            utils.raise_http_exception(
+                status_code=HTTPStatus.FORBIDDEN,
+                error_code=ERROR_CODE_SELF_GRANT_PROHIBITED,
+                error_msg="Altering permission privilege to self is not allowed.",
+            )
 
 
-def get_verified_target_user(
+
+def get_verified_target_users(
     _enforce_fam_access_validated = Depends(enforce_fam_client_token),
     requester: RequesterSchema = Depends(get_current_requester),
-    target_user: TargetUserSchema = Depends(get_target_user_from_id),
+    target_users: list[TargetUserSchema] = Depends(get_target_users_from_ids),
     role: FamRole = Depends(get_request_role_from_id),
-) -> TargetUserSchema:
+) -> list[TargetUserSchema]:
     """
-    Validate the target user by calling IDIM web service, and update business Guid for the found BCeID user
+    Validate a list of target users by calling IDIM web service, and update business Guid for the found BCeID users.
+    Returns a list of verified TargetUserSchema objects. Raises on any invalid user.
     """
-    LOGGER.debug(f"For application operation on: {role.application}")
-    api_instance_env = crud_utils.use_api_instance_by_app(role.application)
-    target_user_validator = TargetUserValidator(
-        requester, target_user, api_instance_env
-    )
-    return target_user_validator.verify_user_exist()
+    return validate_verified_target_users(requester, target_users, role)
 
 
 async def enforce_bceid_by_same_org_guard(
@@ -422,7 +435,7 @@ async def enforce_bceid_by_same_org_guard(
     _enforce_fam_access_validated = Depends(enforce_fam_client_token),
     _enforce_user_type_auth: None = Depends(authorize_by_user_type),
     requester: RequesterSchema = Depends(get_current_requester),
-    target_user: TargetUserSchema = Depends(get_target_user_from_id),
+    target_users: list[TargetUserSchema] = Depends(get_target_users_from_ids),
     role: FamRole = Depends(get_request_role_from_id),
 ):
     """
@@ -450,35 +463,36 @@ async def enforce_bceid_by_same_org_guard(
     )
 
     if requester.user_type_code == UserType.BCEID:
-        try:
-            target_user = get_verified_target_user(requester=requester, target_user=target_user, role=role)
-        except Exception as e:
-            LOGGER.error(f"Target user could not be verified: {e}.")
+        requester_business_guid = requester.business_guid
+        validation_result = validate_verified_target_users(requester, target_users, role)
+        if validation_result.failed_users:
             app_name = role.application.application_name
-            error_msg = f"Unable to verify user {target_user.user_name}. Please contact {app_name} administrator for the action."
+            failed_names = ', '.join([u.user_name for u in validation_result.failed_users])
+            error_msg = f"Unable to verify the following users: {failed_names}. Please contact {app_name} administrator for the action."
+            LOGGER.error(error_msg)
             utils.raise_http_exception(
                 status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
                 error_code=ERROR_CODE_UNKNOWN_STATE,
                 error_msg=error_msg,
             )
 
-        requester_business_guid = requester.business_guid
-        target_user_business_guid = target_user.business_guid
+        for verified_target_user in validation_result.verified_users:
+            target_user_business_guid = verified_target_user.business_guid
 
-        if requester_business_guid is None or target_user_business_guid is None:
-            error_msg = "Operation encountered unexpected error. requester or target user business GUID is missing."
-            utils.raise_http_exception(
-                status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
-                error_code=ERROR_CODE_MISSING_KEY_ATTRIBUTE,
-                error_msg=error_msg,
-            )
+            if requester_business_guid is None or target_user_business_guid is None:
+                error_msg = "Operation encountered unexpected error. requester or target user business GUID is missing."
+                utils.raise_http_exception(
+                    status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+                    error_code=ERROR_CODE_MISSING_KEY_ATTRIBUTE,
+                    error_msg=error_msg,
+                )
 
-        elif requester_business_guid.upper() != target_user_business_guid.upper():
-            utils.raise_http_exception(
-                status_code=HTTPStatus.FORBIDDEN,
-                error_code=ERROR_CODE_DIFFERENT_ORG_GRANT_PROHIBITED,
-                error_msg="Managing for different organization is not allowed.",
-            )
+            if requester_business_guid.upper() != target_user_business_guid.upper():
+                utils.raise_http_exception(
+                    status_code=HTTPStatus.FORBIDDEN,
+                    error_code=ERROR_CODE_DIFFERENT_ORG_GRANT_PROHIBITED,
+                    error_msg="Managing for different organization is not allowed.",
+                )
 
 
 def enforce_bceid_terms_conditions_guard(

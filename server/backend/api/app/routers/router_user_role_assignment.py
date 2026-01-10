@@ -7,10 +7,11 @@ from api.app.routers.router_guards import (
     authorize_by_application_role, authorize_by_privilege,
     authorize_by_user_type, enforce_bceid_by_same_org_guard,
     enforce_bceid_terms_conditions_guard, enforce_self_grant_guard,
-    get_current_requester, get_verified_target_user)
+    get_current_requester, get_verified_target_users)
 from api.app.schemas import (FamUserRoleAssignmentCreateSchema,
                              FamUserRoleAssignmentRes, RequesterSchema,
                              TargetUserSchema)
+from api.app.schemas.target_user_validation_result import TargetUserValidationResultSchema
 from api.app.utils.audit_util import (AuditEventLog, AuditEventOutcome,
                                       AuditEventType)
 from fastapi import APIRouter, Depends, Request, Response
@@ -51,7 +52,7 @@ def create_user_role_assignment_many(
     db: Session = Depends(database.get_db),
     token_claims: dict = Depends(jwt_validation.enforce_fam_client_token),
     requester: RequesterSchema = Depends(get_current_requester),
-    target_user: TargetUserSchema = Depends(get_verified_target_user),
+    target_users: TargetUserValidationResultSchema = Depends(get_verified_target_users),
 ):
     """
     Create FAM user_role_xref association.
@@ -79,7 +80,7 @@ def create_user_role_assignment_many(
         assignments_detail = crud_user_role.create_user_role_assignment_many(
             db,
             role_assignment_request,
-            target_user,
+            target_users.verified_users[0],
             requester,
         )
         response = FamUserRoleAssignmentRes(assignments_detail=assignments_detail)
@@ -98,7 +99,7 @@ def create_user_role_assignment_many(
         # sending user notification after event is finished.
         if role_assignment_request.requires_send_user_email:
             response.email_sending_status = crud_user_role.send_user_access_granted_email(
-                target_user=target_user,
+                target_user=target_users.verified_users[0],
                 roles_assignment_responses=response.assignments_detail
             )
 
@@ -114,10 +115,10 @@ def create_user_role_assignment_many(
         # if failed to get target user from database, use the information from request
         if audit_event_log.target_user is None:
             audit_event_log.target_user = FamUser(
-                user_type_code=target_user.user_type_code,
-                user_name=target_user.user_name,
-                user_guid=target_user.user_guid,
-                cognito_user_id=target_user.cognito_user_id,
+                user_type_code=target_users.verified_users[0].user_type_code,
+                user_name=target_users.verified_users[0].user_name,
+                user_guid=target_users.verified_users[0].user_guid,
+                cognito_user_id=target_users.verified_users[0].cognito_user_id,
             )
         audit_event_log.log_event()
 
