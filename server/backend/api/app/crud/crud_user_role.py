@@ -7,6 +7,7 @@ from api.app import constants as famConstants
 from api.app.crud import crud_forest_client, crud_role, crud_user, crud_utils
 from api.app.crud.services.permission_audit_service import \
     PermissionAuditService
+from api.app.crud.validator.user_role_assignment_validator import validate_request_type, validate_bceid_same_org_users
 from api.app.crud.validator.forest_client_validator import (
     forest_client_active, forest_client_number_exists,
     get_forest_client_status)
@@ -24,8 +25,9 @@ from api.app.schemas.fam_forest_client import FamForestClientSchema
 from api.app.schemas.forest_client_integration import \
     ForestClientIntegrationSearchParmsSchema
 from api.app.schemas.requester import RequesterSchema
-from api.app.utils.utils import raise_http_exception
+from api.app.crud.validator.user_role_assignment_validator import validate_request_type
 from sqlalchemy.orm import Session
+from api.app.utils.utils import raise_http_exception
 
 LOGGER = logging.getLogger(__name__)
 
@@ -47,11 +49,8 @@ def create_user_role_assignment_many(
     """
     LOGGER.debug(f"Request for user role assignment: {request}.")
 
-    # Verify user_type_code in enum (IDIR, BCEID)
-    if (
-        request.user_type_code != famConstants.UserType.IDIR
-        and request.user_type_code != famConstants.UserType.BCEID
-    ):
+    # Validate valid request user_type_code
+    if not validate_request_type(request):
         error_msg = f"Invalid user type: {request.user_type_code}."
         raise_http_exception(
             error_code=famConstants.ERROR_CODE_INVALID_REQUEST_PARAMETER,
@@ -72,16 +71,28 @@ def create_user_role_assignment_many(
         + f"({fam_role.role_id})."
     )
 
+    new_user_permission_granted_list: List[FamUserRoleAssignmentCreateRes] = []
+
+    # BCEID same-org validation (if applicable)
+    valid_users, failed_bceid_users = validate_bceid_same_org_users(
+        requester, verified_users, request.user_type_code
+    )
+
+    # Add failed BCEID users to response
+    for user, reason in failed_bceid_users:
+        new_user_permission_granted_list.append(FamUserRoleAssignmentCreateRes(
+            status_code=HTTPStatus.BAD_REQUEST,
+            detail=famConstants.ERROR_CODE_DIFFERENT_ORG_GRANT_PROHIBITED,
+            error_message=f"BCEID user '{user.user_name}' failed same-organization validation: {reason}",
+        ))
+
     require_child_role = (
         fam_role.role_type_code == famConstants.RoleType.ROLE_TYPE_ABSTRACT
     )
 
-    new_user_permission_granted_list: List[FamUserRoleAssignmentCreateRes] = []
-
-    # Iterate over all verified users
-    for target_user in verified_users:
+    # Iterate over valid users
+    for target_user in valid_users:
         try:
-            # Determine if user already exists or add a new user.
             fam_user = crud_user.find_or_create(
                 db, request.user_type_code, target_user.user_name, target_user.user_guid, requester.cognito_user_id
             )

@@ -39,12 +39,9 @@ router = APIRouter()
         ),  # if Requester is delegated admin, needs to have privilge to grant access with the request role
         Depends(
             authorize_by_user_type
-        ),  # check business bceid user cannot grant idir user access
-        Depends(
-            enforce_bceid_by_same_org_guard
-        ),  # check business bceid user can only grant access for the user from same organization
+        )  # check business bceid user cannot grant idir user access
     ],
-    description="Grant User Access to an application's role.",
+    description="Grant Users Access to an application's role.",
 )
 def create_user_role_assignment_many(
     role_assignment_request: FamUserRoleAssignmentCreateSchema,
@@ -55,7 +52,7 @@ def create_user_role_assignment_many(
     target_users: TargetUserValidationResultSchema = Depends(get_verified_target_users),
 ):
     """
-    Create FAM user_role_xref association.
+    Create FAM user_role_xref associations for multiple users.
     """
     LOGGER.debug(
         f"Executing 'create_user_role_assignment' "
