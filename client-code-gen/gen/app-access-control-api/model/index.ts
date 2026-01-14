@@ -14,6 +14,7 @@ export * from './fam-user-info-schema';
 export * from './fam-user-role-assignment-create-res';
 export * from './fam-user-role-assignment-create-schema';
 export * from './fam-user-role-assignment-res';
+export * from './fam-user-role-assignment-user-schema';
 export * from './fam-user-type-schema';
 export * from './fam-user-update-response-schema';
 export * from './httpvalidation-error';

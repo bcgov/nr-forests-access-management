@@ -13,21 +13,24 @@
  */
 
 
-// May contain unused imports in some cases
-// @ts-ignore
-import { FamUserRoleAssignmentCreateRes } from './fam-user-role-assignment-create-res';
 
 /**
  * 
  * @export
- * @interface FamUserRoleAssignmentRes
+ * @interface FamUserRoleAssignmentUserSchema
  */
-export interface FamUserRoleAssignmentRes {
+export interface FamUserRoleAssignmentUserSchema {
     /**
      * 
-     * @type {Array<FamUserRoleAssignmentCreateRes>}
-     * @memberof FamUserRoleAssignmentRes
+     * @type {string}
+     * @memberof FamUserRoleAssignmentUserSchema
      */
-    'assignments_detail': Array<FamUserRoleAssignmentCreateRes>;
+    'user_name': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof FamUserRoleAssignmentUserSchema
+     */
+    'user_guid': string;
 }
 

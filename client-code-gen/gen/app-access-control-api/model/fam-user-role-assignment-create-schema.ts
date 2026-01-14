@@ -15,26 +15,23 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
+import { FamUserRoleAssignmentUserSchema } from './fam-user-role-assignment-user-schema';
+// May contain unused imports in some cases
+// @ts-ignore
 import { UserType } from './user-type';
 
 /**
- * Request schema for assigning a user to a role, with optional expiry date. - expiry_date_date: The expiry date as a string (YYYY-MM-DD), BC timezone. - _expiry_date: Internal use only, timezone-aware datetime, derived from expiry_date_date.
+ * Request schema for assigning one or more users to a role, with optional expiry date. - users: List of users to assign - user_type_code: The type of all users in this request - expiry_date_date: The expiry date as a string (YYYY-MM-DD), BC timezone. - _expiry_date: Internal use only, timezone-aware datetime, derived from expiry_date_date.
  * @export
  * @interface FamUserRoleAssignmentCreateSchema
  */
 export interface FamUserRoleAssignmentCreateSchema {
     /**
      * 
-     * @type {string}
+     * @type {Array<FamUserRoleAssignmentUserSchema>}
      * @memberof FamUserRoleAssignmentCreateSchema
      */
-    'user_name': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof FamUserRoleAssignmentCreateSchema
-     */
-    'user_guid': string;
+    'users': Array<FamUserRoleAssignmentUserSchema>;
     /**
      * 
      * @type {UserType}

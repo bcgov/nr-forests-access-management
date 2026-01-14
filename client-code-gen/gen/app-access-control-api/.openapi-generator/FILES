@@ -33,6 +33,7 @@ model/fam-user-info-schema.ts
 model/fam-user-role-assignment-create-res.ts
 model/fam-user-role-assignment-create-schema.ts
 model/fam-user-role-assignment-res.ts
+model/fam-user-role-assignment-user-schema.ts
 model/fam-user-type-schema.ts
 model/fam-user-update-response-schema.ts
 model/httpvalidation-error.ts
