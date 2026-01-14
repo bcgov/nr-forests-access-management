@@ -471,7 +471,7 @@ async def enforce_bceid_by_same_org_guard(
 
     # Enforce same organization rule on verified users
     try:
-        validate_bceid_same_org(requester, validation_result.verified_users, role)
+        validate_bceid_same_org(requester, validation_result.verified_users)
     except Exception as e:
         utils.raise_http_exception(
             status_code=HTTPStatus.FORBIDDEN,

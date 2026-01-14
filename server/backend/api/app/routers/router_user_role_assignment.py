@@ -41,7 +41,8 @@ router = APIRouter()
             authorize_by_user_type
         )  # check business bceid user cannot grant idir user access
     ],
-    description="Grant Users Access to an application's role.",
+    summary="Grant multiple users access to an application's role.",
+    description="Granting IDIR/BCeID users access to an application's role, supporting expiry dates for role assignments.",
 )
 def create_user_role_assignment_many(
     role_assignment_request: FamUserRoleAssignmentCreateSchema,

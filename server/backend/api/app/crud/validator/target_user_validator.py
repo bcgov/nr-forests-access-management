@@ -11,7 +11,7 @@ from api.app.schemas import (IdimProxyBceidSearchParamSchema,
 from api.app.utils import utils
 from api.app.models.model import FamRole
 from api.app.schemas.target_user_validation_result import FailedTargetUserSchema, TargetUserValidationResultSchema
-from server.backend.api.app.crud import crud_utils
+from api.app.crud import crud_utils
 
 LOGGER = logging.getLogger(__name__)
 
