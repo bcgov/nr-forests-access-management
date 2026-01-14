@@ -1,5 +1,5 @@
-from api.app.validators.target_user_validators import (validate_target_users,
-                                                       validate_bceid_same_org)
+from api.app.crud.validator.target_user_validator import (validate_target_users,
+                                                    validate_bceid_same_org)
 import logging
 from http import HTTPStatus
 from typing import List
