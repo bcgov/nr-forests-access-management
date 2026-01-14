@@ -31,6 +31,7 @@ class AuditEventLog:
     target_user: models.FamUser
     exception: Exception
     role_assignment_expiry_date: Optional[str] = None
+    user_assignment_results: list = []
 
     def __init__(
         self,
@@ -44,6 +45,7 @@ class AuditEventLog:
         target_user: models.FamUser = None,
         exception: Exception = None,
         role_assignment_expiry_date: str = None,
+        user_assignment_results: list = [],
     ):
         self.request = request
         self.event_type = event_type
@@ -55,6 +57,7 @@ class AuditEventLog:
         self.target_user = target_user
         self.exception = exception
         self.role_assignment_expiry_date = role_assignment_expiry_date
+        self.user_assignment_results = user_assignment_results
 
     def log_event(self):
         log_item = {
@@ -80,7 +83,9 @@ class AuditEventLog:
                 "idpUserName": self.requesting_user.user_name if self.requesting_user else None,
                 "cognitoUsername": self.requesting_user.cognito_user_id if self.requesting_user else None,
             },
+
             "requestIP": self.request.client.host if self.request.client else "unknown",
+            "userAssignmentResults": self.user_assignment_results,
         }
 
         if self.exception:

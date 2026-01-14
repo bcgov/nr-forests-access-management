@@ -1,4 +1,5 @@
-from api.app.validators.target_user_validators import validate_verified_target_users
+from api.app.validators.target_user_validators import (validate_target_users,
+                                                       validate_bceid_same_org)
 import logging
 from http import HTTPStatus
 from typing import List
@@ -416,7 +417,6 @@ def enforce_self_grant_guard(
             )
 
 
-
 def get_verified_target_users(
     _enforce_fam_access_validated = Depends(enforce_fam_client_token),
     requester: RequesterSchema = Depends(get_current_requester),
@@ -427,11 +427,10 @@ def get_verified_target_users(
     Validate a list of target users by calling IDIM web service, and update business Guid for the found BCeID users.
     Returns a list of verified TargetUserSchema objects. Raises on any invalid user.
     """
-    return validate_verified_target_users(requester, target_users, role)
+    return validate_target_users(requester, target_users, role)
 
 
 async def enforce_bceid_by_same_org_guard(
-    # forbid business bceid user (requester) manage idir user's access
     _enforce_fam_access_validated = Depends(enforce_fam_client_token),
     _enforce_user_type_auth: None = Depends(authorize_by_user_type),
     requester: RequesterSchema = Depends(get_current_requester),
@@ -439,60 +438,46 @@ async def enforce_bceid_by_same_org_guard(
     role: FamRole = Depends(get_request_role_from_id),
 ):
     """
-    When requester is a BCeID user, enforce requester can only manage target user from the same organization.
+    Router guard to enforce BCeID same organization validation.
+
+    This guard ensures that a BCeID user (requester) can only manage users from the same organization.
+    It validates the organization consistency between the requester and the target users.
+    Additionally, it ensures that all target users are verified before enforcing the organization rule.
+
+    Parameters:
+        _enforce_fam_access_validated: Dependency to validate the FAM client token.
+        _enforce_user_type_auth: Dependency to authorize user type.
+        requester: The user making the request, validated as the current requester.
+        target_users: List of target users to be managed.
+        role: The application role context for the validation.
+
+    Raises:
+        HTTPException: If the requester and target users are not from the same organization.
+        HTTPException: If there are failed target users during validation.
     """
-    """
-    Initially this guard was using dependency validation: "Depends(get_verified_target_user)" to retrieve
-    information from IDP(IDIM service) for this guard for checking.
-    But due to special case for - deleting user/role assignment when target user is no longer available from IDP
-    (inactive or removed for some reason), we still like to be able to delete the target user from db, however,
-    we won't be able to verify user from IDIM in this case.
-    For this case we won't be able to use "get_verified_target_user" as a guard; moving it from router guard
-    dependency to be in this method's body for special handling. So:
+    # Verify target users before enforcing organization rule
+    validation_result = validate_target_users(requester, target_users, role)
 
-    - For IDIR requester, there is no need to get "verified target user" as IDIR user can remove any IDIR user
-      and any BCeID user.
+    # Raise an error if there are failed users
+    if validation_result.failed_users:
+        app_name = role.application.application_name
+        failed_usernames = [user.user_name for user in validation_result.failed_users]
+        error_msg = f"Unable to verify the following users: {failed_usernames}. Please contact {app_name} administrator for the action."
+        utils.raise_http_exception(
+            status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+            error_code=ERROR_CODE_UNKNOWN_STATE,
+            error_msg=error_msg,
+        )
 
-    - For BCeID requester, get "verified target user" is still needed for BCeID target user to check if they
-      are from the same organization. But, in the case if target user cannot be verified, then raise exception
-      for this case.
-    """
-    LOGGER.debug(
-        f"Verifying requester {requester.user_name} (type {requester.user_type_code}) "
-        "is allowed to manage BCeID target user for the same organization."
-    )
-
-    if requester.user_type_code == UserType.BCEID:
-        requester_business_guid = requester.business_guid
-        validation_result = validate_verified_target_users(requester, target_users, role)
-        if validation_result.failed_users:
-            app_name = role.application.application_name
-            failed_names = ', '.join([u.user_name for u in validation_result.failed_users])
-            error_msg = f"Unable to verify the following users: {failed_names}. Please contact {app_name} administrator for the action."
-            LOGGER.error(error_msg)
-            utils.raise_http_exception(
-                status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
-                error_code=ERROR_CODE_UNKNOWN_STATE,
-                error_msg=error_msg,
-            )
-
-        for verified_target_user in validation_result.verified_users:
-            target_user_business_guid = verified_target_user.business_guid
-
-            if requester_business_guid is None or target_user_business_guid is None:
-                error_msg = "Operation encountered unexpected error. requester or target user business GUID is missing."
-                utils.raise_http_exception(
-                    status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
-                    error_code=ERROR_CODE_MISSING_KEY_ATTRIBUTE,
-                    error_msg=error_msg,
-                )
-
-            if requester_business_guid.upper() != target_user_business_guid.upper():
-                utils.raise_http_exception(
-                    status_code=HTTPStatus.FORBIDDEN,
-                    error_code=ERROR_CODE_DIFFERENT_ORG_GRANT_PROHIBITED,
-                    error_msg="Managing for different organization is not allowed.",
-                )
+    # Enforce same organization rule on verified users
+    try:
+        validate_bceid_same_org(requester, validation_result.verified_users, role)
+    except Exception as e:
+        utils.raise_http_exception(
+            status_code=HTTPStatus.FORBIDDEN,
+            error_code=ERROR_CODE_DIFFERENT_ORG_GRANT_PROHIBITED,
+            error_msg=f"An error occurred while validating organization consistency: {str(e)}",
+        )
 
 
 def enforce_bceid_terms_conditions_guard(

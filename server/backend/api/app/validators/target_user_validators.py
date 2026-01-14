@@ -1,5 +1,6 @@
-from api.app.schemas import RequesterSchema, TargetUserSchema
-from api.app.schemas.target_user_validation_result import TargetUserValidationResultSchema
+from api.app.constants import UserType
+from api.app.schemas import RequesterSchema, TargetUserSchema, FamRole
+from api.app.schemas.target_user_validation_result import TargetUserValidationResultSchema, FailedTargetUserSchema
 from api.app.models.model import FamRole
 from api.app.crud import crud_utils
 from api.app.crud.validator.target_user_validator import TargetUserValidator
@@ -7,7 +8,7 @@ import logging
 
 LOGGER = logging.getLogger(__name__)
 
-def validate_verified_target_users(
+def validate_target_users(
     requester: RequesterSchema,
     target_users: list[TargetUserSchema],
     role: FamRole
@@ -37,6 +38,25 @@ def validate_verified_target_users(
             verified_user = target_user_validator.verify_user_exist()
             verified_users.append(verified_user)
         except Exception as e:
-            LOGGER.warning(f"User validation failed for {target_user.user_name}: {e}")
-            failed_users.append(target_user)
+            LOGGER.error(f"Validation failed for user {target_user.user_name}: {str(e)}")
+            failed_users.append(FailedTargetUserSchema(user=target_user, error_reason=str(e)))
+
     return TargetUserValidationResultSchema(verified_users=verified_users, failed_users=failed_users)
+
+
+def validate_bceid_same_org(requester: RequesterSchema, target_users: list[TargetUserSchema]):
+    """
+    Validate that the requester (BCeID user) can only manage target users from the same organization.
+    Raises ValueError if validation fails.
+    """
+    if requester.user_type_code == UserType.BCEID:
+        requester_business_guid = requester.business_guid
+
+        for target_user in target_users:
+            target_user_business_guid = target_user.business_guid
+
+            if requester_business_guid is None or target_user_business_guid is None:
+                raise ValueError("Requester or target user business GUID is missing.")
+
+            if requester_business_guid.upper() != target_user_business_guid.upper():
+                raise ValueError(f"Managing user {target_user.user_name} from a different organization is not allowed.")
