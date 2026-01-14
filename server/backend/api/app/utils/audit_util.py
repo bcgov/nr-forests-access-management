@@ -85,7 +85,9 @@ class AuditEventLog:
             },
 
             "requestIP": self.request.client.host if self.request.client else "unknown",
-            "userAssignmentResults": self.user_assignment_results,
+            "userAssignmentResults": [
+                x.model_dump() for x in self.user_assignment_results
+            ],
         }
 
         if self.exception:
@@ -96,4 +98,4 @@ class AuditEventLog:
                     "details": self.exception.detail,
                 }
 
-        LOGGER.info(json.dumps(log_item))
+        LOGGER.info(json.dumps(log_item, default=str))

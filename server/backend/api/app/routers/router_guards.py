@@ -328,11 +328,11 @@ async def get_target_users_from_ids(
             + f"request body {rbody}."
         )
         # Accept either a single user dict or a list of user dicts
-        user_items = rbody.get("target_users") or [rbody]
+        user_items = rbody.get("users") or [rbody]
         for user_item in user_items:
             target_user = TargetUserSchema.model_validate({
                 "user_name": user_item["user_name"],
-                "user_type_code": user_item["user_type_code"],
+                "user_type_code": rbody["user_type_code"],
                 "user_guid": user_item["user_guid"],
             })
             target_users.append(target_user)
