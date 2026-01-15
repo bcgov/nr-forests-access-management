@@ -26,7 +26,7 @@ from api.app.main import app, internal_api_prefix
 from api.app.models.model import FamUser
 from api.app.routers.router_guards import (
     enforce_bceid_terms_conditions_guard, get_current_requester,
-    get_verified_target_user)
+    get_verified_target_users)
 from api.app.schemas import RequesterSchema, TargetUserSchema
 from api.app.schemas.fam_user import FamUserSchema
 from api.app.schemas.pagination import UserRolePageParamsSchema
@@ -204,27 +204,27 @@ def override_depends__get_current_requester(test_client_fixture):
 
 
 @pytest.fixture(scope="function")
-def override_depends__get_verified_target_user(test_client_fixture):
-    # Override FastAPI dependency "get_verified_target_user".
+def override_depends__get_verified_target_users(test_client_fixture):
+    # Override FastAPI dependency "get_verified_target_users".
     # Mock the return result for idim validation of the target user, to avoid calling external idim-proxy
-    def _override_get_verified_target_user(mocked_data=ACCESS_GRANT_FOM_DEV_CR_IDIR):
+    def _override_get_verified_target_users(mocked_data=ACCESS_GRANT_FOM_DEV_CR_IDIR):
         app = test_client_fixture.app
-        app.dependency_overrides[get_verified_target_user] = lambda: TargetUserSchema(
+        app.dependency_overrides[get_verified_target_users] = lambda: TargetUserSchema(
             **mocked_data
         )
 
-    return _override_get_verified_target_user
+    return _override_get_verified_target_users
 
 
 @pytest.fixture(scope="function")
 def mock_verified_target_user(mocker):
     """
-    This fixture has the same purpose but different than similar fixture 'override_depends__get_verified_target_user'
+    This fixture has the same purpose but different than similar fixture 'override_depends__get_verified_target_users'
     on testing usage.
     It mocks the return result from idim validation of the target user. However, this is not overriding the FastAPI
     dependency.
     For example:
-    Delete user/role assignment related to "get_verified_target_user" is a special case (not as FastAPI dependency),
+    Delete user/role assignment related to "get_verified_target_users" is a special case (not as FastAPI dependency),
     and needs to be mocked individually at function.
     """
 
@@ -232,7 +232,7 @@ def mock_verified_target_user(mocker):
         mocked_user: Optional[TargetUserSchema] = None,
         mocked_side_effect: Optional[Exception] = None
     ):
-        patch_fn_path = "api.app.routers.router_guards.get_verified_target_user"
+        patch_fn_path = "api.app.routers.router_guards.get_verified_target_users"
         if mocked_user:
             return mocker.patch(patch_fn_path, return_value=mocked_user)
         elif mocked_side_effect:
@@ -245,10 +245,10 @@ def mock_verified_target_user(mocker):
 
 @pytest.fixture(scope="function")
 def create_test_user_role_assignments(
-    test_client_fixture, override_depends__get_verified_target_user
+    test_client_fixture, override_depends__get_verified_target_users
 ):
     """
-    Convenient function to assign multipe users to an application.
+    Convenient function to assign multiple users to an application.
     :param requester_token: token to be used for the request.
                             Pass appropriate application_admin level to
                             create the users to.
@@ -258,7 +258,7 @@ def create_test_user_role_assignments(
     def _create_test_user_role_assignments(requester_token, request_bodies: List[dict]):
         created_users = []
         for request_body in request_bodies:
-            override_depends__get_verified_target_user(request_body)
+            override_depends__get_verified_target_users(request_body)
             created_users.append(
                 create_test_user_role_assignment(
                     test_client_fixture=test_client_fixture,

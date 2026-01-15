@@ -92,10 +92,10 @@ def test_get_fam_application_user_role_assignment_no_role_assignments(
 def test_get_fam_application_user_role_assignment_concrete_role(
     test_client_fixture: starlette.testclient.TestClient,
     test_rsa_key,
-    override_depends__get_verified_target_user,
+    override_depends__get_verified_target_users,
 ):
     # override router guard dependencies
-    override_depends__get_verified_target_user()
+    override_depends__get_verified_target_users()
 
     # test user role assignment
     # create
@@ -127,10 +127,10 @@ def test_get_fam_application_user_role_assignment_concrete_role(
 def test_get_fam_application_user_role_assignment_abstract_role(
     test_client_fixture: starlette.testclient.TestClient,
     test_rsa_key,
-    override_depends__get_verified_target_user,
+    override_depends__get_verified_target_users,
 ):
     # override router guard dependencies
-    override_depends__get_verified_target_user(ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID)
+    override_depends__get_verified_target_users(ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID)
 
     # test user role assignment for abstract role
     # create

@@ -127,8 +127,12 @@ FOM_TEST_ADMIN_ROLE = "FOM_TEST_ADMIN"
 #   _L4T_: LOAD_4_TEST
 
 ACCESS_GRANT_FOM_DEV_CR_IDIR = {
-    "user_name": "fom_user_test",
-    "user_guid": TEST_USER_GUID_IDIR,
+    "users": [
+        {
+            "user_name": "fom_user_test",
+            "user_guid": TEST_USER_GUID_IDIR
+        }
+    ],
     "user_type_code": fam_constants.UserType.IDIR,
     "role_id": FOM_DEV_REVIEWER_ROLE_ID,
 }

@@ -18,7 +18,6 @@ from api.app.constants import (CURRENT_TERMS_AND_CONDITIONS_VERSION,
                                ERROR_CODE_UNKNOWN_STATE, RoleType, UserType)
 from api.app.crud import (crud_access_control_privilege, crud_application,
                           crud_role, crud_user, crud_user_role, crud_utils)
-from api.app.crud.validator.target_user_validator import TargetUserValidator
 from api.app.jwt_validation import (ERROR_GROUPS_REQUIRED,
                                     ERROR_PERMISSION_REQUIRED, JWT_GROUPS_KEY,
                                     enforce_fam_client_token, get_access_roles,
@@ -32,6 +31,7 @@ from api.app.utils import utils
 from api.config import config
 from fastapi import Depends, Request, Security
 from fastapi.security import APIKeyHeader
+from api.app.schemas.target_user_validation_result import TargetUserValidationResultSchema
 from sqlalchemy.orm import Session
 
 """
@@ -422,7 +422,7 @@ def get_verified_target_users(
     requester: RequesterSchema = Depends(get_current_requester),
     target_users: list[TargetUserSchema] = Depends(get_target_users_from_ids),
     role: FamRole = Depends(get_request_role_from_id),
-) -> list[TargetUserSchema]:
+) -> TargetUserValidationResultSchema:
     """
     Validate a list of target users by calling IDIM web service, and update business Guid for the found BCeID users.
     Returns a list of verified TargetUserSchema objects. Raises on any invalid user.
