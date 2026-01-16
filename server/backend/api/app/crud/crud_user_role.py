@@ -80,10 +80,14 @@ def create_user_role_assignment_many(
 
     # Add failed BCEID users to response
     for user, reason in failed_bceid_users:
+        LOGGER.debug(
+            f"BCeID same-organization validation failed for user "
+            f"{user.user_name}: {reason}"
+        )
         new_user_permission_granted_list.append(FamUserRoleAssignmentCreateRes(
-            status_code=HTTPStatus.BAD_REQUEST,
-            detail=famConstants.ERROR_CODE_DIFFERENT_ORG_GRANT_PROHIBITED,
-            error_message=f"BCEID user '{user.user_name}' failed same-organization validation: {reason}",
+            status_code=HTTPStatus.FORBIDDEN,
+            detail=None,
+            error_message=reason,
         ))
 
     require_child_role = (
@@ -184,7 +188,7 @@ def create_user_role_assignment_many(
                 error_message=str(e),
             ))
 
-    LOGGER.info(f"User/Role assignment executed successfully: {new_user_permission_granted_list}")
+    LOGGER.info(f"User/Role assignment executed: {new_user_permission_granted_list}")
     return new_user_permission_granted_list
 
 

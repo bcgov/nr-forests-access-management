@@ -149,12 +149,13 @@ def validate_bceid_same_org(requester: RequesterSchema, target_users: list[Targe
     Validate that the requester (BCeID user) can only manage target users from the same organization.
     Raises ValueError if validation fails.
     """
+    LOGGER.debug(f"Validating BCeID same-organization constraint. requester: ({requester.user_name}, {requester.business_guid})"
+                 f", target_users: {[(user.user_name, user.business_guid) for user in target_users]}")
     if requester.user_type_code == UserType.BCEID:
         requester_business_guid = requester.business_guid
 
         for target_user in target_users:
             target_user_business_guid = target_user.business_guid
-
             if requester_business_guid is None or target_user_business_guid is None:
                 raise ValueError("Requester or target user business GUID is missing.")
 

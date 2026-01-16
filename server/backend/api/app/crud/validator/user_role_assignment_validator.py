@@ -41,7 +41,7 @@ def validate_bceid_same_org_users(
 		failed_users = []
 		for user in users:
 			try:
-				validate_bceid_same_org(requester, user)
+				validate_bceid_same_org(requester, [user])
 				valid_users.append(user)
 			except Exception as e:
 				failed_users.append((user, str(e)))

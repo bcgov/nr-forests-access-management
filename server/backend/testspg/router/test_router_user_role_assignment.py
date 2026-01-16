@@ -52,6 +52,7 @@ def mock_verified_target_user_BCEID_L4T_for_user_role_deletion(mock_verified_tar
     mock_verified_target_user(mocked_user=TargetUserSchema(
         **{
             **ACCESS_GRANT_FOM_DEV_CR_BCEID_L4T,
+            **ACCESS_GRANT_FOM_DEV_CR_BCEID_L4T["users"][0],
             "business_guid": BUSINESS_GUID_BCEID_LOAD_4_TEST,
         }
     ))
@@ -246,12 +247,18 @@ def test_create_user_role_assignment_many_bceid_cannot_grant_access_from_diff_or
     test_client_fixture: starlette.testclient.TestClient,
     test_rsa_key,
     override_depends__enforce_bceid_terms_conditions_guard,
-    mock_verified_target_user_BCEID_L4T_for_user_role_deletion
+    override_depends__get_verified_target_users
 ):
     """
     test business bceid user cannnot grant business bceid user access from different organization
     """
     # override router guard dependencies
+    override_depends__get_verified_target_users(
+        {
+            **ACCESS_GRANT_FOM_DEV_CR_BCEID_L4T,
+            "business_guid": BUSINESS_GUID_BCEID_LOAD_4_TEST,
+        }
+    )
     override_depends__enforce_bceid_terms_conditions_guard()
 
     # create a token for business bceid user COGNITO_USERNAME_BCEID with no app admin role,
@@ -266,14 +273,17 @@ def test_create_user_role_assignment_many_bceid_cannot_grant_access_from_diff_or
         json=ACCESS_GRANT_FOM_DEV_CR_BCEID_L4T,  # Business bceid user LOAD-4-TEST is already created in local_sql with business_guid,
         headers=jwt_utils.headers(token),
     )
-    assert response.status_code == HTTPStatus.FORBIDDEN
+    LOGGER.info(f"response: {response}")
+    LOGGER.info(f"Response data: {response.json()}")
+    assert response.status_code == HTTPStatus.OK
     assert response.json() is not None
     data = response.json()
+    assignment_result = data.get("assignments_detail")[0]
     # business bceid user cannot grant business bceid user access from different organization
-    assert data["detail"]["code"] == ERROR_CODE_DIFFERENT_ORG_GRANT_PROHIBITED
+    assert assignment_result["status_code"] == HTTPStatus.FORBIDDEN
     assert (
-        data["detail"]["description"]
-        == "Managing for different organization is not allowed."
+        assignment_result["error_message"]
+        == f"Managing user {ACCESS_GRANT_FOM_DEV_CR_BCEID_L4T['users'][0]['user_name']} from a different organization is not allowed."
     )
 
 
@@ -1075,7 +1085,7 @@ def test_delete_user_role_assignment_bceid_cannot_delete_access_from_diff_org(
     assert data["detail"]["code"] == ERROR_CODE_DIFFERENT_ORG_GRANT_PROHIBITED
     assert (
         data["detail"]["description"]
-        == "Managing for different organization is not allowed."
+        == "Managing user {data['detail']['user_name']} from a different organization is not allowed."
     )
 
 
