@@ -30,6 +30,7 @@ from api.app.routers.router_guards import (
 from api.app.schemas import RequesterSchema, TargetUserSchema
 from api.app.schemas.fam_user import FamUserSchema
 from api.app.schemas.pagination import UserRolePageParamsSchema
+from api.app.schemas.target_user_validation_result import TargetUserValidationResultSchema
 from testspg.constants import (ACCESS_GRANT_FOM_DEV_CR_IDIR,
                                FOM_DEV_ADMIN_ROLE, FOM_TEST_ADMIN_ROLE,
                                TEST_BCEID_REQUESTER_DICT, TEST_CREATOR)
@@ -209,8 +210,9 @@ def override_depends__get_verified_target_users(test_client_fixture):
     # Mock the return result for idim validation of the target user, to avoid calling external idim-proxy
     def _override_get_verified_target_users(mocked_data=ACCESS_GRANT_FOM_DEV_CR_IDIR):
         app = test_client_fixture.app
-        app.dependency_overrides[get_verified_target_users] = lambda: TargetUserSchema(
-            **mocked_data
+        app.dependency_overrides[get_verified_target_users] = lambda: TargetUserValidationResultSchema(
+            verified_users=[TargetUserSchema(**user) for user in mocked_data["users"]],
+            failed_users=[]  # No failed users in this mock
         )
 
     return _override_get_verified_target_users
@@ -253,6 +255,16 @@ def create_test_user_role_assignments(
                             Pass appropriate application_admin level to
                             create the users to.
     :param request_bodies: request content to create the users.
+        Example `request_body` structure (partial FamUserRoleAssignmentCreateSchema type):
+        {
+            "user_type_code": "IDIR",
+            "users": [
+                {
+                    "user_id": "example-user-id",
+                    "user_name": "example-user-name"
+                }
+            ]
+        }
     """
 
     def _create_test_user_role_assignments(requester_token, request_bodies: List[dict]):

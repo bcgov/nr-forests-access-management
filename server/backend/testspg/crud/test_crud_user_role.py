@@ -39,7 +39,7 @@ def test_create_user_role_with_role_not_exists(db_pg_session: Session):
         assert crud_user_role.create_user_role_assignment_many(
             db_pg_session,
             FamUserRoleAssignmentCreateSchema(**user_role),
-            mocked_target_user,
+            [mocked_target_user],
             dummy_test_requester
         )
     assert str(e._excinfo).find("Role id ") != -1
@@ -208,7 +208,12 @@ def test_crud_create_user_role_with_expiry_date(db_pg_session: Session):
         user_guid=TEST_USER_GUID_IDIR,
         user_id=TEST_USER_ID
     )
-    result = crud_user_role.create_user_role_assignment_many(db_pg_session, schema, target_user, requester)
+    result = crud_user_role.create_user_role_assignment_many(
+        db_pg_session,
+        schema,
+        [target_user],
+        requester
+    )
     assert result and len(result) == 1
     fam_user_role_obj = result[0].detail
     assert fam_user_role_obj.expiry_date is not None
@@ -221,17 +226,21 @@ def test_crud_create_user_role_without_expiry_date(db_pg_session: Session):
     user_role = copy.deepcopy(ACCESS_GRANT_FOM_DEV_CR_IDIR)
     if "expiry_date_date" in user_role:
         del user_role["expiry_date_date"]
-    user_role["user_guid"] = "STATICUSERGUID1234567890ABCDEFGH"
-    user_role["user_name"] = TEST_USER_NAME_IDIR
+    user_role["users"] = [
+        {
+            "user_name": TEST_USER_NAME_IDIR,
+            "user_guid": "STATICUSERGUID1234567890ABCDEFGH",
+        }
+    ]
     schema = FamUserRoleAssignmentCreateSchema(**user_role)
-    target_user = TargetUserSchema(**user_role)
+    target_user = TargetUserSchema(**user_role["users"][0])
     requester = RequesterSchema(
         cognito_user_id=TEST_CREATOR,
         user_name=TEST_USER_NAME_IDIR,
         user_guid=TEST_USER_GUID_IDIR,
         user_id=TEST_USER_ID
     )
-    result = crud_user_role.create_user_role_assignment_many(db_pg_session, schema, target_user, requester)
+    result = crud_user_role.create_user_role_assignment_many(db_pg_session, schema, [target_user], requester)
     assert result and len(result) == 1
     fam_user_role_obj = result[0].detail
     assert fam_user_role_obj.expiry_date is None

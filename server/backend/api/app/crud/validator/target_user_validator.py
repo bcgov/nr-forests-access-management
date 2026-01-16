@@ -135,7 +135,11 @@ def validate_target_users(
             verified_users.append(verified_user)
         except Exception as e:
             LOGGER.error(f"Validation failed for user {target_user.user_name}: {str(e)}")
-            failed_users.append(FailedTargetUserSchema(user=target_user, error_reason=str(e)))
+            failed_users.append(FailedTargetUserSchema(
+                user_name=target_user.user_name,
+                user_guid=target_user.user_guid,
+                error_reason=str(e)
+            ))
 
     return TargetUserValidationResultSchema(verified_users=verified_users, failed_users=failed_users)
 

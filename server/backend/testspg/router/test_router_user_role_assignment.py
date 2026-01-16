@@ -1325,8 +1325,12 @@ def test_delete_user_role_assignment__bceid_requester_cannot_delete_inactive_tar
     target_user_schema = TargetUserSchema.model_validate(new_target_user)
     access_grants_created = create_test_user_role_assignments(
         fom_dev_access_admin_token, [{
-            "user_name": target_user_schema.user_name,
-            "user_guid": target_user_schema.user_guid,
+            "users": [
+                {
+                    "user_name": target_user_schema.user_name,
+                    "user_guid": target_user_schema.user_guid
+                }
+            ],
             "user_type_code": target_user_schema.user_type_code,
             "role_id": FOM_DEV_REVIEWER_ROLE_ID,
         }]
@@ -1350,5 +1354,5 @@ def test_delete_user_role_assignment__bceid_requester_cannot_delete_inactive_tar
     assert response.status_code == HTTPStatus.INTERNAL_SERVER_ERROR
     assert response.json() is not None
     assert response.json()["detail"]["code"] == ERROR_CODE_UNKNOWN_STATE
-    assert f"Unable to verify user {target_user_schema.user_name}" in response.json()["detail"]["description"]
+    assert f"Unable to verify the following users: ['{target_user_schema.user_name}']" in response.json()["detail"]["description"]
     assert db_delete_fn_spy.call_count == 0  # db.delete() should not be called.
