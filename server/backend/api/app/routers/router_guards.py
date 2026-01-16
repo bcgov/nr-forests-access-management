@@ -444,6 +444,9 @@ async def enforce_bceid_by_same_org_guard(
     It validates the organization consistency between the requester and the target users.
     Additionally, it ensures that all target users are verified before enforcing the organization rule.
 
+    - For IDIR requester, there is no need to get "verified target user" as IDIR user can remove any IDIR user
+      and any BCeID user.
+
     Parameters:
         _enforce_fam_access_validated: Dependency to validate the FAM client token.
         _enforce_user_type_auth: Dependency to authorize user type.
@@ -455,29 +458,35 @@ async def enforce_bceid_by_same_org_guard(
         HTTPException: If the requester and target users are not from the same organization.
         HTTPException: If there are failed target users during validation.
     """
-    # Verify target users before enforcing organization rule
-    validation_result = validate_target_users(requester, target_users, role)
+    LOGGER.debug(
+        f"Verifying requester {requester.user_name} (type {requester.user_type_code}) "
+        "is allowed to manage BCeID target users for the same organization."
+    )
 
-    # Raise an error if there are failed users
-    if validation_result.failed_users:
-        app_name = role.application.application_name
-        failed_usernames = [user.user_name for user in validation_result.failed_users]
-        error_msg = f"Unable to verify the following users: {failed_usernames}. Please contact {app_name} administrator for the action."
-        utils.raise_http_exception(
-            status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
-            error_code=ERROR_CODE_UNKNOWN_STATE,
-            error_msg=error_msg,
-        )
+    if requester.user_type_code == UserType.BCEID:
+        # Verify target users before enforcing organization rule
+        validation_result = validate_target_users(requester, target_users, role)
 
-    # Enforce same organization rule on verified users
-    try:
-        validate_bceid_same_org(requester, validation_result.verified_users)
-    except Exception as e:
-        utils.raise_http_exception(
-            status_code=HTTPStatus.FORBIDDEN,
-            error_code=ERROR_CODE_DIFFERENT_ORG_GRANT_PROHIBITED,
-            error_msg=f"An error occurred while validating organization consistency: {str(e)}",
-        )
+        # Raise an error if there are failed users
+        if validation_result.failed_users:
+            app_name = role.application.application_name
+            failed_usernames = [user.user_name for user in validation_result.failed_users]
+            error_msg = f"Unable to verify the following users: {failed_usernames}. Please contact {app_name} administrator for the action."
+            utils.raise_http_exception(
+                status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+                error_code=ERROR_CODE_UNKNOWN_STATE,
+                error_msg=error_msg,
+            )
+
+        # Enforce same organization rule on verified users
+        try:
+            validate_bceid_same_org(requester, validation_result.verified_users)
+        except Exception as e:
+            utils.raise_http_exception(
+                status_code=HTTPStatus.FORBIDDEN,
+                error_code=ERROR_CODE_DIFFERENT_ORG_GRANT_PROHIBITED,
+                error_msg=f"An error occurred while validating organization consistency: {str(e)}",
+            )
 
 
 def enforce_bceid_terms_conditions_guard(

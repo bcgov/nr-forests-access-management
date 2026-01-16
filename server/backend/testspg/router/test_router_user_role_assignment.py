@@ -1265,8 +1265,12 @@ def test_delete_user_role_assignment__idir_requester_can_delete_inactive_target_
     target_user_schema = TargetUserSchema.model_validate(new_target_user)
     access_grants_created = create_test_user_role_assignments(
         fom_dev_access_admin_token, [{
-            "user_name": target_user_schema.user_name,
-            "user_guid": target_user_schema.user_guid,
+            "users": [
+                {
+                    "user_name": target_user_schema.user_name,
+                    "user_guid": target_user_schema.user_guid
+                }
+            ],
             "user_type_code": target_user_schema.user_type_code,
             "role_id": FOM_DEV_REVIEWER_ROLE_ID,
         }]
