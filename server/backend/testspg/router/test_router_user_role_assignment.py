@@ -773,8 +773,12 @@ def test_create_user_role_assignment_many_new_bceid_user_save_business_guid(
     fom_dev_access_admin_token,
 ):
     ACCESS_GRANT_FOM_DEV_CR_BCEID_NEW_USER = {
-        "user_name": "TESTUSER_NOTIN_DB",
-        "user_guid": "somerandomguid23AE535428F171BF13",
+        "users": [
+            {
+                "user_name": "TESTUSER_NOTIN_DB",
+                "user_guid": "somerandomguid23AE535428F171BF13",
+            }
+        ],
         "user_type_code": UserType.BCEID,
         "role_id": FOM_DEV_REVIEWER_ROLE_ID,
     }
@@ -785,7 +789,7 @@ def test_create_user_role_assignment_many_new_bceid_user_save_business_guid(
     # verify user does not exist before creation.
     user = crud_user.get_user_by_domain_and_name(
         db=db_pg_session,
-        user_name=ACCESS_GRANT_FOM_DEV_CR_BCEID_NEW_USER["user_name"],
+        user_name=ACCESS_GRANT_FOM_DEV_CR_BCEID_NEW_USER["users"][0]["user_name"],
         user_type_code=ACCESS_GRANT_FOM_DEV_CR_BCEID_NEW_USER["user_type_code"],
     )
     assert user is None
@@ -810,7 +814,7 @@ def test_create_user_role_assignment_many_new_bceid_user_save_business_guid(
     # new user created
     user = crud_user.get_user_by_domain_and_name(
         db=db_pg_session,
-        user_name=ACCESS_GRANT_FOM_DEV_CR_BCEID_NEW_USER["user_name"],
+        user_name=ACCESS_GRANT_FOM_DEV_CR_BCEID_NEW_USER["users"][0]["user_name"],
         user_type_code=ACCESS_GRANT_FOM_DEV_CR_BCEID_NEW_USER["user_type_code"],
     )
     assert user is not None

@@ -211,7 +211,10 @@ def override_depends__get_verified_target_users(test_client_fixture):
     def _override_get_verified_target_users(mocked_data=ACCESS_GRANT_FOM_DEV_CR_IDIR):
         app = test_client_fixture.app
         app.dependency_overrides[get_verified_target_users] = lambda: TargetUserValidationResultSchema(
-            verified_users=[TargetUserSchema(**user) for user in mocked_data["users"]],
+            verified_users=[
+                TargetUserSchema(**{**mocked_data, **user})  # Flatten all mocked_data and user fields
+                for user in mocked_data["users"]
+            ],
             failed_users=[]  # No failed users in this mock
         )
 
