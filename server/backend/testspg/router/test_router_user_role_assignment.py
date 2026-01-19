@@ -3,6 +3,7 @@ import logging
 from http import HTTPStatus
 
 import pytest
+from api.app.schemas.target_user_validation_result import TargetUserValidationResultSchema
 import starlette.testclient
 import testspg.jwt_utils as jwt_utils
 import testspg.utils as utils
@@ -913,7 +914,7 @@ def test_delete_user_role_assignment_authorize_by_delegated_admin(
     token = jwt_utils.create_jwt_token(
         test_rsa_key,
         roles=[],
-        username=jwt_utils.COGNITO_USERNAME_BCEID_DELEGATED_ADMIN,
+        username=jwt_utils.COGNITO_USERNAME_BCEID_DELEGATED_ADMIN
     )
     response = test_client_fixture.delete(
         f"{endPoint}/{user_role_xref_id}",
@@ -1048,8 +1049,7 @@ def test_delete_user_role_assignment_bceid_cannot_delete_access_from_diff_org(
     fom_dev_access_admin_token,
     test_rsa_key,
     override_depends__get_verified_target_users,
-    override_depends__enforce_bceid_terms_conditions_guard,
-    mock_verified_target_user_BCEID_L4T_for_user_role_deletion
+    override_depends__enforce_bceid_terms_conditions_guard
 ):
     """
     test business bceid user cannnot delete business bceid user access from different organization
@@ -1063,6 +1063,22 @@ def test_delete_user_role_assignment_bceid_cannot_delete_access_from_diff_org(
         }
     )
 
+    # Patch validate_target_users to return a verified user from different organization
+    mock_target_user_validation_result = TargetUserValidationResultSchema(
+        verified_users=[
+            TargetUserSchema(
+                user_name=ACCESS_GRANT_FOM_DEV_CR_BCEID_L4T["users"][0]["user_name"],
+                user_guid=ACCESS_GRANT_FOM_DEV_CR_BCEID_L4T["users"][0]["user_guid"],
+                user_type_code=ACCESS_GRANT_FOM_DEV_CR_BCEID_L4T["user_type_code"],
+                business_guid=BUSINESS_GUID_BCEID_LOAD_4_TEST,
+            )
+        ],
+        failed_users=[]
+    )
+    mocker.patch(
+        "api.app.routers.router_guards.validate_target_users",
+        return_value=mock_target_user_validation_result
+    )
 
     # create a user role assignment for a business bceid user from diff organization as the user COGNITO_USERNAME_BCEID
     user_role_xref_id = create_test_user_role_assignment(
@@ -1089,8 +1105,8 @@ def test_delete_user_role_assignment_bceid_cannot_delete_access_from_diff_org(
     # business bceid user cannot delete business bceid user access from different organization
     assert data["detail"]["code"] == ERROR_CODE_DIFFERENT_ORG_GRANT_PROHIBITED
     assert (
+        f"Managing user {ACCESS_GRANT_FOM_DEV_CR_BCEID_L4T['users'][0]['user_name']} from a different organization is not allowed." in
         data["detail"]["description"]
-        == "Managing user {data['detail']['user_name']} from a different organization is not allowed."
     )
 
 
