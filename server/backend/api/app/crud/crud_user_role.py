@@ -37,39 +37,28 @@ def create_user_role_assignment_many(
     request: FamUserRoleAssignmentCreateSchema,
     verified_users: List[TargetUserSchema],
     requester: RequesterSchema,
-    ) -> List[FamUserRoleAssignmentCreateRes]:
+) -> List[FamUserRoleAssignmentCreateRes]:
     """
-    Create fam_user_role_xref Association
-
-    For initial MVP version:
-        FAM api will do a smart insertion to fam_user_role_xref
-        (and fam_user, fam_role, fam_forest_client)
-        assume and skip some verification/lookup; such as 'forest_client'
-        lookup and 'user' lookup.
+    Create fam_user_role_xref Association for multiple users.
     """
     LOGGER.debug(f"Request for user role assignment: {request}.")
 
     # Validate valid request user_type_code
     if not validate_request_type(request):
-        error_msg = f"Invalid user type: {request.user_type_code}."
         raise_http_exception(
             error_code=famConstants.ERROR_CODE_INVALID_REQUEST_PARAMETER,
-            error_msg=error_msg,
+            error_msg=f"Invalid user type: {request.user_type_code}.",
         )
 
-    # Verify if role exists.
+    # Verify if role exists
     fam_role = crud_role.get_role(db, request.role_id)
     if not fam_role:
-        error_msg = f"Role id {request.role_id} does not exist."
         raise_http_exception(
             error_code=famConstants.ERROR_CODE_INVALID_REQUEST_PARAMETER,
-            error_msg=error_msg,
+            error_msg=f"Role id {request.role_id} does not exist.",
         )
 
-    LOGGER.debug(
-        f"Role for user_role assignment found: {fam_role.role_name}"
-        + f"({fam_role.role_id})."
-    )
+    LOGGER.debug(f"Role for user_role assignment found: {fam_role.role_name} ({fam_role.role_id}).")
 
     new_user_permission_granted_list: List[FamUserRoleAssignmentCreateRes] = []
 
@@ -80,10 +69,7 @@ def create_user_role_assignment_many(
 
     # Add failed BCEID users to response
     for user, reason in failed_bceid_users:
-        LOGGER.debug(
-            f"BCeID same-organization validation failed for user "
-            f"{user.user_name}: {reason}"
-        )
+        LOGGER.debug(f"BCeID same-organization validation failed for user {user.user_name}: {reason}")
         new_user_permission_granted_list.append(FamUserRoleAssignmentCreateRes(
             status_code=HTTPStatus.FORBIDDEN,
             detail=None,
@@ -93,6 +79,9 @@ def create_user_role_assignment_many(
     require_child_role = (
         fam_role.role_type_code == famConstants.RoleType.ROLE_TYPE_ABSTRACT
     )
+
+    # Group role assignments by user, used for audit record creation later
+    user_role_assignments = {}
 
     # Iterate over valid users
     for target_user in valid_users:
@@ -110,13 +99,10 @@ def create_user_role_assignment_many(
                     or request.forest_client_numbers is None
                     or len(request.forest_client_numbers) < 1
                 ):
-                    error_msg = (
-                        "Invalid user role assignment request, missing forest client number."
-                    )
                     new_user_permission_granted_list.append(FamUserRoleAssignmentCreateRes(
                         status_code=HTTPStatus.BAD_REQUEST,
                         detail=None,
-                        error_message=error_msg,
+                        error_message="Invalid user role assignment request, missing forest client number.",
                     ))
                     continue
 
@@ -132,14 +118,10 @@ def create_user_role_assignment_many(
                         )
 
                         if not forest_client_number_exists(forest_client_search_return):
-                            error_msg = (
-                                "Invalid role assignment request. "
-                                + f"Forest Client Number {forest_client_number} does not exist."
-                            )
                             new_user_permission_granted_list.append(FamUserRoleAssignmentCreateRes(
                                 status_code=HTTPStatus.BAD_REQUEST,
                                 detail=None,
-                                error_message=error_msg,
+                                error_message=f"Invalid role assignment request. Forest Client Number {forest_client_number} does not exist.",
                             ))
                             continue
 
@@ -163,6 +145,9 @@ def create_user_role_assignment_many(
                         )
                         new_user_role_assginment_res.detail.role.forest_client = FamForestClientSchema.from_api_json(forest_client_search_return[0])
                         new_user_permission_granted_list.append(new_user_role_assginment_res)
+
+                        _group_assignments_by_user(user_role_assignments, fam_user, new_user_role_assginment_res)
+
                     except Exception as e:
                         new_user_permission_granted_list.append(FamUserRoleAssignmentCreateRes(
                             status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
@@ -175,6 +160,9 @@ def create_user_role_assignment_many(
                         db, fam_user, fam_role, requester.cognito_user_id, expiry_date=request._expiry_date
                     )
                     new_user_permission_granted_list.append(new_user_role_assginment_res)
+
+                    _group_assignments_by_user(user_role_assignments, fam_user, new_user_role_assginment_res)
+
                 except Exception as e:
                     new_user_permission_granted_list.append(FamUserRoleAssignmentCreateRes(
                         status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
@@ -187,6 +175,15 @@ def create_user_role_assignment_many(
                 detail=None,
                 error_message=str(e),
             ))
+
+    # Save audit records for each user
+    permission_audit_service = PermissionAuditService(db)
+    for user_id, data in user_role_assignments.items():
+        permission_audit_service.store_user_permissions_granted_audit_history(
+            requester=requester,
+            change_target_user=data["user"],
+            new_user_permission_granted_list=data["assignments"]
+        )
 
     LOGGER.info(f"User/Role assignment executed: {new_user_permission_granted_list}")
     return new_user_permission_granted_list
@@ -424,3 +421,15 @@ def send_users_access_granted_emails(
             LOGGER.warning(f"Failed to send email to user_id: {user_id}. Reason: {e}")
             for response in successful_responses:
                 response.email_sending_status = famConstants.EmailSendingStatus.SENT_TO_EMAIL_SERVICE_FAILURE
+
+
+def _group_assignments_by_user(user_role_assignments, fam_user, new_user_role_assignment_res):
+    """
+    Helper method to group role assignments by user.
+    """
+    if fam_user.user_id not in user_role_assignments:
+        user_role_assignments[fam_user.user_id] = {
+            "user": fam_user,
+            "assignments": []
+        }
+    user_role_assignments[fam_user.user_id]["assignments"].append(new_user_role_assignment_res)
