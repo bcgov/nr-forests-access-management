@@ -362,28 +362,26 @@ def send_users_access_granted_emails(
     it sends a single email summarizing all successful role assignments and updates the
     email_sending_status field in the role assignment responses.
     """
-    # Create a mapping of user_id to TargetUserSchema for quick lookup
-    target_users_map = {user.user_id: user for user in target_users}
+    # Create a mapping of user_name to TargetUserSchema for quick lookup
+    target_users_map = {user.user_name: user for user in target_users}
 
-    # Group role assignment responses by user_id
+    # Group role assignment responses by user_name
     responses_by_user = {}
     for response in roles_assignment_responses:
-        if response.detail and response.detail.user_id:
-            user_id = response.detail.user_id
-            if user_id not in responses_by_user:
-                responses_by_user[user_id] = []
-            responses_by_user[user_id].append(response)
-
+        if response.detail and response.detail.user:
+            user_name = response.detail.user.user_name
+            if user_name not in responses_by_user:
+                responses_by_user[user_name] = []
+            responses_by_user[user_name].append(response)
     # Process each user
-    for user_id, user_responses in responses_by_user.items():
-        target_user = target_users_map.get(user_id)
-
+    for user_name, user_responses in responses_by_user.items():
+        target_user = target_users_map.get(user_name)
         # Filter successful assignments for the user
         successful_responses = [
             response for response in user_responses if response.status_code == HTTPStatus.OK
         ]
         if not successful_responses:
-            LOGGER.debug(f"No successful role assignments for user_id: {user_id}. Skipping email sending.")
+            LOGGER.debug(f"No successful role assignments for user_name: {user_name}. Skipping email sending.")
             continue
 
         # Construct email parameters
@@ -418,7 +416,7 @@ def send_users_access_granted_emails(
                 response.email_sending_status = famConstants.EmailSendingStatus.SENT_TO_EMAIL_SERVICE_SUCCESS
 
         except Exception as e:
-            LOGGER.warning(f"Failed to send email to user_id: {user_id}. Reason: {e}")
+            LOGGER.warning(f"Failed to send email to user_name: {user_name}. Reason: {e}")
             for response in successful_responses:
                 response.email_sending_status = famConstants.EmailSendingStatus.SENT_TO_EMAIL_SERVICE_FAILURE
 

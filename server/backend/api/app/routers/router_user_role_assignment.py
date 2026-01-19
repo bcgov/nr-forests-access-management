@@ -100,7 +100,7 @@ def create_user_role_assignment_many(
 
         # sending user notification after event is finished (for all verified users)
         if role_assignment_request.requires_send_user_email:
-            send_users_access_granted_emails(target_users, assignments_results)
+            send_users_access_granted_emails(target_users.verified_users, assignments_results)
 
         return response
 
