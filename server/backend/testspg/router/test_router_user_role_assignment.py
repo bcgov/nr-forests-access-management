@@ -4,6 +4,8 @@ from http import HTTPStatus
 
 import pytest
 from api.app.schemas.target_user_validation_result import TargetUserValidationResultSchema
+from api.app.crud.validator.target_user_validator import validate_bceid_same_org
+from api.app.crud.validator import target_user_validator
 import starlette.testclient
 import testspg.jwt_utils as jwt_utils
 import testspg.utils as utils
@@ -44,19 +46,6 @@ LOGGER = logging.getLogger(__name__)
 endPoint = f"{internal_api_prefix}/user-role-assignment"
 
 ERROR_DUPLICATE_USER_ROLE = "already assigned to user"
-
-@pytest.fixture(scope="function")
-def mock_verified_target_user_BCEID_L4T_for_user_role_deletion(mock_verified_target_user):
-    # Delete user/role assignment related to "get_verified_target_user" is a
-    # special case (not as FastAPI dependency), and needs to be mocked
-    # individually at function.
-    mock_verified_target_user(mocked_user=TargetUserSchema(
-        **{
-            **ACCESS_GRANT_FOM_DEV_CR_BCEID_L4T,
-            **ACCESS_GRANT_FOM_DEV_CR_BCEID_L4T["users"][0],
-            "business_guid": BUSINESS_GUID_BCEID_LOAD_4_TEST,
-        }
-    ))
 
 # ------------------ test create user role assignment ----------------------- #
 
@@ -1282,7 +1271,6 @@ def test_delete_user_role_assignment__idir_requester_can_delete_inactive_target_
     fom_dev_access_admin_token,
     create_test_user_role_assignments,
     setup_new_user,
-    mock_verified_target_user,
     mocker
 ):
     """
@@ -1312,15 +1300,10 @@ def test_delete_user_role_assignment__idir_requester_can_delete_inactive_target_
     )
     user_role_xref_id = access_grants_created[0]
 
-    # override idim return (as inactive user search) with simulating not_found to raise exceptoin from validator.
-    mocked_verified_target_fn = mock_verified_target_user(mocked_side_effect=HTTPException(
-        status_code=HTTPStatus.BAD_REQUEST,
-        detail={
-            "code": ERROR_CODE_INVALID_REQUEST_PARAMETER,
-            "description": f"Invalid request, cannot find user {target_user_schema.user_name} ",
-        }
-    ))
     db_delete_fn_spy = mocker.spy(db_pg_session, "delete")
+
+    # Spy on validate_bceid_same_org to ensure it is not called for IDIR requester.
+    validate_bceid_same_org_spy = mocker.spy(target_user_validator, "validate_bceid_same_org")
 
     # execute Delete: IDIR requester should be able to delete successfully.
     response = test_client_fixture.delete(
@@ -1330,8 +1313,8 @@ def test_delete_user_role_assignment__idir_requester_can_delete_inactive_target_
 
     assert response.status_code == HTTPStatus.NO_CONTENT  # delete success
     # verify IDIR app admin DOES NOT need to verify target user with IDIM service.
-    assert mocked_verified_target_fn.call_count == 0
     assert db_delete_fn_spy.call_count == 1  # db.delete() is called.
+    assert validate_bceid_same_org_spy.call_count == 0  # validate_bceid_same_org is NOT called.
 
 
 def test_delete_user_role_assignment__bceid_requester_cannot_delete_inactive_target_user(
