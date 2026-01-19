@@ -413,10 +413,13 @@ def test_create_user_role_assignment_many_with_abstract_role_without_forestclien
         json=COPY_TEST_USER_ROLE_ASSIGNMENT_FOM_DEV_ABSTRACT,
         headers=jwt_utils.headers(fom_dev_access_admin_token),
     )
-    assert response.status_code == 400
+
+    assert response.json() is not None
+    assignment_detail = response.json()["assignments_detail"][0]
+    assert assignment_detail["status_code"] == HTTPStatus.BAD_REQUEST
     assert (
-        response.json()["detail"].get("description")
-        == "Invalid user role assignment request, missing forest client number."
+        "Invalid user role assignment request, missing forest client number." in
+        assignment_detail.get("error_message")
     )
 
 
@@ -705,11 +708,12 @@ def test_user_role_forest_client_number_not_exist_bad_request(
         json=invalid_request,
         headers=jwt_utils.headers(fom_dev_access_admin_token),
     )
-    assert response.status_code == HTTPStatus.BAD_REQUEST
     assert response.json() is not None
+    assignment_detail = response.json()["assignments_detail"][0]
+    assert assignment_detail["status_code"] == HTTPStatus.BAD_REQUEST
     assert (
-        f"Forest Client Number {client_number_not_exists} does not exist."
-        in response.json()["detail"].get("description")
+        f"Forest Client Number {client_number_not_exists} does not exist." in
+        assignment_detail.get("error_message")
     )
 
 
@@ -736,11 +740,12 @@ def test_user_role_forest_client_number_inactive_bad_request(
         json=invalid_request,
         headers=jwt_utils.headers(fom_dev_access_admin_token),
     )
-    assert response.status_code == HTTPStatus.BAD_REQUEST
     assert response.json() is not None
+    assignment_detail = response.json()["assignments_detail"][1]
+    assert assignment_detail["status_code"] == HTTPStatus.BAD_REQUEST
     assert (
         f"Forest client number {FC_NUMBER_EXISTS_DEACTIVATED} is not in active status"
-        in response.json()["detail"].get("description")
+        in assignment_detail.get("error_message")
     )
 
 

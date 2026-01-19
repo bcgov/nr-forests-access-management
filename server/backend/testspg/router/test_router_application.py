@@ -155,7 +155,7 @@ def test_get_fam_application_user_role_assignment_abstract_role(
     )
     assert (
         data[0]["user"]["user_name"]
-        == ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID["user_name"]
+        == ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID["users"][0]["user_name"]
     )
     assert data[0]["role"]["role_type_code"] == "C"
     assert (
