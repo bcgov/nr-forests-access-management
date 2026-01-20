@@ -327,13 +327,25 @@ async def get_target_users_from_ids(
             "Dependency 'get_target_users_from_ids' called with "
             + f"request body {rbody}."
         )
-        # Accept either a single user dict or a list of user dicts
-        user_items = rbody.get("users") or [rbody]
+        user_items = rbody.get("users")
+        if not user_items:
+            error_msg = "The 'users' list in the request body is empty or missing."
+            utils.raise_http_exception(
+                error_code=ERROR_CODE_INVALID_REQUEST_PARAMETER, error_msg=error_msg
+            )
+
+        # Validate each user item
         for user_item in user_items:
+            if not all(key in user_item for key in ["user_name", "user_guid"]):
+                error_msg = "Each user must include 'user_name' and 'user_guid'."
+                utils.raise_http_exception(
+                    error_code=ERROR_CODE_INVALID_REQUEST_PARAMETER, error_msg=error_msg
+                )
+
             target_user = TargetUserSchema.model_validate({
                 "user_name": user_item["user_name"],
-                "user_type_code": rbody["user_type_code"],
                 "user_guid": user_item["user_guid"],
+                "user_type_code": rbody["user_type_code"],
             })
             target_users.append(target_user)
     return target_users
