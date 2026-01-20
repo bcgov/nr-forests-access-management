@@ -1,3 +1,4 @@
+from unittest.mock import patch
 import logging
 import os
 import sys
@@ -370,3 +371,10 @@ def default_app_role_assignment_page_Params() -> UserRolePageParamsSchema:
         sort_by=None,
         sort_order=None
     )
+
+
+# Reusable fixture to patch raise_http_exception for tests
+@pytest.fixture
+def patch_raise_http_exception():
+    with patch("api.app.routers.router_guards.utils.raise_http_exception", side_effect=lambda **kwargs: (_ for _ in ()).throw(Exception(kwargs["error_msg"]))):
+        yield

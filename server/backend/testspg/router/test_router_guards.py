@@ -104,3 +104,127 @@ def test_authorize_ext_api_by_app_role_no_permission(mock_allow_permission, mock
     with pytest.raises(Exception) as excinfo:
         router_guards.authorize_ext_api_by_app_role(requester=requester, app_client_id=app_client_id, db=db)
     assert "No permission to call the external API" in str(excinfo.value)
+
+# ---
+# Tests for enforce_bceid_by_same_org_guard
+
+@pytest.mark.asyncio
+async def test_enforce_bceid_by_same_org_guard_idir_requester():
+    """
+    Test enforce_bceid_by_same_org_guard: IDIR requester, should not call validation, should not raise.
+    """
+    requester = MagicMock()
+    requester.user_type_code = router_guards.UserType.IDIR
+    role = MagicMock()
+    role.application = MagicMock()
+    role.application.application_name = "TestApp"
+
+    # Should not raise, should not call validate_target_users or validate_bceid_same_org
+    try:
+        await router_guards.enforce_bceid_by_same_org_guard(
+            _enforce_fam_access_validated=None,
+            _enforce_user_type_auth=None,
+            requester=requester,
+            target_users=[MagicMock()],
+            role=role,
+        )
+    except Exception:
+        pytest.fail("Should not raise for IDIR requester")
+
+
+@pytest.mark.asyncio
+@patch("api.app.routers.router_guards.validate_bceid_same_org")
+@patch("api.app.routers.router_guards.validate_target_users")
+async def test_enforce_bceid_by_same_org_guard_success(mock_validate_target_users, mock_validate_same_org):
+    """
+    Test enforce_bceid_by_same_org_guard: BCeID requester, all target users verified, same org, no error.
+    """
+    # Setup requester (BCeID)
+    requester = MagicMock()
+    requester.user_type_code = router_guards.UserType.BCEID
+    requester.user_name = "bceid_user"
+
+    # Setup role
+    role = MagicMock()
+    role.application = MagicMock()
+    role.application.application_name = "TestApp"
+
+    # Setup validation result: all users verified, none failed
+    validation_result = MagicMock()
+    validation_result.failed_users = []
+    validation_result.verified_users = [MagicMock(user_name="target1"), MagicMock(user_name="target2")]
+    mock_validate_target_users.return_value = validation_result
+
+    # Should not raise
+    try:
+        await router_guards.enforce_bceid_by_same_org_guard(
+            _enforce_fam_access_validated=None,
+            _enforce_user_type_auth=None,
+            requester=requester,
+            target_users=[MagicMock()],
+            role=role,
+        )
+    except Exception:
+        pytest.fail("Should not raise when all users verified and same org")
+    # Verify organization validation was called
+    assert mock_validate_same_org.call_count == 1
+
+
+@pytest.mark.asyncio
+@patch("api.app.routers.router_guards.validate_bceid_same_org")
+@patch("api.app.routers.router_guards.validate_target_users")
+async def test_enforce_bceid_by_same_org_guard_failed_users(mock_validate_same_org, mock_validate_target_users):
+    """
+    Test enforce_bceid_by_same_org_guard: BCeID requester, some target users failed verification.
+    """
+    requester = MagicMock()
+    requester.user_type_code = router_guards.UserType.BCEID
+    role = MagicMock()
+    role.application = MagicMock()
+    role.application.application_name = "TestApp"
+
+    failed_user = MagicMock(user_name="failed_user")
+    validation_result = MagicMock()
+    validation_result.failed_users = [failed_user]
+    validation_result.verified_users = []
+    mock_validate_target_users.return_value = validation_result
+
+    with pytest.raises(Exception) as excinfo:
+        await router_guards.enforce_bceid_by_same_org_guard(
+            _enforce_fam_access_validated=None,
+            _enforce_user_type_auth=None,
+            requester=requester,
+            target_users=[MagicMock()],
+            role=role,
+        )
+    assert "Unable to verify the following users" in str(excinfo.value)
+
+
+@pytest.mark.asyncio
+@patch("api.app.routers.router_guards.validate_bceid_same_org")
+@patch("api.app.routers.router_guards.validate_target_users")
+async def test_enforce_bceid_by_same_org_guard_diff_org_error(mock_validate_target_users, mock_validate_same_org, patch_raise_http_exception):
+    """
+    Test enforce_bceid_by_same_org_guard: BCeID requester, all users verified, but org validation fails.
+    """
+    requester = MagicMock()
+    requester.user_type_code = router_guards.UserType.BCEID
+    role = MagicMock()
+    role.application = MagicMock()
+    role.application.application_name = "TestApp"
+
+    validation_result = MagicMock()
+    validation_result.failed_users = []
+    validation_result.verified_users = [MagicMock(user_name="target1")]
+    mock_validate_target_users.return_value = validation_result
+    mock_validate_same_org.side_effect = Exception("Different org error")
+
+    with pytest.raises(Exception) as excinfo:
+        await router_guards.enforce_bceid_by_same_org_guard(
+            _enforce_fam_access_validated=None,
+            _enforce_user_type_auth=None,
+            requester=requester,
+            target_users=[MagicMock()],
+            role=role,
+        )
+    assert "An error occurred while validating organization consistency" in str(excinfo.value)
