@@ -19,9 +19,13 @@ export const generateAppPermissionSuccessNotifications = (
 ): PermissionNotificationType[] => {
     const notifications: PermissionNotificationType[] = [];
 
+    const emailSendingStatus =
+        (data as FamUserRoleAssignmentRes).assignments_detail?.[0]?.email_sending_status ??
+        (data as FamAccessControlPrivilegeResponse).email_sending_status;
+
     const email = data.assignments_detail[0]?.detail.user.email;
 
-    if (data.email_sending_status === "SENT_TO_EMAIL_SERVICE_FAILURE") {
+    if ("SENT_TO_EMAIL_SERVICE_FAILURE" === emailSendingStatus) {
         notifications.push({
             serverity: Severity.Error,
             message: `
