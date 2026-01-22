@@ -748,10 +748,11 @@ def test_self_grant_fail(
     # Setup challenge: The user in the json sent to the service must match the user
     # in the JWT security token.
     user_role_assignment_request_data = {
-        "user_name": jwt_utils.IDIR_USERNAME,
+        "users": [
+            {   "user_name": jwt_utils.IDIR_USERNAME, "user_guid": jwt_utils.IDP_USER_GUID}
+        ],
         "user_type_code": UserType.IDIR,
         "role_id": FOM_DEV_REVIEWER_ROLE_ID,
-        "user_guid": jwt_utils.IDP_USER_GUID,
     }
 
     # override router guard dependencies

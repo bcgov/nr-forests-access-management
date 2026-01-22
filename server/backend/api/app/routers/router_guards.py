@@ -292,14 +292,14 @@ async def get_target_users_from_ids(
     For Requesting user, use "get_current_requester" dependency.
 
     Request field convention:
-    - For a single user: request body should be a dict with keys 'user_name', 'user_type_code', 'user_guid'.
-    - For multiple users: request body should contain a 'target_users' key with a list of user dicts.
+    - For multiple users: request body should contain a 'users' key with a list of user dicts.
       Example:
           {
-              "target_users": [
-                  {"user_name": "jdoe", "user_type_code": "IDIR", "user_guid": "abc-123"},
-                  {"user_name": "asmith", "user_type_code": "BCEID", "user_guid": "def-456"}
-              ]
+              "users": [
+                  {"user_name": "jdoe", "user_guid": "abc-123"},
+                  {"user_name": "asmith", "user_guid": "def-456"}
+              ],
+              "user_type_code": "BCEID", # common for all users in the list
           }
     The method will always return a list of TargetUserSchema objects.
     """
@@ -321,7 +321,7 @@ async def get_target_users_from_ids(
                 error_code=ERROR_CODE_INVALID_REQUEST_PARAMETER, error_msg=error_msg
             )
     else:
-        # from request body - support single or multiple users
+        # from request body - support multiple users
         rbody = await request.json()
         LOGGER.debug(
             "Dependency 'get_target_users_from_ids' called with "

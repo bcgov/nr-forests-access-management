@@ -373,6 +373,7 @@ def send_users_access_granted_emails(
             if user_name not in responses_by_user:
                 responses_by_user[user_name] = []
             responses_by_user[user_name].append(response)
+
     # Process each user
     for user_name, user_responses in responses_by_user.items():
         target_user = target_users_map.get(user_name)
