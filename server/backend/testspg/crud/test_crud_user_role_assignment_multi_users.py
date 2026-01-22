@@ -401,3 +401,36 @@ class TestCrudMultiUserEdgeCases:
             assert actual_expiry_utc == expected_expiry_utc, \
                 f"Expiry date mismatch: expected {expected_expiry_utc}, got {actual_expiry_utc}"
 
+
+class TestCrudMultiUserAudit:
+    """Test audit logic for multi-user role assignments."""
+
+    def test_permission_audit_service_called(self, db_pg_session: Session):
+        """
+        TEST: Verify PermissionAuditService is called for each user.
+        Verify:
+        - store_user_permissions_granted_audit_history is called with correct arguments.
+        """
+        verified_users = [CRUD_TEST_USER_1, CRUD_TEST_USER_2]
+        request = create_role_assignment_request(
+            users=verified_users,
+            user_type_code=UserType.IDIR,
+            role_id=FOM_DEV_REVIEWER_ROLE_ID,
+            forest_client_numbers=None
+        )
+        requester = create_test_requester()
+
+        with patch("api.app.crud.services.permission_audit_service.PermissionAuditService.store_user_permissions_granted_audit_history") as mock_audit:
+            # Execute
+            crud_user_role.create_user_role_assignment_many(
+                db=db_pg_session,
+                request=request,
+                verified_users=verified_users,
+                requester=requester,
+            )
+
+            # Assert
+            assert mock_audit.call_count == len(verified_users)
+            for call, user in zip(mock_audit.call_args_list, verified_users):
+                args, kwargs = call
+                assert kwargs["change_target_user"].user_name == user.user_name
