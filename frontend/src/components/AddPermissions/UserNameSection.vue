@@ -35,11 +35,14 @@ const props = withDefaults(
 
 const PERMISSION_REQUIRED_FOR_OPERATION = "permission_required_for_operation";
 
+
 const emit = defineEmits(["setVerifyResult"]);
 
 const userIdInput = ref<string>("");
-
 const errorMsg = ref("");
+
+// List of all valid searched users
+const userList = ref<IdimProxyBceidInfoSchema[]>([]);
 
 /**
  * Checks if the provided user ID matches the currently logged-in user's ID.
@@ -74,6 +77,16 @@ const setUserNotFoundError = () => {
         "No user found. Check the spelling or try another username";
 };
 
+const addUserToList = (user: IdimProxyBceidInfoSchema) => {
+    if (!userList.value.some(u => u.userId === user.userId)) {
+        userList.value.push(user);
+    }
+};
+
+const handleDeleteUser = (userId: string) => {
+    userList.value = userList.value.filter(u => u.userId !== userId);
+};
+
 const verifyIdirMutation = useMutation({
     mutationFn: () => {
         if (props.setIsVerifying) {
@@ -85,6 +98,7 @@ const verifyIdirMutation = useMutation({
     },
     onSuccess: (data) => {
         if (data.found) {
+            addUserToList(data);
             emit("setVerifyResult", data);
         } else {
             setUserNotFoundError();
@@ -109,6 +123,7 @@ const verifyBceidMutation = useMutation({
     },
     onSuccess: (data) => {
         if (data.found) {
+            addUserToList(data);
             emit("setVerifyResult", data);
         } else {
             setUserNotFoundError();
@@ -149,12 +164,13 @@ const resetsearchResult = () => {
     emit("setVerifyResult", null);
 };
 
-// whenver user domain change, remove the previous user identity card
+// whenver user domain change, remove the previous user identity card and clear user list
 watch(
     () => props.domain,
     () => {
         userIdInput.value = "";
         resetsearchResult();
+        userList.value = [];
     }
 );
 </script>
@@ -223,15 +239,40 @@ watch(
         </Field>
 
         <UserIdentityCard
-            v-if="user"
-            :userIdentity="user"
-            :errorMsg="errorMsg"
+            v-if="userList.length > 0"
+            :userList="userList"
+            @deleteUser="handleDeleteUser"
         />
+
+        <div v-if="userList.length > 0" class="user-bulk-message-bar">
+            <span>
+                <b>{{ userList.length }} user{{ userList.length > 1 ? 's' : '' }}</b>
+                &nbsp;will receive the same permissions configured below
+            </span>
+        </div>
     </div>
 </template>
 
 <style lang="scss" scoped>
 .verify-username-button {
     width: 12rem;
+}
+
+.user-bulk-message-bar {
+    margin-top: 0.7rem;
+    border: 1px solid #BEDBFF;
+    background: #EFF6FF;
+    color: #1C398E;
+    border-radius: 4px;
+    padding: 0.7rem 1rem;
+    font-family: 'BC Sans', 'Noto Sans', Arial, sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    display: flex;
+    align-items: center;
+    min-height: 38px;
+    b {
+        font-weight: 700;
+    }
 }
 </style>

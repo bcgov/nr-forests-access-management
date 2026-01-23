@@ -1,101 +1,91 @@
 <script setup lang="ts">
-import CheckMarkFilledIcon from "@carbon/icons-vue/es/checkmark--filled/16";
-import type { IdimProxyBceidInfoSchema } from "fam-app-acsctl-api";
-import Card from "primevue/card";
-
-import CardColumn from "@/components/CardColumn/index.vue";
+import TrashIcon from "@carbon/icons-vue/es/trash-can/16";
+import CheckmarkOutline from "@carbon/icons-vue/es/checkmark--outline/16";
+import DataTable from "primevue/datatable";
+import Column from "primevue/column";
 import { formatUserNameAndId } from "@/utils/UserUtils";
+import type { IdimProxyBceidInfoSchema } from "fam-app-acsctl-api";
 
 const props = defineProps<{
-    userIdentity: IdimProxyBceidInfoSchema;
+    userList: IdimProxyBceidInfoSchema[];
 }>();
+
+const emit = defineEmits(["deleteUser"]);
+const handleDelete = (userId: string) => emit("deleteUser", userId);
 </script>
 
 <template>
-    <div class="user-id-card">
-        <Card>
-            <template #header>
-                <CheckMarkFilledIcon />
-                <p>Verified user information</p>
-            </template>
-
-            <template #content>
-                <div class="container-fluid">
-                    <div class="row gy-4">
-                        <CardColumn
-                            :id="`user-card-id-${props.userIdentity.userId}`"
-                            label="Username"
-                            :description="props.userIdentity.userId"
-                            class="col-auto"
-                        />
-                        <CardColumn
-                            v-if="props.userIdentity.found"
-                            :id="`user-card-full-name-${props.userIdentity.userId}`"
-                            label="Full Name"
-                            :description="
-                                formatUserNameAndId(
-                                    null,
-                                    props.userIdentity.firstName,
-                                    props.userIdentity.lastName
-                                )
-                            "
-                            class="col-auto"
-                        />
-                        <CardColumn
-                            v-if="
-                                props.userIdentity.found &&
-                                props.userIdentity.email
-                            "
-                            :id="`user-card-email-${props.userIdentity.userId}`"
-                            label="Email"
-                            :description="props.userIdentity.email"
-                            class="col-auto"
-                        />
-                        <CardColumn
-                            v-if="
-                                props.userIdentity.found &&
-                                props.userIdentity.businessLegalName
-                            "
-                            :id="`user-card-org-name-${props.userIdentity.userId}`"
-                            label="Organization Name"
-                            :description="props.userIdentity.businessLegalName"
-                            class="col-auto"
-                        />
-                    </div>
-                </div>
-            </template>
-        </Card>
+    <div class="user-id-card-table">
+        <div class="verified-message-bar">
+            <CheckmarkOutline class="verified-icon" />
+            <span class="verified-message-text">Verified user information</span>
+        </div>
+        <DataTable :value="props.userList" stripedRows class="user-table">
+            <Column field="userId" header="Username" />
+            <Column header="Full Name">
+                <template #body="{ data }">
+                    {{ formatUserNameAndId(null, data.firstName, data.lastName) }}
+                </template>
+            </Column>
+            <Column field="email" header="Email" />
+            <Column header="" class="action-col">
+                <template #body="{ data }">
+                    <button class="btn btn-icon" title="Delete user" @click="handleDelete(data.userId)">
+                        <TrashIcon />
+                    </button>
+                </template>
+            </Column>
+        </DataTable>
     </div>
 </template>
 
 <style lang="scss">
-.user-id-card {
+.user-id-card-table {
     margin-top: 2rem;
-
-    .p-card {
-        .p-card-header {
+    .verified-message-bar {
+        height: 38px;
+        background: #F0FDF4;
+        border: 1px solid #B9F8CF;
+        display: flex;
+        align-items: center;
+        padding: 0 1rem;
+        border-radius: 4px;
+        margin-bottom: 0.7rem;
+        font-family: 'BC Sans', 'Noto Sans', Arial, sans-serif;
+        font-weight: 400;
+        font-style: normal;
+        font-size: 14px;
+        color: #1a6333;
+        .verified-icon {
+            margin-right: 0.75rem;
+            width: 20px;
+            height: 20px;
+            stroke: #008236;
+        }
+        .verified-message-text {
+            display: inline-block;
+            vertical-align: middle;
+            color:#0D542B
+        }
+    }
+    .user-table {
+        width: 100%;
+        .action-col {
+            width: 48px;
+            text-align: center;
+        }
+        .btn.btn-icon {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.25rem;
             display: flex;
-            padding: 1.5rem;
             align-items: center;
-
             svg {
                 width: 1rem;
                 height: 1rem;
-                color: var(--support-success);
-                margin-bottom: 0.1rem;
+                color: inherit;
             }
-
-            p {
-                @include type.type-style("heading-compact-01");
-                margin: 0;
-                padding: 0 0 0 1rem;
-                margin-bottom: 0;
-                color: var(--text-primary);
-            }
-        }
-
-        .custom-carbon-icon-misuse {
-            fill: var(--support-error);
         }
     }
 }
