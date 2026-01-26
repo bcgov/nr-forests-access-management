@@ -12,30 +12,31 @@ from typing_extensions import Annotated
 
 LOGGER = logging.getLogger(__name__)
 
-# Role assignment with one role at a time for the user.
+class FamUserRoleAssignmentUserSchema(BaseModel):
+    user_name: Annotated[str, StringConstraints(min_length=3, max_length=20)]
+    user_guid: Annotated[str, StringConstraints(min_length=32, max_length=32)]
+
 class FamUserRoleAssignmentCreateSchema(BaseModel):
     """
-    Request schema for assigning a user to a role, with optional expiry date.
+    Request schema for assigning one or more users to a role, with optional expiry date.
+    - users: List of users to assign
+    - user_type_code: The type of all users in this request
     - expiry_date_date: The expiry date as a string (YYYY-MM-DD), BC timezone.
     - _expiry_date: Internal use only, timezone-aware datetime, derived from expiry_date_date.
     """
-    user_name: Annotated[
-        str, StringConstraints(min_length=3, max_length=20)
-    ]  # IDIM search max length
-    user_guid: Annotated[str, StringConstraints(min_length=32, max_length=32)]
+    users: List[FamUserRoleAssignmentUserSchema]
     user_type_code: UserType
     role_id: int
     forest_client_numbers: Union[
         List[Annotated[str, StringConstraints(min_length=1, max_length=8)]], None
     ] = None
     requires_send_user_email: bool = False
-    expiry_date_date: Optional[str] = Field( # e.g. '2025-12-31', BC timezone.
+    expiry_date_date: Optional[str] = Field(
         default=None,
         description="The expiry date as a string (YYYY-MM-DD), BC timezone. If provided, the role is valid until the end of this day."
     )
     # Internal use only, not exposed in OpenAPI or request/response bodies
     _expiry_date: Optional[datetime] = PrivateAttr(default=None)
-
 
     @field_validator('expiry_date_date')
     @classmethod
@@ -53,7 +54,6 @@ class FamUserRoleAssignmentCreateSchema(BaseModel):
         if dv < now_bc:
             raise ValueError('expiry_date_date must be today or in the future (BC timezone)')
         return v
-
 
     @model_validator(mode="after")
     def set_expiry_date(self):

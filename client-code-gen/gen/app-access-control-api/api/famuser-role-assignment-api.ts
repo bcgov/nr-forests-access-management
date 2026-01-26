@@ -34,8 +34,8 @@ import { HTTPValidationError } from '../model';
 export const FAMUserRoleAssignmentApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
-         * Grant User Access to an application\'s role.
-         * @summary Create User Role Assignment Many
+         * Granting IDIR/BCeID users access to an application\'s role, supporting expiry dates for role assignments.
+         * @summary Grant multiple users access to an application\'s role.
          * @param {FamUserRoleAssignmentCreateSchema} famUserRoleAssignmentCreateSchema 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -122,8 +122,8 @@ export const FAMUserRoleAssignmentApiFp = function(configuration?: Configuration
     const localVarAxiosParamCreator = FAMUserRoleAssignmentApiAxiosParamCreator(configuration)
     return {
         /**
-         * Grant User Access to an application\'s role.
-         * @summary Create User Role Assignment Many
+         * Granting IDIR/BCeID users access to an application\'s role, supporting expiry dates for role assignments.
+         * @summary Grant multiple users access to an application\'s role.
          * @param {FamUserRoleAssignmentCreateSchema} famUserRoleAssignmentCreateSchema 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -158,8 +158,8 @@ export const FAMUserRoleAssignmentApiFactory = function (configuration?: Configu
     const localVarFp = FAMUserRoleAssignmentApiFp(configuration)
     return {
         /**
-         * Grant User Access to an application\'s role.
-         * @summary Create User Role Assignment Many
+         * Granting IDIR/BCeID users access to an application\'s role, supporting expiry dates for role assignments.
+         * @summary Grant multiple users access to an application\'s role.
          * @param {FamUserRoleAssignmentCreateSchema} famUserRoleAssignmentCreateSchema 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -187,8 +187,8 @@ export const FAMUserRoleAssignmentApiFactory = function (configuration?: Configu
  */
 export interface FAMUserRoleAssignmentApiInterface {
     /**
-     * Grant User Access to an application\'s role.
-     * @summary Create User Role Assignment Many
+     * Granting IDIR/BCeID users access to an application\'s role, supporting expiry dates for role assignments.
+     * @summary Grant multiple users access to an application\'s role.
      * @param {FamUserRoleAssignmentCreateSchema} famUserRoleAssignmentCreateSchema 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -216,8 +216,8 @@ export interface FAMUserRoleAssignmentApiInterface {
  */
 export class FAMUserRoleAssignmentApi extends BaseAPI implements FAMUserRoleAssignmentApiInterface {
     /**
-     * Grant User Access to an application\'s role.
-     * @summary Create User Role Assignment Many
+     * Granting IDIR/BCeID users access to an application\'s role, supporting expiry dates for role assignments.
+     * @summary Grant multiple users access to an application\'s role.
      * @param {FamUserRoleAssignmentCreateSchema} famUserRoleAssignmentCreateSchema 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}

@@ -1,4 +1,3 @@
-
 import copy
 import datetime
 import logging
@@ -36,12 +35,11 @@ def test_create_user_role_with_role_not_exists(db_pg_session: Session):
     })
 
     with pytest.raises(HTTPException) as e:
-
-        mocked_target_user = TargetUserSchema(**user_role)
+        mocked_target_user = TargetUserSchema(**user_role["users"][0])
         assert crud_user_role.create_user_role_assignment_many(
             db_pg_session,
             FamUserRoleAssignmentCreateSchema(**user_role),
-            mocked_target_user,
+            [mocked_target_user],
             dummy_test_requester
         )
     assert str(e._excinfo).find("Role id ") != -1
@@ -179,7 +177,9 @@ def test_user_role_expiry_date_invalid_format():
 def test_user_role_expiry_date_utc_storage():
     """Assign a user role with an expiry date and verify UTC storage."""
     user_role = copy.deepcopy(ACCESS_GRANT_FOM_DEV_CR_IDIR)
-    user_role["expiry_date_date"] = "2025-12-31"
+    bc = ZoneInfo(BC_TIMEZONE)
+    future_date = (datetime.datetime.now(bc) + datetime.timedelta(days=10)).date()
+    user_role["expiry_date_date"] = future_date.strftime(DATE_FORMAT_YYYY_MM_DD)
     schema = FamUserRoleAssignmentCreateSchema(**user_role)
     assert schema._expiry_date.tzinfo is not None
     from zoneinfo import ZoneInfo as _ZoneInfo
@@ -194,17 +194,26 @@ def test_crud_create_user_role_with_expiry_date(db_pg_session: Session):
     expiry_date_str = future_date.strftime(DATE_FORMAT_YYYY_MM_DD)
     user_role = copy.deepcopy(ACCESS_GRANT_FOM_DEV_CR_IDIR)
     user_role["expiry_date_date"] = expiry_date_str
-    user_role["user_guid"] = "STATICUSERGUID1234567890ABCDEFGH"
-    user_role["user_name"] = TEST_USER_NAME_IDIR
+    user_role["users"] = [
+        {
+            "user_name": TEST_USER_NAME_IDIR,
+            "user_guid": "STATICUSERGUID1234567890ABCDEFGH",
+        }
+    ]
     schema = FamUserRoleAssignmentCreateSchema(**user_role)
-    target_user = TargetUserSchema(**user_role)
+    target_user = TargetUserSchema(**user_role["users"][0])
     requester = RequesterSchema(
         cognito_user_id=TEST_CREATOR,
         user_name=TEST_USER_NAME_IDIR,
         user_guid=TEST_USER_GUID_IDIR,
         user_id=TEST_USER_ID
     )
-    result = crud_user_role.create_user_role_assignment_many(db_pg_session, schema, target_user, requester)
+    result = crud_user_role.create_user_role_assignment_many(
+        db_pg_session,
+        schema,
+        [target_user],
+        requester
+    )
     assert result and len(result) == 1
     fam_user_role_obj = result[0].detail
     assert fam_user_role_obj.expiry_date is not None
@@ -217,17 +226,21 @@ def test_crud_create_user_role_without_expiry_date(db_pg_session: Session):
     user_role = copy.deepcopy(ACCESS_GRANT_FOM_DEV_CR_IDIR)
     if "expiry_date_date" in user_role:
         del user_role["expiry_date_date"]
-    user_role["user_guid"] = "STATICUSERGUID1234567890ABCDEFGH"
-    user_role["user_name"] = TEST_USER_NAME_IDIR
+    user_role["users"] = [
+        {
+            "user_name": TEST_USER_NAME_IDIR,
+            "user_guid": "STATICUSERGUID1234567890ABCDEFGH",
+        }
+    ]
     schema = FamUserRoleAssignmentCreateSchema(**user_role)
-    target_user = TargetUserSchema(**user_role)
+    target_user = TargetUserSchema(**user_role["users"][0])
     requester = RequesterSchema(
         cognito_user_id=TEST_CREATOR,
         user_name=TEST_USER_NAME_IDIR,
         user_guid=TEST_USER_GUID_IDIR,
         user_id=TEST_USER_ID
     )
-    result = crud_user_role.create_user_role_assignment_many(db_pg_session, schema, target_user, requester)
+    result = crud_user_role.create_user_role_assignment_many(db_pg_session, schema, [target_user], requester)
     assert result and len(result) == 1
     fam_user_role_obj = result[0].detail
     assert fam_user_role_obj.expiry_date is None

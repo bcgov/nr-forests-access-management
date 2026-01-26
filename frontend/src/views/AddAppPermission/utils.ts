@@ -115,19 +115,34 @@ export const validateAppPermissionForm = (isAbstractRoleSelected: boolean) => {
  */
 export const generatePayload = (
     formData: AppPermissionFormType
-):
-    | FamUserRoleAssignmentCreateSchema
-    | FamAccessControlPrivilegeCreateRequest => ({
-    user_name: formData.user?.userId ?? "",
-    user_guid: formData.user?.guid ?? "",
-    user_type_code: formData.domain,
-    role_id: formData.role?.id ?? -1,
-    forest_client_numbers: formData.forestClients.map(
-        (fc) => fc.forest_client_number
-    ),
-    requires_send_user_email: formData.sendUserEmail,
-    expiry_date_date: formData.expiryDate ?? null,
-});
+    ): FamUserRoleAssignmentCreateSchema | FamAccessControlPrivilegeCreateRequest => {
+        const common_payload = {
+            user_type_code: formData.domain,
+            role_id: formData.role?.id ?? -1,
+            forest_client_numbers: formData.forestClients.map(
+                (fc) => fc.forest_client_number
+            ),
+            requires_send_user_email: formData.sendUserEmail,
+            expiry_date_date: formData.expiryDate ?? null,
+        };
+
+        if (formData.isAddingDelegatedAdmin) {
+            return {
+                ...common_payload,
+                user_name: formData.user?.userId ?? "",
+                user_guid: formData.user?.guid ?? "",
+            };
+        }
+        return {
+            ...common_payload,
+            users: [
+                {
+                    user_guid: formData.user?.guid ?? "",
+                    user_name: formData.user?.userId ?? "",
+                },
+            ],
+        };
+    };
 
 export const getRolesByAppId = (data: FamGrantDetailDto[], appId: number) => {
     const foundGrantByAppId = data.find(
