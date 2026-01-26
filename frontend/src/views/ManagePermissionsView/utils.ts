@@ -19,6 +19,13 @@ export const generateAppPermissionSuccessNotifications = (
 ): PermissionNotificationType[] => {
     const notifications: PermissionNotificationType[] = [];
 
+    /**
+     * Represents the status of an email sending operation.
+     * TODO: To use new backend multiple user granting but with current application
+     *       only one user is granted at a time, so we access the first item's status.
+     *       Ticket 2058 will refactor frontend and also address email status handling.
+     *
+     */
     const emailSendingStatus =
         (data as FamUserRoleAssignmentRes).assignments_detail?.[0]?.email_sending_status ??
         (data as FamAccessControlPrivilegeResponse).email_sending_status;
