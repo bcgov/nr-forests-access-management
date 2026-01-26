@@ -101,7 +101,12 @@ const rolesUnderSelectedApp = computed(() => {
     return getRolesByAppId(availableRoles, props.appId);
 });
 
+
 const formData = ref<AppPermissionFormType | undefined>(undefined);
+
+// Multi-user mode and user list state
+const multiUserMode = ref(true); // Set to false for single-user mode as needed
+const userList = ref<IdimProxyBceidInfoSchema[]>([]);
 
 watch(
     () => adminUserAccessQuery.isSuccess && rolesUnderSelectedApp.value,
@@ -127,6 +132,7 @@ const handleDomainChange = (userType: UserType) => {
     }
 };
 
+
 const handleUserVerification = (
     user: IdimProxyIdirInfoSchema | IdimProxyBceidInfoSchema | null,
     domain?: UserType
@@ -136,6 +142,16 @@ const handleUserVerification = (
         // Prevent user from chaning domain while it's verifying
         formData.value.domain = domain ?? formData.value.domain;
     }
+};
+
+const handleAddUser = (user: IdimProxyBceidInfoSchema) => {
+    if (!userList.value.some(u => u.userId === user.userId)) {
+        userList.value.push(user);
+    }
+};
+
+const handleDeleteUser = (userId: string) => {
+    userList.value = userList.value.filter(u => u.userId !== userId);
 };
 
 const queryClient = useQueryClient();
@@ -302,10 +318,7 @@ const getUserNameInputHelperText = () =>
                     <StepContainer title="User information" divider>
                         <UserDomainSelect
                             class="domain-select"
-                            v-if="
-                                auth.authState.famLoginUser?.idpProvider ===
-                                'idir'
-                            "
+                            v-if="auth.authState.famLoginUser?.idpProvider === 'idir'"
                             :domain="formData.domain"
                             :is-verifying-user="isVerifyingUser"
                             @change="handleDomainChange"
@@ -316,8 +329,12 @@ const getUserNameInputHelperText = () =>
                             :user="formData.user"
                             :app-id="appId"
                             :helper-text="getUserNameInputHelperText()"
-                            @setVerifyResult="handleUserVerification"
                             :set-is-verifying="setIsVerifyingUser"
+                            :user-list="userList"
+                            :multi-user-mode="multiUserMode"
+                            @setUser="handleUserVerification"
+                            @addUser="handleAddUser"
+                            @deleteUser="handleDeleteUser"
                         />
                     </StepContainer>
                     <StepContainer

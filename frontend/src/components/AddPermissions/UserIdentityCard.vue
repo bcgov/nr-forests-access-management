@@ -8,6 +8,7 @@ import type { IdimProxyBceidInfoSchema } from "fam-app-acsctl-api";
 
 const props = defineProps<{
     userList: IdimProxyBceidInfoSchema[];
+    multiUserMode?: boolean;
 }>();
 
 const emit = defineEmits(["deleteUser"]);
@@ -28,7 +29,7 @@ const handleDelete = (userId: string) => emit("deleteUser", userId);
                 </template>
             </Column>
             <Column field="email" header="Email" />
-            <Column header="" class="action-col">
+            <Column v-if="props.multiUserMode" header="" class="action-col">
                 <template #body="{ data }">
                     <button class="btn btn-icon" title="Delete user" @click="handleDelete(data.userId)">
                         <TrashIcon />

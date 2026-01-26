@@ -148,7 +148,8 @@ const onSubmit = () => {
                             :domain="UserType.I"
                             :user="formData.user"
                             :app-id="1"
-                            @setVerifyResult="handleUserVerification"
+                            :multi-user-mode="false"
+                            @setUser="handleUserVerification"
                             helperText="Only IDIR users are allowed to be added as application admins"
                         />
                     </StepContainer>

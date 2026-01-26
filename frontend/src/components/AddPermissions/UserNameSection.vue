@@ -19,6 +19,7 @@ import HelperText from "../UI/HelperText.vue";
 
 const auth = useAuth();
 
+
 const props = withDefaults(
     defineProps<{
         domain: UserType;
@@ -27,22 +28,30 @@ const props = withDefaults(
         helperText: string;
         fieldId?: string;
         setIsVerifying?: (verifying: boolean) => void;
+        userList?: IdimProxyBceidInfoSchema[] | null;
+        multiUserMode?: boolean;
     }>(),
     {
         fieldId: "user",
+        multiUserMode: false,
+        userList: () => [],
     }
 );
 
 const PERMISSION_REQUIRED_FOR_OPERATION = "permission_required_for_operation";
 
 
-const emit = defineEmits(["setVerifyResult"]);
+/**
+ * Emits:
+ * - addUser: In multi-user mode, requests parent to add a user to the user list.
+ * - setUser: In single-user mode, notifies parent to set the verified user as the selected user.
+ * - deleteUser: In multi-user mode, requests parent to remove a user from the user list.
+ */
+const emit = defineEmits(["addUser", "deleteUser", "setUser"]);
+
 
 const userIdInput = ref<string>("");
 const errorMsg = ref("");
-
-// List of all valid searched users
-const userList = ref<IdimProxyBceidInfoSchema[]>([]);
 
 /**
  * Checks if the provided user ID matches the currently logged-in user's ID.
@@ -55,10 +64,7 @@ const isCurrentUser = (): boolean => {
 };
 
 const handleMutationError = (error: any) => {
-    emit("setVerifyResult", null);
-
     errorMsg.value = "Failed to load username's data. Try verifying it again";
-
     // Check if error and response properties exist
     if (error.response && error.response.status === 403) {
         const detail = error.response.data?.detail;
@@ -72,19 +78,27 @@ const handleMutationError = (error: any) => {
 };
 
 const setUserNotFoundError = () => {
-    emit("setVerifyResult", null);
     errorMsg.value =
         "No user found. Check the spelling or try another username";
 };
 
+
+
 const addUserToList = (user: IdimProxyBceidInfoSchema) => {
-    if (!userList.value.some(u => u.userId === user.userId)) {
-        userList.value.push(user);
+    const list = props.userList ?? [];
+    if (props.multiUserMode) {
+        // In multi-user mode, emit addUser if not already present
+        if (!list.some(u => u.userId === user.userId)) {
+            emit("addUser", user);
+        }
+    } else {
+        // In single-user mode, emit setUser to parent
+        emit("setUser", user);
     }
 };
 
 const handleDeleteUser = (userId: string) => {
-    userList.value = userList.value.filter(u => u.userId !== userId);
+    emit("deleteUser", userId);
 };
 
 const verifyIdirMutation = useMutation({
@@ -99,7 +113,6 @@ const verifyIdirMutation = useMutation({
     onSuccess: (data) => {
         if (data.found) {
             addUserToList(data);
-            emit("setVerifyResult", data);
         } else {
             setUserNotFoundError();
         }
@@ -124,7 +137,6 @@ const verifyBceidMutation = useMutation({
     onSuccess: (data) => {
         if (data.found) {
             addUserToList(data);
-            emit("setVerifyResult", data);
         } else {
             setUserNotFoundError();
         }
@@ -146,7 +158,6 @@ const handleVerify = (userType: UserType) => {
         return;
     }
     if (isCurrentUser()) {
-        emit("setVerifyResult", null);
         errorMsg.value = "You cannot grant permissions to yourself.";
         return;
     }
@@ -161,16 +172,14 @@ const handleVerify = (userType: UserType) => {
 
 const resetsearchResult = () => {
     errorMsg.value = "";
-    emit("setVerifyResult", null);
 };
 
-// whenver user domain change, remove the previous user identity card and clear user list
+// whenver user domain change, remove the previous user identity card and clear input
 watch(
     () => props.domain,
     () => {
         userIdInput.value = "";
         resetsearchResult();
-        userList.value = [];
     }
 );
 </script>
@@ -239,14 +248,15 @@ watch(
         </Field>
 
         <UserIdentityCard
-            v-if="userList.length > 0"
-            :userList="userList"
+            v-if="(props.userList ?? []).length > 0"
+            :userList="props.userList ?? []"
+            :multiUserMode="props.multiUserMode"
             @deleteUser="handleDeleteUser"
         />
 
-        <div v-if="userList.length > 0" class="user-bulk-message-bar">
+        <div v-if="props.multiUserMode && (props.userList ?? []).length > 0" class="user-bulk-message-bar">
             <span>
-                <b>{{ userList.length }} user{{ userList.length > 1 ? 's' : '' }}</b>
+                <b>{{ (props.userList ?? []).length }} user{{ (props.userList ?? []).length > 1 ? 's' : '' }}</b>
                 &nbsp;will receive the same permissions configured below
             </span>
         </div>
