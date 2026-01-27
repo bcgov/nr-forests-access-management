@@ -105,3 +105,5 @@ terraform/tools/output.txt
 
 # Copilot instructions
 **/*[-.]instructions.md
+**/*.prompt.md
+plan/**

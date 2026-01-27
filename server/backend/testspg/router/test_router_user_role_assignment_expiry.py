@@ -17,7 +17,7 @@ def test_create_user_role_assignment_with_future_expiry_date(
     test_client_fixture: TestClient,
     db_pg_session,
     fom_dev_access_admin_token,
-    override_depends__get_verified_target_user
+    override_depends__get_verified_target_users
 ):
     """
     Test assigning a role with an expiry date.
@@ -27,7 +27,7 @@ def test_create_user_role_assignment_with_future_expiry_date(
         **ACCESS_GRANT_FOM_DEV_CR_IDIR,
         "expiry_date_date": future_date.strftime(DATE_FORMAT_YYYY_MM_DD),
     }
-    override_depends__get_verified_target_user()
+    override_depends__get_verified_target_users()
     response = test_client_fixture.post(
         endPoint,
         json=request_data,
@@ -65,7 +65,7 @@ def test_create_user_role_assignment_without_expiry_date(
     db_pg_session,
     fom_dev_access_admin_token,
     get_current_requester_by_token,
-    override_depends__get_verified_target_user,
+    override_depends__get_verified_target_users,
     default_app_role_assignment_page_Params
 ):
     """
@@ -74,7 +74,7 @@ def test_create_user_role_assignment_without_expiry_date(
     request_data = {
         **ACCESS_GRANT_FOM_DEV_CR_IDIR,
     }
-    override_depends__get_verified_target_user()
+    override_depends__get_verified_target_users()
     response = test_client_fixture.post(
         endPoint,
         json=request_data,
@@ -100,7 +100,7 @@ def test_create_user_role_assignment_without_expiry_date(
 def test_create_user_role_assignment_with_past_expiry_date(
     test_client_fixture: TestClient,
     fom_dev_access_admin_token,
-    override_depends__get_verified_target_user,
+    override_depends__get_verified_target_users,
 ):
     """
     Test assigning a role with a past expiry date (should fail validation).
@@ -110,7 +110,7 @@ def test_create_user_role_assignment_with_past_expiry_date(
         **ACCESS_GRANT_FOM_DEV_CR_IDIR,
         "expiry_date_date": past_date.strftime(DATE_FORMAT_YYYY_MM_DD),
     }
-    override_depends__get_verified_target_user()
+    override_depends__get_verified_target_users()
     response = test_client_fixture.post(
         endPoint,
         json=request_data,
@@ -122,7 +122,7 @@ def test_create_user_role_assignment_with_past_expiry_date(
 def test_create_user_role_assignment_with_invalid_expiry_date_format(
     test_client_fixture: TestClient,
     fom_dev_access_admin_token,
-    override_depends__get_verified_target_user,
+    override_depends__get_verified_target_users,
 ):
     """
     Test assigning a role with an invalid expiry date format (should fail validation).
@@ -132,7 +132,7 @@ def test_create_user_role_assignment_with_invalid_expiry_date_format(
         **ACCESS_GRANT_FOM_DEV_CR_IDIR,
         "expiry_date_date": invalid_date,
     }
-    override_depends__get_verified_target_user()
+    override_depends__get_verified_target_users()
     response = test_client_fixture.post(
         endPoint,
         json=request_data,
@@ -144,7 +144,7 @@ def test_create_user_role_assignment_with_invalid_expiry_date_format(
 def test_create_user_role_assignment_with_today_as_expiry_date(
     test_client_fixture: TestClient,
     fom_dev_access_admin_token,
-    override_depends__get_verified_target_user,
+    override_depends__get_verified_target_users,
 ):
     """
     Test assigning a role with expiry date as today (should be accepted, valid until midnight BC time).
@@ -154,7 +154,7 @@ def test_create_user_role_assignment_with_today_as_expiry_date(
         **ACCESS_GRANT_FOM_DEV_CR_IDIR,
         "expiry_date_date": BC_TODAY.strftime(DATE_FORMAT_YYYY_MM_DD),
     }
-    override_depends__get_verified_target_user()
+    override_depends__get_verified_target_users()
     response = test_client_fixture.post(
         endPoint,
         json=request_data,
@@ -185,7 +185,7 @@ def test_create_user_role_assignment_with_today_as_expiry_date(
 def test_create_user_role_assignment_with_tomorrow_just_before_midnight(
     test_client_fixture: TestClient,
     fom_dev_access_admin_token,
-    override_depends__get_verified_target_user,
+    override_depends__get_verified_target_users,
 ):
     """
     Test assigning a role with expiry date as tomorrow (should be accepted).
@@ -195,7 +195,7 @@ def test_create_user_role_assignment_with_tomorrow_just_before_midnight(
         **ACCESS_GRANT_FOM_DEV_CR_IDIR,
         "expiry_date_date": tomorrow.strftime(DATE_FORMAT_YYYY_MM_DD),
     }
-    override_depends__get_verified_target_user()
+    override_depends__get_verified_target_users()
     response = test_client_fixture.post(
         endPoint,
         json=request_data,
@@ -211,7 +211,7 @@ def test_create_user_role_assignment_with_tomorrow_just_before_midnight(
 def test_create_user_role_assignment_with_leap_year_expiry_date(
     test_client_fixture: TestClient,
     fom_dev_access_admin_token,
-    override_depends__get_verified_target_user,
+    override_depends__get_verified_target_users,
 ):
     """
     Test assigning a role with expiry date as February 29 on a leap year (should be accepted if valid).
@@ -228,7 +228,7 @@ def test_create_user_role_assignment_with_leap_year_expiry_date(
         **ACCESS_GRANT_FOM_DEV_CR_IDIR,
         "expiry_date_date": feb_29.strftime(DATE_FORMAT_YYYY_MM_DD),
     }
-    override_depends__get_verified_target_user()
+    override_depends__get_verified_target_users()
     response = test_client_fixture.post(
         endPoint,
         json=request_data,
@@ -244,7 +244,7 @@ def test_create_user_role_assignment_with_leap_year_expiry_date(
 def test_create_user_role_assignment_with_expiry_date_near_dst_change(
     test_client_fixture: TestClient,
     fom_dev_access_admin_token,
-    override_depends__get_verified_target_user,
+    override_depends__get_verified_target_users,
 ):
     """
     Test assigning a role with expiry date near a daylight saving time change (ensure BC timezone is always used, and no off-by-one-hour errors).
@@ -269,7 +269,7 @@ def test_create_user_role_assignment_with_expiry_date_near_dst_change(
         **ACCESS_GRANT_FOM_DEV_CR_IDIR,
         "expiry_date_date": dst_date.strftime(DATE_FORMAT_YYYY_MM_DD),
     }
-    override_depends__get_verified_target_user()
+    override_depends__get_verified_target_users()
     response = test_client_fixture.post(
         endPoint,
         json=request_data,
@@ -285,7 +285,7 @@ def test_create_user_role_assignment_with_expiry_date_near_dst_change(
 def test_create_user_role_assignment_with_far_future_expiry_date(
     test_client_fixture: TestClient,
     fom_dev_access_admin_token,
-    override_depends__get_verified_target_user,
+    override_depends__get_verified_target_users,
 ):
     """
     Test assigning a role with expiry date many years in the future (should be accepted if within allowed range).
@@ -295,7 +295,7 @@ def test_create_user_role_assignment_with_far_future_expiry_date(
         **ACCESS_GRANT_FOM_DEV_CR_IDIR,
         "expiry_date_date": far_future.strftime(DATE_FORMAT_YYYY_MM_DD),
     }
-    override_depends__get_verified_target_user()
+    override_depends__get_verified_target_users()
     response = test_client_fixture.post(
         endPoint,
         json=request_data,
@@ -311,7 +311,7 @@ def test_create_user_role_assignment_with_far_future_expiry_date(
 def test_create_user_role_assignment_with_empty_string_expiry_date(
     test_client_fixture: TestClient,
     fom_dev_access_admin_token,
-    override_depends__get_verified_target_user,
+    override_depends__get_verified_target_users,
 ):
     """
     Test assigning a role with expiry date as an empty string (should be treated as no expiry).
@@ -320,7 +320,7 @@ def test_create_user_role_assignment_with_empty_string_expiry_date(
         **ACCESS_GRANT_FOM_DEV_CR_IDIR,
         "expiry_date_date": "",
     }
-    override_depends__get_verified_target_user()
+    override_depends__get_verified_target_users()
     response = test_client_fixture.post(
         endPoint,
         json=request_data,
@@ -336,7 +336,7 @@ def test_create_user_role_assignment_with_empty_string_expiry_date(
 def test_create_user_role_assignment_with_null_expiry_date(
     test_client_fixture: TestClient,
     fom_dev_access_admin_token,
-    override_depends__get_verified_target_user,
+    override_depends__get_verified_target_users,
 ):
     """
     Test assigning a role with expiry date as null (should be treated as no expiry).
@@ -345,7 +345,7 @@ def test_create_user_role_assignment_with_null_expiry_date(
         **ACCESS_GRANT_FOM_DEV_CR_IDIR,
         "expiry_date_date": None,
     }
-    override_depends__get_verified_target_user()
+    override_depends__get_verified_target_users()
     response = test_client_fixture.post(
         endPoint,
         json=request_data,

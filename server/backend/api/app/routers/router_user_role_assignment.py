@@ -1,22 +1,23 @@
 import logging
 from http import HTTPStatus
 
-from api.app.crud import crud_role, crud_user, crud_user_role
-from api.app.models.model import FamUser
+from api.app.crud import crud_role, crud_user_role
 from api.app.routers.router_guards import (
     authorize_by_application_role, authorize_by_privilege,
     authorize_by_user_type, enforce_bceid_by_same_org_guard,
     enforce_bceid_terms_conditions_guard, enforce_self_grant_guard,
-    get_current_requester, get_verified_target_user)
+    get_current_requester, get_verified_target_users)
 from api.app.schemas import (FamUserRoleAssignmentCreateSchema,
-                             FamUserRoleAssignmentRes, RequesterSchema,
-                             TargetUserSchema)
+                             FamUserRoleAssignmentRes, RequesterSchema)
+from api.app.schemas.fam_user_role_assignment_create_response import FamUserRoleAssignmentCreateRes
+from api.app.schemas.target_user_validation_result import TargetUserValidationResultSchema
 from api.app.utils.audit_util import (AuditEventLog, AuditEventOutcome,
                                       AuditEventType)
 from fastapi import APIRouter, Depends, Request, Response
 from sqlalchemy.orm import Session
 
 from .. import database, jwt_validation
+from api.app.crud.crud_user_role import send_users_access_granted_emails
 
 LOGGER = logging.getLogger(__name__)
 
@@ -38,12 +39,10 @@ router = APIRouter()
         ),  # if Requester is delegated admin, needs to have privilge to grant access with the request role
         Depends(
             authorize_by_user_type
-        ),  # check business bceid user cannot grant idir user access
-        Depends(
-            enforce_bceid_by_same_org_guard
-        ),  # check business bceid user can only grant access for the user from same organization
+        )  # check business bceid user cannot grant idir user access
     ],
-    description="Grant User Access to an application's role.",
+    summary="Grant multiple users access to an application's role.",
+    description="Granting IDIR/BCeID users access to an application's role, supporting expiry dates for role assignments.",
 )
 def create_user_role_assignment_many(
     role_assignment_request: FamUserRoleAssignmentCreateSchema,
@@ -51,10 +50,10 @@ def create_user_role_assignment_many(
     db: Session = Depends(database.get_db),
     token_claims: dict = Depends(jwt_validation.enforce_fam_client_token),
     requester: RequesterSchema = Depends(get_current_requester),
-    target_user: TargetUserSchema = Depends(get_verified_target_user),
+    target_users: TargetUserValidationResultSchema = Depends(get_verified_target_users),
 ):
     """
-    Create FAM user_role_xref association.
+    Create FAM user_role_xref associations for multiple users.
     """
     LOGGER.debug(
         f"Executing 'create_user_role_assignment' "
@@ -65,9 +64,9 @@ def create_user_role_assignment_many(
         request=request,
         event_type=AuditEventType.CREATE_USER_ROLE_ACCESS,
         forest_client_numbers=role_assignment_request.forest_client_numbers,
-        event_outcome=AuditEventOutcome.SUCCESS,
+        role_assignment_expiry_date=role_assignment_request.expiry_date_date,
+        event_outcome=AuditEventOutcome.SUCCESS
     )
-
 
     try:
         role = crud_role.get_role(db, role_assignment_request.role_id)
@@ -76,49 +75,42 @@ def create_user_role_assignment_many(
         audit_event_log.application = role.application
         audit_event_log.requesting_user = requester
 
-        assignments_detail = crud_user_role.create_user_role_assignment_many(
+        # Grant access for all verified users (may still fail due to other business rules)
+        assignments_results = crud_user_role.create_user_role_assignment_many(
             db,
             role_assignment_request,
-            target_user,
+            target_users.verified_users,
             requester,
         )
-        response = FamUserRoleAssignmentRes(assignments_detail=assignments_detail)
 
-        # Set expiry date for audit log
-        expiry = assignments_detail[0].detail.expiry_date
-        audit_event_log.role_assignment_expiry_date = expiry.isoformat() if expiry else None
-
-        # get target user from database, so for existing user, we can get the cognito user id
-        audit_event_log.target_user = crud_user.get_user_by_domain_and_guid(
-            db,
-            role_assignment_request.user_type_code,
-            role_assignment_request.user_guid,
+        response = FamUserRoleAssignmentRes(
+            assignments_detail=assignments_results +
+            # Failed assignments for users that did not pass IDIM validation
+            [
+                FamUserRoleAssignmentCreateRes(
+                    status_code=HTTPStatus.BAD_REQUEST,
+                    detail=None,
+                    error_message=getattr(failed_user, "error_reason", "User identification validation failed"),
+                )
+                for failed_user in target_users.failed_users
+            ]
         )
 
-        # sending user notification after event is finished.
+        audit_event_log.user_assignment_results = response.assignments_detail
+
+        # sending user notification after event is finished (for all verified users)
         if role_assignment_request.requires_send_user_email:
-            response.email_sending_status = crud_user_role.send_user_access_granted_email(
-                target_user=target_user,
-                roles_assignment_responses=response.assignments_detail
-            )
+            send_users_access_granted_emails(target_users.verified_users, assignments_results)
 
         return response
 
     except Exception as e:
         audit_event_log.event_outcome = AuditEventOutcome.FAIL
         audit_event_log.exception = e
-
         raise e
 
     finally:
-        # if failed to get target user from database, use the information from request
-        if audit_event_log.target_user is None:
-            audit_event_log.target_user = FamUser(
-                user_type_code=target_user.user_type_code,
-                user_name=target_user.user_name,
-                user_guid=target_user.user_guid,
-                cognito_user_id=target_user.cognito_user_id,
-            )
+        # No longer set a single target_user; batch context
         audit_event_log.log_event()
 
 

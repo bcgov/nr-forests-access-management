@@ -1,3 +1,4 @@
+from unittest.mock import patch
 import logging
 import os
 import sys
@@ -26,10 +27,11 @@ from api.app.main import app, internal_api_prefix
 from api.app.models.model import FamUser
 from api.app.routers.router_guards import (
     enforce_bceid_terms_conditions_guard, get_current_requester,
-    get_verified_target_user)
+    get_verified_target_users)
 from api.app.schemas import RequesterSchema, TargetUserSchema
 from api.app.schemas.fam_user import FamUserSchema
 from api.app.schemas.pagination import UserRolePageParamsSchema
+from api.app.schemas.target_user_validation_result import TargetUserValidationResultSchema
 from testspg.constants import (ACCESS_GRANT_FOM_DEV_CR_IDIR,
                                FOM_DEV_ADMIN_ROLE, FOM_TEST_ADMIN_ROLE,
                                TEST_BCEID_REQUESTER_DICT, TEST_CREATOR)
@@ -204,61 +206,48 @@ def override_depends__get_current_requester(test_client_fixture):
 
 
 @pytest.fixture(scope="function")
-def override_depends__get_verified_target_user(test_client_fixture):
-    # Override FastAPI dependency "get_verified_target_user".
+def override_depends__get_verified_target_users(test_client_fixture):
+    # Override FastAPI dependency "get_verified_target_users".
     # Mock the return result for idim validation of the target user, to avoid calling external idim-proxy
-    def _override_get_verified_target_user(mocked_data=ACCESS_GRANT_FOM_DEV_CR_IDIR):
+    def _override_get_verified_target_users(mocked_data=ACCESS_GRANT_FOM_DEV_CR_IDIR):
         app = test_client_fixture.app
-        app.dependency_overrides[get_verified_target_user] = lambda: TargetUserSchema(
-            **mocked_data
+        app.dependency_overrides[get_verified_target_users] = lambda: TargetUserValidationResultSchema(
+            verified_users=[
+                TargetUserSchema(**{**mocked_data, **user})  # Flatten all mocked_data and user fields
+                for user in mocked_data["users"]
+            ],
+            failed_users=[]  # No failed users in this mock
         )
 
-    return _override_get_verified_target_user
-
-
-@pytest.fixture(scope="function")
-def mock_verified_target_user(mocker):
-    """
-    This fixture has the same purpose but different than similar fixture 'override_depends__get_verified_target_user'
-    on testing usage.
-    It mocks the return result from idim validation of the target user. However, this is not overriding the FastAPI
-    dependency.
-    For example:
-    Delete user/role assignment related to "get_verified_target_user" is a special case (not as FastAPI dependency),
-    and needs to be mocked individually at function.
-    """
-
-    def _mock_verified_target_user(
-        mocked_user: Optional[TargetUserSchema] = None,
-        mocked_side_effect: Optional[Exception] = None
-    ):
-        patch_fn_path = "api.app.routers.router_guards.get_verified_target_user"
-        if mocked_user:
-            return mocker.patch(patch_fn_path, return_value=mocked_user)
-        elif mocked_side_effect:
-            return mocker.patch(patch_fn_path, side_effect=mocked_side_effect)
-        else:
-            raise Exception("Programming Error. Missing arguments")
-
-    return _mock_verified_target_user
+    return _override_get_verified_target_users
 
 
 @pytest.fixture(scope="function")
 def create_test_user_role_assignments(
-    test_client_fixture, override_depends__get_verified_target_user
+    test_client_fixture, override_depends__get_verified_target_users
 ):
     """
-    Convenient function to assign multipe users to an application.
+    Convenient function to assign multiple users to an application.
     :param requester_token: token to be used for the request.
                             Pass appropriate application_admin level to
                             create the users to.
     :param request_bodies: request content to create the users.
+        Example `request_body` structure (partial FamUserRoleAssignmentCreateSchema type):
+        {
+            "user_type_code": "IDIR",
+            "users": [
+                {
+                    "user_id": "example-user-id",
+                    "user_name": "example-user-name"
+                }
+            ]
+        }
     """
 
     def _create_test_user_role_assignments(requester_token, request_bodies: List[dict]):
         created_users = []
         for request_body in request_bodies:
-            override_depends__get_verified_target_user(request_body)
+            override_depends__get_verified_target_users(request_body)
             created_users.append(
                 create_test_user_role_assignment(
                     test_client_fixture=test_client_fixture,
@@ -382,3 +371,10 @@ def default_app_role_assignment_page_Params() -> UserRolePageParamsSchema:
         sort_by=None,
         sort_order=None
     )
+
+
+# Reusable fixture to patch raise_http_exception for tests
+@pytest.fixture
+def patch_raise_http_exception():
+    with patch("api.app.routers.router_guards.utils.raise_http_exception", side_effect=lambda **kwargs: (_ for _ in ()).throw(Exception(kwargs["error_msg"]))):
+        yield

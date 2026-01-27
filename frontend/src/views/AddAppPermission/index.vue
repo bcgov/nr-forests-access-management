@@ -237,7 +237,7 @@ const onSubmit = () => {
         const payload = generatePayload(formData.value);
         if (!formData.value.isAddingDelegatedAdmin) {
             isSubmitting.value = true;
-            assignUserRoles.mutate(payload);
+            assignUserRoles.mutate(payload as FamUserRoleAssignmentCreateSchema);
         } else {
             confirm.require({
                 group: "addDelegatedAdmin",
@@ -247,7 +247,7 @@ const onSubmit = () => {
                 acceptClass: "dialog-accept-button",
                 accept: () => {
                     isSubmitting.value = true;
-                    delegatedAdminMutation.mutate(payload);
+                    delegatedAdminMutation.mutate(payload as FamAccessControlPrivilegeCreateRequest);
                 },
             });
         }

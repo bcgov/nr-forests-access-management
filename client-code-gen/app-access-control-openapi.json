@@ -282,8 +282,8 @@
         "tags": [
           "FAM User Role Assignment"
         ],
-        "summary": "Create User Role Assignment Many",
-        "description": "Grant User Access to an application's role.",
+        "summary": "Grant multiple users access to an application's role.",
+        "description": "Granting IDIR/BCeID users access to an application's role, supporting expiry dates for role assignments.",
         "operationId": "create_user_role_assignment_many",
         "requestBody": {
           "content": {
@@ -1578,6 +1578,10 @@
               }
             ],
             "title": "Error Message"
+          },
+          "email_sending_status": {
+            "$ref": "#/components/schemas/EmailSendingStatus",
+            "default": "NOT_REQUIRED"
           }
         },
         "type": "object",
@@ -1589,17 +1593,12 @@
       },
       "FamUserRoleAssignmentCreateSchema": {
         "properties": {
-          "user_name": {
-            "type": "string",
-            "maxLength": 20,
-            "minLength": 3,
-            "title": "User Name"
-          },
-          "user_guid": {
-            "type": "string",
-            "maxLength": 32,
-            "minLength": 32,
-            "title": "User Guid"
+          "users": {
+            "items": {
+              "$ref": "#/components/schemas/FamUserRoleAssignmentUserSchema"
+            },
+            "type": "array",
+            "title": "Users"
           },
           "user_type_code": {
             "$ref": "#/components/schemas/UserType"
@@ -1644,20 +1643,15 @@
         },
         "type": "object",
         "required": [
-          "user_name",
-          "user_guid",
+          "users",
           "user_type_code",
           "role_id"
         ],
         "title": "FamUserRoleAssignmentCreateSchema",
-        "description": "Request schema for assigning a user to a role, with optional expiry date.\n- expiry_date_date: The expiry date as a string (YYYY-MM-DD), BC timezone.\n- _expiry_date: Internal use only, timezone-aware datetime, derived from expiry_date_date."
+        "description": "Request schema for assigning one or more users to a role, with optional expiry date.\n- users: List of users to assign\n- user_type_code: The type of all users in this request\n- expiry_date_date: The expiry date as a string (YYYY-MM-DD), BC timezone.\n- _expiry_date: Internal use only, timezone-aware datetime, derived from expiry_date_date."
       },
       "FamUserRoleAssignmentRes": {
         "properties": {
-          "email_sending_status": {
-            "$ref": "#/components/schemas/EmailSendingStatus",
-            "default": "NOT_REQUIRED"
-          },
           "assignments_detail": {
             "items": {
               "$ref": "#/components/schemas/FamUserRoleAssignmentCreateRes"
@@ -1671,6 +1665,28 @@
           "assignments_detail"
         ],
         "title": "FamUserRoleAssignmentRes"
+      },
+      "FamUserRoleAssignmentUserSchema": {
+        "properties": {
+          "user_name": {
+            "type": "string",
+            "maxLength": 20,
+            "minLength": 3,
+            "title": "User Name"
+          },
+          "user_guid": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 32,
+            "title": "User Guid"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_name",
+          "user_guid"
+        ],
+        "title": "FamUserRoleAssignmentUserSchema"
       },
       "FamUserTypeSchema": {
         "properties": {

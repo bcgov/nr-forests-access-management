@@ -1,3 +1,5 @@
+from api.app.crud.validator.target_user_validator import (validate_target_users,
+                                                    validate_bceid_same_org)
 import logging
 from http import HTTPStatus
 from typing import List
@@ -16,7 +18,6 @@ from api.app.constants import (CURRENT_TERMS_AND_CONDITIONS_VERSION,
                                ERROR_CODE_UNKNOWN_STATE, RoleType, UserType)
 from api.app.crud import (crud_access_control_privilege, crud_application,
                           crud_role, crud_user, crud_user_role, crud_utils)
-from api.app.crud.validator.target_user_validator import TargetUserValidator
 from api.app.jwt_validation import (ERROR_GROUPS_REQUIRED,
                                     ERROR_PERMISSION_REQUIRED, JWT_GROUPS_KEY,
                                     enforce_fam_client_token, get_access_roles,
@@ -30,6 +31,7 @@ from api.app.utils import utils
 from api.config import config
 from fastapi import Depends, Request, Security
 from fastapi.security import APIKeyHeader
+from api.app.schemas.target_user_validation_result import TargetUserValidationResultSchema
 from sqlalchemy.orm import Session
 
 """
@@ -281,72 +283,97 @@ async def authorize_by_privilege(
 # that need this). Specifically: "user_role_xref_id" and
 # "user_name/user_type_code".
 # Very likely in future might have "cognito_user_id" case.
-async def get_target_user_from_id(
+async def get_target_users_from_ids(
     request: Request, db: Session = Depends(database.get_db)
-) -> TargetUserSchema:
+) -> list[TargetUserSchema]:
     """
-    This is used as FastAPI sub-dependency to find target_user for guard purpose.
-    Please note that the TargetUserSchema inputs hasn't been validated yet. Need to call get_verified_target_user to validate the TargetUserSchema.
-    For RequesterSchema, use "get_current_requester()" above.
+    FastAPI dependency to extract target users for guard purposes.
+    Note, it will call IDIM service to verify user existence for each target user.
+    For Requesting user, use "get_current_requester" dependency.
+
+    Request field convention:
+    - For multiple users: request body should contain a 'users' key with a list of user dicts.
+      Example:
+          {
+              "users": [
+                  {"user_name": "jdoe", "user_guid": "abc-123"},
+                  {"user_name": "asmith", "user_guid": "def-456"}
+              ],
+              "user_type_code": "BCEID", # common for all users in the list
+          }
+    The method will always return a list of TargetUserSchema objects.
     """
-    # from path_param - "user_role_xref_id"; should exists already in db.
+    target_users = []
+    # from path_param - "user_role_xref_id"; should exist already in db.
     if "user_role_xref_id" in request.path_params:
         urxid = request.path_params["user_role_xref_id"]
         LOGGER.debug(
-            "Dependency 'get_target_user_from_id' called with "
+            "Dependency 'get_target_users_from_ids' called with "
             + f"request containing user_role_xref_id path param {urxid}."
         )
         user_role = crud_user_role.find_by_id(db, urxid)
         if user_role is not None:
             found_target_user = TargetUserSchema.model_validate(user_role.user)
-            return found_target_user
+            target_users.append(found_target_user)
         else:
             error_msg = "Parameter 'user_role_xref_id' is missing or invalid."
             utils.raise_http_exception(
                 error_code=ERROR_CODE_INVALID_REQUEST_PARAMETER, error_msg=error_msg
             )
-
     else:
-        # from request body - {user_name/user_type_code}
+        # from request body - support multiple users
         rbody = await request.json()
         LOGGER.debug(
-            "Dependency 'get_target_user_from_id' called with "
+            "Dependency 'get_target_users_from_ids' called with "
             + f"request body {rbody}."
         )
-        target_new_user = TargetUserSchema.model_validate(
-            {
-                "user_name": rbody["user_name"],
+        user_items = rbody.get("users")
+        if not user_items:
+            error_msg = "The 'users' list in the request body is empty or missing."
+            utils.raise_http_exception(
+                error_code=ERROR_CODE_INVALID_REQUEST_PARAMETER, error_msg=error_msg
+            )
+
+        # Validate each user item
+        for user_item in user_items:
+            if not all(key in user_item for key in ["user_name", "user_guid"]):
+                error_msg = "Each user must include 'user_name' and 'user_guid'."
+                utils.raise_http_exception(
+                    error_code=ERROR_CODE_INVALID_REQUEST_PARAMETER, error_msg=error_msg
+                )
+
+            target_user = TargetUserSchema.model_validate({
+                "user_name": user_item["user_name"],
+                "user_guid": user_item["user_guid"],
                 "user_type_code": rbody["user_type_code"],
-                "user_guid": rbody["user_guid"],
-            }
-        )
-        return target_new_user
+            })
+            target_users.append(target_user)
+    return target_users
 
 
 def authorize_by_user_type(
     requester: RequesterSchema = Depends(get_current_requester),
-    target_user: TargetUserSchema = Depends(get_target_user_from_id),
+    target_users: list[TargetUserSchema] = Depends(get_target_users_from_ids),
 ):
     """
-    This authorize_by_user_type method is used to forbidden business bceid user manage idir user's access
+    This authorize_by_user_type method is used to forbid business bceid user managing idir user's access.
     """
     if requester.user_type_code == UserType.BCEID:
-        target_user_type_code = target_user.user_type_code
-
-        if not target_user_type_code:
-            error_msg = "Operation encountered unexpected error. Target user user_type code is missing."
-            utils.raise_http_exception(
-                status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
-                error_code=ERROR_CODE_MISSING_KEY_ATTRIBUTE,
-                error_msg=error_msg,
-            )
-
-        if target_user_type_code == UserType.IDIR:
-            utils.raise_http_exception(
-                status_code=HTTPStatus.FORBIDDEN,
-                error_code=ERROR_PERMISSION_REQUIRED,
-                error_msg="Business BCEID requester has no privilege to grant this access to IDIR user.",
-            )
+        for target_user in target_users:
+            target_user_type_code = target_user.user_type_code
+            if not target_user_type_code:
+                error_msg = "Operation encountered unexpected error. Target user user_type code is missing."
+                utils.raise_http_exception(
+                    status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+                    error_code=ERROR_CODE_MISSING_KEY_ATTRIBUTE,
+                    error_msg=error_msg,
+                )
+            if target_user_type_code == UserType.IDIR:
+                utils.raise_http_exception(
+                    status_code=HTTPStatus.FORBIDDEN,
+                    error_code=ERROR_PERMISSION_REQUIRED,
+                    error_msg="Business BCEID requester has no privilege to grant this access to IDIR user.",
+                )
 
 
 def internal_only_action(
@@ -376,108 +403,101 @@ def external_delegated_admin_only_action(
 def enforce_self_grant_guard(
     _enforce_fam_access_validated = Depends(enforce_fam_client_token),
     requester: RequesterSchema = Depends(get_current_requester),
-    target_user: TargetUserSchema = Depends(get_target_user_from_id),
+    target_users: list[TargetUserSchema] = Depends(get_target_users_from_ids),
 ):
     """
     Verify logged on admin (RequesterSchema):
         Self granting/removing privilege currently isn't allowed.
+        Supports multi-user: checks all target users in the list.
     """
     LOGGER.debug(f"enforce_self_grant_guard: requester - {requester}")
-    LOGGER.debug(f"enforce_self_grant_guard: target_user - {target_user}")
+    LOGGER.debug(f"enforce_self_grant_guard: target_users - {target_users}")
 
-    if (
-        requester.user_type_code == target_user.user_type_code
-        and requester.user_guid == target_user.user_guid
-    ):
-        LOGGER.debug(
-            f"User '{requester.user_name}' should not "
-            f"grant/remove permission privilege to self."
-        )
-        utils.raise_http_exception(
-            status_code=HTTPStatus.FORBIDDEN,
-            error_code=ERROR_CODE_SELF_GRANT_PROHIBITED,
-            error_msg="Altering permission privilege to self is not allowed.",
-        )
+    for target_user in target_users:
+        if (
+            requester.user_type_code == target_user.user_type_code
+            and requester.user_guid == target_user.user_guid
+        ):
+            LOGGER.debug(
+                f"User '{requester.user_name}' should not "
+                f"grant/remove permission privilege to self."
+            )
+            utils.raise_http_exception(
+                status_code=HTTPStatus.FORBIDDEN,
+                error_code=ERROR_CODE_SELF_GRANT_PROHIBITED,
+                error_msg="Altering permission privilege to self is not allowed.",
+            )
 
 
-def get_verified_target_user(
+def get_verified_target_users(
     _enforce_fam_access_validated = Depends(enforce_fam_client_token),
     requester: RequesterSchema = Depends(get_current_requester),
-    target_user: TargetUserSchema = Depends(get_target_user_from_id),
+    target_users: list[TargetUserSchema] = Depends(get_target_users_from_ids),
     role: FamRole = Depends(get_request_role_from_id),
-) -> TargetUserSchema:
+) -> TargetUserValidationResultSchema:
     """
-    Validate the target user by calling IDIM web service, and update business Guid for the found BCeID user
+    Validate a list of target users by calling IDIM web service, and update business Guid for the found BCeID users.
+    Returns a list of verified TargetUserSchema objects. Raises on any invalid user.
     """
-    LOGGER.debug(f"For application operation on: {role.application}")
-    api_instance_env = crud_utils.use_api_instance_by_app(role.application)
-    target_user_validator = TargetUserValidator(
-        requester, target_user, api_instance_env
-    )
-    return target_user_validator.verify_user_exist()
+    return validate_target_users(requester, target_users, role)
 
 
 async def enforce_bceid_by_same_org_guard(
-    # forbid business bceid user (requester) manage idir user's access
     _enforce_fam_access_validated = Depends(enforce_fam_client_token),
     _enforce_user_type_auth: None = Depends(authorize_by_user_type),
     requester: RequesterSchema = Depends(get_current_requester),
-    target_user: TargetUserSchema = Depends(get_target_user_from_id),
+    target_users: list[TargetUserSchema] = Depends(get_target_users_from_ids),
     role: FamRole = Depends(get_request_role_from_id),
 ):
     """
-    When requester is a BCeID user, enforce requester can only manage target user from the same organization.
-    """
-    """
-    Initially this guard was using dependency validation: "Depends(get_verified_target_user)" to retrieve
-    information from IDP(IDIM service) for this guard for checking.
-    But due to special case for - deleting user/role assignment when target user is no longer available from IDP
-    (inactive or removed for some reason), we still like to be able to delete the target user from db, however,
-    we won't be able to verify user from IDIM in this case.
-    For this case we won't be able to use "get_verified_target_user" as a guard; moving it from router guard
-    dependency to be in this method's body for special handling. So:
+    Router guard to enforce BCeID same organization validation.
+
+    This guard ensures that a BCeID user (requester) can only manage users from the same organization.
+    It validates the organization consistency between the requester and the target users.
+    Additionally, it ensures that all target users are verified before enforcing the organization rule.
 
     - For IDIR requester, there is no need to get "verified target user" as IDIR user can remove any IDIR user
       and any BCeID user.
 
-    - For BCeID requester, get "verified target user" is still needed for BCeID target user to check if they
-      are from the same organization. But, in the case if target user cannot be verified, then raise exception
-      for this case.
+    Parameters:
+        _enforce_fam_access_validated: Dependency to validate the FAM client token.
+        _enforce_user_type_auth: Dependency to authorize user type.
+        requester: The user making the request, validated as the current requester.
+        target_users: List of target users to be managed.
+        role: The application role context for the validation.
+
+    Raises:
+        HTTPException: If the requester and target users are not from the same organization.
+        HTTPException: If there are failed target users during validation.
     """
     LOGGER.debug(
         f"Verifying requester {requester.user_name} (type {requester.user_type_code}) "
-        "is allowed to manage BCeID target user for the same organization."
+        "is allowed to manage BCeID target users for the same organization."
     )
 
     if requester.user_type_code == UserType.BCEID:
-        try:
-            target_user = get_verified_target_user(requester=requester, target_user=target_user, role=role)
-        except Exception as e:
-            LOGGER.error(f"Target user could not be verified: {e}.")
+        # Verify target users before enforcing organization rule
+        validation_result = validate_target_users(requester, target_users, role)
+
+        # Raise an error if there are failed users
+        if validation_result.failed_users:
             app_name = role.application.application_name
-            error_msg = f"Unable to verify user {target_user.user_name}. Please contact {app_name} administrator for the action."
+            failed_usernames = [user.user_name for user in validation_result.failed_users]
+            error_msg = f"Unable to verify the following users: {failed_usernames}. Please contact {app_name} administrator for the action."
             utils.raise_http_exception(
                 status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
                 error_code=ERROR_CODE_UNKNOWN_STATE,
                 error_msg=error_msg,
             )
 
-        requester_business_guid = requester.business_guid
-        target_user_business_guid = target_user.business_guid
-
-        if requester_business_guid is None or target_user_business_guid is None:
-            error_msg = "Operation encountered unexpected error. requester or target user business GUID is missing."
-            utils.raise_http_exception(
-                status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
-                error_code=ERROR_CODE_MISSING_KEY_ATTRIBUTE,
-                error_msg=error_msg,
-            )
-
-        elif requester_business_guid.upper() != target_user_business_guid.upper():
+        # Enforce same organization rule on verified users
+        try:
+            validate_bceid_same_org(requester, validation_result.verified_users)
+        except Exception as e:
             utils.raise_http_exception(
                 status_code=HTTPStatus.FORBIDDEN,
                 error_code=ERROR_CODE_DIFFERENT_ORG_GRANT_PROHIBITED,
-                error_msg="Managing for different organization is not allowed.",
+                error_msg=f"An error occurred while validating organization consistency: {str(e)}",
             )
 
 

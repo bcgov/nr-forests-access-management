@@ -92,10 +92,10 @@ def test_get_fam_application_user_role_assignment_no_role_assignments(
 def test_get_fam_application_user_role_assignment_concrete_role(
     test_client_fixture: starlette.testclient.TestClient,
     test_rsa_key,
-    override_depends__get_verified_target_user,
+    override_depends__get_verified_target_users,
 ):
     # override router guard dependencies
-    override_depends__get_verified_target_user()
+    override_depends__get_verified_target_users()
 
     # test user role assignment
     # create
@@ -119,7 +119,7 @@ def test_get_fam_application_user_role_assignment_concrete_role(
         data[0]["user"]["user_type"]["code"]
         == ACCESS_GRANT_FOM_DEV_CR_IDIR["user_type_code"]
     )
-    assert data[0]["user"]["user_name"] == ACCESS_GRANT_FOM_DEV_CR_IDIR["user_name"]
+    assert data[0]["user"]["user_name"] == ACCESS_GRANT_FOM_DEV_CR_IDIR["users"][0]["user_name"]
     assert data[0]["role"]["role_type_code"] == "C"
     assert data[0]["role"]["role_name"] == "FOM_REVIEWER"
 
@@ -127,10 +127,10 @@ def test_get_fam_application_user_role_assignment_concrete_role(
 def test_get_fam_application_user_role_assignment_abstract_role(
     test_client_fixture: starlette.testclient.TestClient,
     test_rsa_key,
-    override_depends__get_verified_target_user,
+    override_depends__get_verified_target_users,
 ):
     # override router guard dependencies
-    override_depends__get_verified_target_user(ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID)
+    override_depends__get_verified_target_users(ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID)
 
     # test user role assignment for abstract role
     # create
@@ -142,8 +142,7 @@ def test_get_fam_application_user_role_assignment_abstract_role(
     )
     assert response.status_code == 200
     abstract_role_data = response.json().get("assignments_detail")[0]["detail"]
-
-    # check
+    # chec
     response = test_client_fixture.get(
         get_application_role_assignment_end_point, headers=jwt_utils.headers(token)
     )
@@ -156,7 +155,7 @@ def test_get_fam_application_user_role_assignment_abstract_role(
     )
     assert (
         data[0]["user"]["user_name"]
-        == ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID["user_name"]
+        == ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID["users"][0]["user_name"]
     )
     assert data[0]["role"]["role_type_code"] == "C"
     assert (
