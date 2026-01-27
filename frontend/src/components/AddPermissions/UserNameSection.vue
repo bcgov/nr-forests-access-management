@@ -20,7 +20,7 @@ import { Field } from "vee-validate";
 import Label from "../UI/Label.vue";
 import HelperText from "../UI/HelperText.vue";
 import { formatUserNameAndId } from "@/utils/UserUtils";
-import { GRANT_USER_MANAGEMENT_KEY, type useGrantUserManagement } from "@/composables/useGrantUserManagement";
+import { GRANT_USER_MANAGEMENT_KEY, type useSelectUserManagement } from "@/composables/useGrantUserManagement";
 
 const auth = useAuth();
 
@@ -31,7 +31,7 @@ interface Props {
     helperText: string;
     fieldId?: string;
     setIsVerifying?: (verifying: boolean) => void;
-    injectionKey?: InjectionKey<ReturnType<typeof useGrantUserManagement>>;
+    injectionKey?: InjectionKey<ReturnType<typeof useSelectUserManagement>>;
 }
 
 const props = withDefaults(defineProps<Props>(), {

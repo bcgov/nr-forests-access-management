@@ -2,7 +2,7 @@
 import RoleSelectTable from "@/components/AddPermissions/RoleSelectTable.vue";
 import UserDomainSelect from "@/components/AddPermissions/UserDomainSelect.vue";
 import UserNameInput from "@/components/AddPermissions/UserNameSection.vue";
-import { useGrantUserManagement, GRANT_USER_MANAGEMENT_KEY } from "@/composables/useGrantUserManagement";
+import { useSelectUserManagement, GRANT_USER_MANAGEMENT_KEY } from "@/composables/useGrantUserManagement";
 import DatePicker from "@/components/DatePicker.vue";
 import BoolCheckbox from "@/components/UI/BoolCheckbox.vue";
 import BreadCrumbs from "@/components/UI/BreadCrumbs.vue";
@@ -107,7 +107,7 @@ const formData = ref<AppPermissionFormType | undefined>(undefined);
 
 
 // Use composable for multi-user user management
-const grantUserManagement = useGrantUserManagement(true); // true = multi-user mode
+const grantUserManagement = useSelectUserManagement(true); // true = multi-user mode
 provide(GRANT_USER_MANAGEMENT_KEY, grantUserManagement);
 
 watch(

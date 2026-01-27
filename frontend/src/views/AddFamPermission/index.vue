@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, provide } from "vue";
-import { useGrantUserManagement, GRANT_USER_MANAGEMENT_KEY } from "@/composables/useGrantUserManagement";
+import { useSelectUserManagement, GRANT_USER_MANAGEMENT_KEY } from "@/composables/useGrantUserManagement";
 import { Field, Form } from "vee-validate";
 import { isAxiosError } from "axios";
 import { useRouter } from "vue-router";
@@ -55,7 +55,7 @@ const applicationListQuery = useQuery({
 const formData = ref<FamPermissionFormType>(getDefaultFormData());
 
 // Use composable for single-user management
-const grantUserManagement = useGrantUserManagement(false); // false = single-user mode
+const grantUserManagement = useSelectUserManagement(false); // false = single-user mode
 provide(GRANT_USER_MANAGEMENT_KEY, grantUserManagement);
 
 const handleUserVerification = (user: IdimProxyIdirInfoSchema) => {
