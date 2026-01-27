@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, provide } from "vue";
+import { useGrantUserManagement, GRANT_USER_MANAGEMENT_KEY } from "@/composables/useGrantUserManagement";
 import { Field, Form } from "vee-validate";
 import { isAxiosError } from "axios";
 import { useRouter } from "vue-router";
@@ -50,7 +51,12 @@ const applicationListQuery = useQuery({
     select: (data) => getFamAdminApplications(data),
 });
 
+
 const formData = ref<FamPermissionFormType>(getDefaultFormData());
+
+// Use composable for single-user management
+const grantUserManagement = useGrantUserManagement(false); // false = single-user mode
+provide(GRANT_USER_MANAGEMENT_KEY, grantUserManagement);
 
 const handleUserVerification = (user: IdimProxyIdirInfoSchema) => {
     if (formData.value) {
@@ -148,7 +154,6 @@ const onSubmit = () => {
                             :domain="UserType.I"
                             :user="formData.user"
                             :app-id="1"
-                            :multi-user-mode="false"
                             @setUser="handleUserVerification"
                             helperText="Only IDIR users are allowed to be added as application admins"
                         />
