@@ -2,6 +2,7 @@
 import RoleSelectTable from "@/components/AddPermissions/RoleSelectTable.vue";
 import UserDomainSelect from "@/components/AddPermissions/UserDomainSelect.vue";
 import UserNameInput from "@/components/AddPermissions/UserNameSection.vue";
+import { useGrantUserManagement, GRANT_USER_MANAGEMENT_KEY } from "@/composables/useGrantUserManagement";
 import DatePicker from "@/components/DatePicker.vue";
 import BoolCheckbox from "@/components/UI/BoolCheckbox.vue";
 import BreadCrumbs from "@/components/UI/BreadCrumbs.vue";
@@ -104,9 +105,10 @@ const rolesUnderSelectedApp = computed(() => {
 
 const formData = ref<AppPermissionFormType | undefined>(undefined);
 
-// Multi-user mode and user list state
-const multiUserMode = ref(true); // Set to false for single-user mode as needed
-const userList = ref<IdimProxyBceidInfoSchema[]>([]);
+
+// Use composable for multi-user user management
+const grantUserManagement = useGrantUserManagement(true); // true = multi-user mode
+provide(GRANT_USER_MANAGEMENT_KEY, grantUserManagement);
 
 watch(
     () => adminUserAccessQuery.isSuccess && rolesUnderSelectedApp.value,
@@ -130,28 +132,22 @@ const handleDomainChange = (userType: UserType) => {
         formData.value.domain = userType;
         formData.value.user = null;
     }
+    // Clear composable user list on domain change
+    grantUserManagement.clearUsers();
 };
 
 
+
+// No need for handleAddUser/handleDeleteUser, handled by composable
 const handleUserVerification = (
     user: IdimProxyIdirInfoSchema | IdimProxyBceidInfoSchema | null,
     domain?: UserType
 ) => {
     if (formData.value) {
         formData.value.user = user;
-        // Prevent user from chaning domain while it's verifying
+        // Prevent user from changing domain while it's verifying
         formData.value.domain = domain ?? formData.value.domain;
     }
-};
-
-const handleAddUser = (user: IdimProxyBceidInfoSchema) => {
-    if (!userList.value.some(u => u.userId === user.userId)) {
-        userList.value.push(user);
-    }
-};
-
-const handleDeleteUser = (userId: string) => {
-    userList.value = userList.value.filter(u => u.userId !== userId);
 };
 
 const queryClient = useQueryClient();
@@ -330,11 +326,7 @@ const getUserNameInputHelperText = () =>
                             :app-id="appId"
                             :helper-text="getUserNameInputHelperText()"
                             :set-is-verifying="setIsVerifyingUser"
-                            :user-list="userList"
-                            :multi-user-mode="multiUserMode"
                             @setUser="handleUserVerification"
-                            @addUser="handleAddUser"
-                            @deleteUser="handleDeleteUser"
                         />
                     </StepContainer>
                     <StepContainer
