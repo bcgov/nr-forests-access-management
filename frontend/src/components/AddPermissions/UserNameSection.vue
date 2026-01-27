@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { ref, watch, inject, type InjectionKey } from "vue";
 import SearchLocateIcon from "@carbon/icons-vue/es/search--locate/16";
+import TrashIcon from "@carbon/icons-vue/es/trash-can/16";
+import CheckmarkOutline from "@carbon/icons-vue/es/checkmark--outline/16";
 import Button from "@/components/UI/Button.vue";
-import UserIdentityCard from "@/components/AddPermissions/UserIdentityCard.vue";
 import useAuth from "@/composables/useAuth";
 import { IdpProvider } from "@/enum/IdpEnum";
 import { AppActlApiService } from "@/services/ApiServiceFactory";
@@ -13,42 +14,44 @@ import type {
 } from "fam-app-acsctl-api";
 import { UserType } from "fam-app-acsctl-api";
 import InputText from "primevue/inputtext";
+import DataTable from "primevue/datatable";
+import Column from "primevue/column";
 import { Field } from "vee-validate";
 import Label from "../UI/Label.vue";
 import HelperText from "../UI/HelperText.vue";
+import { formatUserNameAndId } from "@/utils/UserUtils";
+import { GRANT_USER_MANAGEMENT_KEY, type useGrantUserManagement } from "@/composables/useGrantUserManagement";
 
 const auth = useAuth();
 
+interface Props {
+    domain: UserType;
+    user: IdimProxyIdirInfoSchema | IdimProxyBceidInfoSchema | null;
+    appId: number;
+    helperText: string;
+    fieldId?: string;
+    setIsVerifying?: (verifying: boolean) => void;
+    injectionKey?: InjectionKey<ReturnType<typeof useGrantUserManagement>>;
+}
 
-const props = withDefaults(
-    defineProps<{
-        domain: UserType;
-        user: IdimProxyIdirInfoSchema | IdimProxyBceidInfoSchema | null;
-        appId: number;
-        helperText: string;
-        fieldId?: string;
-        setIsVerifying?: (verifying: boolean) => void;
-        userList?: IdimProxyBceidInfoSchema[] | null;
-        multiUserMode?: boolean;
-    }>(),
-    {
-        fieldId: "user",
-        multiUserMode: false,
-        userList: () => [],
-    }
-);
+const props = withDefaults(defineProps<Props>(), {
+    fieldId: "user",
+    injectionKey: () => GRANT_USER_MANAGEMENT_KEY,
+});
+
+// Inject the composable from parent
+const grantUserManagement = inject(props.injectionKey);
+if (!grantUserManagement) {
+    console.error('UserNameSection: grantUserManagement composable not provided');
+}
 
 const PERMISSION_REQUIRED_FOR_OPERATION = "permission_required_for_operation";
 
-
 /**
  * Emits:
- * - addUser: In multi-user mode, requests parent to add a user to the user list.
- * - setUser: In single-user mode, notifies parent to set the verified user as the selected user.
- * - deleteUser: In multi-user mode, requests parent to remove a user from the user list.
+ * - setUser: Notifies parent to set the verified user as the selected user (for formData sync).
  */
-const emit = defineEmits(["addUser", "deleteUser", "setUser"]);
-
+const emit = defineEmits(["setUser"]);
 
 const userIdInput = ref<string>("");
 const errorMsg = ref("");
@@ -82,23 +85,24 @@ const setUserNotFoundError = () => {
         "No user found. Check the spelling or try another username";
 };
 
-
-
-const addUserToList = (user: IdimProxyBceidInfoSchema) => {
-    const list = props.userList ?? [];
-    if (props.multiUserMode) {
-        // In multi-user mode, emit addUser if not already present
-        if (!list.some(u => u.userId === user.userId)) {
-            emit("addUser", user);
-        }
-    } else {
-        // In single-user mode, emit setUser to parent
-        emit("setUser", user);
+/**
+ * Add user to the composable's user list and emit setUser for formData sync.
+ */
+const addUserToList = (user: IdimProxyBceidInfoSchema | IdimProxyIdirInfoSchema) => {
+    if (grantUserManagement) {
+        grantUserManagement.addUser(user);
     }
+    // Still emit setUser for formData sync in parent
+    emit("setUser", user);
 };
 
+/**
+ * Delete user from the composable's user list.
+ */
 const handleDeleteUser = (userId: string) => {
-    emit("deleteUser", userId);
+    if (grantUserManagement) {
+        grantUserManagement.deleteUser(userId);
+    }
 };
 
 const verifyIdirMutation = useMutation({
@@ -174,12 +178,16 @@ const resetsearchResult = () => {
     errorMsg.value = "";
 };
 
-// whenver user domain change, remove the previous user identity card and clear input
+// whenever user domain changes, remove the previous user identity card and clear input
 watch(
     () => props.domain,
     () => {
         userIdInput.value = "";
         resetsearchResult();
+        // Clear composable state on domain change
+        if (grantUserManagement) {
+            grantUserManagement.clearUsers();
+        }
     }
 );
 </script>
@@ -247,16 +255,35 @@ watch(
             </div>
         </Field>
 
-        <UserIdentityCard
-            v-if="(props.userList ?? []).length > 0"
-            :userList="props.userList ?? []"
-            :multiUserMode="props.multiUserMode"
-            @deleteUser="handleDeleteUser"
-        />
+        <!-- Merged: User Identity Table (formerly UserIdentityCard component) -->
+        <div class="user-id-card-table" v-if="grantUserManagement && grantUserManagement.userList.value.length > 0">
+            <div class="verified-message-bar">
+                <CheckmarkOutline class="verified-icon" />
+                <span class="verified-message-text">Verified user information</span>
+            </div>
+            <DataTable :value="Array.from(grantUserManagement.userList.value)" stripedRows class="user-table">
+                <Column field="userId" header="Username" />
+                <Column header="Full Name">
+                    <template #body="{ data }">
+                        {{ formatUserNameAndId(null, data.firstName, data.lastName) }}
+                    </template>
+                </Column>
+                <Column field="email" header="Email" />
+                <Column v-if="grantUserManagement.multiUserMode" header="" class="action-col">
+                    <template #body="{ data }">
+                        <button class="btn btn-icon" title="Delete user" @click="handleDeleteUser(data.userId)">
+                            <TrashIcon />
+                        </button>
+                    </template>
+                </Column>
+            </DataTable>
+        </div>
 
-        <div v-if="props.multiUserMode && (props.userList ?? []).length > 0" class="user-bulk-message-bar">
+        <!-- Bulk message bar -->
+        <div v-if="grantUserManagement && grantUserManagement.multiUserMode && grantUserManagement.userList.value.length > 0"
+             class="user-bulk-message-bar">
             <span>
-                <b>{{ (props.userList ?? []).length }} user{{ (props.userList ?? []).length > 1 ? 's' : '' }}</b>
+                <b>{{ grantUserManagement.userList.value.length }} user{{ grantUserManagement.userList.value.length > 1 ? 's' : '' }}</b>
                 &nbsp;will receive the same permissions configured below
             </span>
         </div>
@@ -283,6 +310,57 @@ watch(
     min-height: 38px;
     b {
         font-weight: 700;
+    }
+}
+
+// Merged styles from UserIdentityCard component
+.user-id-card-table {
+    margin-top: 2rem;
+    .verified-message-bar {
+        height: 38px;
+        background: #F0FDF4;
+        border: 1px solid #B9F8CF;
+        display: flex;
+        align-items: center;
+        padding: 0 1rem;
+        border-radius: 4px;
+        margin-bottom: 0.7rem;
+        font-family: 'BC Sans', 'Noto Sans', Arial, sans-serif;
+        font-weight: 400;
+        font-style: normal;
+        font-size: 14px;
+        color: #1a6333;
+        .verified-icon {
+            margin-right: 0.75rem;
+            width: 20px;
+            height: 20px;
+            stroke: #008236;
+        }
+        .verified-message-text {
+            display: inline-block;
+            vertical-align: middle;
+            color:#0D542B
+        }
+    }
+    .user-table {
+        width: 100%;
+        .action-col {
+            width: 48px;
+            text-align: center;
+        }
+        .btn.btn-icon {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.25rem;
+            display: flex;
+            align-items: center;
+            svg {
+                width: 1rem;
+                height: 1rem;
+                color: inherit;
+            }
+        }
     }
 }
 </style>
