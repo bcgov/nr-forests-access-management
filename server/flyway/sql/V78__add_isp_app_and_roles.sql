@@ -22,8 +22,7 @@ INSERT INTO app_fam.fam_role (
     create_date
 )
 VALUES ('ISP_ADMIN', 'Admin', 'Set up access requests for branch staff and licensees, review and revise incoming ISP data and submit for approval, generate reports for monthly reporting, add and adjust Table Maintenance, requires an IDIR.', (select application_id from app_fam.fam_application where application_name = 'ISP_DEV'), 'C', CURRENT_USER, CURRENT_DATE),
-       ('ISP_APPROVER', 'Approver', 'Review and approve lumber sales reports in ISP, requires an IDIR.', (select application_id from app_fam.fam_application where application_name = 'ISP_DEV'), 'C', CURRENT_USER, CURRENT_DATE),
-       ('ISP_SUBMITTER', 'Submitter', 'Submit electronic lumber sales reports for the Interior, requires a BCelD.', (select application_id from app_fam.fam_application where application_name = 'ISP_DEV'), 'C', CURRENT_USER, CURRENT_DATE)
+       ('ISP_APPROVER', 'Approver', 'Review and approve lumber sales reports in ISP, requires an IDIR.', (select application_id from app_fam.fam_application where application_name = 'ISP_DEV'), 'C', CURRENT_USER, CURRENT_DATE)
 ;
 
 -- Add roles for ISP_TEST
@@ -37,8 +36,7 @@ INSERT INTO app_fam.fam_role (
     create_date
 )
 VALUES ('ISP_ADMIN', 'Admin', 'Set up access requests for branch staff and licensees, review and revise incoming ISP data and submit for approval, generate reports for monthly reporting, add and adjust Table Maintenance, requires an IDIR.', (select application_id from app_fam.fam_application where application_name = 'ISP_TEST'), 'C', CURRENT_USER, CURRENT_DATE),
-       ('ISP_APPROVER', 'Approver', 'Review and approve lumber sales reports in ISP, requires an IDIR.', (select application_id from app_fam.fam_application where application_name = 'ISP_TEST'), 'C', CURRENT_USER, CURRENT_DATE),
-       ('ISP_SUBMITTER', 'Submitter', 'Submit electronic lumber sales reports for the Interior, requires a BCelD.', (select application_id from app_fam.fam_application where application_name = 'ISP_TEST'), 'C', CURRENT_USER, CURRENT_DATE)
+       ('ISP_APPROVER', 'Approver', 'Review and approve lumber sales reports in ISP, requires an IDIR.', (select application_id from app_fam.fam_application where application_name = 'ISP_TEST'), 'C', CURRENT_USER, CURRENT_DATE)
 ;
 
 -- Add roles for ISP_PROD
@@ -52,8 +50,7 @@ INSERT INTO app_fam.fam_role (
     create_date
 )
 VALUES ('ISP_ADMIN', 'Admin', 'Set up access requests for branch staff and licensees, review and revise incoming ISP data and submit for approval, generate reports for monthly reporting, add and adjust Table Maintenance, requires an IDIR.', (select application_id from app_fam.fam_application where application_name = 'ISP_PROD'), 'C', CURRENT_USER, CURRENT_DATE),
-       ('ISP_APPROVER', 'Approver', 'Review and approve lumber sales reports in ISP, requires an IDIR.', (select application_id from app_fam.fam_application where application_name = 'ISP_PROD'), 'C', CURRENT_USER, CURRENT_DATE),
-       ('ISP_SUBMITTER', 'Submitter', 'Submit electronic lumber sales reports for the Interior, requires a BCelD.', (select application_id from app_fam.fam_application where application_name = 'ISP_PROD'), 'C', CURRENT_USER, CURRENT_DATE)
+       ('ISP_APPROVER', 'Approver', 'Review and approve lumber sales reports in ISP, requires an IDIR.', (select application_id from app_fam.fam_application where application_name = 'ISP_PROD'), 'C', CURRENT_USER, CURRENT_DATE)
 ;
 
 -- Create dev, test and prod Cognito app clients for ISP
