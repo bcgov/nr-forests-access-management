@@ -2,7 +2,7 @@
 import RoleSelectTable from "@/components/AddPermissions/RoleSelectTable.vue";
 import UserDomainSelect from "@/components/AddPermissions/UserDomainSelect.vue";
 import UserNameInput from "@/components/AddPermissions/UserNameSection.vue";
-import { useSelectUserManagement, GRANT_USER_MANAGEMENT_KEY } from "@/composables/useGrantUserManagement";
+import { useSelectUserManagement, SELECT_REGULAR_USER_KEY } from "@/composables/useSelectUserManagement";
 import DatePicker from "@/components/DatePicker.vue";
 import BoolCheckbox from "@/components/UI/BoolCheckbox.vue";
 import BreadCrumbs from "@/components/UI/BreadCrumbs.vue";
@@ -32,7 +32,7 @@ import {
     getDefaultFormData,
     getRolesByAppId,
     isAbstractRoleSelected,
-    NewAppAdminQueryParamKey,
+    NewRegularUserQueryParamKey,
     NewDelegatedAddminQueryParamKey,
     validateAppPermissionForm,
     type AppPermissionFormType,
@@ -108,7 +108,7 @@ const formData = ref<AppPermissionFormType | undefined>(undefined);
 
 // Use composable for multi-user user management
 const grantUserManagement = useSelectUserManagement(true); // true = multi-user mode
-provide(GRANT_USER_MANAGEMENT_KEY, grantUserManagement);
+provide(SELECT_REGULAR_USER_KEY, grantUserManagement);
 
 watch(
     () => adminUserAccessQuery.isSuccess && rolesUnderSelectedApp.value,
@@ -167,7 +167,7 @@ const assignUserRoles = useMutation({
             name: ManagePermissionsRoute.name,
             query: {
                 appId: props.appId,
-                [NewAppAdminQueryParamKey]: res.data.assignments_detail
+                [NewRegularUserQueryParamKey]: res.data.assignments_detail
                     .filter((assignment) => assignment.status_code === 200)
                     .map((assignment) => assignment.detail.user_role_xref_id)
                     .join(","),

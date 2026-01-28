@@ -20,13 +20,13 @@ import { Field } from "vee-validate";
 import Label from "../UI/Label.vue";
 import HelperText from "../UI/HelperText.vue";
 import { formatUserNameAndId } from "@/utils/UserUtils";
-import { GRANT_USER_MANAGEMENT_KEY, type useSelectUserManagement } from "@/composables/useGrantUserManagement";
+import { SELECT_REGULAR_USER_KEY, type useSelectUserManagement } from "@/composables/useSelectUserManagement";
 
 const auth = useAuth();
 
 interface Props {
     domain: UserType;
-    user: IdimProxyIdirInfoSchema | IdimProxyBceidInfoSchema | null;
+    user?: IdimProxyIdirInfoSchema | IdimProxyBceidInfoSchema | null;
     appId: number;
     helperText: string;
     fieldId?: string;
@@ -36,7 +36,7 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
     fieldId: "user",
-    injectionKey: () => GRANT_USER_MANAGEMENT_KEY,
+    injectionKey: () => SELECT_REGULAR_USER_KEY,
 });
 
 // Inject the composable from parent

@@ -3,14 +3,15 @@ import type { SelectUser } from '@/types/SelectUserType';
 import type { IdimProxyBceidInfoSchema, IdimProxyIdirInfoSchema } from 'fam-app-acsctl-api/model';
 
 /**
- * Injection key for grant user management composable.
+ * Injection key for select user management composable.
  */
-export const GRANT_USER_MANAGEMENT_KEY = Symbol('grantUserManagement') as InjectionKey<ReturnType<typeof useSelectUserManagement>>;
+export const SELECT_REGULAR_USER_KEY = Symbol('selectRegularUser') as InjectionKey<ReturnType<typeof useSelectUserManagement>>;
+export const SELECT_APP_ADMIN_USER_KEY = Symbol('selectAppAdminUser') as InjectionKey<ReturnType<typeof useSelectUserManagement>>;
 
 /**
  * Composable for managing (add/delete) user selection in add regular/admin users permission forms.
  * Supports both multi-user mode (add/remove multiple users) and single-user mode (replace user).
- * Add applicatoin admin, delegated admin flows: use single-user mode.
+ * Add application admin, delegated admin flows: use single-user mode.
  * Add regular user flow: uses multi-user mode.
  *
  * @param multiUserMode - If true, allows multiple users; if false, replaces user on add

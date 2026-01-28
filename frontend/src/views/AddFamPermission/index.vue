@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref, provide } from "vue";
-import { useSelectUserManagement, GRANT_USER_MANAGEMENT_KEY } from "@/composables/useGrantUserManagement";
+import { ref, provide, computed, watch } from "vue";
+import { useSelectUserManagement, SELECT_APP_ADMIN_USER_KEY } from "@/composables/useSelectUserManagement";
 import { Field, Form } from "vee-validate";
 import { isAxiosError } from "axios";
 import { useRouter } from "vue-router";
@@ -17,19 +17,18 @@ import {
     UserType,
     type FamAppAdminCreateRequest,
 } from "fam-admin-mgmt-api/model";
-import type { IdimProxyIdirInfoSchema } from "fam-app-acsctl-api/model";
 import UserNameInput from "@/components/AddPermissions/UserNameSection.vue";
 import StepContainer from "@/components/UI/StepContainer.vue";
 import Dropdown from "@/components/UI/Dropdown.vue";
 import Button from "@/components/UI/Button.vue";
 import { formatUserNameAndId } from "@/utils/UserUtils";
 import {
-    AddFamPermissionErrorQueryKey,
-    AddFamPermissionSuccessQueryKey,
+    AddAppAdminErrorQueryKey,
+    AddAppAdminSuccessQueryKey,
     generatePayload,
     getDefaultFormData,
-    validateFamPermissionForm,
-    type FamPermissionFormType,
+    validateAppAdminForm,
+    type AppAdminFormType,
 } from "./utils";
 
 const router = useRouter();
@@ -51,18 +50,28 @@ const applicationListQuery = useQuery({
     select: (data) => getFamAdminApplications(data),
 });
 
-
-const formData = ref<FamPermissionFormType>(getDefaultFormData());
+const formData = ref<AppAdminFormType>(getDefaultFormData());
 
 // Use composable for single-user management
 const grantUserManagement = useSelectUserManagement(false); // false = single-user mode
-provide(GRANT_USER_MANAGEMENT_KEY, grantUserManagement);
+provide(SELECT_APP_ADMIN_USER_KEY, grantUserManagement);
 
-const handleUserVerification = (user: IdimProxyIdirInfoSchema) => {
-    if (formData.value) {
-        formData.value.user = user;
-    }
-};
+const selectedUser = computed(() => {
+  const users = grantUserManagement.userList.value;
+  return users.length > 0 ? users[0] : null;
+});
+
+// Sync composable user to formData
+watch(selectedUser, (newUser) => {
+    console.log("Selected user changed:", newUser);
+    formData.value.user = newUser;
+});
+
+// const handleUserVerification = (user: IdimProxyIdirInfoSchema) => {
+//     if (formData.value) {
+//         formData.value.user = user;
+//     }
+// };
 
 const handleApplicationChange = (e: DropdownChangeEvent) => {
     if (formData.value) {
@@ -85,7 +94,7 @@ const famPermissionMutation = useMutation({
         );
         const appName = formData.value.application?.description;
         const successMsg = `Admin privilege has been added to ${userFullName} for application ${appName}`;
-        queryClient.setQueryData([AddFamPermissionSuccessQueryKey], successMsg);
+        queryClient.setQueryData([AddAppAdminSuccessQueryKey], successMsg);
         router.push({
             name: ManagePermissionsRoute.name,
             query: {
@@ -109,7 +118,7 @@ const famPermissionMutation = useMutation({
             errMsg = `Failed to add ${userFullName} as a ${appName} admin`;
         }
 
-        queryClient.setQueryData([AddFamPermissionErrorQueryKey], errMsg);
+        queryClient.setQueryData([AddAppAdminErrorQueryKey], errMsg);
         router.push({ name: ManagePermissionsRoute.name, query: { appId: 1 } });
     },
     onSettled: () => {
@@ -119,6 +128,7 @@ const famPermissionMutation = useMutation({
 });
 
 const onSubmit = () => {
+    console.log("Submitting form data:", formData.value);
     if (formData.value) {
         isSubmitting.value = true;
         const payload = generatePayload(formData.value);
@@ -136,27 +146,28 @@ const onSubmit = () => {
         />
         <div class="app-admin-form-container container-fluid">
             <Form
+                id="add-app-admin-form-id"
                 v-slot="{ handleSubmit }"
                 ref="form"
-                as="div"
                 v-if="formData"
-                :validation-schema="validateFamPermissionForm()"
+                :validation-schema="validateAppAdminForm()"
                 validate-on-submit
-                class="row"
+                class="col-sm-12 col-md-12 col-lg-10"
             >
-                <form
+            <!-- class="row" -->
+                <!-- <form
                     id="add-fam-permission-form-id"
                     class="col-sm-12 col-md-12 col-lg-10"
-                >
+                > -->
                     <StepContainer title="User information" divider>
                         <UserNameInput
                             class="user-name-text-input"
                             :domain="UserType.I"
-                            :user="formData.user"
                             :app-id="1"
-                            @setUser="handleUserVerification"
                             helperText="Only IDIR users are allowed to be added as application admins"
+                            :injection-key="SELECT_APP_ADMIN_USER_KEY"
                         />
+                        <!-- @setUser="handleUserVerification" -->
                     </StepContainer>
                     <StepContainer title="Add application">
                         <Field
@@ -212,7 +223,7 @@ const onSubmit = () => {
                             :is-loading="isSubmitting"
                         />
                     </div>
-                </form>
+                <!-- </form> -->
             </Form>
         </div>
     </div>

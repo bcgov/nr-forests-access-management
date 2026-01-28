@@ -21,7 +21,7 @@ export const AddDelegatedAdminSuccessQuerykey =
 export const AddDelegatedAdminErrorQuerykey = "delegated-admin-mutation-error";
 
 // Query Param keys for new ids
-export const NewAppAdminQueryParamKey = "newAppAdminIds";
+export const NewRegularUserQueryParamKey = "newRegularUserIds";
 export const NewDelegatedAddminQueryParamKey = "newDelegatedAdminIds";
 
 export type AppPermissionFormType = {

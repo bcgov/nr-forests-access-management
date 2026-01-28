@@ -41,8 +41,8 @@ import {
     type AppPermissionQueryErrorType,
 } from "../AddAppPermission/utils";
 import {
-    AddFamPermissionErrorQueryKey,
-    AddFamPermissionSuccessQueryKey,
+    AddAppAdminErrorQueryKey,
+    AddAppAdminSuccessQueryKey,
 } from "../AddFamPermission/utils";
 import {
     generateAppPermissionErrorNotifications,
@@ -73,10 +73,10 @@ const addDelegatedAdminErrorData =
         AddDelegatedAdminErrorQuerykey,
     ]);
 const addFamPermissionSuccessData = queryClient.getQueryData<string>([
-    AddFamPermissionSuccessQueryKey,
+    AddAppAdminSuccessQueryKey,
 ]);
 const addFamPermissionErrorData = queryClient.getQueryData<string>([
-    AddFamPermissionErrorQueryKey,
+    AddAppAdminErrorQueryKey,
 ]);
 
 const handleApplicationChange = (e: DropdownChangeEvent) => {
@@ -215,10 +215,10 @@ const clearNotifications = () => {
         queryKey: [AddDelegatedAdminErrorQuerykey],
     });
     queryClient.removeQueries({
-        queryKey: [AddFamPermissionSuccessQueryKey],
+        queryKey: [AddAppAdminSuccessQueryKey],
     });
     queryClient.removeQueries({
-        queryKey: [AddFamPermissionErrorQueryKey],
+        queryKey: [AddAppAdminErrorQueryKey],
     });
     notifications.value = [];
 };
