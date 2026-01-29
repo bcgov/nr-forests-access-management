@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref, provide, computed, watch } from "vue";
+import { ref, provide, watch } from "vue";
 import { useSelectUserManagement, SELECT_APP_ADMIN_USER_KEY } from "@/composables/useSelectUserManagement";
-import { Field, Form } from "vee-validate";
+import { useForm } from "vee-validate";
 import { isAxiosError } from "axios";
 import { useRouter } from "vue-router";
 import type { DropdownChangeEvent } from "primevue/dropdown";
@@ -50,33 +50,26 @@ const applicationListQuery = useQuery({
     select: (data) => getFamAdminApplications(data),
 });
 
-const formData = ref<AppAdminFormType>(getDefaultFormData());
-
 // Use composable for single-user management
 const grantUserManagement = useSelectUserManagement(false); // false = single-user mode
 provide(SELECT_APP_ADMIN_USER_KEY, grantUserManagement);
 
-const selectedUser = computed(() => {
-  const users = grantUserManagement.userList.value;
-  return users.length > 0 ? users[0] : null;
+// Initialize form with useForm
+const { handleSubmit, errors, values, setFieldValue } = useForm<AppAdminFormType>({
+    validationSchema: validateAppAdminForm(),
+    initialValues: getDefaultFormData(),
 });
 
-// Sync composable user to formData
-watch(selectedUser, (newUser) => {
-    console.log("Selected user changed:", newUser);
-    formData.value.user = newUser;
+watch(errors, (val) => {
+  console.log("Form validation errors:", val);
 });
-
-// const handleUserVerification = (user: IdimProxyIdirInfoSchema) => {
-//     if (formData.value) {
-//         formData.value.user = user;
-//     }
-// };
+watch(() => values.user, (val) => {
+  console.log("Parent form user value:", val);
+});
 
 const handleApplicationChange = (e: DropdownChangeEvent) => {
-    if (formData.value) {
-        formData.value.application = e.value;
-    }
+    console.log("Application selected:", e.value);
+    setFieldValue("application", e.value);
 };
 
 const isSubmitting = ref<boolean>(false);
@@ -88,11 +81,11 @@ const famPermissionMutation = useMutation({
         AdminMgmtApiService.applicationAdminApi.createApplicationAdmin(payload),
     onSuccess: (res) => {
         const userFullName = formatUserNameAndId(
-            formData.value.user?.userId,
-            formData.value.user?.firstName,
-            formData.value.user?.lastName
+            values.user?.userId,
+            values.user?.firstName,
+            values.user?.lastName
         );
-        const appName = formData.value.application?.description;
+        const appName = values.application?.description;
         const successMsg = `Admin privilege has been added to ${userFullName} for application ${appName}`;
         queryClient.setQueryData([AddAppAdminSuccessQueryKey], successMsg);
         router.push({
@@ -106,11 +99,11 @@ const famPermissionMutation = useMutation({
     onError: (error) => {
         let errMsg = "";
         const userFullName = formatUserNameAndId(
-            formData.value.user?.userId,
-            formData.value.user?.firstName,
-            formData.value.user?.lastName
+            values.user?.userId,
+            values.user?.firstName,
+            values.user?.lastName
         );
-        const appName = formData.value.application?.description;
+        const appName = values.application?.description;
 
         if (isAxiosError(error) && error.response?.status === 409) {
             errMsg = `${userFullName} is already a ${appName} admin`;
@@ -128,12 +121,10 @@ const famPermissionMutation = useMutation({
 });
 
 const onSubmit = () => {
-    console.log("Submitting form data:", formData.value);
-    if (formData.value) {
-        isSubmitting.value = true;
-        const payload = generatePayload(formData.value);
-        famPermissionMutation.mutate(payload);
-    }
+    console.log("Submitting form data:", values);
+    isSubmitting.value = true;
+    const payload = generatePayload(values);
+    famPermissionMutation.mutate(payload);
 };
 </script>
 
@@ -145,86 +136,71 @@ const onSubmit = () => {
             subtitle="All fields are mandatory"
         />
         <div class="app-admin-form-container container-fluid">
-            <Form
+            <form
                 id="add-app-admin-form-id"
-                v-slot="{ handleSubmit }"
-                ref="form"
-                v-if="formData"
-                :validation-schema="validateAppAdminForm()"
-                validate-on-submit
                 class="col-sm-12 col-md-12 col-lg-10"
+                @submit.prevent="handleSubmit(onSubmit)()"
             >
-            <!-- class="row" -->
-                <!-- <form
-                    id="add-fam-permission-form-id"
-                    class="col-sm-12 col-md-12 col-lg-10"
-                > -->
-                    <StepContainer title="User information" divider>
-                        <UserNameInput
-                            class="user-name-text-input"
-                            :domain="UserType.I"
-                            :app-id="1"
-                            helperText="Only IDIR users are allowed to be added as application admins"
-                            :injection-key="SELECT_APP_ADMIN_USER_KEY"
-                        />
-                        <!-- @setUser="handleUserVerification" -->
-                    </StepContainer>
-                    <StepContainer title="Add application">
-                        <Field
-                            name="application"
-                            v-slot="{ errorMessage }"
-                            v-model="formData.application"
-                        >
-                            <Dropdown
-                                required
-                                label-text="Select an application this user will be able to manage"
-                                class="application-dropdown"
-                                name="application-dropdown"
-                                :value="formData.application"
-                                :options="applicationListQuery.data.value"
-                                @change="handleApplicationChange"
-                                option-label="description"
-                                placeholder="Choose an application"
-                                :is-fetching="
-                                    applicationListQuery.isLoading.value
-                                "
-                                :is-error="applicationListQuery.isError.value"
-                                :error-msg="
-                                    isAxiosError(
-                                        applicationListQuery.error.value
-                                    )
-                                        ? formatAxiosError(
-                                              applicationListQuery.error.value
-                                          )
-                                        : 'Failed to fetch data.'
-                                "
-                            />
-                            <span v-if="errorMessage" class="invalid-feedback">
-                                {{ errorMessage }}
-                            </span>
-                        </Field>
-                    </StepContainer>
-                    <div class="button-group">
-                        <Button
-                            label="Back"
-                            severity="secondary"
-                            @click="
-                                () =>
-                                    router.push({
-                                        name: ManagePermissionsRoute.name,
-                                        query: { appId: 1 },
-                                    })
+                <StepContainer title="User information" divider>
+                    <UserNameInput
+                        class="user-name-text-input"
+                        :domain="UserType.I"
+                        :app-id="1"
+                        helperText="Only IDIR users are allowed to be added as application admins"
+                        :injection-key="SELECT_APP_ADMIN_USER_KEY"
+                    />
+                </StepContainer>
+                <StepContainer title="Add application">
+                    <div>
+                        <Dropdown
+                            required
+                            label-text="Select an application this user will be able to manage"
+                            class="application-dropdown"
+                            name="application-dropdown"
+                            :value="values.application"
+                            :options="applicationListQuery.data.value"
+                            @change="handleApplicationChange"
+                            option-label="description"
+                            placeholder="Choose an application"
+                            :is-fetching="
+                                applicationListQuery.isLoading.value
+                            "
+                            :is-error="applicationListQuery.isError.value"
+                            :error-msg="
+                                isAxiosError(
+                                    applicationListQuery.error.value
+                                )
+                                    ? formatAxiosError(
+                                          applicationListQuery.error.value
+                                      )
+                                    : 'Failed to fetch data.'
                             "
                         />
-                        <Button
-                            :label="`Create Application Admin`"
-                            @click="handleSubmit(onSubmit)"
-                            :icon="CheckmarkIcon"
-                            :is-loading="isSubmitting"
-                        />
+                        <span v-if="errors.application" class="invalid-feedback">
+                            {{ errors.application }}
+                        </span>
                     </div>
-                <!-- </form> -->
-            </Form>
+                </StepContainer>
+                <div class="button-group">
+                    <Button
+                        label="Back"
+                        severity="secondary"
+                        @click="
+                            () =>
+                                router.push({
+                                    name: ManagePermissionsRoute.name,
+                                    query: { appId: 1 },
+                                })
+                        "
+                    />
+                    <Button
+                        :label="`Create Application Admin`"
+                        type="submit"
+                        :icon="CheckmarkIcon"
+                        :is-loading="isSubmitting"
+                    />
+                </div>
+            </form>
         </div>
     </div>
 </template>

@@ -16,17 +16,18 @@ import { UserType } from "fam-app-acsctl-api";
 import InputText from "primevue/inputtext";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
-import { Field } from "vee-validate";
+import { useField } from "vee-validate";
 import Label from "../UI/Label.vue";
 import HelperText from "../UI/HelperText.vue";
 import { formatUserNameAndId } from "@/utils/UserUtils";
 import { SELECT_REGULAR_USER_KEY, type useSelectUserManagement } from "@/composables/useSelectUserManagement";
+import type { SelectUser } from "@/types/SelectUserType";
+import { toSelectUserManagementUser } from "@/composables/useSelectUserManagement";
 
 const auth = useAuth();
 
 interface Props {
     domain: UserType;
-    user?: IdimProxyIdirInfoSchema | IdimProxyBceidInfoSchema | null;
     appId: number;
     helperText: string;
     fieldId?: string;
@@ -39,6 +40,9 @@ const props = withDefaults(defineProps<Props>(), {
     injectionKey: () => SELECT_REGULAR_USER_KEY,
 });
 
+// Use useField to manage the user field
+const { value: userFieldValue, errorMessage: userFieldError, setValue: setUserFieldValue } = useField<SelectUser | null>(props.fieldId);
+
 // Inject the composable from parent
 const grantUserManagement = inject(props.injectionKey);
 if (!grantUserManagement) {
@@ -46,12 +50,6 @@ if (!grantUserManagement) {
 }
 
 const PERMISSION_REQUIRED_FOR_OPERATION = "permission_required_for_operation";
-
-/**
- * Emits:
- * - setUser: Notifies parent to set the verified user as the selected user (for formData sync).
- */
-const emit = defineEmits(["setUser"]);
 
 const userIdInput = ref<string>("");
 const errorMsg = ref("");
@@ -86,14 +84,16 @@ const setUserNotFoundError = () => {
 };
 
 /**
- * Add user to the composable's user list and emit setUser for formData sync.
+ * Add user to the composable's user list and update form field via useField.
  */
 const addUserToList = (user: IdimProxyBceidInfoSchema | IdimProxyIdirInfoSchema) => {
+    console.log("Adding user to list:", user);
+    const selectUser = toSelectUserManagementUser(user);
     if (grantUserManagement) {
-        grantUserManagement.addUser(user);
+        grantUserManagement.addUser(selectUser);
     }
-    // Still emit setUser for formData sync in parent
-    emit("setUser", user);
+    setUserFieldValue(selectUser);
+    userIdInput.value = ""; // Clear input after successful verification
 };
 
 /**
@@ -203,32 +203,27 @@ watch(
             })`"
             required
         />
-        <Field
-            :name="props.fieldId"
-            v-slot="{ errorMessage }"
-            v-model="props.user"
-        >
-            <div class="input-with-verify-button">
-                <div>
-                    <InputText
-                        id="userIdInput"
-                        class="w-100 custom-height"
-                        type="text"
-                        maxlength="20"
-                        v-model="userIdInput"
-                        :class="{ 'is-invalid': errorMessage || errorMsg }"
-                        @keydown.enter.prevent="handleVerify(props.domain)"
-                        @blur="handleVerify(props.domain)"
-                        :disabled="
-                            verifyBceidMutation.isPending.value ||
-                            verifyIdirMutation.isPending.value
-                        "
-                    />
-                    <HelperText
-                        :text="errorMsg || errorMessage || helperText"
-                        :is-error="!!(errorMessage || errorMsg)"
-                    />
-                </div>
+        <div class="input-with-verify-button">
+            <div>
+                <InputText
+                    id="userIdInput"
+                    class="w-100 custom-height"
+                    type="text"
+                    maxlength="20"
+                    v-model="userIdInput"
+                    :class="{ 'is-invalid': userFieldError || errorMsg }"
+                    @keydown.enter.prevent="handleVerify(props.domain)"
+                    @blur="handleVerify(props.domain)"
+                    :disabled="
+                        verifyBceidMutation.isPending.value ||
+                        verifyIdirMutation.isPending.value
+                    "
+                />
+                <HelperText
+                    :text="errorMsg || userFieldError || helperText"
+                    :is-error="!!(userFieldError || errorMsg)"
+                />
+            </div>
 
                 <Button
                     class="verify-username-button"
@@ -252,8 +247,7 @@ watch(
                     "
                 >
                 </Button>
-            </div>
-        </Field>
+        </div>
 
         <!-- Merged: User Identity Table (formerly UserIdentityCard component) -->
         <div class="user-id-card-table" v-if="grantUserManagement && grantUserManagement.userList.value.length > 0">
