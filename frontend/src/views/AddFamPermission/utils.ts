@@ -1,7 +1,4 @@
-import { AdminMgmtApiService } from "@/services/ApiServiceFactory";
 import type { SelectUser } from "@/types/SelectUserType";
-import { getFamAdminApplications } from "@/utils/ApiUtils";
-import { useQuery } from "@tanstack/vue-query";
 import type {
     FamAppAdminCreateRequest,
     FamApplicationGrantDto,
@@ -32,11 +29,7 @@ export const getDefaultFormData = (): AppAdminFormType =>
 export const validateAppAdminForm = () => {
     console.log("Validating app admin form");
     return object({
-        user: mixed<SelectUser>()
-            .required("A valid user is required"),
-            // .test("is-user-found", "A valid user ID is required", (value) => {
-            //     return value?.found === true;
-            // }),
+        user: mixed<SelectUser>().required("A valid user is required"),
         application: mixed<FamApplicationGrantDto>().required(
             "Please select an application"
         ),

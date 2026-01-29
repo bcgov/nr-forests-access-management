@@ -78,8 +78,6 @@ const handleApplicationChange = (e: DropdownChangeEvent) => {
     setFieldValue("application", e.value);
 };
 
-const isSubmitting = ref<boolean>(false);
-
 const famPermissionMutation = useMutation({
     mutationFn: (payload: FamAppAdminCreateRequest) =>
         AdminMgmtApiService.applicationAdminApi.createApplicationAdmin(payload),
@@ -118,14 +116,10 @@ const famPermissionMutation = useMutation({
         queryClient.setQueryData([AddAppAdminErrorQueryKey], errMsg);
         router.push({ name: ManagePermissionsRoute.name, query: { appId: 1 } });
     },
-    onSettled: () => {
-        isSubmitting.value = false;
-    },
     retry: 0,
 });
 
 const onSubmit = () => {
-    isSubmitting.value = true;
     famPermissionMutation.mutate(generatePayload(values));
 };
 
@@ -206,7 +200,7 @@ const onInvalid = () => {
                         :label="`Create Application Admin`"
                         type="submit"
                         :icon="CheckmarkIcon"
-                        :is-loading="isSubmitting"
+                        :is-loading="famPermissionMutation.isPending.value"
                     />
                 </div>
             </form>
