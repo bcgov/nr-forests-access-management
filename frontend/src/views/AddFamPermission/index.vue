@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, provide, watch } from "vue";
+import { ref, provide } from "vue";
 import { useSelectUserManagement, SELECT_APP_ADMIN_USER_KEY } from "@/composables/useSelectUserManagement";
 import { useForm } from "vee-validate";
 import { isAxiosError } from "axios";
@@ -27,6 +27,7 @@ import {
     AddAppAdminSuccessQueryKey,
     generatePayload,
     getDefaultFormData,
+    NewAppAdminQueryParamKey,
     validateAppAdminForm,
     type AppAdminFormType,
 } from "./utils";
@@ -41,8 +42,31 @@ const crumbs: BreadCrumbType[] = [
     },
 ];
 
+// Use composable for single-user user selection
+const grantUserManagement = useSelectUserManagement(false); // false = single-user mode
+provide(SELECT_APP_ADMIN_USER_KEY, grantUserManagement);
+
+/**
+ * Form setup using vee-validate's v4 useForm composable.
+ * - validationSchema: Schema for form validation.
+ * - initialValues: Default values for the form fields to be initialized.
+ * Returns form handlers and state.
+ * handleSubmit - function to handle form submission
+ * errors - reactive object containing validation errors
+ * values - reactive object containing form field values
+ * setFieldValue - function to programmatically set field values
+ */
+const { handleSubmit, errors, values, setFieldValue, meta } = useForm<AppAdminFormType>({
+    validationSchema: validateAppAdminForm(),
+    initialValues: getDefaultFormData(),
+});
+
+// Flag to track if form has been submitted - controls error display
+const hasSubmitted = ref<boolean>(false);
+
+const queryClient = useQueryClient();
 const applicationListQuery = useQuery({
-    queryKey: ["admin-user-access"],
+    queryKey: ["admin-user-apps-privilege"],
     queryFn: () =>
         AdminMgmtApiService.adminUserAccessesApi
             .adminUserAccessPrivilege()
@@ -50,31 +74,11 @@ const applicationListQuery = useQuery({
     select: (data) => getFamAdminApplications(data),
 });
 
-// Use composable for single-user management
-const grantUserManagement = useSelectUserManagement(false); // false = single-user mode
-provide(SELECT_APP_ADMIN_USER_KEY, grantUserManagement);
-
-// Initialize form with useForm
-const { handleSubmit, errors, values, setFieldValue } = useForm<AppAdminFormType>({
-    validationSchema: validateAppAdminForm(),
-    initialValues: getDefaultFormData(),
-});
-
-watch(errors, (val) => {
-  console.log("Form validation errors:", val);
-});
-watch(() => values.user, (val) => {
-  console.log("Parent form user value:", val);
-});
-
 const handleApplicationChange = (e: DropdownChangeEvent) => {
-    console.log("Application selected:", e.value);
     setFieldValue("application", e.value);
 };
 
 const isSubmitting = ref<boolean>(false);
-
-const queryClient = useQueryClient();
 
 const famPermissionMutation = useMutation({
     mutationFn: (payload: FamAppAdminCreateRequest) =>
@@ -92,7 +96,7 @@ const famPermissionMutation = useMutation({
             name: ManagePermissionsRoute.name,
             query: {
                 appId: 1,
-                newFamAdminIds: [res.data.application_admin_id],
+                [NewAppAdminQueryParamKey]: [res.data.application_admin_id],
             },
         });
     },
@@ -121,10 +125,15 @@ const famPermissionMutation = useMutation({
 });
 
 const onSubmit = () => {
-    console.log("Submitting form data:", values);
     isSubmitting.value = true;
-    const payload = generatePayload(values);
-    famPermissionMutation.mutate(payload);
+    famPermissionMutation.mutate(generatePayload(values));
+};
+
+// vee-validate onInvalid handler after form submission attempt.
+// For displaying validation errors after first submit attempt.
+// After v5 upgrade, can probably remove this and use better approach.
+const onInvalid = () => {
+  hasSubmitted.value = true;
 };
 </script>
 
@@ -139,7 +148,7 @@ const onSubmit = () => {
             <form
                 id="add-app-admin-form-id"
                 class="col-sm-12 col-md-12 col-lg-10"
-                @submit.prevent="handleSubmit(onSubmit)()"
+                @submit.prevent="handleSubmit(onSubmit, onInvalid)()"
             >
                 <StepContainer title="User information" divider>
                     <UserNameInput
@@ -176,7 +185,7 @@ const onSubmit = () => {
                                     : 'Failed to fetch data.'
                             "
                         />
-                        <span v-if="errors.application" class="invalid-feedback">
+                        <span v-if="hasSubmitted && errors.application" class="invalid-feedback">
                             {{ errors.application }}
                         </span>
                     </div>

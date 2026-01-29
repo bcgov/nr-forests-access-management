@@ -1,4 +1,7 @@
+import { AdminMgmtApiService } from "@/services/ApiServiceFactory";
 import type { SelectUser } from "@/types/SelectUserType";
+import { getFamAdminApplications } from "@/utils/ApiUtils";
+import { useQuery } from "@tanstack/vue-query";
 import type {
     FamAppAdminCreateRequest,
     FamApplicationGrantDto,
@@ -8,7 +11,6 @@ import { mixed, object } from "yup";
 
 export const AddAppAdminSuccessQueryKey = "app-admin-success";
 export const AddAppAdminErrorQueryKey = "app-admin-error";
-
 export const NewAppAdminQueryParamKey = "newAppAdminIds";
 
 export type AppAdminFormType = {
