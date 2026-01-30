@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, provide } from "vue";
+import { ref, provide, watch } from "vue";
 import { useSelectUserManagement, SELECT_APP_ADMIN_USER_KEY } from "@/composables/useSelectUserManagement";
 import { useForm } from "vee-validate";
 import { isAxiosError } from "axios";
@@ -60,6 +60,17 @@ const { handleSubmit, errors, values, setFieldValue, meta } = useForm<AppAdminFo
     validationSchema: validateAppAdminForm(),
     initialValues: getDefaultFormData(),
 });
+
+// Watch selectUserManagement.currentUser and sync with form field
+watch(
+    () => grantUserManagement.currentUser.value,
+    (newUser) => {
+        if (newUser || meta.value.dirty) {
+            console.log("Form has been touched, updating user field");
+            setFieldValue('user', newUser);
+        }
+    }
+);
 
 // Flag to track if form has been submitted - controls error display
 const hasSubmitted = ref<boolean>(false);
@@ -151,6 +162,7 @@ const onInvalid = () => {
                         :app-id="1"
                         helperText="Only IDIR users are allowed to be added as application admins"
                         :injection-key="SELECT_APP_ADMIN_USER_KEY"
+                        :error-message="hasSubmitted ? errors.user : ''"
                     />
                 </StepContainer>
                 <StepContainer title="Add application">

@@ -16,12 +16,10 @@ import { UserType } from "fam-app-acsctl-api";
 import InputText from "primevue/inputtext";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
-import { useField } from "vee-validate";
 import Label from "../UI/Label.vue";
 import HelperText from "../UI/HelperText.vue";
 import { formatUserNameAndId } from "@/utils/UserUtils";
 import { SELECT_REGULAR_USER_KEY, type useSelectUserManagement } from "@/composables/useSelectUserManagement";
-import type { SelectUser } from "@/types/SelectUserType";
 import { toSelectUserManagementUser } from "@/composables/useSelectUserManagement";
 
 const auth = useAuth();
@@ -30,30 +28,22 @@ interface Props {
     domain: UserType;
     appId: number;
     helperText: string;
-    fieldId?: string;
+    errorMessage?: string;
     setIsVerifying?: (verifying: boolean) => void;
     injectionKey?: InjectionKey<ReturnType<typeof useSelectUserManagement>>;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-    fieldId: "user",
     injectionKey: () => SELECT_REGULAR_USER_KEY,
 });
 
-// Use useField to manage the user field
-const {
-    value: userFieldValue,
-    errorMessage: userFieldError, // parent component use this to show field errors
-    setValue: setUserFieldValue
-} = useField<SelectUser | null>(props.fieldId);
+const usernameInput = ref<string>(""); // input for username at this component.
+const errorMsg = ref(""); // error message for username verification errors
 
 // Inject the composable from parent
 const selectUserManagement = inject(props.injectionKey);
 
 const PERMISSION_REQUIRED_FOR_OPERATION = "permission_required_for_operation";
-
-const usernameInput = ref<string>(""); // input for username at this component.
-const errorMsg = ref(""); // error message for username verification errors
 
 /**
  * Checks if the provided user ID matches the currently logged-in user's ID.
@@ -83,14 +73,14 @@ const setUserNotFoundError = () => {
 };
 
 /**
- * Add user to the composable's user list and update form field via useField.
+ * Add user to the composable's user list.
+ * The parent form watches selectUserManagement.currentUser to sync with form field.
  */
 const addUserToList = (user: IdimProxyBceidInfoSchema | IdimProxyIdirInfoSchema) => {
     const selectUser = toSelectUserManagementUser(user);
     if (selectUserManagement) {
         selectUserManagement.addUser(selectUser);
     }
-    setUserFieldValue(selectUser);
     usernameInput.value = ""; // Clear input after successful verification
 };
 
@@ -209,17 +199,16 @@ watch(
                     type="text"
                     maxlength="20"
                     v-model="usernameInput"
-                    :class="{ 'is-invalid': userFieldError || errorMsg }"
+                    :class="{ 'is-invalid': errorMsg || errorMessage }"
                     @keydown.enter.prevent="handleVerify(props.domain)"
-                    @blur="handleVerify(props.domain)"
                     :disabled="
                         verifyBceidMutation.isPending.value ||
                         verifyIdirMutation.isPending.value
                     "
                 />
                 <HelperText
-                    :text="errorMsg || userFieldError || helperText"
-                    :is-error="!!(userFieldError || errorMsg)"
+                    :text="errorMsg || errorMessage || helperText"
+                    :is-error="!!(errorMsg || errorMessage)"
                 />
             </div>
 
