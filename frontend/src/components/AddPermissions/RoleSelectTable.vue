@@ -26,6 +26,7 @@ const props = defineProps<{
      * Determines whether the logged in user is only a d-admin and not an app admin
      */
     isDelegatedAdminOnly: boolean;
+    setFieldValue: (field: string, value: any) => void;
 }>();
 
 const formData = inject<Ref<AppPermissionFormType>>(APP_PERMISSION_FORM_KEY);
@@ -68,18 +69,21 @@ const rows = computed<FamRoleGrantDto[]>(() => {
 const setRoleAndClearClients = (role: FamRoleGrantDto) => {
     if (role.id === delegatedAdminRow.id) {
         selectedRole.value = role;
-        formData.value.role = null;
-        formData.value.isAddingDelegatedAdmin = true;
+        props.setFieldValue('role', null);
+        props.setFieldValue('isAddingDelegatedAdmin', true);
     } else {
         selectedRole.value = role;
-        formData.value.role = role;
-        formData.value.isAddingDelegatedAdmin = false;
+        props.setFieldValue('role', role);
+        props.setFieldValue('isAddingDelegatedAdmin', false);
     }
 
-    formData.value.forestClients = [];
-    formData.value.forestClientInput.value = "";
-    formData.value.forestClientInput.isValid = true;
-    formData.value.forestClientInput.errorMsg = "";
+    props.setFieldValue('forestClients', []);
+    props.setFieldValue('forestClientInput', {
+        ...formData.value.forestClientInput,
+        value: '',
+        isValid: true,
+        errorMsg: '',
+    });
 };
 
 const handleRoleSelect = (role: FamRoleGrantDto) => {
@@ -164,6 +168,7 @@ const handleRoleSelect = (role: FamRoleGrantDto) => {
                             "
                             :app-id="props.appId"
                             :field-id="props.forestClientsFieldId"
+                            :set-field-value="props.setFieldValue"
                         />
 
                         <DelegatedAdminSection

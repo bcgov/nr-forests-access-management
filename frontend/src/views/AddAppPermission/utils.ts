@@ -1,4 +1,6 @@
+import { IdpProvider } from "@/enum/IdpEnum";
 import type { TextInputType } from "@/types/InputTypes";
+import type { SelectUser } from "@/types/SelectUserType";
 import {
     RoleType,
     type FamAccessControlPrivilegeCreateRequest,
@@ -9,15 +11,12 @@ import {
     UserType,
     type FamForestClientSchema,
     type FamUserRoleAssignmentCreateSchema,
-    type IdimProxyBceidInfoSchema,
-    type IdimProxyIdirInfoSchema,
 } from "fam-app-acsctl-api/model";
 import { array, mixed, object } from "yup";
 
-export const AddAppUserPermissionSuccessQuerykey = "app-admin-mutation-success";
-export const AddAppUserPermissionErrorQuerykey = "app-admin-mutation-error";
-export const AddDelegatedAdminSuccessQuerykey =
-    "delegated-admin-mutation-success";
+export const AddAppUserPermissionSuccessQuerykey = "app-user-mutation-success";
+export const AddAppUserPermissionErrorQuerykey = "app-user-mutation-error";
+export const AddDelegatedAdminSuccessQuerykey = "delegated-admin-mutation-success";
 export const AddDelegatedAdminErrorQuerykey = "delegated-admin-mutation-error";
 
 // Query Param keys for new ids
@@ -26,7 +25,7 @@ export const NewDelegatedAddminQueryParamKey = "newDelegatedAdminIds";
 
 export type AppPermissionFormType = {
     domain: UserType;
-    user: IdimProxyIdirInfoSchema | IdimProxyBceidInfoSchema | null;
+    users: SelectUser[];
     forestClients: FamForestClientSchema[];
     role: FamRoleGrantDto | null;
     sendUserEmail: boolean;
@@ -49,7 +48,7 @@ export type AppPermissionQueryErrorType = {
 
 const defaultFormData: AppPermissionFormType = {
     domain: UserType.B,
-    user: null,
+    users: [],
     forestClients: [],
     role: null,
     sendUserEmail: false,
@@ -79,12 +78,17 @@ export const getDefaultFormData = (
 /**
  * Validation schema for app admin and delegated admin
  */
-export const validateAppPermissionForm = (isAbstractRoleSelected: boolean) => {
+export const validateAppPermissionForm = () => {
     return object({
-        user: mixed<IdimProxyIdirInfoSchema | IdimProxyBceidInfoSchema>()
-            .required("A valid user is required")
-            .test("is-user-found", "A valid user ID is required", (value) => {
-                return value?.found === true;
+        users: array()
+            .of(mixed<SelectUser>().required("A valid user is required"))
+            .when("isAddingDelegatedAdmin", {
+                is: false,
+                then: (schema) => schema.min(1, "At least one user is required"),
+                otherwise: (schema) =>
+                    schema
+                        .min(1, "A valid user is required")
+                        .max(1, "Only one user is allowed for delegated admin"),
             }),
         role: mixed<FamRoleGrantDto>().required("Please select a role"),
         forestClients: array()
@@ -98,7 +102,8 @@ export const validateAppPermissionForm = (isAbstractRoleSelected: boolean) => {
                     )
             )
             .when("role", {
-                is: () => isAbstractRoleSelected,
+                is: (role: FamRoleGrantDto | null) =>
+                    role?.type_code === RoleType.A,
                 then: (schema) =>
                     schema.min(1, "At least one organization is required"),
                 otherwise: (schema) => schema.default([]).nullable(),
@@ -127,20 +132,19 @@ export const generatePayload = (
         };
 
         if (formData.isAddingDelegatedAdmin) {
+            const delegatedAdminUser = formData.users[0];
             return {
                 ...common_payload,
-                user_name: formData.user?.userId ?? "",
-                user_guid: formData.user?.guid ?? "",
+                user_name: delegatedAdminUser?.userId ?? "",
+                user_guid: delegatedAdminUser?.guid ?? "",
             };
         }
         return {
             ...common_payload,
-            users: [
-                {
-                    user_guid: formData.user?.guid ?? "",
-                    user_name: formData.user?.userId ?? "",
-                },
-            ],
+            users: formData.users.map((user) => ({
+                user_guid: user.guid ?? "",
+                user_name: user.userId ?? "",
+            })),
         };
     };
 
@@ -162,3 +166,10 @@ export const getRolesByAppId = (data: FamGrantDetailDto[], appId: number) => {
 export const isAbstractRoleSelected = (
     formData?: AppPermissionFormType
 ): boolean => formData?.role?.type_code === RoleType.A;
+
+export const getUserNameInputHelperText = (domain: UserType) =>
+    `Type user's ${
+        domain === UserType.I
+            ? IdpProvider.IDIR
+            : IdpProvider.BCEIDBUSINESS
+    } and click "Verify username"`;
