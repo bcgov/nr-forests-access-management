@@ -41,26 +41,26 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 // Use useField to manage the user field
-const { value: userFieldValue, errorMessage: userFieldError, setValue: setUserFieldValue } = useField<SelectUser | null>(props.fieldId);
+const {
+    value: userFieldValue,
+    errorMessage: userFieldError, // parent component use this to show field errors
+    setValue: setUserFieldValue
+} = useField<SelectUser | null>(props.fieldId);
 
 // Inject the composable from parent
-const grantUserManagement = inject(props.injectionKey);
-if (!grantUserManagement) {
-    console.error('UserNameSection: grantUserManagement composable not provided');
-}
+const selectUserManagement = inject(props.injectionKey);
 
 const PERMISSION_REQUIRED_FOR_OPERATION = "permission_required_for_operation";
 
-const userIdInput = ref<string>("");
-const errorMsg = ref("");
+const usernameInput = ref<string>(""); // input for username at this component.
+const errorMsg = ref(""); // error message for username verification errors
 
 /**
  * Checks if the provided user ID matches the currently logged-in user's ID.
  */
 const isCurrentUser = (): boolean => {
-    const userId = userIdInput.value?.toLowerCase();
+    const userId = usernameInput.value?.toLowerCase();
     const loggedInUserId = auth.authState.famLoginUser?.username?.toLowerCase();
-
     return userId === loggedInUserId;
 };
 
@@ -79,29 +79,27 @@ const handleMutationError = (error: any) => {
 };
 
 const setUserNotFoundError = () => {
-    errorMsg.value =
-        "No user found. Check the spelling or try another username";
+    errorMsg.value = "No user found. Check the spelling or try another username";
 };
 
 /**
  * Add user to the composable's user list and update form field via useField.
  */
 const addUserToList = (user: IdimProxyBceidInfoSchema | IdimProxyIdirInfoSchema) => {
-    console.log("Adding user to list:", user);
     const selectUser = toSelectUserManagementUser(user);
-    if (grantUserManagement) {
-        grantUserManagement.addUser(selectUser);
+    if (selectUserManagement) {
+        selectUserManagement.addUser(selectUser);
     }
     setUserFieldValue(selectUser);
-    userIdInput.value = ""; // Clear input after successful verification
+    usernameInput.value = ""; // Clear input after successful verification
 };
 
 /**
  * Delete user from the composable's user list.
  */
 const handleDeleteUser = (userId: string) => {
-    if (grantUserManagement) {
-        grantUserManagement.deleteUser(userId);
+    if (selectUserManagement) {
+        selectUserManagement.deleteUser(userId);
     }
 };
 
@@ -111,7 +109,7 @@ const verifyIdirMutation = useMutation({
             props.setIsVerifying(true);
         }
         return AppActlApiService.idirBceidProxyApi
-            .idirSearch(userIdInput.value, props.appId)
+            .idirSearch(usernameInput.value, props.appId)
             .then((res) => res.data);
     },
     onSuccess: (data) => {
@@ -135,7 +133,7 @@ const verifyBceidMutation = useMutation({
             props.setIsVerifying(true);
         }
         return AppActlApiService.idirBceidProxyApi
-            .bceidSearch(userIdInput.value, props.appId)
+            .bceidSearch(usernameInput.value, props.appId)
             .then((res) => res.data);
     },
     onSuccess: (data) => {
@@ -157,7 +155,7 @@ const handleVerify = (userType: UserType) => {
     if (
         verifyBceidMutation.isPending.value ||
         verifyIdirMutation.isPending.value ||
-        !userIdInput.value
+        !usernameInput.value
     ) {
         return;
     }
@@ -182,11 +180,11 @@ const resetsearchResult = () => {
 watch(
     () => props.domain,
     () => {
-        userIdInput.value = "";
+        usernameInput.value = "";
         resetsearchResult();
         // Clear composable state on domain change
-        if (grantUserManagement) {
-            grantUserManagement.clearUsers();
+        if (selectUserManagement) {
+            selectUserManagement.clearUsers();
         }
     }
 );
@@ -195,7 +193,7 @@ watch(
 <template>
     <div class="form-field">
         <Label
-            for="userIdInput"
+            for="usernameInput"
             :label-text="`Username (${
                 props.domain === UserType.I
                     ? IdpProvider.IDIR
@@ -206,11 +204,11 @@ watch(
         <div class="input-with-verify-button">
             <div>
                 <InputText
-                    id="userIdInput"
+                    id="usernameInput"
                     class="w-100 custom-height"
                     type="text"
                     maxlength="20"
-                    v-model="userIdInput"
+                    v-model="usernameInput"
                     :class="{ 'is-invalid': userFieldError || errorMsg }"
                     @keydown.enter.prevent="handleVerify(props.domain)"
                     @blur="handleVerify(props.domain)"
@@ -249,13 +247,13 @@ watch(
                 </Button>
         </div>
 
-        <!-- Merged: User Identity Table (formerly UserIdentityCard component) -->
-        <div class="user-id-card-table" v-if="grantUserManagement && grantUserManagement.userList.value.length > 0">
+        <!-- User Identity Table -->
+        <div class="user-id-card-table" v-if="selectUserManagement && selectUserManagement.userList.value.length > 0">
             <div class="verified-message-bar">
                 <CheckmarkOutline class="verified-icon" />
                 <span class="verified-message-text">Verified user information</span>
             </div>
-            <DataTable :value="Array.from(grantUserManagement.userList.value)" stripedRows class="user-table">
+            <DataTable :value="Array.from(selectUserManagement.userList.value)" stripedRows class="user-table">
                 <Column field="userId" header="Username" />
                 <Column header="Full Name">
                     <template #body="{ data }">
@@ -263,7 +261,7 @@ watch(
                     </template>
                 </Column>
                 <Column field="email" header="Email" />
-                <Column v-if="grantUserManagement.multiUserMode" header="" class="action-col">
+                <Column header="" class="action-col">
                     <template #body="{ data }">
                         <button class="btn btn-icon" title="Delete user" @click="handleDeleteUser(data.userId)">
                             <TrashIcon />
@@ -274,10 +272,10 @@ watch(
         </div>
 
         <!-- Bulk message bar -->
-        <div v-if="grantUserManagement && grantUserManagement.multiUserMode && grantUserManagement.userList.value.length > 0"
+        <div v-if="selectUserManagement && selectUserManagement.multiUserMode && selectUserManagement.userList.value.length > 0"
              class="user-bulk-message-bar">
             <span>
-                <b>{{ grantUserManagement.userList.value.length }} user{{ grantUserManagement.userList.value.length > 1 ? 's' : '' }}</b>
+                <b>{{ selectUserManagement.userList.value.length }} user{{ selectUserManagement.userList.value.length > 1 ? 's' : '' }}</b>
                 &nbsp;will receive the same permissions configured below
             </span>
         </div>

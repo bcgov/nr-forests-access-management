@@ -212,6 +212,7 @@ const onInvalid = () => {
     .app-admin-form-container {
         margin-top: 3rem;
         padding: 0;
+        margin-bottom: 3rem;
 
         .invalid-feedback {
             display: block;
