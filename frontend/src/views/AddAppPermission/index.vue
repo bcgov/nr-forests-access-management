@@ -233,6 +233,7 @@ const delegatedAdminMutation = useMutation({
         ),
     onSuccess: (res) => {
         queryClient.setQueryData([AddDelegatedAdminSuccessQuerykey], res.data);
+        activeTabIndex.value = 1;
         router.push({
             name: ManagePermissionsRoute.name,
             query: {
