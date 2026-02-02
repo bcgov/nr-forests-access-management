@@ -2,11 +2,6 @@
 import RoleSelectTable from "@/components/AddPermissions/RoleSelectTable.vue";
 import UserDomainSelect from "@/components/AddPermissions/UserDomainSelect.vue";
 import UserNameInput from "@/components/AddPermissions/UserNameSection.vue";
-import {
-    useSelectUserManagement,
-    SELECT_DELEGATED_ADMIN_USER_KEY,
-    SELECT_REGULAR_USER_KEY,
-} from "@/composables/useSelectUserManagement";
 import DatePicker from "@/components/DatePicker.vue";
 import BoolCheckbox from "@/components/UI/BoolCheckbox.vue";
 import BreadCrumbs from "@/components/UI/BreadCrumbs.vue";
@@ -14,8 +9,12 @@ import Button from "@/components/UI/Button.vue";
 import PageTitle from "@/components/UI/PageTitle.vue";
 import StepContainer from "@/components/UI/StepContainer.vue";
 import useAuth from "@/composables/useAuth";
+import {
+    SELECT_DELEGATED_ADMIN_USER_KEY,
+    SELECT_REGULAR_USER_KEY,
+    useSelectUserManagement,
+} from "@/composables/useSelectUserManagement";
 import { APP_PERMISSION_FORM_KEY } from "@/constants/InjectionKeys";
-import { IdpProvider } from "@/enum/IdpEnum";
 import { ManagePermissionsRoute } from "@/router/routes";
 import {
     AdminMgmtApiService,
@@ -35,11 +34,11 @@ import {
     generatePayload,
     getDefaultFormData,
     getRolesByAppId,
-    NewRegularUserQueryParamKey,
+    getUserNameInputHelperText,
     NewDelegatedAddminQueryParamKey,
+    NewRegularUserQueryParamKey,
     validateAppPermissionForm,
     type AppPermissionFormType,
-    getUserNameInputHelperText,
 } from "@/views/AddAppPermission/utils";
 import CheckmarkIcon from "@carbon/icons-vue/es/checkmark/16";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
@@ -65,6 +64,9 @@ if (!props.appId) {
     console.warn("Invalid or missing required query params");
     router.push("/");
 }
+
+const hasSubmitted = ref(false);
+const userErrorMessage = computed(() => (hasSubmitted.value ? errors.value.users ?? "" : ""));
 
 const crumbs: BreadCrumbType[] = [
     {
@@ -121,9 +123,7 @@ const {
     ),
 });
 
-const formData = ref<AppPermissionFormType>(values as AppPermissionFormType);
-
-// Use composable for multi-user and delegated admin user management
+// Use composable for single/multi user selection management
 const regularUserSelectManagement = useSelectUserManagement(true); // true = multi-user mode
 const delegatedAdminUserSelectManagement = useSelectUserManagement(false); // false = single-user mode
 provide(SELECT_REGULAR_USER_KEY, regularUserSelectManagement);
@@ -144,11 +144,6 @@ watch(
     },
     { immediate: true }
 );
-
-provide(APP_PERMISSION_FORM_KEY, formData);
-
-const hasSubmitted = ref(false);
-const userErrorMessage = computed(() => (hasSubmitted.value ? errors.value.users ?? "" : ""));
 
 const handleDomainChange = (userType: UserType) => {
     setFieldValue("domain", userType);
@@ -178,15 +173,14 @@ watch(
 );
 
 watch(
-    () => formData.value.isAddingDelegatedAdmin,
+    () => values.isAddingDelegatedAdmin,
     (isDelegatedAdmin) => {
         if (isDelegatedAdmin) {
             regularUserSelectManagement.clearUsers();
-            setFieldValue("users", []);
         } else {
             delegatedAdminUserSelectManagement.clearUsers();
-            setFieldValue("users", []);
         }
+        setFieldValue("users", []);
     }
 );
 
@@ -217,7 +211,7 @@ const assignUserRoles = useMutation({
     onError: (error) => {
         queryClient.setQueryData([AddAppUserPermissionErrorQuerykey], {
             error,
-            formData: formData.value,
+            formData: values,
         });
         router.push({
             name: ManagePermissionsRoute.name,
@@ -239,7 +233,6 @@ const delegatedAdminMutation = useMutation({
         ),
     onSuccess: (res) => {
         queryClient.setQueryData([AddDelegatedAdminSuccessQuerykey], res.data);
-        activeTabIndex.value = 1;
         router.push({
             name: ManagePermissionsRoute.name,
             query: {
@@ -257,7 +250,7 @@ const delegatedAdminMutation = useMutation({
     onError: (error) => {
         queryClient.setQueryData([AddDelegatedAdminErrorQuerykey], {
             error,
-            formData: formData.value,
+            formData: values,
         });
         router.push({
             name: ManagePermissionsRoute.name,
@@ -283,12 +276,12 @@ const confirm = useConfirm();
 const onSubmit = () => {
     hasSubmitted.value = true;
     if (
-        formData.value &&
-        formData.value.forestClientInput.isValid &&
-        !formData.value.forestClientInput.isVerifying
+        values &&
+        values.forestClientInput.isValid &&
+        !values.forestClientInput.isVerifying
     ) {
-        const payload = generatePayload(formData.value);
-        if (!formData.value.isAddingDelegatedAdmin) {
+        const payload = generatePayload(values);
+        if (!values.isAddingDelegatedAdmin) {
             isSubmitting.value = true;
             assignUserRoles.mutate(payload as FamUserRoleAssignmentCreateSchema);
         } else {
@@ -322,9 +315,9 @@ const onInvalid = () => {
             <template #message>
                 <p>
                     Are you sure you want to add
-                    <strong>{{ formData?.users?.[0]?.userId.toUpperCase() }}</strong>
+                    <strong>{{ values?.users?.[0]?.userId.toUpperCase() }}</strong>
                     as a delegated admin? As a delegated admin
-                    <strong>{{ formData?.users?.[0]?.userId.toUpperCase() }}</strong>
+                    <strong>{{ values?.users?.[0]?.userId.toUpperCase() }}</strong>
                     will be able to add, edit or delete users
                 </p>
             </template>
@@ -344,23 +337,22 @@ const onInvalid = () => {
                         <UserDomainSelect
                             class="domain-select"
                             v-if="auth.authState.famLoginUser?.idpProvider === 'idir'"
-                            :domain="formData.domain"
+                            :domain="values.domain"
                             :is-verifying-user="isVerifyingUser"
                             @change="handleDomainChange"
                         />
                         <UserNameInput
                             class="user-name-text-input"
-                            :domain="formData.domain"
+                            :domain="values.domain"
                             :app-id="appId"
-                            :helper-text="getUserNameInputHelperText(formData.domain)"
+                            :helper-text="getUserNameInputHelperText(values.domain)"
                             :set-is-verifying="setIsVerifyingUser"
                             :injection-key="
-                                formData.isAddingDelegatedAdmin
+                                values.isAddingDelegatedAdmin
                                     ? SELECT_DELEGATED_ADMIN_USER_KEY
                                     : SELECT_REGULAR_USER_KEY
                             "
                             :error-message="userErrorMessage"
-                            "
                         />
                     </StepContainer>
                     <StepContainer
@@ -389,15 +381,16 @@ const onInvalid = () => {
                             role-field-id="role"
                             forest-clients-field-id="forestClients"
                             :set-field-value="(field: string, value: any) => setFieldValue(field as any, value)"
+                            :formValues="values"
                         />
                     </StepContainer>
                     <StepContainer
                         title="User expiry date"
                         divider
-                        v-if="!formData?.isAddingDelegatedAdmin"
+                        v-if="!values?.isAddingDelegatedAdmin"
                     >
                         <DatePicker
-                            :modelValue="formData.expiryDate"
+                            :modelValue="values.expiryDate"
                             @update:datePickerValue="setFieldValue('expiryDate', $event)"
                             title="Expiry date (optional)"
                             description="By default, this role does not expire. Set an expiry date if you want the permission to end automatically."
@@ -407,7 +400,8 @@ const onInvalid = () => {
                     <StepContainer :divider="false">
                         <BoolCheckbox
                             class="email-checkbox"
-                            v-model="formData.sendUserEmail"
+                            :model-value="values.sendUserEmail"
+                            @update:model-value="(val) => setFieldValue('sendUserEmail', val)"
                             label="Send email to notify user"
                         />
                     </StepContainer>

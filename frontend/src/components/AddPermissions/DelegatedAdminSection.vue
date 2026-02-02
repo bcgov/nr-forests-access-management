@@ -1,31 +1,25 @@
 <script setup lang="ts">
-import { APP_PERMISSION_FORM_KEY } from "@/constants/InjectionKeys";
 import {
     isAbstractRoleSelected,
     type AppPermissionFormType,
 } from "@/views/AddAppPermission/utils";
 import type { FamRoleGrantDto } from "fam-admin-mgmt-api/model";
 import type { DropdownChangeEvent } from "primevue/dropdown";
-import { inject, type Ref } from "vue";
 import Dropdown from "../UI/Dropdown.vue";
 import NotificationMessage from "../UI/NotificationMessage.vue";
 import SubsectionTitle from "../UI/SubsectionTitle.vue";
 import ForestClientSection from "./ForestClientAddTable.vue";
 
-const formData = inject<Ref<AppPermissionFormType>>(APP_PERMISSION_FORM_KEY);
-
-if (!formData) {
-    throw new Error("formData is required but not provided");
-}
-
 const props = defineProps<{
     roleOptions: FamRoleGrantDto[];
     appId: number;
     forestClientsFieldId: string;
+    formValues: AppPermissionFormType;
+    setFieldValue: (field: string, value: any) => void;
 }>();
 
 const onDropdownChange = (event: DropdownChangeEvent) => {
-    formData.value.role = event.value as FamRoleGrantDto;
+    props.setFieldValue("role", event.value as FamRoleGrantDto);
 };
 </script>
 <template>
@@ -46,17 +40,19 @@ const onDropdownChange = (event: DropdownChangeEvent) => {
             required
             name="role"
             label-text="Role"
-            :value="formData.role"
+            :value="props.formValues.role"
             :options="props.roleOptions"
             option-label="display_name"
             :on-change="onDropdownChange"
-            :disabled="formData.forestClientInput.isVerifying"
+            :disabled="props.formValues.forestClientInput.isVerifying"
         />
 
         <ForestClientSection
-            v-if="isAbstractRoleSelected(formData)"
+            v-if="isAbstractRoleSelected(props.formValues)"
             :app-id="props.appId"
             :field-id="props.forestClientsFieldId"
+            :form-values="props.formValues"
+            :set-field-value="props.setFieldValue"
         />
     </div>
 </template>

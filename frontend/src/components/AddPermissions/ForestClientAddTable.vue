@@ -17,45 +17,38 @@ import Chip from "../UI/Chip.vue";
 import HelperText from "../UI/HelperText.vue";
 import SubsectionTitle from "../UI/SubsectionTitle.vue";
 
-const formData = inject<Ref<AppPermissionFormType>>(APP_PERMISSION_FORM_KEY);
-
-if (!formData) {
-    throw new Error("formData is required but not provided");
-}
-
 const props = defineProps<{
     appId: number;
     fieldId: string;
-    setFieldValue?: (field: string, value: any) => void;
+    formValues: AppPermissionFormType;
+    setFieldValue: (field: string, value: any) => void;
 }>();
 
 const { setErrors: setForestClientsError } = useField(props.fieldId);
 
+
+const updateForestClientInput = (
+    updates: Partial<AppPermissionFormType["forestClientInput"]>
+) => {
+    props.setFieldValue("forestClientInput", {
+        ...props.formValues.forestClientInput,
+        ...updates,
+    });
+};
+
 const setVerificationError = (errorMessage: string) => {
-    if (props.setFieldValue) {
-        props.setFieldValue('forestClientInput', {
-            ...formData.value.forestClientInput,
-            isValid: false,
-            errorMsg: errorMessage,
-        });
-    } else {
-        formData.value.forestClientInput.isValid = false;
-        formData.value.forestClientInput.errorMsg = errorMessage;
-    }
+    updateForestClientInput({
+        isValid: false,
+        errorMsg: errorMessage,
+    });
 };
 
 const clearVerificationError = () => {
     setForestClientsError("");
-    if (props.setFieldValue) {
-        props.setFieldValue('forestClientInput', {
-            ...formData.value.forestClientInput,
-            isValid: true,
-            errorMsg: "",
-        });
-    } else {
-        formData.value.forestClientInput.isValid = true;
-        formData.value.forestClientInput.errorMsg = "";
-    }
+    updateForestClientInput({
+        isValid: true,
+        errorMsg: "",
+    });
 };
 
 const clientSearchMutation = useMutation({
@@ -63,19 +56,14 @@ const clientSearchMutation = useMutation({
         "forest_clients",
         "search",
         {
-            client_number: formData.value.forestClientInput.value,
+            client_number: props.formValues.forestClientInput.value,
             application_id: props.appId,
         },
     ],
     mutationFn: (clientNumber: string) => {
-        if (props.setFieldValue) {
-            props.setFieldValue('forestClientInput', {
-                ...formData.value.forestClientInput,
-                isVerifying: true,
-            });
-        } else {
-            formData.value.forestClientInput.isVerifying = true;
-        }
+        updateForestClientInput({
+            isVerifying: true,
+        });
         return AppActlApiService.forestClientsApi
             .search(clientNumber, props.appId)
             .then((res) => res.data);
@@ -90,20 +78,13 @@ const clientSearchMutation = useMutation({
                 "This organization can't be added due to its status"
             );
         } else {
-            // Use setFieldValue to update forestClients array
-            if (props.setFieldValue) {
-                props.setFieldValue('forestClients', [
-                    ...formData.value.forestClients,
-                    data[0],
-                ]);
-                props.setFieldValue('forestClientInput', {
-                    ...formData.value.forestClientInput,
-                    value: '',
-                });
-            } else {
-                formData.value.forestClients.push(data[0]);
-                formData.value.forestClientInput.value = "";
-            }
+            props.setFieldValue("forestClients", [
+                ...props.formValues.forestClients,
+                data[0],
+            ]);
+            updateForestClientInput({
+                value: "",
+            });
         }
     },
     onError: () => {
@@ -112,33 +93,19 @@ const clientSearchMutation = useMutation({
         );
     },
     onSettled: () => {
-        if (props.setFieldValue) {
-            props.setFieldValue('forestClientInput', {
-                ...formData.value.forestClientInput,
-                isVerifying: false,
-            });
-        } else {
-            formData.value.forestClientInput.isVerifying = false;
-        }
+        updateForestClientInput({
+            isVerifying: false,
+        });
     },
 });
 
 const removeForestClientFromList = (clientNumber: string) => {
-    if (props.setFieldValue) {
-        props.setFieldValue(
-            'forestClients',
-            formData.value.forestClients.filter(
-                (client) => client.forest_client_number !== clientNumber
-            )
-        );
-    } else {
-        const idx = formData.value.forestClients.findIndex(
-            (client) => client.forest_client_number === clientNumber
-        );
-        if (idx !== -1) {
-            formData.value.forestClients.splice(idx, 1);
-        }
-    }
+    props.setFieldValue(
+        "forestClients",
+        props.formValues.forestClients.filter(
+            (client) => client.forest_client_number !== clientNumber
+        )
+    );
 };
 
 const enforceNumber = (event: Event) => {
@@ -150,25 +117,20 @@ const enforceNumber = (event: Event) => {
         }
     }
     target.value = newValue;
-    if (props.setFieldValue) {
-        props.setFieldValue('forestClientInput', {
-            ...formData.value.forestClientInput,
-            value: newValue,
-        });
-    } else {
-        formData.value.forestClientInput.value = newValue;
-    }
+    updateForestClientInput({
+        value: newValue,
+    });
 };
 
 const addOrganization = () => {
     clearVerificationError();
 
-    if (!formData.value.forestClientInput.value) {
+    if (!props.formValues.forestClientInput.value) {
         return;
     }
 
     if (
-        formData.value.forestClientInput.value.length <
+        props.formValues.forestClientInput.value.length <
         FOREST_CLIENT_INPUT_MAX_LENGTH
     ) {
         setVerificationError(
@@ -177,10 +139,10 @@ const addOrganization = () => {
         return;
     }
     // Check duplication
-    const duplicate = formData.value.forestClients.find(
+    const duplicate = props.formValues.forestClients.find(
         (client) =>
             client.forest_client_number ===
-            formData.value.forestClientInput.value
+            props.formValues.forestClientInput.value
     );
 
     if (duplicate) {
@@ -188,7 +150,7 @@ const addOrganization = () => {
         return;
     }
 
-    clientSearchMutation.mutate(formData.value.forestClientInput.value);
+    clientSearchMutation.mutate(props.formValues.forestClientInput.value);
 };
 
 onUnmounted(() => {
@@ -210,33 +172,34 @@ onUnmounted(() => {
         <Field
             :name="props.fieldId"
             v-slot="{ errorMessage }"
-            v-model="formData.forestClients"
+            :model-value="props.formValues.forestClients"
+            @update:model-value="(value) => props.setFieldValue('forestClients', value)"
         >
             <!-- Input section -->
             <div class="input-with-verify-button">
                 <div>
                     <InputText
-                        :id="formData.forestClientInput.id"
+                        :id="props.formValues.forestClientInput.id"
                         class="w-100 custom-height"
-                        :value="formData.forestClientInput.value"
+                        :value="props.formValues.forestClientInput.value"
                         @input="enforceNumber"
                         @keydown.enter.prevent="addOrganization()"
                         :maxlength="FOREST_CLIENT_INPUT_MAX_LENGTH"
                         :class="{
-                            'is-invalid': errorMessage || !formData.forestClientInput.isValid,
+                            'is-invalid': errorMessage || !props.formValues.forestClientInput.isValid,
                         }"
-                        :disabled="formData.forestClientInput.isVerifying"
+                        :disabled="props.formValues.forestClientInput.isVerifying"
                     />
                     <HelperText
                         :text="
                             errorMessage ||
-                            formData.forestClientInput.errorMsg ||
+                            props.formValues.forestClientInput.errorMsg ||
                             'Enter the 8-digit client number'
                         "
                         :is-error="
                             !!(
                                 errorMessage ||
-                                !formData.forestClientInput.isValid
+                                !props.formValues.forestClientInput.isValid
                             )
                         "
                     />
@@ -249,13 +212,13 @@ onUnmounted(() => {
                     label="Add organization"
                     @click="addOrganization"
                     :icon="AddIcon"
-                    :is-loading="formData.forestClientInput.isVerifying"
+                    :is-loading="props.formValues.forestClientInput.isVerifying"
                 />
             </div>
         </Field>
 
         <!-- Table section -->
-        <DataTable class="fam-table" :value="formData.forestClients">
+        <DataTable class="fam-table" :value="props.formValues.forestClients">
             <template #empty>No organization added yet</template>
 
             <Column header="Client number" field="forest_client_number" />
