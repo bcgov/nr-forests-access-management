@@ -1,20 +1,19 @@
 <script setup lang="ts">
-import DataTable from "primevue/datatable";
-import Column from "primevue/column";
 import Button from "@/components/UI/Button.vue";
+import { FOREST_CLIENT_INPUT_MAX_LENGTH } from "@/constants/constants";
+import { AppActlApiService } from "@/services/ApiServiceFactory";
+import type { AppPermissionFormType } from "@/views/AddAppPermission/utils";
 import AddIcon from "@carbon/icons-vue/es/add/16";
 import TrashIcon from "@carbon/icons-vue/es/trash-can/16";
-import { AppActlApiService } from "@/services/ApiServiceFactory";
 import { useMutation } from "@tanstack/vue-query";
+import Column from "primevue/column";
+import DataTable from "primevue/datatable";
 import InputText from "primevue/inputtext";
 import { Field, useField } from "vee-validate";
-import { inject, onUnmounted, ref, type Ref } from "vue";
-import { FOREST_CLIENT_INPUT_MAX_LENGTH } from "@/constants/constants";
-import { APP_PERMISSION_FORM_KEY } from "@/constants/InjectionKeys";
-import type { AppPermissionFormType } from "@/views/AddAppPermission/utils";
-import Label from "../UI/Label.vue";
+import { onUnmounted, watch } from "vue";
 import Chip from "../UI/Chip.vue";
 import HelperText from "../UI/HelperText.vue";
+import Label from "../UI/Label.vue";
 import SubsectionTitle from "../UI/SubsectionTitle.vue";
 
 const props = defineProps<{
@@ -25,7 +24,6 @@ const props = defineProps<{
 }>();
 
 const { setErrors: setForestClientsError } = useField(props.fieldId);
-
 
 const updateForestClientInput = (
     updates: Partial<AppPermissionFormType["forestClientInput"]>

@@ -25,6 +25,7 @@ const props = defineProps<{
 
 const onDropdownChange = (event: DropdownChangeEvent) => {
     props.setFieldValue("role", event.value as FamRoleGrantDto);
+    props.setFieldValue('forestClients', []);
 };
 
 watch(
