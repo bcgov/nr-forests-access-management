@@ -53,7 +53,7 @@ watch(
             v-else
             severity="error"
             title="Note:"
-            message="Delegated admin cannot be added when multiple users are selected. Please remove extra users and leave only one user to proceed."
+            message="Delegated Admin can only be assigned to one user at a time. Select a single user to continue."
         />
 
 

@@ -1,26 +1,25 @@
 <script setup lang="ts">
-import { ref, watch, inject, type InjectionKey } from "vue";
-import SearchLocateIcon from "@carbon/icons-vue/es/search--locate/16";
-import TrashIcon from "@carbon/icons-vue/es/trash-can/16";
-import CheckmarkOutline from "@carbon/icons-vue/es/checkmark--outline/16";
 import Button from "@/components/UI/Button.vue";
 import useAuth from "@/composables/useAuth";
+import { ADD_PERMISSION_SELECT_USER_KEY, toSelectUserManagementUser, type useSelectUserManagement } from "@/composables/useSelectUserManagement";
 import { IdpProvider } from "@/enum/IdpEnum";
 import { AppActlApiService } from "@/services/ApiServiceFactory";
+import { formatUserNameAndId } from "@/utils/UserUtils";
+import CheckmarkOutline from "@carbon/icons-vue/es/checkmark--outline/16";
+import SearchLocateIcon from "@carbon/icons-vue/es/search--locate/16";
+import TrashIcon from "@carbon/icons-vue/es/trash-can/16";
 import { useMutation } from "@tanstack/vue-query";
 import type {
     IdimProxyBceidInfoSchema,
     IdimProxyIdirInfoSchema,
 } from "fam-app-acsctl-api";
 import { UserType } from "fam-app-acsctl-api";
-import InputText from "primevue/inputtext";
-import DataTable from "primevue/datatable";
 import Column from "primevue/column";
-import Label from "../UI/Label.vue";
+import DataTable from "primevue/datatable";
+import InputText from "primevue/inputtext";
+import { inject, ref, watch, type InjectionKey } from "vue";
 import HelperText from "../UI/HelperText.vue";
-import { formatUserNameAndId } from "@/utils/UserUtils";
-import { ADD_PERMISSION_SELECT_USER_KEY, type useSelectUserManagement } from "@/composables/useSelectUserManagement";
-import { toSelectUserManagementUser } from "@/composables/useSelectUserManagement";
+import Label from "../UI/Label.vue";
 
 const auth = useAuth();
 
@@ -73,10 +72,14 @@ const setUserNotFoundError = () => {
 };
 
 const addUserToList = (user: IdimProxyBceidInfoSchema | IdimProxyIdirInfoSchema) => {
+    if (!selectUserManagement) return;
     const selectUser = toSelectUserManagementUser(user);
-    if (selectUserManagement) {
-        selectUserManagement.addUser(selectUser);
+    // Check if user already exists in the list
+    if (selectUserManagement.hasUser(selectUser.userId, selectUser.guid ?? undefined)) {
+        errorMsg.value = "User has been added to the list";
+        return;
     }
+    selectUserManagement.addUser(selectUser);
     usernameInput.value = ""; // Clear input after successful verification
 };
 

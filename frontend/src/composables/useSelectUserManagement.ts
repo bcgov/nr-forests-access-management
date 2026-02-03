@@ -28,9 +28,7 @@ export const useSelectUserManagement = (multiUserMode = false) => {
     const addUser = (user: SelectUser) => {
         if (!user) return;
         if (multiUserMode) {
-            const exists = userList.value.some(
-                (u) => u.userId.toLowerCase() === user.userId.toLowerCase()
-            );
+            const exists = hasUser(user.userId, user.guid ?? undefined);
             if (!exists) {
                 userList.value.push(user);
             }
@@ -56,10 +54,18 @@ export const useSelectUserManagement = (multiUserMode = false) => {
         () => userList.value[0] || null
     );
 
-    const hasUser = (userId: string): boolean => {
-        return userList.value.some(
-            (u) => u.userId.toLowerCase() === userId.toLowerCase()
-        );
+    /**
+     * Utility to check if a user exists in a user list by userId (case-insensitive).
+     * @param userId - User ID to check
+     * @param guid - Optional GUID to check
+     * @returns true if user exists, false otherwise
+     */
+    const hasUser = (userId: string, guid?: string): boolean => {
+        return userList.value.some((u) => {
+            const userIdMatch = u.userId.toLowerCase() === userId.toLowerCase();
+            const guidMatch = guid ? (u.guid?.toLowerCase() === guid.toLowerCase()) : true;
+            return userIdMatch && guidMatch;
+        });
     };
 
     return {
