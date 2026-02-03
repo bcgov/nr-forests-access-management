@@ -9,6 +9,7 @@ import Dropdown from "../UI/Dropdown.vue";
 import NotificationMessage from "../UI/NotificationMessage.vue";
 import SubsectionTitle from "../UI/SubsectionTitle.vue";
 import ForestClientSection from "./ForestClientAddTable.vue";
+import { watch } from "vue";
 
 const props = defineProps<{
     roleOptions: FamRoleGrantDto[];
@@ -17,16 +18,25 @@ const props = defineProps<{
     formValues: AppPermissionFormType;
     setFieldValue: (field: string, value: any) => void;
     /**
-     * To disable delegated admin role with multiple users selected.
+     * To disable delegated admin role with 'invalid' multiple users selected.
      */
     disabled?: boolean;
 }>();
 
 const onDropdownChange = (event: DropdownChangeEvent) => {
-    if (!props.disabled) {
-        props.setFieldValue("role", event.value as FamRoleGrantDto);
-    }
+    props.setFieldValue("role", event.value as FamRoleGrantDto);
 };
+
+watch(
+    () => props.disabled,
+    (isDisabled) => {
+        if (isDisabled) {
+            // Clear role if disabled due to invalid requirement met.
+            props.setFieldValue("role", null);
+        }
+    }
+);
+
 </script>
 <template>
     <div
@@ -34,10 +44,18 @@ const onDropdownChange = (event: DropdownChangeEvent) => {
         :class="{ 'disabled-section': props.disabled }"
     >
         <NotificationMessage
+            v-if="!props.disabled"
             severity="info"
             title="Note:"
             message="Delegated admin will be able to add, edit and delete users."
         />
+        <NotificationMessage
+            v-else
+            severity="error"
+            title="Note:"
+            message="Delegated admin cannot be added when multiple users are selected. Please remove extra users and leave only one user to proceed."
+        />
+
 
         <SubsectionTitle
             title="Role the delegated admin can assign"
