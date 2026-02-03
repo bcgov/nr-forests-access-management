@@ -19,7 +19,7 @@ import Column from "primevue/column";
 import Label from "../UI/Label.vue";
 import HelperText from "../UI/HelperText.vue";
 import { formatUserNameAndId } from "@/utils/UserUtils";
-import { SELECT_REGULAR_USER_KEY, type useSelectUserManagement } from "@/composables/useSelectUserManagement";
+import { ADD_PERMISSION_SELECT_USER_KEY, type useSelectUserManagement } from "@/composables/useSelectUserManagement";
 import { toSelectUserManagementUser } from "@/composables/useSelectUserManagement";
 
 const auth = useAuth();
@@ -34,13 +34,13 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-    injectionKey: () => SELECT_REGULAR_USER_KEY,
+    injectionKey: () => ADD_PERMISSION_SELECT_USER_KEY,
 });
 
 const usernameInput = ref<string>(""); // input for username at this component.
 const errorMsg = ref(""); // error message for username verification errors
 
-// Inject the composable from parent
+// Inject select users composable from parent
 const selectUserManagement = inject(props.injectionKey);
 
 const PERMISSION_REQUIRED_FOR_OPERATION = "permission_required_for_operation";
@@ -72,10 +72,6 @@ const setUserNotFoundError = () => {
     errorMsg.value = "No user found. Check the spelling or try another username";
 };
 
-/**
- * Add user to the composable's user list.
- * The parent form watches selectUserManagement.currentUser to sync with form field.
- */
 const addUserToList = (user: IdimProxyBceidInfoSchema | IdimProxyIdirInfoSchema) => {
     const selectUser = toSelectUserManagementUser(user);
     if (selectUserManagement) {
@@ -84,9 +80,6 @@ const addUserToList = (user: IdimProxyBceidInfoSchema | IdimProxyIdirInfoSchema)
     usernameInput.value = ""; // Clear input after successful verification
 };
 
-/**
- * Delete user from the composable's user list.
- */
 const handleDeleteUser = (userId: string) => {
     if (selectUserManagement) {
         selectUserManagement.deleteUser(userId);

@@ -16,14 +16,23 @@ const props = defineProps<{
     forestClientsFieldId: string;
     formValues: AppPermissionFormType;
     setFieldValue: (field: string, value: any) => void;
+    /**
+     * To disable delegated admin role with multiple users selected.
+     */
+    disabled?: boolean;
 }>();
 
 const onDropdownChange = (event: DropdownChangeEvent) => {
-    props.setFieldValue("role", event.value as FamRoleGrantDto);
+    if (!props.disabled) {
+        props.setFieldValue("role", event.value as FamRoleGrantDto);
+    }
 };
 </script>
 <template>
-    <div class="delegated-admin-section">
+    <div
+        class="delegated-admin-section"
+        :class="{ 'disabled-section': props.disabled }"
+    >
         <NotificationMessage
             severity="info"
             title="Note:"
@@ -44,11 +53,11 @@ const onDropdownChange = (event: DropdownChangeEvent) => {
             :options="props.roleOptions"
             option-label="display_name"
             :on-change="onDropdownChange"
-            :disabled="props.formValues.forestClientInput.isVerifying"
+            :disabled="props.formValues.forestClientInput.isVerifying || props.disabled"
         />
 
         <ForestClientSection
-            v-if="isAbstractRoleSelected(props.formValues)"
+            v-if="isAbstractRoleSelected(props.formValues) && !props.disabled"
             :app-id="props.appId"
             :field-id="props.forestClientsFieldId"
             :form-values="props.formValues"
@@ -59,6 +68,11 @@ const onDropdownChange = (event: DropdownChangeEvent) => {
 <style lang="scss">
 .delegated-admin-section {
     margin-top: 1.5rem;
+
+    &.disabled-section {
+        opacity: 0.6;
+        pointer-events: none;
+    }
 
     .subsection-title-container {
         margin: 1.5rem 0;

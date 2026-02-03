@@ -10,11 +10,9 @@ import PageTitle from "@/components/UI/PageTitle.vue";
 import StepContainer from "@/components/UI/StepContainer.vue";
 import useAuth from "@/composables/useAuth";
 import {
-    SELECT_DELEGATED_ADMIN_USER_KEY,
-    SELECT_REGULAR_USER_KEY,
+    ADD_PERMISSION_SELECT_USER_KEY,
     useSelectUserManagement,
 } from "@/composables/useSelectUserManagement";
-import { APP_PERMISSION_FORM_KEY } from "@/constants/InjectionKeys";
 import { ManagePermissionsRoute } from "@/router/routes";
 import {
     AdminMgmtApiService,
@@ -123,11 +121,10 @@ const {
     ),
 });
 
-// Use composable for single/multi user selection management
-const regularUserSelectManagement = useSelectUserManagement(true); // true = multi-user mode
-const delegatedAdminUserSelectManagement = useSelectUserManagement(false); // false = single-user mode
-provide(SELECT_REGULAR_USER_KEY, regularUserSelectManagement);
-provide(SELECT_DELEGATED_ADMIN_USER_KEY, delegatedAdminUserSelectManagement);
+// Select user  management
+// single-user select for delegated admin or multi-users select for regular users
+const selectUserManagement = useSelectUserManagement(true); // Initially multi-user mode
+provide(ADD_PERMISSION_SELECT_USER_KEY, selectUserManagement);
 
 watch(
     () => adminUserAccessQuery.isSuccess && rolesUnderSelectedApp.value,
@@ -149,12 +146,11 @@ const handleDomainChange = (userType: UserType) => {
     setFieldValue("domain", userType);
     setFieldValue("users", []);
     // Clear composable user lists on domain change
-    regularUserSelectManagement.clearUsers();
-    delegatedAdminUserSelectManagement.clearUsers();
+    selectUserManagement.clearUsers();
 };
 
 watch(
-    () => regularUserSelectManagement.userList.value,
+    () => selectUserManagement.userList.value,
     (newUsers) => {
         if (newUsers.length || meta.value.dirty) {
             setFieldValue("users", Array.from(newUsers));
@@ -164,23 +160,10 @@ watch(
 );
 
 watch(
-    () => delegatedAdminUserSelectManagement.currentUser.value,
-    (newUser) => {
-        if (newUser || meta.value.dirty) {
-            setFieldValue("users", newUser ? [newUser] : []);
-        }
-    }
-);
-
-watch(
     () => values.isAddingDelegatedAdmin,
     (isDelegatedAdmin) => {
-        if (isDelegatedAdmin) {
-            regularUserSelectManagement.clearUsers();
-        } else {
-            delegatedAdminUserSelectManagement.clearUsers();
-        }
-        setFieldValue("users", []);
+        // Update composable mode based on form state
+        selectUserManagement.multiUserMode = !isDelegatedAdmin;
     }
 );
 
@@ -348,11 +331,7 @@ const onInvalid = () => {
                             :app-id="appId"
                             :helper-text="getUserNameInputHelperText(values.domain)"
                             :set-is-verifying="setIsVerifyingUser"
-                            :injection-key="
-                                values.isAddingDelegatedAdmin
-                                    ? SELECT_DELEGATED_ADMIN_USER_KEY
-                                    : SELECT_REGULAR_USER_KEY
-                            "
+                            :injection-key="ADD_PERMISSION_SELECT_USER_KEY"
                             :error-message="userErrorMessage"
                         />
                     </StepContainer>

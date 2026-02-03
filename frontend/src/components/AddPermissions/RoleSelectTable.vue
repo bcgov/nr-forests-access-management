@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { APP_PERMISSION_FORM_KEY } from "@/constants/InjectionKeys";
 import {
     isAbstractRoleSelected,
     type AppPermissionFormType,
@@ -11,7 +10,7 @@ import DataTable from "primevue/datatable";
 import RadioButton from "primevue/radiobutton";
 import { useConfirm } from "primevue/useconfirm";
 import { ErrorMessage, Field } from "vee-validate";
-import { computed, inject, ref, type Ref } from "vue";
+import { computed, ref } from "vue";
 import Label from "../UI/Label.vue";
 import DelegatedAdminSection from "./DelegatedAdminSection.vue";
 import ForestClientAddTable from "./ForestClientAddTable.vue";
@@ -30,6 +29,15 @@ const props = defineProps<{
     formValues: AppPermissionFormType;
 }>();
 
+/**
+ * Checks if attempting to switch to delegated admin role with multiple users selected.
+ * When true, DelegatedAdminSection should be disabled pending user cleanup.
+ */
+const isAttemptingDelegatedAdminWithMultipleUsers = computed(() => {
+    const isDelegatedAdminSelected = selectedRole.value?.id === delegatedAdminRow.id;
+    const hasMultipleUsers = props.formValues.users.length > 1;
+    return isDelegatedAdminSelected && hasMultipleUsers;
+});
 
 
 const confirm = useConfirm();
@@ -179,6 +187,7 @@ const handleRoleSelect = (role: FamRoleGrantDto) => {
                             :forest-clients-field-id="props.forestClientsFieldId"
                             :form-values="props.formValues"
                             :set-field-value="props.setFieldValue"
+                            :disabled="isAttemptingDelegatedAdminWithMultipleUsers"
                         />
                     </template>
                 </Column>
