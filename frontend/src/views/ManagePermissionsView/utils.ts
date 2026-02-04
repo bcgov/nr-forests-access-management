@@ -1,6 +1,10 @@
+import SccssGrantAppUsersNtfnTemplate from "@/components/NotificationContent/SccssGrantAppUsersNtfnTemplate.vue";
 import type { PermissionNotificationType } from "@/types/NotificationTypes";
+import { Severity } from "@/types/NotificationTypes";
 import { formatForestClientDisplayName } from "@/utils/ForestClientUtils";
 import { formatUserNameAndId } from "@/utils/UserUtils";
+import { AddAppUserPermissionErrorQuerykey, AddAppUserPermissionSuccessQuerykey, AddDelegatedAdminErrorQuerykey, AddDelegatedAdminSuccessQuerykey, type AppPermissionQueryErrorType } from "@/views/AddAppPermission/utils";
+import type { QueryClient } from "@tanstack/vue-query";
 import type {
     FamAccessControlPrivilegeCreateResponse,
     FamAccessControlPrivilegeResponse,
@@ -8,28 +12,56 @@ import type {
 } from "fam-admin-mgmt-api/model";
 import type {
     FamRoleWithClientSchema,
+    FamUserRoleAssignmentCreateRes,
     FamUserRoleAssignmentRes,
 } from "fam-app-acsctl-api/model";
-import { Severity } from "../../types/NotificationTypes";
-import type { AppPermissionQueryErrorType } from "../AddAppPermission/utils";
+import { h, type Ref } from "vue";
+import { AddAppAdminErrorQueryKey, AddAppAdminSuccessQueryKey } from "../AddFamPermission/utils";
 
-export const generateAppPermissionSuccessNotifications = (
-    data: FamUserRoleAssignmentRes | FamAccessControlPrivilegeResponse,
-    isDelegatedAdmin: boolean
+export const toAppUserGrantSuccessNotification = (
+    data: FamUserRoleAssignmentRes,
+    applicationName: string | null
+): PermissionNotificationType | null => {
+
+    const mapAppUserGrantResponseByUserId = (
+        items: Array<FamUserRoleAssignmentCreateRes>
+    ): Map<number, FamUserRoleAssignmentCreateRes[]> => {
+        return items.reduce((map, item) => {
+            const userId = item.detail.user_id;
+            if (!map.has(userId)) {
+                map.set(userId, []);
+            }
+            map.get(userId)?.push(item);
+            return map;
+        }, new Map<number, FamUserRoleAssignmentCreateRes[]>());
+    };
+
+    // grouped by user ID and use first result per user for success notification
+    const successAssignmentsByUser = Array.from(
+        mapAppUserGrantResponseByUserId(
+            data.assignments_detail.filter((assignment) => assignment.status_code === 200)
+        ).values()
+    ).map((items) => items[0]);
+
+    if (successAssignmentsByUser.length === 0) {
+        return null;
+    }
+
+    return {
+        serverity: Severity.Success,
+        message: h(SccssGrantAppUsersNtfnTemplate, {
+            successAssignments: successAssignmentsByUser,
+            applicationName,
+        }),
+        hasFullMsg: false,
+    };
+};
+
+export const toDAdminGrantingSuccessNotification = (
+    data: FamAccessControlPrivilegeResponse
 ): PermissionNotificationType[] => {
     const notifications: PermissionNotificationType[] = [];
-
-    /**
-     * Represents the status of an email sending operation.
-     * TODO: To use new backend multiple user granting but with current application
-     *       only one user is granted at a time, so we access the first item's status.
-     *       Ticket 2058 will refactor frontend and also address email status handling.
-     *
-     */
-    const emailSendingStatus =
-        (data as FamUserRoleAssignmentRes).assignments_detail?.[0]?.email_sending_status ??
-        (data as FamAccessControlPrivilegeResponse).email_sending_status;
-
+    const emailSendingStatus = data.email_sending_status;
     const email = data.assignments_detail[0]?.detail.user.email;
 
     if ("SENT_TO_EMAIL_SERVICE_FAILURE" === emailSendingStatus) {
@@ -66,9 +98,7 @@ export const generateAppPermissionSuccessNotifications = (
         famUser.last_name
     );
 
-    let actionTerm = isDelegatedAdmin
-        ? "granted privilege to manage"
-        : "added with";
+    let actionTerm = "granted privilege to manage";
 
     // Success notifications for abstract roles
     if (successClientList.length && successRoleList.length) {
@@ -128,9 +158,7 @@ export const generateAppPermissionSuccessNotifications = (
         });
     }
 
-    actionTerm = isDelegatedAdmin
-        ? "already has the privilege to manage"
-        : "already exists with";
+    actionTerm = "already has the privilege to manage";
 
     // Conflict notifications for Abstract roles
     if (conflictClientList.length && conflictRoleList.length) {
@@ -257,3 +285,25 @@ export const generateFamNotification = (
     message,
     hasFullMsg: false,
 });
+
+export const clearNotifications = (queryClient: QueryClient, notifications: Ref<PermissionNotificationType[]>) => {
+    queryClient.removeQueries({
+        queryKey: [AddAppUserPermissionSuccessQuerykey],
+    });
+    queryClient.removeQueries({
+        queryKey: [AddAppUserPermissionErrorQuerykey],
+    });
+    queryClient.removeQueries({
+        queryKey: [AddDelegatedAdminSuccessQuerykey],
+    });
+    queryClient.removeQueries({
+        queryKey: [AddDelegatedAdminErrorQuerykey],
+    });
+    queryClient.removeQueries({
+        queryKey: [AddAppAdminSuccessQueryKey],
+    });
+    queryClient.removeQueries({
+        queryKey: [AddAppAdminErrorQueryKey],
+    });
+    notifications.value = [];
+};

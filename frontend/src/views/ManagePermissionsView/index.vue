@@ -26,7 +26,10 @@ import HelpDeskIcon from "@carbon/icons-vue/es/help-desk/16";
 import UserIcon from "@carbon/icons-vue/es/user/16";
 import { useQuery, useQueryClient } from "@tanstack/vue-query";
 import { isAxiosError } from "axios";
-import { AdminRoleAuthGroup } from "fam-admin-mgmt-api/model";
+import {
+    AdminRoleAuthGroup,
+    type FamAccessControlPrivilegeResponse,
+} from "fam-admin-mgmt-api/model";
 import type { FamUserRoleAssignmentRes } from "fam-app-acsctl-api/model";
 import type { DropdownChangeEvent } from "primevue/dropdown";
 import TabPanel from "primevue/tabpanel";
@@ -46,10 +49,11 @@ import {
 } from "../AddFamPermission/utils";
 import {
     generateAppPermissionErrorNotifications,
-    generateAppPermissionSuccessNotifications,
+    toAppUserGrantSuccessNotification,
+    toDAdminGrantingSuccessNotification,
     generateFamNotification,
-} from "./utils";
-
+    clearNotifications,
+} from "@/views/ManagePermissionsView/utils";
 const queryClient = useQueryClient();
 const route = useRoute();
 const router = useRouter();
@@ -65,7 +69,7 @@ const addAppUserPermissionErrorData =
         AddAppUserPermissionErrorQuerykey,
     ]);
 const addDelegatedAdminSuccessData =
-    queryClient.getQueryData<FamUserRoleAssignmentRes>([
+    queryClient.getQueryData<FamAccessControlPrivilegeResponse>([
         AddDelegatedAdminSuccessQuerykey,
     ]);
 const addDelegatedAdminErrorData =
@@ -82,7 +86,7 @@ const addFamPermissionErrorData = queryClient.getQueryData<string>([
 const handleApplicationChange = (e: DropdownChangeEvent) => {
     setSelectedApp(e.value);
     router.replace({ query: { appId: e.value.id } });
-    clearNotifications();
+    clearNotifications(queryClient, notifications);
 };
 
 const adminUserAccessQuery = useQuery({
@@ -170,18 +174,17 @@ const tabs: ManagePermissionsTabType[] = [
 // and the app’s setup for different user roles and environments.
 const visibleTabs = computed(() => tabs.filter((tab) => tab.visible.value));
 
+const appUserSuccessNotification = addAppUserPermissionSuccessData
+    ? toAppUserGrantSuccessNotification(
+          addAppUserPermissionSuccessData,
+          selectedApp.value?.name ?? null
+      )
+    : null;
+
 const notifications = ref<PermissionNotificationType[]>([
-    ...(addAppUserPermissionSuccessData
-        ? generateAppPermissionSuccessNotifications(
-              addAppUserPermissionSuccessData,
-              false
-          )
-        : []),
+    ...(appUserSuccessNotification ? [appUserSuccessNotification] : []),
     ...(addDelegatedAdminSuccessData
-        ? generateAppPermissionSuccessNotifications(
-              addDelegatedAdminSuccessData,
-              true
-          )
+        ? toDAdminGrantingSuccessNotification(addDelegatedAdminSuccessData)
         : []),
     ...(addAppUserPermissionErrorData
         ? [
@@ -200,28 +203,6 @@ const notifications = ref<PermissionNotificationType[]>([
         ? [generateFamNotification(false, addFamPermissionErrorData)]
         : []),
 ]);
-
-const clearNotifications = () => {
-    queryClient.removeQueries({
-        queryKey: [AddAppUserPermissionSuccessQuerykey],
-    });
-    queryClient.removeQueries({
-        queryKey: [AddAppUserPermissionErrorQuerykey],
-    });
-    queryClient.removeQueries({
-        queryKey: [AddDelegatedAdminSuccessQuerykey],
-    });
-    queryClient.removeQueries({
-        queryKey: [AddDelegatedAdminErrorQuerykey],
-    });
-    queryClient.removeQueries({
-        queryKey: [AddAppAdminSuccessQueryKey],
-    });
-    queryClient.removeQueries({
-        queryKey: [AddAppAdminErrorQueryKey],
-    });
-    notifications.value = [];
-};
 
 const addNotifications = (newNotifications: PermissionNotificationType[]) => {
     notifications.value = newNotifications;
@@ -267,7 +248,7 @@ watch(
 
 const onTabChange = (event: TabViewChangeEvent) => {
     activeTabIndex.value = event.index;
-    clearNotifications();
+    clearNotifications(queryClient, notifications);
 };
 
 const tabHeaders: ManagePermissionsTabHeaderType = {
@@ -283,7 +264,7 @@ const onNotificationClose = (idx: number) => {
 
 // Clear notifications data
 onUnmounted(() => {
-    clearNotifications();
+    clearNotifications(queryClient, notifications);
 });
 </script>
 
