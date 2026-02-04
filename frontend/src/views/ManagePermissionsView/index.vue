@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import ManagePermissionsTable from "@/components/ManagePermissionsTable";
 import TablePlaceholder from "@/components/ManagePermissionsTable/TablePlaceholder.vue";
+import Button from "@/components/UI/Button.vue";
 import Dropdown from "@/components/UI/Dropdown.vue";
 import PageTitle from "@/components/UI/PageTitle.vue";
-import Button from "@/components/UI/Button.vue";
+import { AddAppPermissionRoute, AddFamPermissionRoute } from "@/router/routes";
 import { AdminMgmtApiService } from "@/services/ApiServiceFactory";
 import {
     activeTabIndex,
@@ -19,11 +20,10 @@ import type { PermissionNotificationType } from "@/types/NotificationTypes";
 import { formatAxiosError, getUniqueApplications } from "@/utils/ApiUtils";
 import { isSelectedAppAuthorized } from "@/utils/AuthUtils";
 import NotificationStack from "@/views/ManagePermissionsView/NotificationStack.vue";
-import { AddAppPermissionRoute, AddFamPermissionRoute } from "@/router/routes";
-import EnterpriseIcon from "@carbon/icons-vue/es/enterprise/16";
-import UserIcon from "@carbon/icons-vue/es/user/16";
-import HelpDeskIcon from "@carbon/icons-vue/es/help-desk/16";
 import AddIcon from "@carbon/icons-vue/es/add/16";
+import EnterpriseIcon from "@carbon/icons-vue/es/enterprise/16";
+import HelpDeskIcon from "@carbon/icons-vue/es/help-desk/16";
+import UserIcon from "@carbon/icons-vue/es/user/16";
 import { useQuery, useQueryClient } from "@tanstack/vue-query";
 import { isAxiosError } from "axios";
 import { AdminRoleAuthGroup } from "fam-admin-mgmt-api/model";
