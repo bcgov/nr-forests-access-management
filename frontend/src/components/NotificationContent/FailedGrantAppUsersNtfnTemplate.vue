@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { EmailSendingStatus, type FamUserRoleAssignmentCreateRes } from "fam-app-acsctl-api/model";
 import { formatUserNameAndId } from "@/utils/UserUtils";
 import DotMarkIcon from "@carbon/icons-vue/es/dot-mark/16";
+import { type FamUserRoleAssignmentCreateRes } from "fam-app-acsctl-api/model";
 
 /**
- * A template for notification content on successful permission grants to regular users.
+ * A template for notification content on failed permission grants to regular users.
  */
 
 const props = defineProps<{
@@ -12,24 +12,12 @@ const props = defineProps<{
     applicationName: string | null;
 }>();
 
-const headerText = `Permission added in ${props.applicationName ?? "this application"} to users:`;
+const headerText = `Failed to send email for permissions granted in ${props.applicationName ?? "this application"}. Please contact users:`;
 
-const getEmailSuffix = (
-    emailStatus?: EmailSendingStatus | null,
-    email?: string | null
-): string => {
-    if (!emailStatus || !email) {
-        return "";
-    }
-    if (EmailSendingStatus.SentToEmailServiceSuccess === emailStatus) {
-        return ` and email sent to ${email}`;
-    }
-    return "";
-};
 </script>
 
 <template>
-    <div class="success-permission-content">
+    <div class="failed-permission-content">
         <div class="notification-header">
             {{ headerText }}
         </div>
@@ -48,12 +36,7 @@ const getEmailSuffix = (
                             assignment.detail.user.first_name,
                             assignment.detail.user.last_name
                         )
-                    }}{{
-                        getEmailSuffix(
-                            assignment.email_sending_status,
-                            assignment.detail.user.email
-                        )
-                    }}
+                    }} - {{ assignment.detail.user.email }}
                 </span>
             </li>
         </ul>
@@ -61,7 +44,7 @@ const getEmailSuffix = (
 </template>
 
 <style scoped lang="scss">
-.success-permission-content {
+.failed-permission-content {
     .notification-header {
         margin-bottom: 0.75rem;
         font-weight: 400;

@@ -63,11 +63,11 @@ const appIdFromQueryParam = ref(route.query.appId);
 const addAppUserPermissionSuccessData =
     queryClient.getQueryData<FamUserRoleAssignmentRes>([
         AddAppUserPermissionSuccessQuerykey,
-    ]);
-const addAppUserPermissionErrorData =
+    ]) ?? null;
+const addAppUserPermissionGeneralErrorData =
     queryClient.getQueryData<AppPermissionQueryErrorType>([
         AddAppUserPermissionErrorQuerykey,
-    ]);
+    ]) ?? null;
 const addDelegatedAdminSuccessData =
     queryClient.getQueryData<FamAccessControlPrivilegeResponse>([
         AddDelegatedAdminSuccessQuerykey,
@@ -174,24 +174,20 @@ const tabs: ManagePermissionsTabType[] = [
 // and the app’s setup for different user roles and environments.
 const visibleTabs = computed(() => tabs.filter((tab) => tab.visible.value));
 
-const appUserSuccessNotification = addAppUserPermissionSuccessData
-    ? toAppUserGrantSuccessNotification(
-          addAppUserPermissionSuccessData,
-          selectedApp.value?.name ?? null
-      )
-    : null;
+// Generation of app user permission success notification
+const appUserSuccessNotification = toAppUserGrantSuccessNotification(
+    addAppUserPermissionSuccessData,
+    selectedApp.value?.name ?? null
+);
 
+// notifications state initialization
 const notifications = ref<PermissionNotificationType[]>([
     ...(appUserSuccessNotification ? [appUserSuccessNotification] : []),
+    ...(addAppUserPermissionGeneralErrorData
+        ? [generateAppPermissionErrorNotifications(addAppUserPermissionGeneralErrorData)]
+        : []),
     ...(addDelegatedAdminSuccessData
         ? toDAdminGrantingSuccessNotification(addDelegatedAdminSuccessData)
-        : []),
-    ...(addAppUserPermissionErrorData
-        ? [
-              generateAppPermissionErrorNotifications(
-                  addAppUserPermissionErrorData
-              ),
-          ]
         : []),
     ...(addDelegatedAdminErrorData
         ? [generateAppPermissionErrorNotifications(addDelegatedAdminErrorData)]

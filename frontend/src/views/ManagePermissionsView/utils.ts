@@ -19,9 +19,12 @@ import { h, type Ref } from "vue";
 import { AddAppAdminErrorQueryKey, AddAppAdminSuccessQueryKey } from "../AddFamPermission/utils";
 
 export const toAppUserGrantSuccessNotification = (
-    data: FamUserRoleAssignmentRes,
+    data: FamUserRoleAssignmentRes | null,
     applicationName: string | null
 ): PermissionNotificationType | null => {
+    if (!data || data.assignments_detail.length === 0) {
+        return null;
+    }
 
     const mapAppUserGrantResponseByUserId = (
         items: Array<FamUserRoleAssignmentCreateRes>
@@ -50,7 +53,7 @@ export const toAppUserGrantSuccessNotification = (
     return {
         serverity: Severity.Success,
         message: h(SccssGrantAppUsersNtfnTemplate, {
-            successAssignments: successAssignmentsByUser,
+            assignments: successAssignmentsByUser,
             applicationName,
         }),
         hasFullMsg: false,
