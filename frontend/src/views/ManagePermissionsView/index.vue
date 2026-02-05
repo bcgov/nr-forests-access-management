@@ -25,6 +25,7 @@ import {
     generateAppPermissionErrorNotifications,
     generateFamNotification,
     toAppUserGrantSuccessNotification,
+    toAppUserRequestErrorNotification,
     toDAdminGrantingSuccessNotification,
 } from "@/views/ManagePermissionsView/utils";
 import AddIcon from "@carbon/icons-vue/es/add/16";
@@ -64,7 +65,7 @@ const addAppUserPermissionSuccessData =
     queryClient.getQueryData<FamUserRoleAssignmentRes>([
         AddAppUserPermissionSuccessQuerykey,
     ]) ?? null;
-const addAppUserPermissionGeneralErrorData =
+const addAppUserPermissionRequestErrorData =
     queryClient.getQueryData<AppPermissionQueryErrorType>([
         AddAppUserPermissionErrorQuerykey,
     ]) ?? null;
@@ -177,9 +178,7 @@ const visibleTabs = computed(() => tabs.filter((tab) => tab.visible.value));
 // notifications state initialization
 const notifications = ref<PermissionNotificationType[]>([
     ...( toAppUserGrantSuccessNotification(addAppUserPermissionSuccessData, selectedApp.value?.name ?? null)),
-    ...(addAppUserPermissionGeneralErrorData
-        ? [generateAppPermissionErrorNotifications(addAppUserPermissionGeneralErrorData)]
-        : []),
+    ...( toAppUserRequestErrorNotification(addAppUserPermissionRequestErrorData, selectedApp.value?.name ?? null)),
     ...(addDelegatedAdminSuccessData
         ? toDAdminGrantingSuccessNotification(addDelegatedAdminSuccessData)
         : []),

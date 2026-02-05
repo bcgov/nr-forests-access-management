@@ -17,6 +17,7 @@ import type {
 } from "fam-app-acsctl-api/model";
 import { h, type Ref } from "vue";
 import { AddAppAdminErrorQueryKey, AddAppAdminSuccessQueryKey } from "../AddFamPermission/utils";
+import FailedGrantAppUsersNtfnTemplate from "@/components/NotificationContent/FailedGrantAppUsersNtfnTemplate.vue";
 
 export const toAppUserGrantSuccessNotification = (
     data: FamUserRoleAssignmentRes | null,
@@ -56,7 +57,7 @@ export const toAppUserGrantSuccessNotification = (
             assignments: successAssignmentsByUser,
             applicationName,
         }),
-        hasFullMsg: false,
+        hasFullMsg: false
     }];
 };
 
@@ -223,6 +224,24 @@ export const toDAdminGrantingSuccessNotification = (
     }
 
     return notifications;
+};
+
+export const toAppUserRequestErrorNotification = (
+    errData: AppPermissionQueryErrorType | null,
+    applicationName: string | null,
+): PermissionNotificationType[] => {
+    if (!errData) {
+        return [];
+    }
+
+    return [{
+        serverity: Severity.Error,
+        message: h(FailedGrantAppUsersNtfnTemplate, {
+            applicationName: applicationName,
+            requestErrorData:errData
+        }),
+        hasFullMsg: false
+    }];
 };
 
 export const generateAppPermissionErrorNotifications = (
