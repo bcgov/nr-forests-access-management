@@ -21,9 +21,9 @@ import { AddAppAdminErrorQueryKey, AddAppAdminSuccessQueryKey } from "../AddFamP
 export const toAppUserGrantSuccessNotification = (
     data: FamUserRoleAssignmentRes | null,
     applicationName: string | null
-): PermissionNotificationType | null => {
+): PermissionNotificationType[] => {
     if (!data || data.assignments_detail.length === 0) {
-        return null;
+        return [];
     }
 
     const mapAppUserGrantResponseByUserId = (
@@ -47,17 +47,17 @@ export const toAppUserGrantSuccessNotification = (
     ).map((items) => items[0]);
 
     if (successAssignmentsByUser.length === 0) {
-        return null;
+        return [];
     }
 
-    return {
+    return [{
         serverity: Severity.Success,
         message: h(SccssGrantAppUsersNtfnTemplate, {
             assignments: successAssignmentsByUser,
             applicationName,
         }),
         hasFullMsg: false,
-    };
+    }];
 };
 
 export const toDAdminGrantingSuccessNotification = (

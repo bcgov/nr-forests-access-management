@@ -20,6 +20,13 @@ import type { PermissionNotificationType } from "@/types/NotificationTypes";
 import { formatAxiosError, getUniqueApplications } from "@/utils/ApiUtils";
 import { isSelectedAppAuthorized } from "@/utils/AuthUtils";
 import NotificationStack from "@/views/ManagePermissionsView/NotificationStack.vue";
+import {
+    clearNotifications,
+    generateAppPermissionErrorNotifications,
+    generateFamNotification,
+    toAppUserGrantSuccessNotification,
+    toDAdminGrantingSuccessNotification,
+} from "@/views/ManagePermissionsView/utils";
 import AddIcon from "@carbon/icons-vue/es/add/16";
 import EnterpriseIcon from "@carbon/icons-vue/es/enterprise/16";
 import HelpDeskIcon from "@carbon/icons-vue/es/help-desk/16";
@@ -47,13 +54,6 @@ import {
     AddAppAdminErrorQueryKey,
     AddAppAdminSuccessQueryKey,
 } from "../AddFamPermission/utils";
-import {
-    generateAppPermissionErrorNotifications,
-    toAppUserGrantSuccessNotification,
-    toDAdminGrantingSuccessNotification,
-    generateFamNotification,
-    clearNotifications,
-} from "@/views/ManagePermissionsView/utils";
 const queryClient = useQueryClient();
 const route = useRoute();
 const router = useRouter();
@@ -174,15 +174,9 @@ const tabs: ManagePermissionsTabType[] = [
 // and the app’s setup for different user roles and environments.
 const visibleTabs = computed(() => tabs.filter((tab) => tab.visible.value));
 
-// Generation of app user permission success notification
-const appUserSuccessNotification = toAppUserGrantSuccessNotification(
-    addAppUserPermissionSuccessData,
-    selectedApp.value?.name ?? null
-);
-
 // notifications state initialization
 const notifications = ref<PermissionNotificationType[]>([
-    ...(appUserSuccessNotification ? [appUserSuccessNotification] : []),
+    ...( toAppUserGrantSuccessNotification(addAppUserPermissionSuccessData, selectedApp.value?.name ?? null)),
     ...(addAppUserPermissionGeneralErrorData
         ? [generateAppPermissionErrorNotifications(addAppUserPermissionGeneralErrorData)]
         : []),

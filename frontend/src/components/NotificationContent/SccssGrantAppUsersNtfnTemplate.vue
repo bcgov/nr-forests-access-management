@@ -1,7 +1,8 @@
 <script setup lang="ts">
+import { computed, ref } from "vue";
 import { EmailSendingStatus, type FamUserRoleAssignmentCreateRes } from "fam-app-acsctl-api/model";
 import { formatUserNameAndId } from "@/utils/UserUtils";
-import DotMarkIcon from "@carbon/icons-vue/es/dot-mark/16";
+import CheckMarkIcon from "@carbon/icons-vue/es/checkmark--filled/20";
 
 /**
  * A template for notification content on successful permission grants to regular users.
@@ -12,7 +13,21 @@ const props = defineProps<{
     applicationName: string | null;
 }>();
 
-const headerText = `Permission added in ${props.applicationName ?? "this application"} to users:`;
+const headerText = `Permission added to the following users`;
+
+const isExpanded = ref(false);
+
+const showToggle = computed(() => props.assignments.length > 2);
+const visibleAssignments = computed(() => {
+    if (!showToggle.value || isExpanded.value) {
+        return props.assignments;
+    }
+    return props.assignments.slice(0, 2);
+});
+
+const toggleExpanded = () => {
+    isExpanded.value = !isExpanded.value;
+};
 
 const getEmailSuffix = (
     emailStatus?: EmailSendingStatus | null,
@@ -31,12 +46,21 @@ const getEmailSuffix = (
 <template>
     <div class="success-permission-content">
         <div class="notification-header">
-            {{ headerText }}
+            <CheckMarkIcon /><strong>Success</strong> {{ headerText }}
         </div>
+
+        <button
+            v-if="showToggle && isExpanded"
+            class="toggle-link"
+            type="button"
+            @click="toggleExpanded"
+        >
+            show less...
+        </button>
 
         <ul class="notification-list">
             <li
-                v-for="assignment in props.assignments"
+                v-for="assignment in visibleAssignments"
                 :key="assignment.detail.user_id"
                 class="notification-list-item"
             >
@@ -57,13 +81,21 @@ const getEmailSuffix = (
                 </span>
             </li>
         </ul>
+
+        <button
+            v-if="showToggle && !isExpanded"
+            class="toggle-link"
+            type="button"
+            @click="toggleExpanded"
+        >
+            show more...
+        </button>
     </div>
 </template>
 
 <style scoped lang="scss">
 .success-permission-content {
     .notification-header {
-        margin-bottom: 0.75rem;
         font-weight: 400;
         line-height: 1.5;
     }
@@ -93,6 +125,17 @@ const getEmailSuffix = (
                 margin-bottom: 0;
             }
         }
+    }
+
+    .toggle-link {
+        background: none;
+        border: none;
+        padding: 0;
+        margin: 0 0 0.25rem;
+        color: inherit;
+        font-style: italic;
+        text-decoration: underline;
+        cursor: pointer;
     }
 }
 </style>
