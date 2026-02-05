@@ -247,11 +247,12 @@ export const toAppUserRequestErrorNotification = (
 export const generateAppPermissionErrorNotifications = (
     errData: AppPermissionQueryErrorType
 ): PermissionNotificationType => {
-    const { user, forestClients, role } = errData.formData;
+    const { users, forestClients, role } = errData.formData;
+    // For delegated admin, only one user is available in the form data 'users' array
     const userFullName = formatUserNameAndId(
-        user?.userId,
-        user?.firstName,
-        user?.lastName
+        users[0].userId,
+        users[0].firstName,
+        users[0].lastName
     );
     const roleName = role?.display_name;
 
