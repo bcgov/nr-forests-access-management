@@ -3,6 +3,7 @@ import { computed, ref } from "vue";
 import { EmailSendingStatus, type FamUserRoleAssignmentCreateRes } from "fam-app-acsctl-api/model";
 import { formatUserNameAndId } from "@/utils/UserUtils";
 import CheckMarkIcon from "@carbon/icons-vue/es/checkmark--filled/20";
+import DotMarkIcon from "@carbon/icons-vue/es/dot-mark/16";
 
 /**
  * A template for notification content on successful permission grants to regular users.
@@ -45,56 +46,72 @@ const getEmailSuffix = (
 
 <template>
     <div class="success-permission-content">
-        <div class="notification-header">
-            <CheckMarkIcon /><strong>Success</strong> {{ headerText }}
-        </div>
+        <CheckMarkIcon />
+        <div class="notification-body">
+            <div class="notification-header">
+                <strong>Success</strong> {{ headerText }}:
+            </div>
 
-        <button
-            v-if="showToggle && isExpanded"
-            class="toggle-link"
-            type="button"
-            @click="toggleExpanded"
-        >
-            show less...
-        </button>
-
-        <ul class="notification-list">
-            <li
-                v-for="assignment in visibleAssignments"
-                :key="assignment.detail.user_id"
-                class="notification-list-item"
+            <button
+                v-if="showToggle && isExpanded"
+                class="toggle-link"
+                type="button"
+                @click="toggleExpanded"
             >
-                <DotMarkIcon class="dot-mark-icon" />
-                <span>
-                    {{
-                        formatUserNameAndId(
-                            assignment.detail.user.user_name,
-                            assignment.detail.user.first_name,
-                            assignment.detail.user.last_name
-                        )
-                    }}{{
-                        getEmailSuffix(
-                            assignment.email_sending_status,
-                            assignment.detail.user.email
-                        )
-                    }}
-                </span>
-            </li>
-        </ul>
+                show less...
+            </button>
 
-        <button
-            v-if="showToggle && !isExpanded"
-            class="toggle-link"
-            type="button"
-            @click="toggleExpanded"
-        >
-            show more...
-        </button>
+            <ul class="notification-list">
+                <li
+                    v-for="assignment in visibleAssignments"
+                    :key="assignment.detail.user_id"
+                    class="notification-list-item"
+                >
+                    <DotMarkIcon class="dot-mark-icon" />
+                    <span>
+                        {{
+                            formatUserNameAndId(
+                                assignment.detail.user.user_name,
+                                assignment.detail.user.first_name,
+                                assignment.detail.user.last_name
+                            )
+                        }}{{
+                            getEmailSuffix(
+                                assignment.email_sending_status,
+                                assignment.detail.user.email
+                            )
+                        }}
+                    </span>
+                </li>
+            </ul>
+
+            <button
+                v-if="showToggle && !isExpanded"
+                class="toggle-link"
+                type="button"
+                @click="toggleExpanded"
+            >
+                show more...
+            </button>
+        </div>
     </div>
 </template>
 
 <style scoped lang="scss">
 .success-permission-content {
+    display: flex;
+    align-items: flex-start;
+
+    // Ensure icon stays sized and aligned
+    > svg {
+        flex-shrink: 0;
+        margin-top: 0.15em;
+    }
+
+    .notification-body {
+        flex: 1 1 0%;
+    }
+
     .notification-header {
         font-weight: 400;
         line-height: 1.5;
@@ -108,7 +125,6 @@ const getEmailSuffix = (
         .notification-list-item {
             position: relative;
             line-height: 1.5;
-
 
             &::before {
                 content: none;
