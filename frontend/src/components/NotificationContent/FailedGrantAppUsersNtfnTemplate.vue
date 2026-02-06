@@ -316,7 +316,6 @@ const reqErr_remainingClients = Math.max(reqErr_forestClients.length - PREVIEW_L
     align-items: flex-start;
     margin-bottom: 0.5rem;
 
-    // Ensure icon stays sized and aligned
     > svg {
         flex-shrink: 0;
         margin-top: 0.15em;
@@ -385,7 +384,7 @@ const reqErr_remainingClients = Math.max(reqErr_forestClients.length - PREVIEW_L
 .btn-see-all:hover {
     color: var(--link-primary-hover);
 }
-/* Organization list styling for alignment and wrapping */
+
 .orgination-list {
     margin-left: 1rem;
     font-size: 0.97em;
