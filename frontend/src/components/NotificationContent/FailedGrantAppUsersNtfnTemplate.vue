@@ -74,6 +74,13 @@ const emailSendingErr_toggleExpanded = () => {
     emailSendingErr_isExpanded.value = !emailSendingErr_isExpanded.value;
 };
 
+//--- 500 internal error during granting assignment for individual user.
+
+// Backend will have no 'detail' field but error_message is available.
+const internalErr_assignments = (assignments ?? []).filter(
+    (a) => a.status_code >= 500
+)
+
 //--- requestErrorData (general error case) setup
 const reqErr_showAllUsers = ref(false);
 const reqErr_showAllClients = ref(false);
@@ -88,7 +95,7 @@ const reqErr_remainingClients = Math.max(reqErr_forestClients.length - PREVIEW_L
 </script>
 
 <template>
-    <!-- 409 user role exists error template-->
+    <!-- 409 user role exists error template -->
     <template v-if="conflictErr_userIds && conflictErr_userIds.length > 0">
         <div class="failed-permission-content">
             <MisuseIcon />
@@ -151,7 +158,7 @@ const reqErr_remainingClients = Math.max(reqErr_forestClients.length - PREVIEW_L
         </div>
     </template>
 
-    <!-- Email sending error template-->
+    <!-- Email sending error template -->
     <template v-if="emailSendingErr_assignments && emailSendingErr_assignments.length > 0">
         <div class="failed-permission-content">
             <MisuseIcon />
@@ -200,7 +207,31 @@ const reqErr_remainingClients = Math.max(reqErr_forestClients.length - PREVIEW_L
         </div>
     </template>
 
-    <!-- General request error template-->
+    <!-- Internal error template -->
+    <template v-if="internalErr_assignments && internalErr_assignments.length > 0">
+        <div class="failed-permission-content">
+            <MisuseIcon />
+            <div class="notification-body">
+                <div class="notification-header">
+                    <strong>Error</strong> An unexpected error occurred:
+                </div>
+
+                <ul class="notification-list user-list">
+                    <li
+                        v-for="assignment in internalErr_assignments"
+                        class="notification-list-item"
+                    >
+                        <DotMarkIcon class="dot-mark-icon" />
+                        <span>
+                            {{ assignment.error_message!.length > 125 ? assignment.error_message!.slice(0, 125) + '...' : assignment.error_message }}
+                        </span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </template>
+
+    <!-- General request error template -->
     <template v-if="requestErrorData">
         <div class="failed-permission-content">
             <MisuseIcon />
