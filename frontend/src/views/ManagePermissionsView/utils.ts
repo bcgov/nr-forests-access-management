@@ -35,7 +35,7 @@ export const toAppUserGrantPermissionNotification = (
         ).values()
     ).map((items) => items[0]);
 
-    // failure case: grouped by user ID and use first result per user for error notification
+    // failure case: filter all failed assignments or email sending failures
     const failedOrEmailSendingErrorAssignments = data.assignments_detail.filter(
         (assignment) =>
             assignment.status_code !== 200 || assignment.email_sending_status === EmailSendingStatus.SentToEmailServiceFailure

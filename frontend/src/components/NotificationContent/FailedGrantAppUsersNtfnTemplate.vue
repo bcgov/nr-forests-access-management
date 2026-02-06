@@ -31,13 +31,32 @@ if ((!props.assignments && !props.requestErrorData) || (props.assignments && pro
 }
 const PREVIEW_LIMIT = 2;
 
+const assignments = props.assignments ?? [];
+//--- 409 conflict case setup (user already has the role assignment)
+const conflictErr_assignmentsMap = mapAppUserGrantResponseByUserId(
+    (assignments ?? []).filter((a) => a.status_code === 409)
+);
+const conflictErr_userIds = computed(() => Array.from(conflictErr_assignmentsMap.keys()));
+const conflictErr_headerText = `${assignments[0]?.detail?.role?.display_name || 'Role'} role already exists for the following users`
+const conflictErr_isExpanded = ref(false);
+const conflictErr_showToggle = computed(() => conflictErr_userIds.value.length > PREVIEW_LIMIT);
+const conflictErr_visibleUserIds = computed(() => {
+    if (!conflictErr_showToggle.value || conflictErr_isExpanded.value) {
+        return conflictErr_userIds.value;
+    }
+    return conflictErr_userIds.value.slice(0, PREVIEW_LIMIT);
+});
+const conflictErr_toggleExpanded = () => {
+    conflictErr_isExpanded.value = !conflictErr_isExpanded.value;
+};
+
 //--- Email seinding failure case setup
-const headerText_failedEmailSending = `Failed to send email for permissions granted to the following users`;
+const emailSendingErr_headerText = `Failed to send email for permissions granted to the following users`;
 
 // grouped by user ID and use first result per user for notification
 const emailSendingErr_assignments = Array.from(
     mapAppUserGrantResponseByUserId(
-        (props.assignments ?? []).filter(
+        (assignments ?? []).filter(
             (a) => a.email_sending_status === EmailSendingStatus.SentToEmailServiceFailure
         )
     ).values()
@@ -69,12 +88,76 @@ const reqErr_remainingClients = Math.max(reqErr_forestClients.length - PREVIEW_L
 </script>
 
 <template>
+    <!-- 409 user role exists error template-->
+    <template v-if="conflictErr_userIds && conflictErr_userIds.length > 0">
+        <div class="failed-permission-content">
+            <MisuseIcon />
+            <div class="notification-body">
+                <div class="notification-header">
+                    <strong>Error</strong> {{ conflictErr_headerText }}:
+                </div>
+
+                <button
+                    v-if="conflictErr_showToggle && conflictErr_isExpanded"
+                    class="toggle-link"
+                    type="button"
+                    @click="conflictErr_toggleExpanded"
+                >
+                    show less...
+                </button>
+
+                <ul class="notification-list user-list">
+                    <li
+                        v-for="userId in conflictErr_visibleUserIds"
+                        :key="userId"
+                        class="notification-list-item"
+                    >
+                        <DotMarkIcon class="dot-mark-icon" />
+                        <span>
+                            {{
+                                formatUserNameAndId(
+                                    conflictErr_assignmentsMap.get(userId)![0].detail.user.user_name,
+                                    conflictErr_assignmentsMap.get(userId)![0].detail.user.first_name,
+                                    conflictErr_assignmentsMap.get(userId)![0].detail.user.last_name
+                                )
+                            }}
+                        </span>
+                        <div
+                            v-if="conflictErr_assignmentsMap.get(userId)!.some(a => a.detail.role?.forest_client)"
+                            class="orgination-list"
+                        >
+                            with organizations:
+                            <span class="org-names">
+                                <template v-for="(assignment, idx) in conflictErr_assignmentsMap.get(userId)" :key="assignment.detail.role?.forest_client?.forest_client_number">
+                                    <template v-if="assignment.detail.role?.forest_client">
+                                        {{ assignment.detail.role.forest_client.client_name +'(' + assignment.detail.role.forest_client.forest_client_number + ')'}}
+                                        <span v-if="idx < conflictErr_assignmentsMap.get(userId)!.length - 1">, </span>
+                                    </template>
+                                </template>
+                            </span>
+                        </div>
+                    </li>
+                </ul>
+
+                <button
+                    v-if="conflictErr_showToggle && !conflictErr_isExpanded"
+                    class="toggle-link"
+                    type="button"
+                    @click="conflictErr_toggleExpanded"
+                >
+                    show more...
+                </button>
+            </div>
+        </div>
+    </template>
+
+    <!-- Email sending error template-->
     <template v-if="emailSendingErr_assignments && emailSendingErr_assignments.length > 0">
         <div class="failed-permission-content">
             <MisuseIcon />
             <div class="notification-body">
                 <div class="notification-header">
-                    <strong>Error</strong> {{ headerText_failedEmailSending }}:
+                    <strong>Error</strong> {{ emailSendingErr_headerText }}:
                 </div>
 
                 <button
@@ -268,5 +351,21 @@ const reqErr_remainingClients = Math.max(reqErr_forestClients.length - PREVIEW_L
 
 .btn-see-all:hover {
     color: var(--link-primary-hover);
+}
+/* Organization list styling for alignment and wrapping */
+.orgination-list {
+    margin-left: 1rem;
+    font-size: 0.97em;
+    color: #333;
+    word-break: break-word;
+    white-space: normal;
+    line-height: 1.5;
+    max-width: 100%;
+}
+.org-names {
+    display: inline;
+    word-break: break-word;
+    white-space: normal;
+    margin-bottom: 0.7rem;
 }
 </style>
