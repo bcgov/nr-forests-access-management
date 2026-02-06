@@ -23,10 +23,10 @@ import NotificationStack from "@/views/ManagePermissionsView/NotificationStack.v
 import {
     clearNotifications,
     generateFamNotification,
-    toAppUserRequestErrorNotification as toAppUserGrantReqErrorNotification,
-    toAppUserGrantSuccessNotification,
-    generateAppPermissionErrorNotifications as toDelegatedAdminGrantReqErrorNotifications,
-    toDAdminGrantingSuccessNotification as toDelegatedAdminGrantSuccessNotification,
+    toAppUserGrantReqErrorNotification,
+    toAppUserGrantPermissionNotification,
+    toDelegatedAdminGrantReqErrorNotifications,
+    toDelegatedAdminGrantSuccessNotification,
 } from "@/views/ManagePermissionsView/utils";
 import AddIcon from "@carbon/icons-vue/es/add/16";
 import EnterpriseIcon from "@carbon/icons-vue/es/enterprise/16";
@@ -177,7 +177,7 @@ const visibleTabs = computed(() => tabs.filter((tab) => tab.visible.value));
 
 // notifications state initialization
 const notifications = ref<PermissionNotificationType[]>([
-    ...( toAppUserGrantSuccessNotification(addAppUserPermissionSuccessData, selectedApp.value?.name ?? null)),
+    ...( toAppUserGrantPermissionNotification(addAppUserPermissionSuccessData, selectedApp.value?.name ?? null)),
     ...( toAppUserGrantReqErrorNotification(addAppUserPermissionRequestErrorData, selectedApp.value?.name ?? null)),
     ...(addDelegatedAdminSuccessData
         ? toDelegatedAdminGrantSuccessNotification(addDelegatedAdminSuccessData)

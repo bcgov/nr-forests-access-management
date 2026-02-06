@@ -1,6 +1,8 @@
+import FailedGrantAppUsersNtfnTemplate from "@/components/NotificationContent/FailedGrantAppUsersNtfnTemplate.vue";
 import SccssGrantAppUsersNtfnTemplate from "@/components/NotificationContent/SccssGrantAppUsersNtfnTemplate.vue";
 import type { PermissionNotificationType } from "@/types/NotificationTypes";
 import { Severity } from "@/types/NotificationTypes";
+import { mapAppUserGrantResponseByUserId } from "@/utils/ApiUtils";
 import { formatForestClientDisplayName } from "@/utils/ForestClientUtils";
 import { formatUserNameAndId } from "@/utils/UserUtils";
 import { AddAppUserPermissionErrorQuerykey, AddAppUserPermissionSuccessQuerykey, AddDelegatedAdminErrorQuerykey, AddDelegatedAdminSuccessQuerykey, type AppPermissionQueryErrorType } from "@/views/AddAppPermission/utils";
@@ -12,33 +14,18 @@ import type {
 } from "fam-admin-mgmt-api/model";
 import type {
     FamRoleWithClientSchema,
-    FamUserRoleAssignmentCreateRes,
-    FamUserRoleAssignmentRes,
+    FamUserRoleAssignmentRes
 } from "fam-app-acsctl-api/model";
 import { h, type Ref } from "vue";
 import { AddAppAdminErrorQueryKey, AddAppAdminSuccessQueryKey } from "../AddFamPermission/utils";
-import FailedGrantAppUsersNtfnTemplate from "@/components/NotificationContent/FailedGrantAppUsersNtfnTemplate.vue";
 
-export const toAppUserGrantSuccessNotification = (
+export const toAppUserGrantPermissionNotification = (
     data: FamUserRoleAssignmentRes | null,
     applicationName: string | null
 ): PermissionNotificationType[] => {
     if (!data || data.assignments_detail.length === 0) {
         return [];
     }
-
-    const mapAppUserGrantResponseByUserId = (
-        items: Array<FamUserRoleAssignmentCreateRes>
-    ): Map<number, FamUserRoleAssignmentCreateRes[]> => {
-        return items.reduce((map, item) => {
-            const userId = item.detail.user_id;
-            if (!map.has(userId)) {
-                map.set(userId, []);
-            }
-            map.get(userId)?.push(item);
-            return map;
-        }, new Map<number, FamUserRoleAssignmentCreateRes[]>());
-    };
 
     // grouped by user ID and use first result per user for success notification
     const successAssignmentsByUser = Array.from(
@@ -61,7 +48,25 @@ export const toAppUserGrantSuccessNotification = (
     }];
 };
 
-export const toDAdminGrantingSuccessNotification = (
+export const toAppUserGrantReqErrorNotification = (
+    errData: AppPermissionQueryErrorType | null,
+    applicationName: string | null,
+): PermissionNotificationType[] => {
+    if (!errData) {
+        return [];
+    }
+
+    return [{
+        serverity: Severity.Error,
+        message: h(FailedGrantAppUsersNtfnTemplate, {
+            applicationName: applicationName,
+            requestErrorData:errData
+        }),
+        hasFullMsg: false
+    }];
+};
+
+export const toDelegatedAdminGrantSuccessNotification = (
     data: FamAccessControlPrivilegeResponse
 ): PermissionNotificationType[] => {
     const notifications: PermissionNotificationType[] = [];
@@ -226,25 +231,7 @@ export const toDAdminGrantingSuccessNotification = (
     return notifications;
 };
 
-export const toAppUserRequestErrorNotification = (
-    errData: AppPermissionQueryErrorType | null,
-    applicationName: string | null,
-): PermissionNotificationType[] => {
-    if (!errData) {
-        return [];
-    }
-
-    return [{
-        serverity: Severity.Error,
-        message: h(FailedGrantAppUsersNtfnTemplate, {
-            applicationName: applicationName,
-            requestErrorData:errData
-        }),
-        hasFullMsg: false
-    }];
-};
-
-export const generateAppPermissionErrorNotifications = (
+export const toDelegatedAdminGrantReqErrorNotifications = (
     errData: AppPermissionQueryErrorType
 ): PermissionNotificationType => {
     const { users, forestClients, role } = errData.formData;

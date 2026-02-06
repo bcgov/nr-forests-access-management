@@ -4,6 +4,7 @@ import {
     type AdminUserAccessResponse,
     type FamApplicationGrantDto,
 } from "fam-admin-mgmt-api/model";
+import type { FamUserRoleAssignmentCreateRes } from "fam-app-acsctl-api";
 
 /**
  * Formats an Axios error into a string containing the status and error message.
@@ -106,4 +107,23 @@ export const getApplicationById = (
     const uniqueApps = getUniqueApplications(data);
 
     return uniqueApps.find((app) => app.id === appId);
+};
+
+/**
+ * Groups an array of FamUserRoleAssignmentCreateRes items by user ID.
+ * @param items An array of FamUserRoleAssignmentCreateRes items to be grouped by user ID.
+ * @returns A map where the key is the user ID and the value is an array of
+ *          FamUserRoleAssignmentCreateRes items for that user.
+ */
+export const mapAppUserGrantResponseByUserId = (
+    items: Array<FamUserRoleAssignmentCreateRes>
+): Map<number, FamUserRoleAssignmentCreateRes[]> => {
+    return items.reduce((map, item) => {
+        const userId = item.detail.user_id;
+        if (!map.has(userId)) {
+            map.set(userId, []);
+        }
+        map.get(userId)?.push(item);
+        return map;
+    }, new Map<number, FamUserRoleAssignmentCreateRes[]>());
 };
