@@ -12,9 +12,10 @@ import type {
     FamAccessControlPrivilegeResponse,
     FamRoleWithClientDto,
 } from "fam-admin-mgmt-api/model";
-import type {
-    FamRoleWithClientSchema,
-    FamUserRoleAssignmentRes
+import {
+    EmailSendingStatus,
+    type FamRoleWithClientSchema,
+    type FamUserRoleAssignmentRes
 } from "fam-app-acsctl-api/model";
 import { h, type Ref } from "vue";
 import { AddAppAdminErrorQueryKey, AddAppAdminSuccessQueryKey } from "../AddFamPermission/utils";
@@ -27,37 +28,54 @@ export const toAppUserGrantPermissionNotification = (
         return [];
     }
 
-    // grouped by user ID and use first result per user for success notification
+    // success case: grouped by user ID and use first result per user for success notification
     const successAssignmentsByUser = Array.from(
         mapAppUserGrantResponseByUserId(
             data.assignments_detail.filter((assignment) => assignment.status_code === 200)
         ).values()
     ).map((items) => items[0]);
 
-    if (successAssignmentsByUser.length === 0) {
-        return [];
-    }
+    // failure case: grouped by user ID and use first result per user for error notification
+    const failedOrEmailSendingErrorAssignments = data.assignments_detail.filter(
+        (assignment) =>
+            assignment.status_code !== 200 || assignment.email_sending_status === EmailSendingStatus.SentToEmailServiceFailure
+    );
 
-    return [{
-        serverity: Severity.Success,
-        message: h(SccssGrantAppUsersNtfnTemplate, {
-            assignments: successAssignmentsByUser,
-            applicationName,
-        }),
-        hasFullMsg: false
-    }];
+    const notifications: PermissionNotificationType[] = [];
+    if (successAssignmentsByUser.length > 0) {
+        notifications.push({
+            severity: Severity.Success,
+            message: h(SccssGrantAppUsersNtfnTemplate, {
+                assignments: successAssignmentsByUser,
+                applicationName,
+            }),
+            hasFullMsg: false
+        });
+    }
+    if (failedOrEmailSendingErrorAssignments.length > 0) {
+        notifications.push({
+            severity: Severity.Error,
+            message: h(FailedGrantAppUsersNtfnTemplate, {
+                assignments: failedOrEmailSendingErrorAssignments,
+                applicationName,
+            }),
+            hasFullMsg: false
+        });
+    }
+    return notifications;
 };
 
 export const toAppUserGrantReqErrorNotification = (
     errData: AppPermissionQueryErrorType | null,
     applicationName: string | null,
 ): PermissionNotificationType[] => {
+    console
     if (!errData) {
         return [];
     }
 
     return [{
-        serverity: Severity.Error,
+        severity: Severity.Error,
         message: h(FailedGrantAppUsersNtfnTemplate, {
             applicationName: applicationName,
             requestErrorData:errData
@@ -75,7 +93,7 @@ export const toDelegatedAdminGrantSuccessNotification = (
 
     if ("SENT_TO_EMAIL_SERVICE_FAILURE" === emailSendingStatus) {
         notifications.push({
-            serverity: Severity.Error,
+            severity: Severity.Error,
             message: `
             Failed to send email to ${email}. Contact them and tell them permissions have been granted.`,
             hasFullMsg: false,
@@ -112,7 +130,7 @@ export const toDelegatedAdminGrantSuccessNotification = (
     // Success notifications for abstract roles
     if (successClientList.length && successRoleList.length) {
         notifications.push({
-            serverity: Severity.Success,
+            severity: Severity.Success,
             message: `
             ${formattedUserName} was successfully ${actionTerm} organization${
                 successClientList.length > 1 ? "s" : ""
@@ -159,7 +177,7 @@ export const toDelegatedAdminGrantSuccessNotification = (
     // Success notifications for concrete roles
     if (!successClientList.length && successRoleList.length) {
         notifications.push({
-            serverity: Severity.Success,
+            severity: Severity.Success,
             message: `
             ${formattedUserName} was successfully ${actionTerm} the role ${successRoleList[0].display_name}
             `,
@@ -172,7 +190,7 @@ export const toDelegatedAdminGrantSuccessNotification = (
     // Conflict notifications for Abstract roles
     if (conflictClientList.length && conflictRoleList.length) {
         notifications.push({
-            serverity: Severity.Error,
+            severity: Severity.Error,
             message: `
             ${formattedUserName} ${actionTerm} organization${
                 conflictClientList.length > 1 ? "s" : ""
@@ -220,7 +238,7 @@ export const toDelegatedAdminGrantSuccessNotification = (
     // Conflict notifications for Concrete roles
     if (!conflictClientList.length && conflictRoleList.length) {
         notifications.push({
-            serverity: Severity.Error,
+            severity: Severity.Error,
             message: `
             ${formattedUserName} ${actionTerm} the role ${conflictRoleList[0].display_name}
             `,
@@ -244,7 +262,7 @@ export const toDelegatedAdminGrantReqErrorNotifications = (
     const roleName = role?.display_name;
 
     return {
-        serverity: Severity.Error,
+        severity: Severity.Error,
         message: `
         Failed to add ${userFullName} with ${roleName} for organization${
             forestClients.length > 1 ? "s" : ""
@@ -291,7 +309,7 @@ export const generateFamNotification = (
     isSuccess: boolean,
     message: string
 ): PermissionNotificationType => ({
-    serverity: isSuccess ? Severity.Success : Severity.Error,
+    severity: isSuccess ? Severity.Success : Severity.Error,
     message,
     hasFullMsg: false,
 });

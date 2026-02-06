@@ -31,8 +31,9 @@ if ((!props.assignments && !props.requestErrorData) || (props.assignments && pro
 }
 const PREVIEW_LIMIT = 2;
 
-//--- properties for email seinding failure case
+//--- Email seinding failure case setup
 const headerText_failedEmailSending = `Failed to send email for permissions granted to the following users`;
+
 // grouped by user ID and use first result per user for notification
 const emailSendingErr_assignments = Array.from(
     mapAppUserGrantResponseByUserId(
@@ -42,7 +43,19 @@ const emailSendingErr_assignments = Array.from(
     ).values()
 ).map((items) => items[0]);
 
-//--- properties for requestErrorData (general error case)
+const emailSendingErr_isExpanded = ref(false);
+const emailSendingErr_showToggle = computed(() => emailSendingErr_assignments.length > 2);
+const emailSendingErr_visibleAssignments = computed(() => {
+    if (!emailSendingErr_showToggle.value || emailSendingErr_isExpanded.value) {
+        return emailSendingErr_assignments;
+    }
+    return emailSendingErr_assignments.slice(0, 2);
+});
+const emailSendingErr_toggleExpanded = () => {
+    emailSendingErr_isExpanded.value = !emailSendingErr_isExpanded.value;
+};
+
+//--- requestErrorData (general error case) setup
 const reqErr_showAllUsers = ref(false);
 const reqErr_showAllClients = ref(false);
 const reqErr_roleName = props.requestErrorData?.formData.role?.display_name;
@@ -64,9 +77,18 @@ const reqErr_remainingClients = Math.max(reqErr_forestClients.length - PREVIEW_L
                     <strong>Error</strong> {{ headerText_failedEmailSending }}:
                 </div>
 
+                <button
+                    v-if="emailSendingErr_showToggle && emailSendingErr_isExpanded"
+                    class="toggle-link"
+                    type="button"
+                    @click="emailSendingErr_toggleExpanded"
+                >
+                    show less...
+                </button>
+
                 <ul class="notification-list user-list">
                     <li
-                        v-for="assignment in emailSendingErr_assignments"
+                        v-for="assignment in emailSendingErr_visibleAssignments"
                         :key="assignment.detail.user_id"
                         class="notification-list-item"
                     >
@@ -78,16 +100,25 @@ const reqErr_remainingClients = Math.max(reqErr_forestClients.length - PREVIEW_L
                                     assignment.detail.user.first_name,
                                     assignment.detail.user.last_name
                                 )
-                            }}
+                            }} {{ assignment.detail.user.email ? ' - ' + assignment.detail.user.email : '' }}
                         </span>
                     </li>
                 </ul>
+
+                <button
+                    v-if="emailSendingErr_showToggle && !emailSendingErr_isExpanded"
+                    class="toggle-link"
+                    type="button"
+                    @click="emailSendingErr_toggleExpanded"
+                >
+                    show more...
+                </button>
             </div>
         </div>
     </template>
 
     <!-- General request error template-->
-    <template v-else>
+    <template v-if="requestErrorData">
         <div class="failed-permission-content">
             <MisuseIcon />
             <div class="notification-body">
@@ -165,7 +196,7 @@ const reqErr_remainingClients = Math.max(reqErr_forestClients.length - PREVIEW_L
 </template>
 
 <style scoped lang="scss">
-.failed-permission-content {
+ .failed-permission-content {
     display: flex;
     align-items: flex-start;
 
@@ -214,6 +245,16 @@ const reqErr_remainingClients = Math.max(reqErr_forestClients.length - PREVIEW_L
                 margin-bottom: 0;
             }
         }
+    }
+    .toggle-link {
+        background: none;
+        border: none;
+        padding: 0;
+        margin: 0 0 0.25rem;
+        color: inherit;
+        font-style: italic;
+        text-decoration: underline;
+        cursor: pointer;
     }
 }
 

@@ -261,7 +261,7 @@ export const createNotification = <T>(
         : context.errorTemplate(variables, error as Error);
 
     return {
-        serverity: success ? Severity.Success : Severity.Error,
+        severity: success ? Severity.Success : Severity.Error,
         message,
         hasFullMsg: false,
     };
