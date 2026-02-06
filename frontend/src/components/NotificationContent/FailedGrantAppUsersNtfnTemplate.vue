@@ -32,19 +32,20 @@ if ((!props.assignments && !props.requestErrorData) || (props.assignments && pro
 const PREVIEW_LIMIT = 2;
 
 const assignments = props.assignments ?? [];
+
 //--- 409 conflict case setup (user already has the role assignment)
 const conflictErr_assignmentsMap = mapAppUserGrantResponseByUserId(
     (assignments ?? []).filter((a) => a.status_code === 409)
 );
-const conflictErr_userIds = computed(() => Array.from(conflictErr_assignmentsMap.keys()));
-const conflictErr_headerText = `${assignments[0]?.detail?.role?.display_name || 'Role'} role already exists for the following users`
+const conflictErr_userIds = Array.from(conflictErr_assignmentsMap.keys());
+const conflictErr_headerText = `${assignments[0]?.detail?.role?.display_name} role already exists for the following users`
 const conflictErr_isExpanded = ref(false);
-const conflictErr_showToggle = computed(() => conflictErr_userIds.value.length > PREVIEW_LIMIT);
+const conflictErr_showToggle = conflictErr_userIds.length > PREVIEW_LIMIT;
 const conflictErr_visibleUserIds = computed(() => {
-    if (!conflictErr_showToggle.value || conflictErr_isExpanded.value) {
-        return conflictErr_userIds.value;
+    if (!conflictErr_showToggle || conflictErr_isExpanded.value) {
+        return conflictErr_userIds;
     }
-    return conflictErr_userIds.value.slice(0, PREVIEW_LIMIT);
+    return conflictErr_userIds.slice(0, PREVIEW_LIMIT);
 });
 const conflictErr_toggleExpanded = () => {
     conflictErr_isExpanded.value = !conflictErr_isExpanded.value;
@@ -63,12 +64,12 @@ const emailSendingErr_assignments = Array.from(
 ).map((items) => items[0]);
 
 const emailSendingErr_isExpanded = ref(false);
-const emailSendingErr_showToggle = computed(() => emailSendingErr_assignments.length > 2);
+const emailSendingErr_showToggle = emailSendingErr_assignments.length > PREVIEW_LIMIT;
 const emailSendingErr_visibleAssignments = computed(() => {
-    if (!emailSendingErr_showToggle.value || emailSendingErr_isExpanded.value) {
+    if (!emailSendingErr_showToggle || emailSendingErr_isExpanded.value) {
         return emailSendingErr_assignments;
     }
-    return emailSendingErr_assignments.slice(0, 2);
+    return emailSendingErr_assignments.slice(0, PREVIEW_LIMIT);
 });
 const emailSendingErr_toggleExpanded = () => {
     emailSendingErr_isExpanded.value = !emailSendingErr_isExpanded.value;
@@ -313,6 +314,7 @@ const reqErr_remainingClients = Math.max(reqErr_forestClients.length - PREVIEW_L
  .failed-permission-content {
     display: flex;
     align-items: flex-start;
+    margin-bottom: 0.5rem;
 
     // Ensure icon stays sized and aligned
     > svg {
