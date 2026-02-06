@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.6.0](https://github.com/bcgov/nr-forests-access-management/compare/v2.5.0...v2.6.0) (2026-01-29)
+
+
+### Features
+
+* [#2057](https://github.com/bcgov/nr-forests-access-management/issues/2057) Granting Multiple Users backend ([#2064](https://github.com/bcgov/nr-forests-access-management/issues/2064)) ([7049cfc](https://github.com/bcgov/nr-forests-access-management/commit/7049cfc002dce715d02f0cc4358403d13678fb88))
+* [#2066](https://github.com/bcgov/nr-forests-access-management/issues/2066) Onboarding ISP to FAM ([#2068](https://github.com/bcgov/nr-forests-access-management/issues/2068)) ([d8afd30](https://github.com/bcgov/nr-forests-access-management/commit/d8afd30eb7d553b872d3a0093faba7fdf7da3f0f))
+
 ## [2.5.0](https://github.com/bcgov/nr-forests-access-management/compare/v2.4.0...v2.5.0) (2025-12-23)
 
 
