@@ -23,8 +23,8 @@ import NotificationStack from "@/views/ManagePermissionsView/NotificationStack.v
 import {
     clearNotifications,
     generateFamNotification,
-    toAppUserGrantReqErrorNotification,
     toAppUserGrantPermissionNotification,
+    toAppUserGrantReqErrorNotification,
     toDelegatedAdminGrantReqErrorNotifications,
     toDelegatedAdminGrantSuccessNotification,
 } from "@/views/ManagePermissionsView/utils";

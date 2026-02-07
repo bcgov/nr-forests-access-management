@@ -1,27 +1,27 @@
 <script setup lang="ts">
-import { ref, provide, watch } from "vue";
-import { useSelectUserManagement, SELECT_APP_ADMIN_USER_KEY } from "@/composables/useSelectUserManagement";
-import { useForm } from "vee-validate";
-import { isAxiosError } from "axios";
-import { useRouter } from "vue-router";
-import type { DropdownChangeEvent } from "primevue/dropdown";
-import CheckmarkIcon from "@carbon/icons-vue/es/checkmark/16";
+import UserNameInput from "@/components/AddPermissions/UserNameSection.vue";
 import BreadCrumbs from "@/components/UI/BreadCrumbs.vue";
-import type { BreadCrumbType } from "@/types/BreadCrumbTypes";
-import { ManagePermissionsRoute } from "@/router/routes";
+import Button from "@/components/UI/Button.vue";
+import Dropdown from "@/components/UI/Dropdown.vue";
 import PageTitle from "@/components/UI/PageTitle.vue";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
+import StepContainer from "@/components/UI/StepContainer.vue";
+import { SELECT_APP_ADMIN_USER_KEY, useSelectUserManagement } from "@/composables/useSelectUserManagement";
+import { ManagePermissionsRoute } from "@/router/routes";
 import { AdminMgmtApiService } from "@/services/ApiServiceFactory";
+import type { BreadCrumbType } from "@/types/BreadCrumbTypes";
 import { formatAxiosError, getFamAdminApplications } from "@/utils/ApiUtils";
+import { formatUserNameAndId } from "@/utils/UserUtils";
+import CheckmarkIcon from "@carbon/icons-vue/es/checkmark/16";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
+import { isAxiosError } from "axios";
 import {
     UserType,
     type FamAppAdminCreateRequest,
 } from "fam-admin-mgmt-api/model";
-import UserNameInput from "@/components/AddPermissions/UserNameSection.vue";
-import StepContainer from "@/components/UI/StepContainer.vue";
-import Dropdown from "@/components/UI/Dropdown.vue";
-import Button from "@/components/UI/Button.vue";
-import { formatUserNameAndId } from "@/utils/UserUtils";
+import type { DropdownChangeEvent } from "primevue/dropdown";
+import { useForm } from "vee-validate";
+import { provide, ref, watch } from "vue";
+import { useRouter } from "vue-router";
 import {
     AddAppAdminErrorQueryKey,
     AddAppAdminSuccessQueryKey,
@@ -43,8 +43,8 @@ const crumbs: BreadCrumbType[] = [
 ];
 
 // Use composable for single-user user selection
-const grantUserManagement = useSelectUserManagement(false); // false = single-user mode
-provide(SELECT_APP_ADMIN_USER_KEY, grantUserManagement);
+const selectAppAdminUserManagement = useSelectUserManagement(false); // false = single-user mode
+provide(SELECT_APP_ADMIN_USER_KEY, selectAppAdminUserManagement);
 
 /**
  * Form setup using vee-validate's v4 useForm composable.
@@ -63,16 +63,15 @@ const { handleSubmit, errors, values, setFieldValue, meta } = useForm<AppAdminFo
 
 // Watch selectUserManagement.currentUser and sync with form field
 watch(
-    () => grantUserManagement.currentUser.value,
+    () => selectAppAdminUserManagement.currentUser.value,
     (newUser) => {
         if (newUser || meta.value.dirty) {
-            console.log("Form has been touched, updating user field");
             setFieldValue('user', newUser);
         }
     }
 );
 
-// Flag to track if form has been submitted - controls error display
+// Flag to track if form has been submitted - to control error display
 const hasSubmitted = ref<boolean>(false);
 
 const queryClient = useQueryClient();
@@ -131,6 +130,7 @@ const famPermissionMutation = useMutation({
 });
 
 const onSubmit = () => {
+    hasSubmitted.value = true;
     famPermissionMutation.mutate(generatePayload(values));
 };
 
