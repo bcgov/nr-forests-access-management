@@ -27,7 +27,6 @@ export const getDefaultFormData = (): AppAdminFormType =>
  * Validation schema for application admin
  */
 export const validateAppAdminForm = () => {
-    console.log("Validating app admin form");
     return object({
         user: mixed<SelectUser>().required("A valid user is required"),
         application: mixed<FamApplicationGrantDto>().required(
