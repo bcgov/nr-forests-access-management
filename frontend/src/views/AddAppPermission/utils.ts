@@ -23,6 +23,8 @@ export const AddDelegatedAdminErrorQuerykey = "delegated-admin-mutation-error";
 export const NewRegularUserQueryParamKey = "newRegularUserIds";
 export const NewDelegatedAddminQueryParamKey = "newDelegatedAdminIds";
 
+export const MAX_USERS_GRANTING_ALLOWED = 50;
+
 export type AppPermissionFormType = {
     domain: UserType;
     users: SelectUser[];
@@ -82,6 +84,7 @@ export const validateAppPermissionForm = () => {
     return object({
         users: array()
             .of(mixed<SelectUser>().required("A valid user is required"))
+            .max(MAX_USERS_GRANTING_ALLOWED, `User list exceeds ${MAX_USERS_GRANTING_ALLOWED} users allowed`)
             .when("isAddingDelegatedAdmin", {
                 is: false,
                 then: (schema) => schema.min(1, "At least one user is required"),
