@@ -1,5 +1,4 @@
 from unittest.mock import patch
-import pytest
 import logging
 from datetime import datetime, timedelta, timezone, time as dt_time
 from zoneinfo import ZoneInfo
@@ -23,6 +22,9 @@ from testspg.test_data.user_role_assignment_test_data import (
     create_role_assignment_request,
     create_test_requester
 )
+from api.app.schemas.fam_user_role_assignment_create import FamUserRoleAssignmentCreateSchema
+from api.app.constants import MAX_NUM_USERS_ASSIGNMENT_GRANT, UserType
+from pydantic import ValidationError
 
 LOGGER = logging.getLogger(__name__)
 
@@ -203,6 +205,45 @@ class TestCrudMultiUserAssignmentErrors:
         # Second user (new) should succeed
         assert results2[1].status_code == HTTPStatus.OK
 
+    def test_schema_users_min_and_max_constraints(self):
+        """
+        TEST: FamUserRoleAssignmentCreateSchema users min/max constraints.
+        Verify:
+        - Error is raised if users list is empty (min constraint)
+        - Error is raised if users list exceeds max (MAX_NUM_USERS_ASSIGNMENT_GRANT)
+        - Error message matches expected
+        """
+        # Valid user template
+        valid_user = dict(user_name="Users", user_guid="A"*32)
+        # Test min constraint (empty list)
+        try:
+            FamUserRoleAssignmentCreateSchema(
+                users=[],
+                user_type_code=UserType.IDIR,
+                role_id=1
+            )
+            assert False, "Expected ValidationError for empty users list"
+        except ValidationError as e:
+            assert any(
+                err['msg'].startswith('List should have at least 1 item')
+                for err in e.errors()
+            ), f"Unexpected error message: {e.errors()}"
+
+        # Test max constraint (exceeding max)
+        too_many_users = [valid_user for _ in range(MAX_NUM_USERS_ASSIGNMENT_GRANT + 1)]
+        try:
+            FamUserRoleAssignmentCreateSchema(
+                users=too_many_users,
+                user_type_code=UserType.IDIR,
+                role_id=1
+            )
+            assert False, "Expected ValidationError for too many users"
+        except ValidationError as e:
+            assert any(
+                "Can only grant at most" in err['msg']
+                for err in e.errors()
+            ), f"Unexpected error message: {e.errors()}"
+
 
 class TestCrudMultiUserForestClientLogic:
     """Test forest client child role logic for multi-user assignments."""
@@ -239,33 +280,6 @@ class TestCrudMultiUserForestClientLogic:
 
 class TestCrudMultiUserEdgeCases:
     """Test edge cases for multi-user CRUD operations."""
-
-    def test_crud_empty_verified_users_list(self, db_pg_session: Session):
-        """
-        TEST: Empty verified users list.
-        Verify:
-        - Returns empty list
-        - No database changes
-        """
-        verified_users = []
-        request = create_role_assignment_request(
-            users=verified_users,
-            user_type_code=UserType.IDIR,
-            role_id=FOM_DEV_REVIEWER_ROLE_ID,
-            forest_client_numbers=None
-        )
-        requester = create_test_requester()
-
-        # Execute
-        results = crud_user_role.create_user_role_assignment_many(
-            db=db_pg_session,
-            request=request,
-            verified_users=verified_users,
-            requester=requester,
-        )
-
-        # Assert
-        assert len(results) == 0
 
     def test_crud_per_user_error_isolation(self, db_pg_session: Session):
         """
