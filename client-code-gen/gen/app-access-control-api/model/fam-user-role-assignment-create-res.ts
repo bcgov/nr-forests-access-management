@@ -37,7 +37,7 @@ export interface FamUserRoleAssignmentCreateRes {
      * @type {FamApplicationUserRoleAssignmentGetSchema}
      * @memberof FamUserRoleAssignmentCreateRes
      */
-    'detail': FamApplicationUserRoleAssignmentGetSchema;
+    'detail'?: FamApplicationUserRoleAssignmentGetSchema | null;
     /**
      * 
      * @type {string}
