@@ -163,6 +163,8 @@ const handleRoleSelect = (role: FamRoleGrantDto) => {
                             "
                             :app-id="props.appId"
                             :field-id="props.forestClientsFieldId"
+                            :form-values="props.formValues"
+                            :set-field-value="props.setFieldValue"
                         />
 
                         <ForestClientAddTable
