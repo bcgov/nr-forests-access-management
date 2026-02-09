@@ -186,7 +186,7 @@ const assignUserRoles = useMutation({
                 appId: props.appId,
                 [NewRegularUserQueryParamKey]: res.data.assignments_detail
                     .filter((assignment) => assignment.status_code === 200)
-                    .map((assignment) => assignment.detail.user_role_xref_id)
+                    .map((assignment) => assignment.detail!.user_role_xref_id)
                     .join(","),
             },
         });

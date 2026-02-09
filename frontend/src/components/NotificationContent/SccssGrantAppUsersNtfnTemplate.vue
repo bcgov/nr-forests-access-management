@@ -64,21 +64,21 @@ const getEmailSuffix = (
             <ul class="notification-list">
                 <li
                     v-for="assignment in visibleAssignments"
-                    :key="assignment.detail.user_id"
+                    :key="assignment.detail!.user_id"
                     class="notification-list-item"
                 >
                     <DotMarkIcon class="dot-mark-icon" />
                     <span>
                         {{
                             formatUserNameAndId(
-                                assignment.detail.user.user_name,
-                                assignment.detail.user.first_name,
-                                assignment.detail.user.last_name
+                                assignment.detail!.user.user_name,
+                                assignment.detail!.user.first_name,
+                                assignment.detail!.user.last_name
                             )
                         }}{{
                             getEmailSuffix(
                                 assignment.email_sending_status,
-                                assignment.detail.user.email
+                                assignment.detail!.user.email
                             )
                         }}
                     </span>

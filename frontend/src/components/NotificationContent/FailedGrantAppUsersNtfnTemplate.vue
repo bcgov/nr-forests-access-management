@@ -124,21 +124,21 @@ const reqErr_remainingClients = Math.max(reqErr_forestClients.length - PREVIEW_L
                         <span>
                             {{
                                 formatUserNameAndId(
-                                    conflictErr_assignmentsMap.get(userId)![0].detail.user.user_name,
-                                    conflictErr_assignmentsMap.get(userId)![0].detail.user.first_name,
-                                    conflictErr_assignmentsMap.get(userId)![0].detail.user.last_name
+                                    conflictErr_assignmentsMap.get(userId)![0].detail!.user.user_name,
+                                    conflictErr_assignmentsMap.get(userId)![0].detail!.user.first_name,
+                                    conflictErr_assignmentsMap.get(userId)![0].detail!.user.last_name
                                 )
                             }}
                         </span>
                         <div
-                            v-if="conflictErr_assignmentsMap.get(userId)!.some(a => a.detail.role?.forest_client)"
+                            v-if="conflictErr_assignmentsMap.get(userId)!.some(a => a.detail!.role?.forest_client)"
                             class="orgination-list"
                         >
                             with organizations:
                             <span class="org-names">
-                                <template v-for="(assignment, idx) in conflictErr_assignmentsMap.get(userId)" :key="assignment.detail.role?.forest_client?.forest_client_number">
-                                    <template v-if="assignment.detail.role?.forest_client">
-                                        {{ assignment.detail.role.forest_client.client_name +'(' + assignment.detail.role.forest_client.forest_client_number + ')'}}
+                                <template v-for="(assignment, idx) in conflictErr_assignmentsMap.get(userId)" :key="assignment.detail!.role?.forest_client?.forest_client_number">
+                                    <template v-if="assignment.detail!.role?.forest_client">
+                                        {{ assignment.detail!.role.forest_client.client_name +'(' + assignment.detail!.role.forest_client.forest_client_number + ')'}}
                                         <span v-if="idx < conflictErr_assignmentsMap.get(userId)!.length - 1">, </span>
                                     </template>
                                 </template>
@@ -180,18 +180,18 @@ const reqErr_remainingClients = Math.max(reqErr_forestClients.length - PREVIEW_L
                 <ul class="notification-list user-list">
                     <li
                         v-for="assignment in emailSendingErr_visibleAssignments"
-                        :key="assignment.detail.user_id"
+                        :key="assignment.detail!.user_id"
                         class="notification-list-item"
                     >
                         <DotMarkIcon class="dot-mark-icon" />
                         <span>
                             {{
                                 formatUserNameAndId(
-                                    assignment.detail.user.user_name,
-                                    assignment.detail.user.first_name,
-                                    assignment.detail.user.last_name
+                                    assignment.detail!.user.user_name,
+                                    assignment.detail!.user.first_name,
+                                    assignment.detail!.user.last_name
                                 )
-                            }} {{ assignment.detail.user.email ? ' - ' + assignment.detail.user.email : '' }}
+                            }} {{ assignment.detail!.user.email ? ' - ' + assignment.detail!.user.email : '' }}
                         </span>
                     </li>
                 </ul>
