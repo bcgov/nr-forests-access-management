@@ -11,6 +11,21 @@ import SubsectionTitle from "../UI/SubsectionTitle.vue";
 import ForestClientSection from "./ForestClientAddTable.vue";
 import { watch } from "vue";
 
+/**
+ * TODO:
+ * There are several child-component from `frontend/src/views/AddAppPermission/index.vue`, this `DelegatedAdminSection.vue`
+ * is one of them. Previously this child-component inject a parent form directly for direct field manipulation, which is too
+ * much coupling and now when using a recommended vee-validate library's Composition API `useForm`, the parent form now is
+ * following a best practice to be a "read-only form". So the child-component can't directly change the values dynamically
+ * anymore. The 'formValues' and 'setFieldValue' are new addition of props passed in from parent component, to overcome
+ * previous coupling of parent form in the child component. They are provided from vee-validate's 'useForm' API.
+ *
+ * This is a temporary solution agreed after discussion with Olga. Later, we will change delegated-admin granting
+ * permission backend to handle multiple users as well. That time we will totally refactor all child components to be
+ * only accepting necessary props from parent fields' value only, not the form itself, and provide "event" based
+ * callback for parent component to handle the value change from child component, instead of child component directly
+ * manipulate parent form values.
+ */
 const props = defineProps<{
     roleOptions: FamRoleGrantDto[];
     appId: number;
