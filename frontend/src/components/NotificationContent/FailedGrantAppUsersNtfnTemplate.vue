@@ -17,7 +17,7 @@ import { computed, ref } from "vue";
  * - requestErrorData: Optional error data related to the permission grant request.
  *
  * Note:
- * - Either asignments or requestErrorData should be provided to render meaningful content.
+ * - Either assignments or requestErrorData should be provided to render meaningful content.
  */
 
 const props = defineProps<{
@@ -34,11 +34,16 @@ const PREVIEW_LIMIT = 2;
 const assignments = props.assignments ?? [];
 
 //--- 409 conflict case setup (user already has the role assignment)
+const conflictErr_conflictAssignments = (assignments ?? []).filter(
+    (a) => a.status_code === 409
+);
 const conflictErr_assignmentsMap = mapAppUserGrantResponseByUserId(
-    (assignments ?? []).filter((a) => a.status_code === 409)
+    conflictErr_conflictAssignments
 );
 const conflictErr_userIds = Array.from(conflictErr_assignmentsMap.keys());
-const conflictErr_headerText = `${assignments[0]?.detail?.role?.display_name} role already exists for the following users`
+const conflictErr_roleName =
+    conflictErr_conflictAssignments[0]?.detail?.role?.display_name;
+const conflictErr_headerText = `${conflictErr_roleName} role already exists for the following users`;
 const conflictErr_isExpanded = ref(false);
 const conflictErr_showToggle = conflictErr_userIds.length > PREVIEW_LIMIT;
 const conflictErr_visibleUserIds = computed(() => {
@@ -80,7 +85,7 @@ const emailSendingErr_toggleExpanded = () => {
 // Backend will have no 'detail' field but error_message is available.
 const internalErr_assignments = (assignments ?? []).filter(
     (a) => a.status_code >= 500
-)
+);
 
 //--- requestErrorData (general error case) setup
 const reqErr_showAllUsers = ref(false);

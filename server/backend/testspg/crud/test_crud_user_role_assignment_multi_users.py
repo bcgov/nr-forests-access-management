@@ -5,7 +5,7 @@ from zoneinfo import ZoneInfo
 from api.app.datetime_format import BC_TIMEZONE
 from http import HTTPStatus
 from sqlalchemy.orm import Session
-
+import pytest
 from api.app.schemas import TargetUserSchema
 from api.app.schemas.fam_user_role_assignment_create_response import FamUserRoleAssignmentCreateRes
 from api.app.crud import crud_user_role
@@ -215,18 +215,18 @@ class TestCrudMultiUserAssignmentErrors:
         # Valid user template
         valid_user = dict(user_name="Users", user_guid="A"*32)
         # Test min constraint (empty list)
-        try:
+        with pytest.raises(ValidationError) as exc_info:
             FamUserRoleAssignmentCreateSchema(
                 users=[],
                 user_type_code=UserType.IDIR,
                 role_id=1
             )
-            assert False, "Expected ValidationError for empty users list"
-        except ValidationError as e:
-            assert any(
-                err['msg'].startswith('List should have at least 1 item')
-                for err in e.errors()
-            ), f"Unexpected error message: {e.errors()}"
+        errors = exc_info.value.errors()
+        # Assert error is for 'users' field and type is 'too_short' (Pydantic v2)
+        assert any(
+            err['loc'] == ('users',) and err['type'] == 'too_short'
+            for err in errors
+        ), f"Unexpected error details: {errors}"
 
         # Test max constraint (exceeding max)
         too_many_users = [valid_user for _ in range(MAX_NUM_USERS_ASSIGNMENT_GRANT + 1)]
