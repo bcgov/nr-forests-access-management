@@ -49,7 +49,7 @@ const getEmailSuffix = (
         <CheckMarkIcon />
         <div class="notification-body">
             <div class="notification-header">
-                <strong>Success</strong>: {{ headerText }}:
+                <strong>Success</strong>: {{ headerText }}
             </div>
 
             <button

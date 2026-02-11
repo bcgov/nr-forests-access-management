@@ -102,7 +102,7 @@ const reqErr_remainingClients = Math.max(reqErr_forestClients.length - PREVIEW_L
             <MisuseIcon />
             <div class="notification-body">
                 <div class="notification-header">
-                    <strong>Error</strong> {{ conflictErr_headerText }}:
+                    <strong>Error</strong>: {{ conflictErr_headerText }}
                 </div>
 
                 <button
@@ -165,7 +165,7 @@ const reqErr_remainingClients = Math.max(reqErr_forestClients.length - PREVIEW_L
             <MisuseIcon />
             <div class="notification-body">
                 <div class="notification-header">
-                    <strong>Error</strong>: {{ emailSendingErr_headerText }}:
+                    <strong>Error</strong>: {{ emailSendingErr_headerText }}
                 </div>
 
                 <button
@@ -214,7 +214,7 @@ const reqErr_remainingClients = Math.max(reqErr_forestClients.length - PREVIEW_L
             <MisuseIcon />
             <div class="notification-body">
                 <div class="notification-header">
-                    <strong>Error</strong>: An unexpected error occurred:
+                    <strong>Error</strong>: An unexpected error occurred
                 </div>
 
                 <ul class="notification-list user-list">
@@ -238,7 +238,7 @@ const reqErr_remainingClients = Math.max(reqErr_forestClients.length - PREVIEW_L
             <MisuseIcon />
             <div class="notification-body">
                 <div class="notification-header">
-                    <strong>Error</strong>: Failed to add user(s) with {{ reqErr_roleName }} role:
+                    <strong>Error</strong>: Failed to add user(s) with {{ reqErr_roleName }} role
                 </div>
 
                 <template v-if="isAbstractRole">
