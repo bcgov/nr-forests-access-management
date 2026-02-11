@@ -930,4 +930,8 @@ const downloadManagePermissionsCSVData = () => {
     white-space: normal;
     word-wrap: break-word;
 }
+
+.p-paginator .p-dropdown {
+  min-width: 6rem !important;
+}
 </style>
