@@ -358,7 +358,7 @@ const onInvalid = () => {
                             :helper-text="getUserNameInputHelperText(values.domain)"
                             :set-is-verifying="setIsVerifyingUser"
                             :injection-key="ADD_PERMISSION_SELECT_USER_KEY"
-                            :error-message="userErrorMessage"
+                            :form-validate-error-msg="userErrorMessage"
                         />
                     </StepContainer>
                     <StepContainer

@@ -162,7 +162,7 @@ const onInvalid = () => {
                         :app-id="1"
                         helperText="Only IDIR users are allowed to be added as application admins"
                         :injection-key="SELECT_APP_ADMIN_USER_KEY"
-                        :error-message="hasSubmitted ? errors.user : ''"
+                        :form-validate-error-msg="hasSubmitted ? errors.user : ''"
                     />
                 </StepContainer>
                 <StepContainer title="Add application">

@@ -27,7 +27,7 @@ interface Props {
     domain: UserType;
     appId: number;
     helperText: string;
-    errorMessage?: string;
+    formValidateErrorMsg?: string;
     setIsVerifying?: (verifying: boolean) => void;
     injectionKey?: InjectionKey<ReturnType<typeof useSelectUserManagement>>;
 }
@@ -37,7 +37,7 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const usernameInput = ref<string>(""); // input for username at this component.
-const errorMsg = ref(""); // error message for username verification errors
+const usernameVerificationErrorMsg = ref(""); // error message for username verification errors
 
 // Inject select users composable from parent
 const selectUserManagement = inject(props.injectionKey);
@@ -54,12 +54,12 @@ const isCurrentUser = (): boolean => {
 };
 
 const handleMutationError = (error: any) => {
-    errorMsg.value = "Failed to load username's data. Try verifying it again";
+    usernameVerificationErrorMsg.value = "Failed to load username's data. Try verifying it again";
     // Check if error and response properties exist
     if (error.response && error.response.status === 403) {
         const detail = error.response.data?.detail;
         if (detail?.code === PERMISSION_REQUIRED_FOR_OPERATION) {
-            errorMsg.value = `${detail.description}. Org name: ${
+            usernameVerificationErrorMsg.value = `${detail.description}. Org name: ${
                 auth.authState.famLoginUser?.organization ??
                 "Unknown organization"
             }`;
@@ -68,7 +68,7 @@ const handleMutationError = (error: any) => {
 };
 
 const setUserNotFoundError = () => {
-    errorMsg.value = "No user found. Check the spelling or try another username";
+    usernameVerificationErrorMsg.value = "No user found. Check the spelling or try another username";
 };
 
 const addUserToList = (user: IdimProxyBceidInfoSchema | IdimProxyIdirInfoSchema) => {
@@ -76,7 +76,7 @@ const addUserToList = (user: IdimProxyBceidInfoSchema | IdimProxyIdirInfoSchema)
     const selectUser = toSelectUserManagementUser(user);
     // Check if user already exists in the list
     if (selectUserManagement.hasUser(selectUser.userId, selectUser.guid ?? undefined)) {
-        errorMsg.value = "User has been added to the list";
+        usernameVerificationErrorMsg.value = "User has been added to the list";
         return;
     }
     selectUserManagement.addUser(selectUser);
@@ -146,10 +146,10 @@ const handleVerify = (userType: UserType) => {
         return;
     }
     if (isCurrentUser()) {
-        errorMsg.value = "You cannot grant permissions to yourself.";
+        usernameVerificationErrorMsg.value = "You cannot grant permissions to yourself.";
         return;
     }
-    errorMsg.value = "";
+    usernameVerificationErrorMsg.value = "";
     if (userType === "I") {
         verifyIdirMutation.mutate();
     }
@@ -159,7 +159,7 @@ const handleVerify = (userType: UserType) => {
 };
 
 const resetsearchResult = () => {
-    errorMsg.value = "";
+    usernameVerificationErrorMsg.value = "";
 };
 
 // whenever user domain changes, remove the previous user identity card and clear input
@@ -195,7 +195,7 @@ watch(
                     type="text"
                     maxlength="20"
                     v-model="usernameInput"
-                    :class="{ 'is-invalid': errorMsg || errorMessage }"
+                    :class="{ 'is-invalid': usernameVerificationErrorMsg || formValidateErrorMsg }"
                     @keydown.enter.prevent="handleVerify(props.domain)"
                     :disabled="
                         verifyBceidMutation.isPending.value ||
@@ -203,8 +203,8 @@ watch(
                     "
                 />
                 <HelperText
-                    :text="errorMsg || errorMessage || helperText"
-                    :is-error="!!(errorMsg || errorMessage)"
+                    :text="usernameVerificationErrorMsg || formValidateErrorMsg || helperText"
+                    :is-error="!!(usernameVerificationErrorMsg || formValidateErrorMsg)"
                 />
             </div>
 
