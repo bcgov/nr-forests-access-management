@@ -142,11 +142,33 @@ watch(
     { immediate: true }
 );
 
-const handleDomainChange = (userType: UserType) => {
+/**
+ * Performs the actual domain change and clears user list.
+ */
+const performDomainChange = (userType: UserType) => {
     setFieldValue("domain", userType);
     setFieldValue("users", []);
     // Clear composable user lists on domain change
     selectUserManagement.clearUsers();
+};
+
+/**
+ * Handles domain change from UserDomainSelect.
+ * Shows confirmation dialog if selected user list is not empty.
+ */
+const handleDomainChange = (userType: UserType) => {
+    if (selectUserManagement.userList.value.length > 0) {
+        confirm.require({
+            group: "changeDomain",
+            header: "Changing User Domain",
+            rejectLabel: "Cancel",
+            acceptLabel: "Continue",
+            acceptClass: "dialog-accept-button",
+            accept: () => performDomainChange(userType),
+        });
+    } else {
+        performDomainChange(userType);
+    }
 };
 
 watch(
@@ -293,6 +315,18 @@ const onInvalid = () => {
 <template>
     <div class="add-app-permission-container">
         <ConfirmDialog
+            group="changeDomain"
+            class="confirm-dialog-with-blue-button"
+        >
+            <template #message>
+                <p>
+                    Changing the domain will remove the user{{
+                        selectUserManagement.userList.value.length > 1 ? "s" : ""
+                    }} you've added. Are you sure you want to continue?
+                </p>
+            </template>
+        </ConfirmDialog>
+        <ConfirmDialog
             group="addDelegatedAdmin"
             class="confirm-dialog-with-blue-button"
         >
@@ -323,7 +357,7 @@ const onInvalid = () => {
                             v-if="auth.authState.famLoginUser?.idpProvider === 'idir'"
                             :domain="values.domain"
                             :is-verifying-user="isVerifyingUser"
-                            @change="handleDomainChange"
+                            @domain-change-request="handleDomainChange"
                         />
                         <UserNameInput
                             class="user-name-text-input"

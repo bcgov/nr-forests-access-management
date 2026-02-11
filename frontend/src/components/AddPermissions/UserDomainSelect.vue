@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { computed } from "vue";
-import RadioButton from "primevue/radiobutton";
-import { UserType } from "fam-app-acsctl-api";
 import { IdpProvider } from "@/enum/IdpEnum";
+import { UserType } from "fam-app-acsctl-api";
+import RadioButton from "primevue/radiobutton";
+import { toRef } from "vue";
 import Label from "../UI/Label.vue";
 
 const props = withDefaults(
@@ -15,16 +15,17 @@ const props = withDefaults(
     }
 );
 
-const emit = defineEmits(["change"]);
+const emit = defineEmits(["domain-change-request"]);
 
-const computedDomain = computed({
-    get() {
-        return props.domain;
-    },
-    set(newSelectedDomain: string) {
-        emit("change", newSelectedDomain);
-    },
-});
+// Local state for the selected domain, always synced from prop.
+// By calling toRef(props, "domain"), it gives a Ref object (localDomain) that always reflects
+// the current value of props.domain and updates reactively if the parent changes the prop.
+const localDomain = toRef(props, "domain");
+
+// Emit change request, but do not update localDomain until parent confirms
+const handleDomainChange = (newDomain: UserType) => {
+    emit("domain-change-request", newDomain);
+};
 </script>
 
 <template>
@@ -38,11 +39,12 @@ const computedDomain = computed({
         <div class="row">
             <div class="col idp-select-col">
                 <RadioButton
-                    v-model="computedDomain"
+                    :model-value="localDomain"
                     inputId="idirSelect"
                     name="domainRadioOptions"
                     :value="UserType.I"
                     :disabled="props.isVerifyingUser"
+                    @update:model-value="handleDomainChange"
                 />
                 <Label
                     for="idirSelect"
@@ -54,11 +56,12 @@ const computedDomain = computed({
         <div class="row">
             <div class="col idp-select-col">
                 <RadioButton
-                    v-model="computedDomain"
+                    :model-value="localDomain"
                     inputId="businessBceidSelect"
                     name="domainRadioOptions"
                     :value="UserType.B"
                     :disabled="props.isVerifyingUser"
+                    @update:model-value="handleDomainChange"
                 />
                 <Label
                     for="businessBceidSelect"
