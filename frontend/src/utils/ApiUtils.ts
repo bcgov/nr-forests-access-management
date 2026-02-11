@@ -119,7 +119,11 @@ export const mapAppUserGrantResponseByUserId = (
     items: Array<FamUserRoleAssignmentCreateRes>
 ): Map<number, FamUserRoleAssignmentCreateRes[]> => {
     return items.reduce((map, item) => {
-        const userId = item.detail!.user_id;
+        const { detail } = item;
+        if (!detail || detail.user_id == null) {
+            return map;
+        }
+        const userId = detail.user_id;
         if (!map.has(userId)) {
             map.set(userId, []);
         }

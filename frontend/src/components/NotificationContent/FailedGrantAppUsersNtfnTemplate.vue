@@ -51,7 +51,7 @@ const conflictErr_toggleExpanded = () => {
     conflictErr_isExpanded.value = !conflictErr_isExpanded.value;
 };
 
-//--- Email seinding failure case setup
+//--- Email sending failure case setup
 const emailSendingErr_headerText = `Email notifications could not be sent to some users`;
 
 // grouped by user ID and use first result per user for notification

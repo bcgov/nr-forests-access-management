@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 from api.app.schemas import TargetUserSchema
 from api.app.schemas.fam_user_role_assignment_create_response import FamUserRoleAssignmentCreateRes
 from api.app.crud import crud_user_role
-from api.app.constants import UserType
+from api.app.constants import UserType, MAX_NUM_USERS_ASSIGNMENT_GRANT
 import api.app.crud.crud_user as crud_user
 from testspg.constants import (
     FOM_DEV_SUBMITTER_ROLE_ID,
@@ -23,7 +23,6 @@ from testspg.test_data.user_role_assignment_test_data import (
     create_test_requester
 )
 from api.app.schemas.fam_user_role_assignment_create import FamUserRoleAssignmentCreateSchema
-from api.app.constants import MAX_NUM_USERS_ASSIGNMENT_GRANT, UserType
 from pydantic import ValidationError
 
 LOGGER = logging.getLogger(__name__)
