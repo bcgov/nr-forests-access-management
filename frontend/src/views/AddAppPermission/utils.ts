@@ -127,7 +127,7 @@ export const generatePayload = (
         const common_payload = {
             user_type_code: formData.domain,
             role_id: formData.role?.id ?? -1,
-            forest_client_numbers: formData.forestClients.map(
+            forest_client_numbers: (formData.forestClients ?? []).map(
                 (fc) => fc.forest_client_number
             ),
             requires_send_user_email: formData.sendUserEmail,
