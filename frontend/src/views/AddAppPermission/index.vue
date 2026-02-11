@@ -181,14 +181,6 @@ watch(
     { deep: true }
 );
 
-watch(
-    () => values.isAddingDelegatedAdmin,
-    (isDelegatedAdmin) => {
-        // Update composable mode based on form state
-        selectUserManagement.multiUserMode = !isDelegatedAdmin;
-    }
-);
-
 const queryClient = useQueryClient();
 
 const assignUserRoles = useMutation({
