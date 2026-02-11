@@ -177,8 +177,8 @@ const visibleTabs = computed(() => tabs.filter((tab) => tab.visible.value));
 
 // notifications state initialization
 const notifications = ref<PermissionNotificationType[]>([
-    ...( toAppUserGrantPermissionNotification(addAppUserPermissionSuccessData, selectedApp.value?.name ?? null)),
-    ...( toAppUserGrantReqErrorNotification(addAppUserPermissionRequestErrorData, selectedApp.value?.name ?? null)),
+    ...(toAppUserGrantPermissionNotification(addAppUserPermissionSuccessData, selectedApp.value?.name ?? null)),
+    ...(toAppUserGrantReqErrorNotification(addAppUserPermissionRequestErrorData, selectedApp.value?.name ?? null)),
     ...(addDelegatedAdminSuccessData
         ? toDelegatedAdminGrantSuccessNotification(addDelegatedAdminSuccessData)
         : []),
