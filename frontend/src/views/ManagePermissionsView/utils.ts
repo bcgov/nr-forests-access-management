@@ -69,7 +69,6 @@ export const toAppUserGrantReqErrorNotification = (
     errData: AppPermissionQueryErrorType | null,
     applicationName: string | null,
 ): PermissionNotificationType[] => {
-    console
     if (!errData) {
         return [];
     }

@@ -20,10 +20,15 @@ const isExpanded = ref(false);
 
 const showToggle = computed(() => props.assignments.length > 2);
 const visibleAssignments = computed(() => {
+    const filtered = props.assignments.filter(
+        // with type guard for 'detail' being non-null
+        (a): a is FamUserRoleAssignmentCreateRes & { detail: NonNullable<FamUserRoleAssignmentCreateRes['detail']> } =>
+            a.detail != null
+        );
     if (!showToggle.value || isExpanded.value) {
-        return props.assignments;
+        return filtered;
     }
-    return props.assignments.slice(0, 2);
+    return filtered.slice(0, 2);
 });
 
 const toggleExpanded = () => {
@@ -71,14 +76,14 @@ const getEmailSuffix = (
                     <span>
                         {{
                             formatUserNameAndId(
-                                assignment.detail!.user.user_name,
-                                assignment.detail!.user.first_name,
-                                assignment.detail!.user.last_name
+                                assignment.detail.user.user_name,
+                                assignment.detail.user.first_name,
+                                assignment.detail.user.last_name
                             )
                         }}{{
                             getEmailSuffix(
                                 assignment.email_sending_status,
-                                assignment.detail!.user.email
+                                assignment.detail.user.email
                             )
                         }}
                     </span>
