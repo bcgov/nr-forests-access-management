@@ -39,12 +39,15 @@ const displayMessage = computed(() => {
             :closable="props.closable === undefined ? true : props.closable"
             @close="props.onClose ?? undefined"
         >
-            <CheckMarkIcon v-if="props.severity === 'success'" />
-            <MisuseIcon v-else-if="props.severity === 'error'" />
-            <WarnIcon v-else />
+            <template v-if="typeof displayMessage === 'string'">
+                <CheckMarkIcon v-if="props.severity === 'success'" />
+                <MisuseIcon v-else-if="props.severity === 'error'" />
+                <WarnIcon v-else />
+            </template>
 
             <span class="custom-message-text">
-                <strong v-if="!hideTitle">{{
+                <!-- Render for only string messages; for custom vnode or function, build its own header/title -->
+                <strong v-if="!hideTitle && (typeof displayMessage === 'string')">{{
                     props.title ?? props.severity
                 }}</strong>
                 <!-- Render `displayMessage` based on its type -->

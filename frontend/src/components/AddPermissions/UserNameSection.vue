@@ -1,66 +1,65 @@
 <script setup lang="ts">
-import { ref, watch } from "vue";
-import SearchLocateIcon from "@carbon/icons-vue/es/search--locate/16";
 import Button from "@/components/UI/Button.vue";
-import UserIdentityCard from "@/components/AddPermissions/UserIdentityCard.vue";
 import useAuth from "@/composables/useAuth";
+import { ADD_PERMISSION_SELECT_USER_KEY, toSelectUserManagementUser, useSelectUserManagement } from "@/composables/useSelectUserManagement";
 import { IdpProvider } from "@/enum/IdpEnum";
 import { AppActlApiService } from "@/services/ApiServiceFactory";
+import { formatUserNameAndId } from "@/utils/UserUtils";
+import CheckmarkOutline from "@carbon/icons-vue/es/checkmark--outline/16";
+import SearchLocateIcon from "@carbon/icons-vue/es/search--locate/16";
+import TrashIcon from "@carbon/icons-vue/es/trash-can/16";
 import { useMutation } from "@tanstack/vue-query";
 import type {
     IdimProxyBceidInfoSchema,
     IdimProxyIdirInfoSchema,
 } from "fam-app-acsctl-api";
 import { UserType } from "fam-app-acsctl-api";
+import Column from "primevue/column";
+import DataTable from "primevue/datatable";
 import InputText from "primevue/inputtext";
-import { Field } from "vee-validate";
-import Label from "../UI/Label.vue";
+import { inject, ref, watch, type InjectionKey } from "vue";
 import HelperText from "../UI/HelperText.vue";
+import Label from "../UI/Label.vue";
 
 const auth = useAuth();
 
-const props = withDefaults(
-    defineProps<{
-        domain: UserType;
-        user: IdimProxyIdirInfoSchema | IdimProxyBceidInfoSchema | null;
-        appId: number;
-        helperText: string;
-        fieldId?: string;
-        setIsVerifying?: (verifying: boolean) => void;
-    }>(),
-    {
-        fieldId: "user",
-    }
-);
+interface Props {
+    domain: UserType;
+    appId: number;
+    helperText: string;
+    formValidateErrorMsg?: string;
+    setIsVerifying?: (verifying: boolean) => void;
+    injectionKey?: InjectionKey<ReturnType<typeof useSelectUserManagement>>;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+    injectionKey: () => ADD_PERMISSION_SELECT_USER_KEY,
+});
+
+const usernameInput = ref<string>(""); // input for username at this component.
+const usernameVerificationErrorMsg = ref(""); // error message for username verification errors
+
+// Inject select users composable from parent
+const selectUserManagement = inject(props.injectionKey);
 
 const PERMISSION_REQUIRED_FOR_OPERATION = "permission_required_for_operation";
-
-const emit = defineEmits(["setVerifyResult"]);
-
-const userIdInput = ref<string>("");
-
-const errorMsg = ref("");
 
 /**
  * Checks if the provided user ID matches the currently logged-in user's ID.
  */
 const isCurrentUser = (): boolean => {
-    const userId = userIdInput.value?.toLowerCase();
+    const userId = usernameInput.value?.toLowerCase();
     const loggedInUserId = auth.authState.famLoginUser?.username?.toLowerCase();
-
     return userId === loggedInUserId;
 };
 
 const handleMutationError = (error: any) => {
-    emit("setVerifyResult", null);
-
-    errorMsg.value = "Failed to load username's data. Try verifying it again";
-
+    usernameVerificationErrorMsg.value = "Failed to load username's data. Try verifying it again";
     // Check if error and response properties exist
     if (error.response && error.response.status === 403) {
         const detail = error.response.data?.detail;
         if (detail?.code === PERMISSION_REQUIRED_FOR_OPERATION) {
-            errorMsg.value = `${detail.description}. Org name: ${
+            usernameVerificationErrorMsg.value = `${detail.description}. Org name: ${
                 auth.authState.famLoginUser?.organization ??
                 "Unknown organization"
             }`;
@@ -69,9 +68,25 @@ const handleMutationError = (error: any) => {
 };
 
 const setUserNotFoundError = () => {
-    emit("setVerifyResult", null);
-    errorMsg.value =
-        "No user found. Check the spelling or try another username";
+    usernameVerificationErrorMsg.value = "No user found. Check the spelling or try another username";
+};
+
+const addUserToList = (user: IdimProxyBceidInfoSchema | IdimProxyIdirInfoSchema) => {
+    if (!selectUserManagement) return;
+    const selectUser = toSelectUserManagementUser(user);
+    // Check if user already exists in the list
+    if (selectUserManagement.hasUser(selectUser.userId, selectUser.guid ?? undefined)) {
+        usernameVerificationErrorMsg.value = "User has been added to the list";
+        return;
+    }
+    selectUserManagement.addUser(selectUser);
+    usernameInput.value = ""; // Clear input after successful verification
+};
+
+const handleDeleteUser = (userId: string) => {
+    if (selectUserManagement) {
+        selectUserManagement.deleteUser(userId);
+    }
 };
 
 const verifyIdirMutation = useMutation({
@@ -80,12 +95,12 @@ const verifyIdirMutation = useMutation({
             props.setIsVerifying(true);
         }
         return AppActlApiService.idirBceidProxyApi
-            .idirSearch(userIdInput.value, props.appId)
+            .idirSearch(usernameInput.value, props.appId)
             .then((res) => res.data);
     },
     onSuccess: (data) => {
         if (data.found) {
-            emit("setVerifyResult", data);
+            addUserToList(data);
         } else {
             setUserNotFoundError();
         }
@@ -104,12 +119,12 @@ const verifyBceidMutation = useMutation({
             props.setIsVerifying(true);
         }
         return AppActlApiService.idirBceidProxyApi
-            .bceidSearch(userIdInput.value, props.appId)
+            .bceidSearch(usernameInput.value, props.appId)
             .then((res) => res.data);
     },
     onSuccess: (data) => {
         if (data.found) {
-            emit("setVerifyResult", data);
+            addUserToList(data);
         } else {
             setUserNotFoundError();
         }
@@ -126,16 +141,15 @@ const handleVerify = (userType: UserType) => {
     if (
         verifyBceidMutation.isPending.value ||
         verifyIdirMutation.isPending.value ||
-        !userIdInput.value
+        !usernameInput.value
     ) {
         return;
     }
     if (isCurrentUser()) {
-        emit("setVerifyResult", null);
-        errorMsg.value = "You cannot grant permissions to yourself.";
+        usernameVerificationErrorMsg.value = "You cannot grant permissions to yourself.";
         return;
     }
-    errorMsg.value = "";
+    usernameVerificationErrorMsg.value = "";
     if (userType === "I") {
         verifyIdirMutation.mutate();
     }
@@ -145,16 +159,19 @@ const handleVerify = (userType: UserType) => {
 };
 
 const resetsearchResult = () => {
-    errorMsg.value = "";
-    emit("setVerifyResult", null);
+    usernameVerificationErrorMsg.value = "";
 };
 
-// whenver user domain change, remove the previous user identity card
+// whenever user domain changes, remove the previous user identity card and clear input
 watch(
     () => props.domain,
     () => {
-        userIdInput.value = "";
+        usernameInput.value = "";
         resetsearchResult();
+        // Clear composable state on domain change
+        if (selectUserManagement) {
+            selectUserManagement.clearUsers();
+        }
     }
 );
 </script>
@@ -162,7 +179,7 @@ watch(
 <template>
     <div class="form-field">
         <Label
-            for="userIdInput"
+            for="usernameInput"
             :label-text="`Username (${
                 props.domain === UserType.I
                     ? IdpProvider.IDIR
@@ -170,32 +187,26 @@ watch(
             })`"
             required
         />
-        <Field
-            :name="props.fieldId"
-            v-slot="{ errorMessage }"
-            v-model="props.user"
-        >
-            <div class="input-with-verify-button">
-                <div>
-                    <InputText
-                        id="userIdInput"
-                        class="w-100 custom-height"
-                        type="text"
-                        maxlength="20"
-                        v-model="userIdInput"
-                        :class="{ 'is-invalid': errorMessage || errorMsg }"
-                        @keydown.enter.prevent="handleVerify(props.domain)"
-                        @blur="handleVerify(props.domain)"
-                        :disabled="
-                            verifyBceidMutation.isPending.value ||
-                            verifyIdirMutation.isPending.value
-                        "
-                    />
-                    <HelperText
-                        :text="errorMsg || errorMessage || helperText"
-                        :is-error="!!(errorMessage || errorMsg)"
-                    />
-                </div>
+        <div class="input-with-verify-button">
+            <div>
+                <InputText
+                    id="usernameInput"
+                    class="w-100 custom-height"
+                    type="text"
+                    maxlength="20"
+                    v-model="usernameInput"
+                    :class="{ 'is-invalid': usernameVerificationErrorMsg || formValidateErrorMsg }"
+                    @keydown.enter.prevent="handleVerify(props.domain)"
+                    :disabled="
+                        verifyBceidMutation.isPending.value ||
+                        verifyIdirMutation.isPending.value
+                    "
+                />
+                <HelperText
+                    :text="usernameVerificationErrorMsg || formValidateErrorMsg || helperText"
+                    :is-error="!!(usernameVerificationErrorMsg || formValidateErrorMsg)"
+                />
+            </div>
 
                 <Button
                     class="verify-username-button"
@@ -219,19 +230,112 @@ watch(
                     "
                 >
                 </Button>
-            </div>
-        </Field>
+        </div>
 
-        <UserIdentityCard
-            v-if="user"
-            :userIdentity="user"
-            :errorMsg="errorMsg"
-        />
+        <!-- User Identity Table -->
+        <div class="user-id-card-table" v-if="selectUserManagement && selectUserManagement.userList.value.length > 0">
+            <div class="verified-message-bar">
+                <CheckmarkOutline class="verified-icon" />
+                <span class="verified-message-text">Verified user information</span>
+            </div>
+            <DataTable :value="Array.from(selectUserManagement.userList.value)" stripedRows class="user-table">
+                <Column field="userId" header="Username" />
+                <Column header="Full Name">
+                    <template #body="{ data }">
+                        {{ formatUserNameAndId(null, data.firstName, data.lastName) }}
+                    </template>
+                </Column>
+                <Column field="email" header="Email" />
+                <Column header="" class="action-col">
+                    <template #body="{ data }">
+                        <button class="btn btn-icon" title="Delete user" @click="handleDeleteUser(data.userId)">
+                            <TrashIcon />
+                        </button>
+                    </template>
+                </Column>
+            </DataTable>
+        </div>
+
+        <!-- Bulk message bar -->
+        <div v-if="selectUserManagement && selectUserManagement.multiUserMode && selectUserManagement.userList.value.length > 0"
+             class="user-bulk-message-bar">
+            <span>
+                <b>{{ selectUserManagement.userList.value.length }} user{{ selectUserManagement.userList.value.length > 1 ? 's' : '' }}</b>
+                &nbsp;will receive the same permissions configured below
+            </span>
+        </div>
     </div>
 </template>
 
 <style lang="scss" scoped>
 .verify-username-button {
     width: 12rem;
+}
+
+.user-bulk-message-bar {
+    margin-top: 0.7rem;
+    border: 1px solid colors.$blue-10;
+    background: #EFF6FF;
+    color: colors.$blue-80;
+    border-radius: 4px;
+    padding: 0.7rem 1rem;
+    font-size: 14px;
+    font-weight: 400;
+    display: flex;
+    align-items: center;
+    min-height: 38px;
+    b {
+        font-weight: 700;
+    }
+}
+
+// Merged styles from UserIdentityCard component
+.user-id-card-table {
+    margin-top: 2rem;
+    .verified-message-bar {
+        height: 38px;
+        background: #F0FDF4;
+        border: 1px solid colors.$green-10;
+        display: flex;
+        align-items: center;
+        padding: 0 1rem;
+        border-radius: 4px;
+        margin-bottom: 0.7rem;
+        font-weight: 400;
+        font-style: normal;
+        font-size: 14px;
+        color: colors.$green-80;
+        .verified-icon {
+            margin-right: 0.75rem;
+            width: 20px;
+            height: 20px;
+            stroke: colors.$green-80;
+        }
+        .verified-message-text {
+            display: inline-block;
+            vertical-align: middle;
+            color: colors.$green-80;
+        }
+    }
+    .user-table {
+        width: 100%;
+        .action-col {
+            width: 48px;
+            text-align: center;
+        }
+        .btn.btn-icon {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.25rem;
+            display: flex;
+            align-items: center;
+            svg {
+                width: 1rem;
+                height: 1rem;
+                color: inherit;
+            }
+        }
+    }
 }
 </style>

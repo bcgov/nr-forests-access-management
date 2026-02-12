@@ -9,8 +9,10 @@ import Button from "@/components/UI/Button.vue";
 import PageTitle from "@/components/UI/PageTitle.vue";
 import StepContainer from "@/components/UI/StepContainer.vue";
 import useAuth from "@/composables/useAuth";
-import { APP_PERMISSION_FORM_KEY } from "@/constants/InjectionKeys";
-import { IdpProvider } from "@/enum/IdpEnum";
+import {
+    ADD_PERMISSION_SELECT_USER_KEY,
+    useSelectUserManagement,
+} from "@/composables/useSelectUserManagement";
 import { ManagePermissionsRoute } from "@/router/routes";
 import {
     AdminMgmtApiService,
@@ -30,9 +32,9 @@ import {
     generatePayload,
     getDefaultFormData,
     getRolesByAppId,
-    isAbstractRoleSelected,
-    NewAppAdminQueryParamKey,
+    getUserNameInputHelperText,
     NewDelegatedAddminQueryParamKey,
+    NewRegularUserQueryParamKey,
     validateAppPermissionForm,
     type AppPermissionFormType,
 } from "@/views/AddAppPermission/utils";
@@ -43,12 +45,10 @@ import { AdminRoleAuthGroup } from "fam-admin-mgmt-api/model";
 import {
     UserType,
     type FamUserRoleAssignmentCreateSchema,
-    type IdimProxyBceidInfoSchema,
-    type IdimProxyIdirInfoSchema,
 } from "fam-app-acsctl-api/model";
 import ConfirmDialog from "primevue/confirmdialog";
 import { useConfirm } from "primevue/useconfirm";
-import { Form } from "vee-validate";
+import { useForm } from "vee-validate";
 import { computed, provide, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 
@@ -62,6 +62,9 @@ if (!props.appId) {
     console.warn("Invalid or missing required query params");
     router.push("/");
 }
+
+const hasSubmitted = ref(false);
+const userErrorMessage = computed(() => (hasSubmitted.value ? errors.value.users ?? "" : ""));
 
 const crumbs: BreadCrumbType[] = [
     {
@@ -101,42 +104,82 @@ const rolesUnderSelectedApp = computed(() => {
     return getRolesByAppId(availableRoles, props.appId);
 });
 
-const formData = ref<AppPermissionFormType | undefined>(undefined);
+const {
+    handleSubmit,
+    errors,
+    values,
+    setFieldValue,
+    meta,
+    setValues,
+} = useForm<AppPermissionFormType>({
+    validationSchema: validateAppPermissionForm(),
+    initialValues: getDefaultFormData(
+        auth.authState.famLoginUser?.idpProvider === "idir"
+            ? UserType.I
+            : UserType.B,
+        environments.isProdEnvironment()
+    ),
+});
+
+// Select user  management
+// single-user select for delegated admin or multi-users select for regular users
+const selectUserManagement = useSelectUserManagement(true); // Initially multi-user mode
+provide(ADD_PERMISSION_SELECT_USER_KEY, selectUserManagement);
 
 watch(
     () => adminUserAccessQuery.isSuccess && rolesUnderSelectedApp.value,
     (isSuccessful) => {
         if (isSuccessful) {
-            formData.value = getDefaultFormData(
+            setValues(
+                getDefaultFormData(
                 auth.authState.famLoginUser?.idpProvider === "idir"
                     ? UserType.I
                     : UserType.B,
                 environments.isProdEnvironment()
-            );
+            ));
         }
     },
     { immediate: true }
 );
 
-provide(APP_PERMISSION_FORM_KEY, formData);
+/**
+ * Performs the actual domain change and clears user list.
+ */
+const performDomainChange = (userType: UserType) => {
+    setFieldValue("domain", userType);
+    setFieldValue("users", []);
+    // Clear composable user lists on domain change
+    selectUserManagement.clearUsers();
+};
 
+/**
+ * Handles domain change from UserDomainSelect.
+ * Shows confirmation dialog if selected user list is not empty.
+ */
 const handleDomainChange = (userType: UserType) => {
-    if (formData.value) {
-        formData.value.domain = userType;
-        formData.value.user = null;
+    if (selectUserManagement.userList.value.length > 0) {
+        confirm.require({
+            group: "changeDomain",
+            header: "Changing User Domain",
+            rejectLabel: "Cancel",
+            acceptLabel: "Continue",
+            acceptClass: "dialog-accept-button",
+            accept: () => performDomainChange(userType),
+        });
+    } else {
+        performDomainChange(userType);
     }
 };
 
-const handleUserVerification = (
-    user: IdimProxyIdirInfoSchema | IdimProxyBceidInfoSchema | null,
-    domain?: UserType
-) => {
-    if (formData.value) {
-        formData.value.user = user;
-        // Prevent user from chaning domain while it's verifying
-        formData.value.domain = domain ?? formData.value.domain;
-    }
-};
+watch(
+    () => selectUserManagement.userList.value,
+    (newUsers) => {
+        if (newUsers.length || meta.value.dirty) {
+            setFieldValue("users", Array.from(newUsers));
+        }
+    },
+    { deep: true }
+);
 
 const queryClient = useQueryClient();
 
@@ -155,9 +198,9 @@ const assignUserRoles = useMutation({
             name: ManagePermissionsRoute.name,
             query: {
                 appId: props.appId,
-                [NewAppAdminQueryParamKey]: res.data.assignments_detail
+                [NewRegularUserQueryParamKey]: res.data.assignments_detail
                     .filter((assignment) => assignment.status_code === 200)
-                    .map((assignment) => assignment.detail.user_role_xref_id)
+                    .map((assignment) => assignment.detail!.user_role_xref_id)
                     .join(","),
             },
         });
@@ -165,7 +208,7 @@ const assignUserRoles = useMutation({
     onError: (error) => {
         queryClient.setQueryData([AddAppUserPermissionErrorQuerykey], {
             error,
-            formData: formData.value,
+            formData: values,
         });
         router.push({
             name: ManagePermissionsRoute.name,
@@ -205,7 +248,7 @@ const delegatedAdminMutation = useMutation({
     onError: (error) => {
         queryClient.setQueryData([AddDelegatedAdminErrorQuerykey], {
             error,
-            formData: formData.value,
+            formData: values,
         });
         router.push({
             name: ManagePermissionsRoute.name,
@@ -229,13 +272,14 @@ const setIsVerifyingUser = (verifying: boolean) => {
 const confirm = useConfirm();
 
 const onSubmit = () => {
+    hasSubmitted.value = true;
     if (
-        formData.value &&
-        formData.value.forestClientInput.isValid &&
-        !formData.value.forestClientInput.isVerifying
+        values &&
+        values.forestClientInput.isValid &&
+        !values.forestClientInput.isVerifying
     ) {
-        const payload = generatePayload(formData.value);
-        if (!formData.value.isAddingDelegatedAdmin) {
+        const payload = generatePayload(values);
+        if (!values.isAddingDelegatedAdmin) {
             isSubmitting.value = true;
             assignUserRoles.mutate(payload as FamUserRoleAssignmentCreateSchema);
         } else {
@@ -254,16 +298,26 @@ const onSubmit = () => {
     }
 };
 
-const getUserNameInputHelperText = () =>
-    `Type user's ${
-        formData.value?.domain === UserType.I
-            ? IdpProvider.IDIR
-            : IdpProvider.BCEIDBUSINESS
-    } and click "Verify username"`;
+const onInvalid = () => {
+    hasSubmitted.value = true;
+};
+
 </script>
 
 <template>
     <div class="add-app-permission-container">
+        <ConfirmDialog
+            group="changeDomain"
+            class="confirm-dialog-with-blue-button"
+        >
+            <template #message>
+                <p>
+                    Changing the domain will remove the user{{
+                        selectUserManagement.userList.value.length > 1 ? "s" : ""
+                    }} you've added. Are you sure you want to continue?
+                </p>
+            </template>
+        </ConfirmDialog>
         <ConfirmDialog
             group="addDelegatedAdmin"
             class="confirm-dialog-with-blue-button"
@@ -271,9 +325,9 @@ const getUserNameInputHelperText = () =>
             <template #message>
                 <p>
                     Are you sure you want to add
-                    <strong>{{ formData?.user?.userId.toUpperCase() }}</strong>
+                    <strong>{{ values?.users?.[0]?.userId.toUpperCase() }}</strong>
                     as a delegated admin? As a delegated admin
-                    <strong>{{ formData?.user?.userId.toUpperCase() }}</strong>
+                    <strong>{{ values?.users?.[0]?.userId.toUpperCase() }}</strong>
                     will be able to add, edit or delete users
                 </p>
             </template>
@@ -284,40 +338,27 @@ const getUserNameInputHelperText = () =>
             :subtitle="`Add a new user permission to ${rolesUnderSelectedApp?.application.description}`"
         />
         <div class="app-permission-form-container container-fluid">
-            <Form
-                v-slot="{ handleSubmit }"
-                ref="form"
-                as="div"
-                v-if="formData"
-                :validation-schema="
-                    validateAppPermissionForm(isAbstractRoleSelected(formData))
-                "
-                validate-on-submit
-                class="row"
+            <form
+                id="add-app-permission-form-id"
+                class="col-sm-12 col-md-12 col-lg-10 row"
+                @submit.prevent="handleSubmit(onSubmit, onInvalid)()"
             >
-                <form
-                    id="add-app-permission-form-id"
-                    class="col-sm-12 col-md-12 col-lg-10"
-                >
                     <StepContainer title="User information" divider>
                         <UserDomainSelect
                             class="domain-select"
-                            v-if="
-                                auth.authState.famLoginUser?.idpProvider ===
-                                'idir'
-                            "
-                            :domain="formData.domain"
+                            v-if="auth.authState.famLoginUser?.idpProvider === 'idir'"
+                            :domain="values.domain"
                             :is-verifying-user="isVerifyingUser"
-                            @change="handleDomainChange"
+                            @domain-change-request="handleDomainChange"
                         />
                         <UserNameInput
                             class="user-name-text-input"
-                            :domain="formData.domain"
-                            :user="formData.user"
+                            :domain="values.domain"
                             :app-id="appId"
-                            :helper-text="getUserNameInputHelperText()"
-                            @setVerifyResult="handleUserVerification"
+                            :helper-text="getUserNameInputHelperText(values.domain)"
                             :set-is-verifying="setIsVerifyingUser"
+                            :injection-key="ADD_PERMISSION_SELECT_USER_KEY"
+                            :form-validate-error-msg="userErrorMessage"
                         />
                     </StepContainer>
                     <StepContainer
@@ -326,6 +367,14 @@ const getUserNameInputHelperText = () =>
                         divider
                         v-if="rolesUnderSelectedApp?.roles"
                     >
+                        <!--
+                          Use an arrow function to cast 'field' to 'any' before passing to setFieldValue.
+                          This ensures type compatibility between the child and vee-validate's setFieldValue,
+                          which may expect a more specific field type. The cast avoids TypeScript errors when
+                          the child passes arbitrary field names.
+                          [TODO]: In future, should redesign child component to not be tightly coupled with
+                                  parent's form manipulation logic within child component.
+                        -->
                         <RoleSelectTable
                             :app-id="appId"
                             :roleOptions="rolesUnderSelectedApp.roles"
@@ -337,16 +386,18 @@ const getUserNameInputHelperText = () =>
                             "
                             role-field-id="role"
                             forest-clients-field-id="forestClients"
+                            :set-field-value="(field: string, value: any) => setFieldValue(field as any, value)"
+                            :formValues="values"
                         />
                     </StepContainer>
                     <StepContainer
                         title="User expiry date"
                         divider
-                        v-if="!formData?.isAddingDelegatedAdmin"
+                        v-if="!values?.isAddingDelegatedAdmin"
                     >
                         <DatePicker
-                            :modelValue="formData.expiryDate"
-                            @update:datePickerValue="formData.expiryDate = $event"
+                            :modelValue="values.expiryDate"
+                            @update:datePickerValue="setFieldValue('expiryDate', $event)"
                             title="Expiry date (optional)"
                             description="By default, this role does not expire. Set an expiry date if you want the permission to end automatically."
                             :minDate="currentDateInBCTimezone()"
@@ -355,7 +406,8 @@ const getUserNameInputHelperText = () =>
                     <StepContainer :divider="false">
                         <BoolCheckbox
                             class="email-checkbox"
-                            v-model="formData.sendUserEmail"
+                            :model-value="values.sendUserEmail"
+                            @update:model-value="(val) => setFieldValue('sendUserEmail', val)"
                             label="Send email to notify user"
                         />
                     </StepContainer>
@@ -375,13 +427,12 @@ const getUserNameInputHelperText = () =>
                         />
                         <Button
                             label="Add user permission"
-                            @click="handleSubmit(onSubmit)"
+                            type="submit"
                             :icon="CheckmarkIcon"
                             :is-loading="isSubmitting"
                         />
                     </div>
-                </form>
-            </Form>
+            </form>
         </div>
     </div>
 </template>

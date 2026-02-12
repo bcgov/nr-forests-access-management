@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import ManagePermissionsTable from "@/components/ManagePermissionsTable";
 import TablePlaceholder from "@/components/ManagePermissionsTable/TablePlaceholder.vue";
+import Button from "@/components/UI/Button.vue";
 import Dropdown from "@/components/UI/Dropdown.vue";
 import PageTitle from "@/components/UI/PageTitle.vue";
-import Button from "@/components/UI/Button.vue";
+import { AddAppPermissionRoute, AddFamPermissionRoute } from "@/router/routes";
 import { AdminMgmtApiService } from "@/services/ApiServiceFactory";
 import {
     activeTabIndex,
@@ -19,14 +20,24 @@ import type { PermissionNotificationType } from "@/types/NotificationTypes";
 import { formatAxiosError, getUniqueApplications } from "@/utils/ApiUtils";
 import { isSelectedAppAuthorized } from "@/utils/AuthUtils";
 import NotificationStack from "@/views/ManagePermissionsView/NotificationStack.vue";
-import { AddAppPermissionRoute, AddFamPermissionRoute } from "@/router/routes";
-import EnterpriseIcon from "@carbon/icons-vue/es/enterprise/16";
-import UserIcon from "@carbon/icons-vue/es/user/16";
-import HelpDeskIcon from "@carbon/icons-vue/es/help-desk/16";
+import {
+    clearNotifications,
+    generateFamNotification,
+    toAppUserGrantPermissionNotification,
+    toAppUserGrantReqErrorNotification,
+    toDelegatedAdminGrantReqErrorNotifications,
+    toDelegatedAdminGrantSuccessNotification,
+} from "@/views/ManagePermissionsView/utils";
 import AddIcon from "@carbon/icons-vue/es/add/16";
+import EnterpriseIcon from "@carbon/icons-vue/es/enterprise/16";
+import HelpDeskIcon from "@carbon/icons-vue/es/help-desk/16";
+import UserIcon from "@carbon/icons-vue/es/user/16";
 import { useQuery, useQueryClient } from "@tanstack/vue-query";
 import { isAxiosError } from "axios";
-import { AdminRoleAuthGroup } from "fam-admin-mgmt-api/model";
+import {
+    AdminRoleAuthGroup,
+    type FamAccessControlPrivilegeResponse,
+} from "fam-admin-mgmt-api/model";
 import type { FamUserRoleAssignmentRes } from "fam-app-acsctl-api/model";
 import type { DropdownChangeEvent } from "primevue/dropdown";
 import TabPanel from "primevue/tabpanel";
@@ -41,15 +52,9 @@ import {
     type AppPermissionQueryErrorType,
 } from "../AddAppPermission/utils";
 import {
-    AddFamPermissionErrorQueryKey,
-    AddFamPermissionSuccessQueryKey,
+    AddAppAdminErrorQueryKey,
+    AddAppAdminSuccessQueryKey,
 } from "../AddFamPermission/utils";
-import {
-    generateAppPermissionErrorNotifications,
-    generateAppPermissionSuccessNotifications,
-    generateFamNotification,
-} from "./utils";
-
 const queryClient = useQueryClient();
 const route = useRoute();
 const router = useRouter();
@@ -59,13 +64,13 @@ const appIdFromQueryParam = ref(route.query.appId);
 const addAppUserPermissionSuccessData =
     queryClient.getQueryData<FamUserRoleAssignmentRes>([
         AddAppUserPermissionSuccessQuerykey,
-    ]);
-const addAppUserPermissionErrorData =
+    ]) ?? null;
+const addAppUserPermissionRequestErrorData =
     queryClient.getQueryData<AppPermissionQueryErrorType>([
         AddAppUserPermissionErrorQuerykey,
-    ]);
+    ]) ?? null;
 const addDelegatedAdminSuccessData =
-    queryClient.getQueryData<FamUserRoleAssignmentRes>([
+    queryClient.getQueryData<FamAccessControlPrivilegeResponse>([
         AddDelegatedAdminSuccessQuerykey,
     ]);
 const addDelegatedAdminErrorData =
@@ -73,16 +78,16 @@ const addDelegatedAdminErrorData =
         AddDelegatedAdminErrorQuerykey,
     ]);
 const addFamPermissionSuccessData = queryClient.getQueryData<string>([
-    AddFamPermissionSuccessQueryKey,
+    AddAppAdminSuccessQueryKey,
 ]);
 const addFamPermissionErrorData = queryClient.getQueryData<string>([
-    AddFamPermissionErrorQueryKey,
+    AddAppAdminErrorQueryKey,
 ]);
 
 const handleApplicationChange = (e: DropdownChangeEvent) => {
     setSelectedApp(e.value);
     router.replace({ query: { appId: e.value.id } });
-    clearNotifications();
+    clearNotifications(queryClient, notifications);
 };
 
 const adminUserAccessQuery = useQuery({
@@ -170,28 +175,15 @@ const tabs: ManagePermissionsTabType[] = [
 // and the app’s setup for different user roles and environments.
 const visibleTabs = computed(() => tabs.filter((tab) => tab.visible.value));
 
+// notifications state initialization
 const notifications = ref<PermissionNotificationType[]>([
-    ...(addAppUserPermissionSuccessData
-        ? generateAppPermissionSuccessNotifications(
-              addAppUserPermissionSuccessData,
-              false
-          )
-        : []),
+    ...(toAppUserGrantPermissionNotification(addAppUserPermissionSuccessData, selectedApp.value?.name ?? null)),
+    ...(toAppUserGrantReqErrorNotification(addAppUserPermissionRequestErrorData, selectedApp.value?.name ?? null)),
     ...(addDelegatedAdminSuccessData
-        ? generateAppPermissionSuccessNotifications(
-              addDelegatedAdminSuccessData,
-              true
-          )
-        : []),
-    ...(addAppUserPermissionErrorData
-        ? [
-              generateAppPermissionErrorNotifications(
-                  addAppUserPermissionErrorData
-              ),
-          ]
+        ? toDelegatedAdminGrantSuccessNotification(addDelegatedAdminSuccessData)
         : []),
     ...(addDelegatedAdminErrorData
-        ? [generateAppPermissionErrorNotifications(addDelegatedAdminErrorData)]
+        ? [toDelegatedAdminGrantReqErrorNotifications(addDelegatedAdminErrorData)]
         : []),
     ...(addFamPermissionSuccessData
         ? [generateFamNotification(true, addFamPermissionSuccessData)]
@@ -200,28 +192,6 @@ const notifications = ref<PermissionNotificationType[]>([
         ? [generateFamNotification(false, addFamPermissionErrorData)]
         : []),
 ]);
-
-const clearNotifications = () => {
-    queryClient.removeQueries({
-        queryKey: [AddAppUserPermissionSuccessQuerykey],
-    });
-    queryClient.removeQueries({
-        queryKey: [AddAppUserPermissionErrorQuerykey],
-    });
-    queryClient.removeQueries({
-        queryKey: [AddDelegatedAdminSuccessQuerykey],
-    });
-    queryClient.removeQueries({
-        queryKey: [AddDelegatedAdminErrorQuerykey],
-    });
-    queryClient.removeQueries({
-        queryKey: [AddFamPermissionSuccessQueryKey],
-    });
-    queryClient.removeQueries({
-        queryKey: [AddFamPermissionErrorQueryKey],
-    });
-    notifications.value = [];
-};
 
 const addNotifications = (newNotifications: PermissionNotificationType[]) => {
     notifications.value = newNotifications;
@@ -267,7 +237,7 @@ watch(
 
 const onTabChange = (event: TabViewChangeEvent) => {
     activeTabIndex.value = event.index;
-    clearNotifications();
+    clearNotifications(queryClient, notifications);
 };
 
 const tabHeaders: ManagePermissionsTabHeaderType = {
@@ -283,7 +253,7 @@ const onNotificationClose = (idx: number) => {
 
 // Clear notifications data
 onUnmounted(() => {
-    clearNotifications();
+    clearNotifications(queryClient, notifications);
 });
 </script>
 

@@ -1,10 +1,9 @@
-
 import logging
 from datetime import datetime, time
 from typing import List, Optional, Union
 from zoneinfo import ZoneInfo
 
-from api.app.constants import UserType
+from api.app.constants import MAX_NUM_USERS_ASSIGNMENT_GRANT, UserType
 from api.app.datetime_format import BC_TIMEZONE, DATE_FORMAT_YYYY_MM_DD
 from pydantic import (BaseModel, ConfigDict, Field, PrivateAttr,
                       StringConstraints, field_validator, model_validator)
@@ -24,7 +23,10 @@ class FamUserRoleAssignmentCreateSchema(BaseModel):
     - expiry_date_date: The expiry date as a string (YYYY-MM-DD), BC timezone.
     - _expiry_date: Internal use only, timezone-aware datetime, derived from expiry_date_date.
     """
-    users: List[FamUserRoleAssignmentUserSchema]
+    users: List[FamUserRoleAssignmentUserSchema] = Field(
+        ...,
+        min_items=1  # Minimum 1 user required
+    )
     user_type_code: UserType
     role_id: int
     forest_client_numbers: Union[
@@ -37,6 +39,16 @@ class FamUserRoleAssignmentCreateSchema(BaseModel):
     )
     # Internal use only, not exposed in OpenAPI or request/response bodies
     _expiry_date: Optional[datetime] = PrivateAttr(default=None)
+
+    @field_validator('users')
+    @classmethod
+    def validate_users(cls, v):
+        """
+        Validate the 'users' list to ensure it doesn't exceed the maximum allowed.
+        """
+        if len(v) > MAX_NUM_USERS_ASSIGNMENT_GRANT:
+            raise ValueError(f"Can only grant at most {MAX_NUM_USERS_ASSIGNMENT_GRANT} users, you have {len(v)} users in the list")
+        return v
 
     @field_validator('expiry_date_date')
     @classmethod

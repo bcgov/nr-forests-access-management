@@ -124,6 +124,7 @@ CREATE_USER_MAX_LEN = 100
 MIN_PAGE = 1
 DEFAULT_PAGE_SIZE = 50
 MIN_PAGE_SIZE = 10
+MAX_NUM_USERS_ASSIGNMENT_GRANT = 50
 
 # -- external API constants
 EXT_MIN_PAGE = 1 # External API pagination is 1 index
