@@ -34,7 +34,7 @@ const adminUserAccessQuery = useQuery({
 });
 
 watch(
-    () => adminUserAccessQuery.isError,
+    () => adminUserAccessQuery.isError.value,
     (isError) => {
         if (isError) {
             setForestClientsError("Failed to fetch available organizations. Please try again.");
