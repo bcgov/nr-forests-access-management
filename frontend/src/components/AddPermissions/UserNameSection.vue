@@ -274,12 +274,11 @@ watch(
 
 .user-bulk-message-bar {
     margin-top: 0.7rem;
-    border: 1px solid #BEDBFF;
+    border: 1px solid colors.$blue-10;
     background: #EFF6FF;
-    color: #1C398E;
+    color: colors.$blue-80;
     border-radius: 4px;
     padding: 0.7rem 1rem;
-    font-family: 'BC Sans', 'Noto Sans', Arial, sans-serif;
     font-size: 14px;
     font-weight: 400;
     display: flex;
@@ -296,27 +295,26 @@ watch(
     .verified-message-bar {
         height: 38px;
         background: #F0FDF4;
-        border: 1px solid #B9F8CF;
+        border: 1px solid colors.$green-10;
         display: flex;
         align-items: center;
         padding: 0 1rem;
         border-radius: 4px;
         margin-bottom: 0.7rem;
-        font-family: 'BC Sans', 'Noto Sans', Arial, sans-serif;
         font-weight: 400;
         font-style: normal;
         font-size: 14px;
-        color: #1a6333;
+        color: colors.$green-80;
         .verified-icon {
             margin-right: 0.75rem;
             width: 20px;
             height: 20px;
-            stroke: #008236;
+            stroke: colors.$green-80;
         }
         .verified-message-text {
             display: inline-block;
             vertical-align: middle;
-            color:#0D542B
+            color: colors.$green-80;
         }
     }
     .user-table {
