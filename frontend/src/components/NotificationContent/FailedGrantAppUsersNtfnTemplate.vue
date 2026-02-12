@@ -27,7 +27,7 @@ const props = defineProps<{
 }>();
 
 if ((!props.assignments && !props.requestErrorData) || (props.assignments && props.requestErrorData)) {
-    throw new Error("Programming Error: Either 'assignments' or 'requestErrorData' prop must be provided but not both.");
+    console.error("Programming Error: Either 'assignments' or 'requestErrorData' prop must be provided but not both.");
 }
 const PREVIEW_LIMIT = 2;
 

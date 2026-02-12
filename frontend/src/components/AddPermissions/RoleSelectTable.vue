@@ -127,11 +127,11 @@ const handleRoleSelect = (role: FamRoleGrantDto) => {
             class="table-error invalid-feedback"
             :name="props.roleFieldId"
         />
-        <!-- Field validation with v-model bound to computedRole -->
+
         <Field
             :name="props.roleFieldId"
             aria-label="Role Select"
-            v-model="props.formValues.role"
+            :model-value="props.formValues.role"
         >
             <DataTable :value="rows" class="fam-table">
                 <template #empty> No role found. </template>
