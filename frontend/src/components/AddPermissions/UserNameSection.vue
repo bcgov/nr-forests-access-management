@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Button from "@/components/UI/Button.vue";
 import useAuth from "@/composables/useAuth";
-import { ADD_PERMISSION_SELECT_USER_KEY, toSelectUserManagementUser, type useSelectUserManagement } from "@/composables/useSelectUserManagement";
+import { ADD_PERMISSION_SELECT_USER_KEY, toSelectUserManagementUser, useSelectUserManagement } from "@/composables/useSelectUserManagement";
 import { IdpProvider } from "@/enum/IdpEnum";
 import { AppActlApiService } from "@/services/ApiServiceFactory";
 import { formatUserNameAndId } from "@/utils/UserUtils";
