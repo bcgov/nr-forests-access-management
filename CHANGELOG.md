@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.7.0](https://github.com/bcgov/nr-forests-access-management/compare/v2.6.0...v2.7.0) (2026-02-12)
+
+
+### Features
+
+* [#2058](https://github.com/bcgov/nr-forests-access-management/issues/2058) Granting multiple regular users frontend ([#2071](https://github.com/bcgov/nr-forests-access-management/issues/2071)) ([44fc037](https://github.com/bcgov/nr-forests-access-management/commit/44fc03794a40b85b55b0231f2d2475ac6e83e12c))
+
 ## [2.6.0](https://github.com/bcgov/nr-forests-access-management/compare/v2.5.0...v2.6.0) (2026-01-29)
 
 
