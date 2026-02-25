@@ -5,12 +5,12 @@ resource "aws_cognito_user_pool_client" "dev_isp_oidc_client" {
   allowed_oauth_scopes                          = ["openid", "profile", "email"]
   callback_urls                                 = [
     var.oidc_sso_playground_url,
-    "http://localhost:8080/isp/callback",
+    "http://localhost:3000/",
     "https://dlvrapps.nrs.gov.bc.ca/int/isp/callback"
   ]
   logout_urls                                   = [
     var.oidc_sso_playground_url,
-    "${var.cognito_app_client_logout_chain_url.dev}http://localhost:8080",
+    "${var.cognito_app_client_logout_chain_url.dev}http://localhost:3000",
     "${var.cognito_app_client_logout_chain_url.dev}https://dlvrapps.nrs.gov.bc.ca/int/isp"
   ]
   enable_propagate_additional_user_context_data = "false"
