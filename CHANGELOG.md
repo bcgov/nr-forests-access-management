@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.7.1](https://github.com/bcgov/nr-forests-access-management/compare/v2.7.0...v2.7.1) (2026-02-25)
+
+
+### Bug Fixes
+
+* [#2079](https://github.com/bcgov/nr-forests-access-management/issues/2079) IPS Dev Client Redirect Change. ([#2081](https://github.com/bcgov/nr-forests-access-management/issues/2081)) ([a332468](https://github.com/bcgov/nr-forests-access-management/commit/a3324680b27a4573f09e18a419e583f8cbb861dd))
+
 ## [2.7.0](https://github.com/bcgov/nr-forests-access-management/compare/v2.6.0...v2.7.0) (2026-02-12)
 
 
