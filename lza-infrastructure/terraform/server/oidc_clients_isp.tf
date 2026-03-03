@@ -6,12 +6,14 @@ resource "aws_cognito_user_pool_client" "dev_isp_oidc_client" {
   callback_urls                                 = [
     var.oidc_sso_playground_url,
     "http://localhost:3000/",
-    "https://dlvrapps.nrs.gov.bc.ca/int/isp/callback"
+    "https://dlvrapps.nrs.gov.bc.ca/int/isp/callback",
+    "https://dlvrapps.nrs.gov.bc.ca/pub/isp/callback"
   ]
   logout_urls                                   = [
     var.oidc_sso_playground_url,
     "${var.cognito_app_client_logout_chain_url.dev}http://localhost:3000",
-    "${var.cognito_app_client_logout_chain_url.dev}https://dlvrapps.nrs.gov.bc.ca/int/isp"
+    "${var.cognito_app_client_logout_chain_url.dev}https://dlvrapps.nrs.gov.bc.ca/int/isp",
+    "${var.cognito_app_client_logout_chain_url.dev}https://dlvrapps.nrs.gov.bc.ca/pub/isp"
   ]
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
@@ -43,12 +45,14 @@ resource "aws_cognito_user_pool_client" "test_isp_oidc_client" {
   callback_urls                                 = [
     var.oidc_sso_playground_url,
     "http://localhost:8080/isp/callback",
-    "https://testapps.nrs.gov.bc.ca/int/isp/callback"
+    "https://testapps.nrs.gov.bc.ca/int/isp/callback",
+    "https://testapps.nrs.gov.bc.ca/pub/isp/callback"
   ]
   logout_urls                                   = [
     var.oidc_sso_playground_url,
     "${var.cognito_app_client_logout_chain_url.test}http://localhost:8000",
-    "${var.cognito_app_client_logout_chain_url.test}https://testapps.nrs.gov.bc.ca/int/isp"
+    "${var.cognito_app_client_logout_chain_url.test}https://testapps.nrs.gov.bc.ca/int/isp",
+    "${var.cognito_app_client_logout_chain_url.test}https://testapps.nrs.gov.bc.ca/pub/isp"
   ]
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
@@ -79,11 +83,13 @@ resource "aws_cognito_user_pool_client" "prod_isp_oidc_client" {
   allowed_oauth_scopes                          = ["openid", "profile", "email"]
   callback_urls                                 = [
     var.oidc_sso_playground_url,
-    "https://apps.nrs.gov.bc.ca/int/isp/callback"
+    "https://apps.nrs.gov.bc.ca/int/isp/callback",
+    "https://apps.nrs.gov.bc.ca/pub/isp/callback"
   ]
   logout_urls                                   = [
     var.oidc_sso_playground_url,
-    "${var.cognito_app_client_logout_chain_url.prod}https://apps.nrs.gov.bc.ca/int/isp"
+    "${var.cognito_app_client_logout_chain_url.prod}https://apps.nrs.gov.bc.ca/int/isp",
+    "${var.cognito_app_client_logout_chain_url.prod}https://apps.nrs.gov.bc.ca/pub/isp"
   ]
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
