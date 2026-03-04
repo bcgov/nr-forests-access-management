@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.8.0](https://github.com/bcgov/nr-forests-access-management/compare/v2.7.0...v2.8.0) (2026-03-04)
+
+
+### Features
+
+* adding new url to silva config ([#2083](https://github.com/bcgov/nr-forests-access-management/issues/2083)) ([bcd930c](https://github.com/bcgov/nr-forests-access-management/commit/bcd930cf16a49f8ca123a44726f94851531a3e07))
+
+
+### Bug Fixes
+
+* [#2079](https://github.com/bcgov/nr-forests-access-management/issues/2079) IPS Dev Client Redirect Change. ([#2081](https://github.com/bcgov/nr-forests-access-management/issues/2081)) ([a332468](https://github.com/bcgov/nr-forests-access-management/commit/a3324680b27a4573f09e18a419e583f8cbb861dd))
+* Added the pub redirect urls for APT2, REPT and ISP ([#2090](https://github.com/bcgov/nr-forests-access-management/issues/2090)) ([48a9f10](https://github.com/bcgov/nr-forests-access-management/commit/48a9f1044a1d0aa4da7abaa39738d04ed463fc13))
+
 ## [2.7.0](https://github.com/bcgov/nr-forests-access-management/compare/v2.6.0...v2.7.0) (2026-02-12)
 
 
