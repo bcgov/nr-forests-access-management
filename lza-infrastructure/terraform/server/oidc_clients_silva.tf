@@ -51,6 +51,7 @@ resource "aws_cognito_user_pool_client" "test_silva_oidc_client" {
       "http://localhost:3000/dashboard",
       "http://localhost:4173/dashboard",
       "https://nr-silva-test-frontend.apps.silver.devops.gov.bc.ca/dashboard",
+      "https://nr-silva-preview-frontend.apps.silver.devops.gov.bc.ca/dashboard",
       "https://silva-test.nrs.gov.bc.ca/dashboard"
     ],
     [for i in range("${var.dev_pr_url_count}") : "https://nr-silva-${i}-frontend.apps.silver.devops.gov.bc.ca/dashboard"]
@@ -61,6 +62,7 @@ resource "aws_cognito_user_pool_client" "test_silva_oidc_client" {
       "${var.cognito_app_client_logout_chain_url.test}http://localhost:3000/",
       "${var.cognito_app_client_logout_chain_url.test}http://localhost:4173/",
       "${var.cognito_app_client_logout_chain_url.test}https://nr-silva-test-frontend.apps.silver.devops.gov.bc.ca/",
+      "${var.cognito_app_client_logout_chain_url.test}https://nr-silva-preview-frontend.apps.silver.devops.gov.bc.ca/",
       "${var.cognito_app_client_logout_chain_url.test}https://silva-test.nrs.gov.bc.ca/"
     ],
     [
