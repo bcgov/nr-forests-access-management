@@ -11,7 +11,5 @@ Built with AWS.
 ## Getting Started
 
 [FAM Onboarding Guide](../../wiki/FAM-Onboarding)
-
 [FAM Onboarding Ops Guide](../../wiki/FAM-Onboarding-Ops-Guide)
-
 [FAM Onboarding Form](https://submit.digital.gov.bc.ca/app/form/submit?f=7c2d538d-ef17-4ffb-ba7c-471207339be1)
