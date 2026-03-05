@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.8.1](https://github.com/bcgov/nr-forests-access-management/compare/v2.8.0...v2.8.1) (2026-03-05)
+
+
+### Bug Fixes
+
+* trigger derek changes ([#2092](https://github.com/bcgov/nr-forests-access-management/issues/2092)) ([99a6a7b](https://github.com/bcgov/nr-forests-access-management/commit/99a6a7b7785f07d0fbc95688a71d2a7a7e3c60c4))
+
 ## [2.8.0](https://github.com/bcgov/nr-forests-access-management/compare/v2.7.0...v2.8.0) (2026-03-04)
 
 
