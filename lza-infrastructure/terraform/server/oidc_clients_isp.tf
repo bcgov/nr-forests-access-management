@@ -6,8 +6,8 @@ resource "aws_cognito_user_pool_client" "dev_isp_oidc_client" {
   callback_urls                                 = [
     var.oidc_sso_playground_url,
     "http://localhost:3000/",
-    "https://dlvrapps.nrs.gov.bc.ca/int/isp/callback",
-    "https://dlvrapps.nrs.gov.bc.ca/pub/isp/callback"
+    "https://dlvrapps.nrs.gov.bc.ca/int/isp/dashboard",
+    "https://dlvrapps.nrs.gov.bc.ca/pub/isp/dashboard"
   ]
   logout_urls                                   = [
     var.oidc_sso_playground_url,
@@ -44,9 +44,9 @@ resource "aws_cognito_user_pool_client" "test_isp_oidc_client" {
   allowed_oauth_scopes                          = ["openid", "profile", "email"]
   callback_urls                                 = [
     var.oidc_sso_playground_url,
-    "http://localhost:8080/isp/callback",
-    "https://testapps.nrs.gov.bc.ca/int/isp/callback",
-    "https://testapps.nrs.gov.bc.ca/pub/isp/callback"
+    "http://localhost:8080/isp/dashboard",
+    "https://testapps.nrs.gov.bc.ca/int/isp/dashboard",
+    "https://testapps.nrs.gov.bc.ca/pub/isp/dashboard"
   ]
   logout_urls                                   = [
     var.oidc_sso_playground_url,
@@ -83,8 +83,8 @@ resource "aws_cognito_user_pool_client" "prod_isp_oidc_client" {
   allowed_oauth_scopes                          = ["openid", "profile", "email"]
   callback_urls                                 = [
     var.oidc_sso_playground_url,
-    "https://apps.nrs.gov.bc.ca/int/isp/callback",
-    "https://apps.nrs.gov.bc.ca/pub/isp/callback"
+    "https://apps.nrs.gov.bc.ca/int/isp/dashboard",
+    "https://apps.nrs.gov.bc.ca/pub/isp/dashboard"
   ]
   logout_urls                                   = [
     var.oidc_sso_playground_url,
