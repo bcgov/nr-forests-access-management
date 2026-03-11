@@ -11,9 +11,9 @@ INSERT INTO app_fam.fam_application (
     create_user,
     create_date
 )
-VALUES ('SCS_DEV', 'SCS Application (DEV)', 'DEV', CURRENT_USER, CURRENT_DATE),
-       ('SCS_TEST', 'SCS Application (TEST)', 'TEST', CURRENT_USER, CURRENT_DATE),
-       ('SCS_PROD', 'SCS Application (PROD)', 'PROD', CURRENT_USER, CURRENT_DATE)
+VALUES ('SCS_DEV', 'SCS - Scale Control System (DEV)', 'DEV', CURRENT_USER, CURRENT_DATE),
+       ('SCS_TEST', 'SCS - Scale Control System (TEST)', 'TEST', CURRENT_USER, CURRENT_DATE),
+       ('SCS_PROD', 'SCS - Scale Control System (PROD)', 'PROD', CURRENT_USER, CURRENT_DATE)
 ;
 
 -- Add roles for SCS_DEV
