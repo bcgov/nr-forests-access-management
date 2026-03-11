@@ -17,7 +17,8 @@ VALUES ('SCS_DEV', 'SCS - Scale Control System (DEV)', 'DEV', CURRENT_USER, CURR
 ;
 
 -- Add roles for SCS_DEV
--- TODO: Update role names, display names, descriptions and role_type_code based on team confirmation.
+-- Concrete ('C') roles are IDIR-based, assigned directly to a user.
+-- Abstract ('A') roles are BCeID-based, scoped to a forest_client (delegated access).
 INSERT INTO app_fam.fam_role (
     role_name,
     display_name,
@@ -27,8 +28,17 @@ INSERT INTO app_fam.fam_role (
     create_user,
     create_date
 )
-VALUES ('SCS_ADMIN', 'Admin', 'Administrative privileges for the SCS application.', (select application_id from app_fam.fam_application where application_name = 'SCS_DEV'), 'C', CURRENT_USER, CURRENT_DATE),
-       ('SCS_VIEWER', 'Viewer', 'View only privileges for the SCS application.', (select application_id from app_fam.fam_application where application_name = 'SCS_DEV'), 'C', CURRENT_USER, CURRENT_DATE)
+VALUES ('SCS_BRANCH_SYS_SUPPORT', 'Branch System Support', 'Branch system support for the SCS application.', (select application_id from app_fam.fam_application where application_name = 'SCS_DEV'), 'C', CURRENT_USER, CURRENT_DATE),
+       ('SCS_CE_TECHNICIAN', 'Technician', 'Technician role for the SCS application.', (select application_id from app_fam.fam_application where application_name = 'SCS_DEV'), 'C', CURRENT_USER, CURRENT_DATE),
+       ('SCS_CHECK_SCALER', 'Check Scaler', 'Check scaler role for the SCS application.', (select application_id from app_fam.fam_application where application_name = 'SCS_DEV'), 'C', CURRENT_USER, CURRENT_DATE),
+       ('SCS_CLERICAL', 'Clerical', 'Clerical role for the SCS application.', (select application_id from app_fam.fam_application where application_name = 'SCS_DEV'), 'C', CURRENT_USER, CURRENT_DATE),
+       ('SCS_DIST_MANAGER', 'District Manager', 'District manager role for the SCS application.', (select application_id from app_fam.fam_application where application_name = 'SCS_DEV'), 'C', CURRENT_USER, CURRENT_DATE),
+       ('SCS_DIST_SCALING_MANAGER', 'District Scaling Manager', 'District scaling manager role for the SCS application.', (select application_id from app_fam.fam_application where application_name = 'SCS_DEV'), 'C', CURRENT_USER, CURRENT_DATE),
+       ('SCS_INDUSTRY_SCALER', 'Industry Scaler', 'Industry scaler role for the SCS application, scoped to a forest client.', (select application_id from app_fam.fam_application where application_name = 'SCS_DEV'), 'A', CURRENT_USER, CURRENT_DATE),
+       ('SCS_OWNER', 'Scale Site Owner', 'Scale site owner role for the SCS application, scoped to a forest client.', (select application_id from app_fam.fam_application where application_name = 'SCS_DEV'), 'A', CURRENT_USER, CURRENT_DATE),
+       ('SCS_REGIONAL_MANAGER', 'Regional Manager', 'Regional manager role for the SCS application.', (select application_id from app_fam.fam_application where application_name = 'SCS_DEV'), 'C', CURRENT_USER, CURRENT_DATE),
+       ('SCS_REGIONAL_SCALING_MANAGER', 'Regional Scaling Manager', 'Regional scaling manager role for the SCS application.', (select application_id from app_fam.fam_application where application_name = 'SCS_DEV'), 'C', CURRENT_USER, CURRENT_DATE),
+       ('SCS_SYS_ADMIN', 'Admin', 'System administrator role for the SCS application.', (select application_id from app_fam.fam_application where application_name = 'SCS_DEV'), 'C', CURRENT_USER, CURRENT_DATE)
 ;
 
 -- Add roles for SCS_TEST
@@ -41,8 +51,17 @@ INSERT INTO app_fam.fam_role (
     create_user,
     create_date
 )
-VALUES ('SCS_ADMIN', 'Admin', 'Administrative privileges for the SCS application.', (select application_id from app_fam.fam_application where application_name = 'SCS_TEST'), 'C', CURRENT_USER, CURRENT_DATE),
-       ('SCS_VIEWER', 'Viewer', 'View only privileges for the SCS application.', (select application_id from app_fam.fam_application where application_name = 'SCS_TEST'), 'C', CURRENT_USER, CURRENT_DATE)
+VALUES ('SCS_BRANCH_SYS_SUPPORT', 'Branch System Support', 'Branch system support for the SCS application.', (select application_id from app_fam.fam_application where application_name = 'SCS_TEST'), 'C', CURRENT_USER, CURRENT_DATE),
+       ('SCS_CE_TECHNICIAN', 'Technician', 'Technician role for the SCS application.', (select application_id from app_fam.fam_application where application_name = 'SCS_TEST'), 'C', CURRENT_USER, CURRENT_DATE),
+       ('SCS_CHECK_SCALER', 'Check Scaler', 'Check scaler role for the SCS application.', (select application_id from app_fam.fam_application where application_name = 'SCS_TEST'), 'C', CURRENT_USER, CURRENT_DATE),
+       ('SCS_CLERICAL', 'Clerical', 'Clerical role for the SCS application.', (select application_id from app_fam.fam_application where application_name = 'SCS_TEST'), 'C', CURRENT_USER, CURRENT_DATE),
+       ('SCS_DIST_MANAGER', 'District Manager', 'District manager role for the SCS application.', (select application_id from app_fam.fam_application where application_name = 'SCS_TEST'), 'C', CURRENT_USER, CURRENT_DATE),
+       ('SCS_DIST_SCALING_MANAGER', 'District Scaling Manager', 'District scaling manager role for the SCS application.', (select application_id from app_fam.fam_application where application_name = 'SCS_TEST'), 'C', CURRENT_USER, CURRENT_DATE),
+       ('SCS_INDUSTRY_SCALER', 'Industry Scaler', 'Industry scaler role for the SCS application, scoped to a forest client.', (select application_id from app_fam.fam_application where application_name = 'SCS_TEST'), 'A', CURRENT_USER, CURRENT_DATE),
+       ('SCS_OWNER', 'Scale Site Owner', 'Scale site owner role for the SCS application, scoped to a forest client.', (select application_id from app_fam.fam_application where application_name = 'SCS_TEST'), 'A', CURRENT_USER, CURRENT_DATE),
+       ('SCS_REGIONAL_MANAGER', 'Regional Manager', 'Regional manager role for the SCS application.', (select application_id from app_fam.fam_application where application_name = 'SCS_TEST'), 'C', CURRENT_USER, CURRENT_DATE),
+       ('SCS_REGIONAL_SCALING_MANAGER', 'Regional Scaling Manager', 'Regional scaling manager role for the SCS application.', (select application_id from app_fam.fam_application where application_name = 'SCS_TEST'), 'C', CURRENT_USER, CURRENT_DATE),
+       ('SCS_SYS_ADMIN', 'Admin', 'System administrator role for the SCS application.', (select application_id from app_fam.fam_application where application_name = 'SCS_TEST'), 'C', CURRENT_USER, CURRENT_DATE)
 ;
 
 -- Add roles for SCS_PROD
@@ -55,8 +74,17 @@ INSERT INTO app_fam.fam_role (
     create_user,
     create_date
 )
-VALUES ('SCS_ADMIN', 'Admin', 'Administrative privileges for the SCS application.', (select application_id from app_fam.fam_application where application_name = 'SCS_PROD'), 'C', CURRENT_USER, CURRENT_DATE),
-       ('SCS_VIEWER', 'Viewer', 'View only privileges for the SCS application.', (select application_id from app_fam.fam_application where application_name = 'SCS_PROD'), 'C', CURRENT_USER, CURRENT_DATE)
+VALUES ('SCS_BRANCH_SYS_SUPPORT', 'Branch System Support', 'Branch system support for the SCS application.', (select application_id from app_fam.fam_application where application_name = 'SCS_PROD'), 'C', CURRENT_USER, CURRENT_DATE),
+       ('SCS_CE_TECHNICIAN', 'Technician', 'Technician role for the SCS application.', (select application_id from app_fam.fam_application where application_name = 'SCS_PROD'), 'C', CURRENT_USER, CURRENT_DATE),
+       ('SCS_CHECK_SCALER', 'Check Scaler', 'Check scaler role for the SCS application.', (select application_id from app_fam.fam_application where application_name = 'SCS_PROD'), 'C', CURRENT_USER, CURRENT_DATE),
+       ('SCS_CLERICAL', 'Clerical', 'Clerical role for the SCS application.', (select application_id from app_fam.fam_application where application_name = 'SCS_PROD'), 'C', CURRENT_USER, CURRENT_DATE),
+       ('SCS_DIST_MANAGER', 'District Manager', 'District manager role for the SCS application.', (select application_id from app_fam.fam_application where application_name = 'SCS_PROD'), 'C', CURRENT_USER, CURRENT_DATE),
+       ('SCS_DIST_SCALING_MANAGER', 'District Scaling Manager', 'District scaling manager role for the SCS application.', (select application_id from app_fam.fam_application where application_name = 'SCS_PROD'), 'C', CURRENT_USER, CURRENT_DATE),
+       ('SCS_INDUSTRY_SCALER', 'Industry Scaler', 'Industry scaler role for the SCS application, scoped to a forest client.', (select application_id from app_fam.fam_application where application_name = 'SCS_PROD'), 'A', CURRENT_USER, CURRENT_DATE),
+       ('SCS_OWNER', 'Scale Site Owner', 'Scale site owner role for the SCS application, scoped to a forest client.', (select application_id from app_fam.fam_application where application_name = 'SCS_PROD'), 'A', CURRENT_USER, CURRENT_DATE),
+       ('SCS_REGIONAL_MANAGER', 'Regional Manager', 'Regional manager role for the SCS application.', (select application_id from app_fam.fam_application where application_name = 'SCS_PROD'), 'C', CURRENT_USER, CURRENT_DATE),
+       ('SCS_REGIONAL_SCALING_MANAGER', 'Regional Scaling Manager', 'Regional scaling manager role for the SCS application.', (select application_id from app_fam.fam_application where application_name = 'SCS_PROD'), 'C', CURRENT_USER, CURRENT_DATE),
+       ('SCS_SYS_ADMIN', 'Admin', 'System administrator role for the SCS application.', (select application_id from app_fam.fam_application where application_name = 'SCS_PROD'), 'C', CURRENT_USER, CURRENT_DATE)
 ;
 
 -- Create dev, test and prod Cognito app clients for SCS
