@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.9.1](https://github.com/bcgov/nr-forests-access-management/compare/v2.9.0...v2.9.1) (2026-03-12)
+
+
+### Bug Fixes
+
+* add callback urls for apt2 ([#2104](https://github.com/bcgov/nr-forests-access-management/issues/2104)) ([8a85b8f](https://github.com/bcgov/nr-forests-access-management/commit/8a85b8f69594a7913d7db2499fe1fc89549a09c3))
+
 ## [2.9.0](https://github.com/bcgov/nr-forests-access-management/compare/v2.8.2...v2.9.0) (2026-03-12)
 
 
