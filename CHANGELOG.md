@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.9.0](https://github.com/bcgov/nr-forests-access-management/compare/v2.8.2...v2.9.0) (2026-03-12)
+
+
+### Features
+
+* added the SCS client to FAM ([#2096](https://github.com/bcgov/nr-forests-access-management/issues/2096)) ([b3b05ac](https://github.com/bcgov/nr-forests-access-management/commit/b3b05ac0778f68a6ea88e337712afff9c1b75e65))
+
 ## [2.8.2](https://github.com/bcgov/nr-forests-access-management/compare/v2.8.1...v2.8.2) (2026-03-10)
 
 
