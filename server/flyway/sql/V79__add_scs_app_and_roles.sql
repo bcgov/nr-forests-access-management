@@ -1,8 +1,5 @@
 -- Add SCS application and roles
 
--- TODO: Confirm app description with the SCS team.
--- TODO: Confirm roles, role descriptions, and whether any roles are associated with forest_client.
-
 -- Add SCS_DEV, SCS_TEST and SCS_PROD applications
 INSERT INTO app_fam.fam_application (
     application_name,
