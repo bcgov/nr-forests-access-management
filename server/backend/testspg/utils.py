@@ -24,6 +24,7 @@ def get_user_role_by_cognito_user_id_and_role_id(
     )
     return user_role
 
+
 def get_existing_testdb_seeded_users(db_pg_session: Session, excluded_user_name_prefix):
     """
     Testcontainer db is up with some existing users (from flyway). If the tests loaded with

@@ -29,7 +29,8 @@ from api.app.repositories.access_control_privilege_repository import \
 from api.app.repositories.application_admin_repository import \
     ApplicationAdminRepository
 from api.app.repositories.application_repository import ApplicationRepository
-from api.app.repositories.forest_client_repository import ForestClientRepository
+from api.app.repositories.forest_client_repository import \
+    ForestClientRepository
 from api.app.repositories.role_repository import RoleRepository
 from api.app.repositories.user_repository import UserRepository
 from api.app.routers.router_guards import get_verified_target_user
