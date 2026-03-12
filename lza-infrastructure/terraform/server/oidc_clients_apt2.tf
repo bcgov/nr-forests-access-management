@@ -6,6 +6,7 @@ resource "aws_cognito_user_pool_client" "dev_apt_oidc_client" {
   callback_urls                                 = [
     var.oidc_sso_playground_url,
     "http://localhost:8080/apt2/dashboard",
+    "http://localhost:8080/apt2/callback",
     "https://dlvrapps.nrs.gov.bc.ca/int/apt2/dashboard",
     "https://dlvrapps.nrs.gov.bc.ca/pub/apt2/dashboard",
     "https://dlvrapps.nrs.gov.bc.ca/int/apt2/callback",
