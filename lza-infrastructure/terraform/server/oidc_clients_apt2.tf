@@ -5,21 +5,12 @@ resource "aws_cognito_user_pool_client" "dev_apt_oidc_client" {
   allowed_oauth_scopes                          = ["openid", "profile", "email"]
   callback_urls                                 = [
     var.oidc_sso_playground_url,
-    "http://localhost:8080/apt2/dashboard",
-    "http://localhost:8080/apt2/callback",
-    "https://dlvrapps.nrs.gov.bc.ca/int/apt2/dashboard",
-    "https://dlvrapps.nrs.gov.bc.ca/pub/apt2/dashboard",
-    "https://dlvrapps.nrs.gov.bc.ca/int/apt2/callback",
-    "https://dlvrapps.nrs.gov.bc.ca/pub/apt2/callback",
     "http://localhost:3000/",
     "https://dlvrapps.nrs.gov.bc.ca/int/apt2",
     "https://dlvrapps.nrs.gov.bc.ca/pub/apt2"
   ]
   logout_urls                                   = [
     var.oidc_sso_playground_url,
-    "${var.cognito_app_client_logout_chain_url.dev}http://localhost:8080/",
-    "${var.cognito_app_client_logout_chain_url.dev}https://dlvrapps.nrs.gov.bc.ca/int/apt2",
-    "${var.cognito_app_client_logout_chain_url.dev}https://dlvrapps.nrs.gov.bc.ca/pub/apt2",
     "${var.cognito_app_client_logout_chain_url.dev}http://localhost:3000/logout",
     "${var.cognito_app_client_logout_chain_url.dev}https://dlvrapps.nrs.gov.bc.ca/int/apt2/logout",
     "${var.cognito_app_client_logout_chain_url.dev}https://dlvrapps.nrs.gov.bc.ca/pub/apt2/logout"
@@ -53,21 +44,13 @@ resource "aws_cognito_user_pool_client" "test_apt_oidc_client" {
   allowed_oauth_scopes                          = ["openid", "profile", "email"]
   callback_urls                                 = [
       var.oidc_sso_playground_url,
-      "http://localhost:8080/apt2/dashboard",
-      "https://testapps.nrs.gov.bc.ca/int/apt2/dashboard",
-      "https://testapps.nrs.gov.bc.ca/pub/apt2/dashboard",
-      "https://testapps.nrs.gov.bc.ca/int/apt2/callback",
-      "https://testapps.nrs.gov.bc.ca/pub/apt2/callback",
-      "https://dlvrapps.nrs.gov.bc.ca/int/apt2/dashboard",
-      "https://dlvrapps.nrs.gov.bc.ca/pub/apt2/dashboard",
-      "https://dlvrapps.nrs.gov.bc.ca/int/apt2/callback",
-      "https://dlvrapps.nrs.gov.bc.ca/pub/apt2/callback"
+      "https://testapps.nrs.gov.bc.ca/int/apt2",
+      "https://testapps.nrs.gov.bc.ca/pub/apt2"
     ]
   logout_urls                                   = [
       var.oidc_sso_playground_url,
-      "${var.cognito_app_client_logout_chain_url.test}http://localhost:8080/",
-      "${var.cognito_app_client_logout_chain_url.test}https://testapps.nrs.gov.bc.ca/int/apt2",
-      "${var.cognito_app_client_logout_chain_url.test}https://testapps.nrs.gov.bc.ca/pub/apt2"
+      "${var.cognito_app_client_logout_chain_url.test}https://testapps.nrs.gov.bc.ca/int/apt2/logout",
+      "${var.cognito_app_client_logout_chain_url.test}https://testapps.nrs.gov.bc.ca/pub/apt2/logout"
     ]
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
@@ -98,15 +81,13 @@ resource "aws_cognito_user_pool_client" "prod_apt_oidc_client" {
   allowed_oauth_scopes                          = ["openid", "profile", "email"]
   callback_urls                                 = [
     var.oidc_sso_playground_url,
-    "https://apps.nrs.gov.bc.ca/int/apt2/dashboard",
-    "https://apps.nrs.gov.bc.ca/int/apt2/callback",
-    "https://apps.nrs.gov.bc.ca/pub/apt2/dashboard",
-    "https://apps.nrs.gov.bc.ca/pub/apt2/callback"
+    "https://apps.nrs.gov.bc.ca/int/apt2/",
+    "https://apps.nrs.gov.bc.ca/pub/apt2/",
   ]
   logout_urls                                   = [
     var.oidc_sso_playground_url,
-    "${var.cognito_app_client_logout_chain_url.prod}https://apps.nrs.gov.bc.ca/int/apt2",
-    "${var.cognito_app_client_logout_chain_url.prod}https://apps.nrs.gov.bc.ca/pub/apt2"
+    "${var.cognito_app_client_logout_chain_url.prod}https://apps.nrs.gov.bc.ca/int/apt2/logout",
+    "${var.cognito_app_client_logout_chain_url.prod}https://apps.nrs.gov.bc.ca/pub/apt2/logout"
   ]
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
