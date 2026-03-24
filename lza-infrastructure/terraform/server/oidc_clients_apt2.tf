@@ -81,11 +81,17 @@ resource "aws_cognito_user_pool_client" "prod_apt_oidc_client" {
   allowed_oauth_scopes                          = ["openid", "profile", "email"]
   callback_urls                                 = [
     var.oidc_sso_playground_url,
+    "https://apps.nrs.gov.bc.ca/int/apt2/dashboard",
+    "https://apps.nrs.gov.bc.ca/int/apt2/callback",
+    "https://apps.nrs.gov.bc.ca/pub/apt2/dashboard",
+    "https://apps.nrs.gov.bc.ca/pub/apt2/callback",
     "https://apps.nrs.gov.bc.ca/int/apt2",
-    "https://apps.nrs.gov.bc.ca/pub/apt2",
+    "https://apps.nrs.gov.bc.ca/pub/apt2"
   ]
   logout_urls                                   = [
     var.oidc_sso_playground_url,
+    "${var.cognito_app_client_logout_chain_url.prod}https://apps.nrs.gov.bc.ca/int/apt2",
+    "${var.cognito_app_client_logout_chain_url.prod}https://apps.nrs.gov.bc.ca/pub/apt2",
     "${var.cognito_app_client_logout_chain_url.prod}https://apps.nrs.gov.bc.ca/int/apt2/logout",
     "${var.cognito_app_client_logout_chain_url.prod}https://apps.nrs.gov.bc.ca/pub/apt2/logout"
   ]
