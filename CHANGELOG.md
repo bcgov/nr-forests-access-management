@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.10.0](https://github.com/bcgov/nr-forests-access-management/compare/v2.9.1...v2.10.0) (2026-03-24)
+
+
+### Features
+
+* FAM config for ISP in Dev, Test and prod ([#2114](https://github.com/bcgov/nr-forests-access-management/issues/2114)) ([3cd3333](https://github.com/bcgov/nr-forests-access-management/commit/3cd3333f2d7e4406d2f71be53902597fbba6b081))
+* FAM config for SCS in Dev.Test and Prod ([#2115](https://github.com/bcgov/nr-forests-access-management/issues/2115)) ([bb98a9b](https://github.com/bcgov/nr-forests-access-management/commit/bb98a9b9ed6f58f10063e1408c02b52d50253278))
+* updates for apt2 to work in dev, test and prod ([#2109](https://github.com/bcgov/nr-forests-access-management/issues/2109)) ([272c395](https://github.com/bcgov/nr-forests-access-management/commit/272c395e5fb74195374c8aa16ab4a007c1754301))
+
+
+### Bug Fixes
+
+* add PR urls to waste plus test environment  ([#2117](https://github.com/bcgov/nr-forests-access-management/issues/2117)) ([1c0e68d](https://github.com/bcgov/nr-forests-access-management/commit/1c0e68d7e14938758f751157c50a27ef9e11b899))
+
 ## [2.9.1](https://github.com/bcgov/nr-forests-access-management/compare/v2.9.0...v2.9.1) (2026-03-12)
 
 
