@@ -53,8 +53,8 @@ resource "aws_cognito_user_pool_client" "test_waste_plus_oidc_client" {
       "http://127.0.0.1:3000/dashboard",
       "https://nr-waste-plus-test-frontend.apps.silver.devops.gov.bc.ca/dashboard",
       "https://wasteplus-tst.nrs.gov.bc.ca/dashboard",
-      [for i in range("${var.dev_pr_url_count}") : "https://nr-waste-plus-${i}-frontend.apps.silver.devops.gov.bc.ca/dashboard"]
-    ]
+    ],
+    [for i in range("${var.dev_pr_url_count}") : "https://nr-waste-plus-${i}-frontend.apps.silver.devops.gov.bc.ca/dashboard"]
   )
   logout_urls                                   = concat(
     [
@@ -62,9 +62,9 @@ resource "aws_cognito_user_pool_client" "test_waste_plus_oidc_client" {
       "${var.cognito_app_client_logout_chain_url.test}http://localhost:3000",
       "${var.cognito_app_client_logout_chain_url.test}http://127.0.0.1:3000",
       "${var.cognito_app_client_logout_chain_url.test}https://nr-waste-plus-test-frontend.apps.silver.devops.gov.bc.ca",
-      "${var.cognito_app_client_logout_chain_url.test}https://wasteplus-tst.nrs.gov.bc.ca",
-      [for i in range("${var.dev_pr_url_count}") : "${var.cognito_app_client_logout_chain_url.dev}https://nr-waste-plus-${i}-frontend.apps.silver.devops.gov.bc.ca"]
-    ]
+      "${var.cognito_app_client_logout_chain_url.test}https://wasteplus-tst.nrs.gov.bc.ca"
+    ],
+    [for i in range("${var.dev_pr_url_count}") : "${var.cognito_app_client_logout_chain_url.dev}https://nr-waste-plus-${i}-frontend.apps.silver.devops.gov.bc.ca"]
   )
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
