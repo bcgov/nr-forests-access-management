@@ -5,12 +5,14 @@ resource "aws_cognito_user_pool_client" "dev_scs_oidc_client" {
   allowed_oauth_scopes                          = ["openid", "profile", "email"]
   callback_urls                                 = [
     var.oidc_sso_playground_url,
-    "http://localhost:3000",
+    "http://localhost:3000/",
+    "https://dlvrapps.nrs.gov.bc.ca/int/scs",
     "https://dlvrapps.nrs.gov.bc.ca/pub/scs"
   ]
   logout_urls                                   = [
     var.oidc_sso_playground_url,
-    "${var.cognito_app_client_logout_chain_url.dev}http://localhost:3000",
+    "${var.cognito_app_client_logout_chain_url.dev}http://localhost:3000/logout",
+    "${var.cognito_app_client_logout_chain_url.dev}https://dlvrapps.nrs.gov.bc.ca/int/scs/logout",
     "${var.cognito_app_client_logout_chain_url.dev}https://dlvrapps.nrs.gov.bc.ca/pub/scs/logout"
   ]
   enable_propagate_additional_user_context_data = "false"
@@ -22,8 +24,7 @@ resource "aws_cognito_user_pool_client" "dev_scs_oidc_client" {
   read_attributes                               = var.minimum_oidc_attribute_list
   refresh_token_validity                        = "24"
   supported_identity_providers                  = [
-    "${aws_cognito_identity_provider.dev_idir_oidc_provider.provider_name}",
-    "${aws_cognito_identity_provider.dev_bceid_business_oidc_provider.provider_name}"
+    "${aws_cognito_identity_provider.dev_idir_oidc_provider.provider_name}"
   ]
 
   token_validity_units {
@@ -43,12 +44,12 @@ resource "aws_cognito_user_pool_client" "test_scs_oidc_client" {
   allowed_oauth_scopes                          = ["openid", "profile", "email"]
   callback_urls                                 = [
     var.oidc_sso_playground_url,
-    "http://localhost:3000",
+    "https://testapps.nrs.gov.bc.ca/int/scs",
     "https://testapps.nrs.gov.bc.ca/pub/scs"
   ]
   logout_urls                                   = [
     var.oidc_sso_playground_url,
-    "${var.cognito_app_client_logout_chain_url.test}http://localhost:3000",
+    "${var.cognito_app_client_logout_chain_url.test}https://testapps.nrs.gov.bc.ca/int/scs/logout",
     "${var.cognito_app_client_logout_chain_url.test}https://testapps.nrs.gov.bc.ca/pub/scs/logout"
   ]
   enable_propagate_additional_user_context_data = "false"
@@ -60,8 +61,7 @@ resource "aws_cognito_user_pool_client" "test_scs_oidc_client" {
   read_attributes                               = var.minimum_oidc_attribute_list
   refresh_token_validity                        = "24"
   supported_identity_providers                  = [
-    "${aws_cognito_identity_provider.test_idir_oidc_provider.provider_name}",
-    "${aws_cognito_identity_provider.test_bceid_business_oidc_provider.provider_name}"
+    "${aws_cognito_identity_provider.test_idir_oidc_provider.provider_name}"
   ]
 
   token_validity_units {
@@ -81,10 +81,12 @@ resource "aws_cognito_user_pool_client" "prod_scs_oidc_client" {
   allowed_oauth_scopes                          = ["openid", "profile", "email"]
   callback_urls                                 = [
     var.oidc_sso_playground_url,
+    "https://apps.nrs.gov.bc.ca/int/scs",
     "https://apps.nrs.gov.bc.ca/pub/scs"
   ]
   logout_urls                                   = [
     var.oidc_sso_playground_url,
+    "${var.cognito_app_client_logout_chain_url.prod}https://apps.nrs.gov.bc.ca/int/scs/logout",
     "${var.cognito_app_client_logout_chain_url.prod}https://apps.nrs.gov.bc.ca/pub/scs/logout"
   ]
   enable_propagate_additional_user_context_data = "false"
@@ -96,8 +98,7 @@ resource "aws_cognito_user_pool_client" "prod_scs_oidc_client" {
   read_attributes                               = var.minimum_oidc_attribute_list
   refresh_token_validity                        = "24"
   supported_identity_providers                  = [
-    "${aws_cognito_identity_provider.prod_idir_oidc_provider.provider_name}",
-    "${aws_cognito_identity_provider.prod_bceid_business_oidc_provider.provider_name}"
+    "${aws_cognito_identity_provider.prod_idir_oidc_provider.provider_name}"
   ]
 
   token_validity_units {
