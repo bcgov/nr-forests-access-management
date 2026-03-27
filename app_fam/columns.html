@@ -153,18 +153,18 @@
         "comments": "<p>Automatically generated key used to identify the uniqueness of a FamUserRoleXref within the FAM Application<\/p>"
     },
     {
-        "tableName": "fam_application_admin",
-        "tableFileName": "fam_application_admin",
+        "tableName": "fam_app_environment",
+        "tableFileName": "fam_app_environment",
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
-        "name": "create_date",
+        "name": "update_date",
         "type": "timestamptz",
         "length": 35,
         "nullable": "",
         "autoUpdated": "",
         "defaultValue": "CURRENT_TIMESTAMP",
-        "comments": "<p>The date and time the record was created.<\/p>"
+        "comments": "<p>The date and time the record was created or last updated.<\/p>"
     },
     {
         "tableName": "fam_group",
@@ -237,18 +237,18 @@
         "comments": "<p>Unique ID to reference and identify the user within FAM system.<\/p>"
     },
     {
-        "tableName": "fam_app_environment",
-        "tableFileName": "fam_app_environment",
+        "tableName": "fam_application_admin",
+        "tableFileName": "fam_application_admin",
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
-        "name": "expiry_date",
-        "type": "timestamptz",
-        "length": 35,
+        "name": "update_user",
+        "type": "varchar",
+        "length": 100,
         "nullable": "√",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>The date and time the record expired.<\/p>"
+        "comments": "<p>The user or proxy account that created or last updated the record.<\/p>"
     },
     {
         "tableName": "fam_privilege_change_audit",
@@ -573,6 +573,20 @@
         "comments": "<p>The business guid of the user if is a business bceid user.<\/p>"
     },
     {
+        "tableName": "fam_app_environment",
+        "tableFileName": "fam_app_environment",
+        "tableType": "Table",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "description",
+        "type": "varchar",
+        "length": 100,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>Description of what the app_environmentrepresents.<\/p>"
+    },
+    {
         "tableName": "fam_application_admin",
         "tableFileName": "fam_application_admin",
         "tableType": "Table",
@@ -585,20 +599,6 @@
         "autoUpdated": "",
         "defaultValue": "null",
         "comments": "<p>Unique ID to reference and identify the user within FAM system.<\/p>"
-    },
-    {
-        "tableName": "fam_application_admin",
-        "tableFileName": "fam_application_admin",
-        "tableType": "Table",
-        "keyClass": "",
-        "keyTitle": "",
-        "name": "update_date",
-        "type": "timestamptz",
-        "length": 35,
-        "nullable": "",
-        "autoUpdated": "",
-        "defaultValue": "CURRENT_TIMESTAMP",
-        "comments": "<p>The date and time the record was created or last updated.<\/p>"
     },
     {
         "tableName": "fam_group_role_xref",
@@ -755,18 +755,18 @@
         "comments": "<p>The user or proxy account that created or last updated the record.<\/p>"
     },
     {
-        "tableName": "fam_application_admin",
-        "tableFileName": "fam_application_admin",
+        "tableName": "fam_app_environment",
+        "tableFileName": "fam_app_environment",
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
-        "name": "create_user",
-        "type": "varchar",
-        "length": 100,
-        "nullable": "",
+        "name": "expiry_date",
+        "type": "timestamptz",
+        "length": 35,
+        "nullable": "√",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>The user or proxy account that created the record.<\/p>"
+        "comments": "<p>The date and time the record expired.<\/p>"
     },
     {
         "tableName": "fam_group",
@@ -811,18 +811,18 @@
         "comments": "<p>Primary key that identifies the type of privilege change (Grant, Revoke, or Update access).<\/p>"
     },
     {
-        "tableName": "fam_app_environment",
-        "tableFileName": "fam_app_environment",
+        "tableName": "fam_application_admin",
+        "tableFileName": "fam_application_admin",
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
-        "name": "description",
+        "name": "create_user",
         "type": "varchar",
         "length": 100,
-        "nullable": "√",
+        "nullable": "",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>Description of what the app_environmentrepresents.<\/p>"
+        "comments": "<p>The user or proxy account that created the record.<\/p>"
     },
     {
         "tableName": "fam_user",
@@ -1413,8 +1413,8 @@
         "comments": "<p>JSON-formatted document describing the privilege(s) being changed. E.g. For end user permissions, this is details about the fam_role(s).<\/p>"
     },
     {
-        "tableName": "fam_app_environment",
-        "tableFileName": "fam_app_environment",
+        "tableName": "fam_application_admin",
+        "tableFileName": "fam_application_admin",
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
@@ -1539,18 +1539,18 @@
         "comments": ""
     },
     {
-        "tableName": "fam_app_environment",
-        "tableFileName": "fam_app_environment",
+        "tableName": "fam_application_admin",
+        "tableFileName": "fam_application_admin",
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
-        "name": "effective_date",
+        "name": "create_date",
         "type": "timestamptz",
         "length": 35,
         "nullable": "",
         "autoUpdated": "",
         "defaultValue": "CURRENT_TIMESTAMP",
-        "comments": "<p>The date and time the record was effective.<\/p>"
+        "comments": "<p>The date and time the record was created.<\/p>"
     },
     {
         "tableName": "fam_user_terms_conditions",
@@ -1567,18 +1567,18 @@
         "comments": "<p>Number to identity the version of the terms and conditions the user accepted.<\/p>"
     },
     {
-        "tableName": "fam_application_admin",
-        "tableFileName": "fam_application_admin",
+        "tableName": "fam_app_environment",
+        "tableFileName": "fam_app_environment",
         "tableType": "Table",
         "keyClass": "primaryKey",
         "keyTitle": "Primary Key",
-        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>application_admin_id",
-        "type": "int8",
-        "length": 19,
+        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>app_environment",
+        "type": "varchar",
+        "length": 4,
         "nullable": "",
-        "autoUpdated": "√",
+        "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>Automatically generated key used to identify the uniqueness of a User administers the Application.<\/p>"
+        "comments": "<p>Application environment.<\/p>"
     },
     {
         "tableName": "flyway_schema_history",
@@ -1637,18 +1637,18 @@
         "comments": "<p>Unique ID to reference and identify the application role within FAM system.<\/p>"
     },
     {
-        "tableName": "fam_application_admin",
-        "tableFileName": "fam_application_admin",
+        "tableName": "fam_app_environment",
+        "tableFileName": "fam_app_environment",
         "tableType": "Table",
-        "keyClass": "foreignKey",
-        "keyTitle": "Foreign Key",
-        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>application_id",
-        "type": "int8",
-        "length": 19,
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "effective_date",
+        "type": "timestamptz",
+        "length": 35,
         "nullable": "",
         "autoUpdated": "",
-        "defaultValue": "null",
-        "comments": "<p>Unique ID to reference and identify the application within FAM system.<\/p>"
+        "defaultValue": "CURRENT_TIMESTAMP",
+        "comments": "<p>The date and time the record was effective.<\/p>"
     },
     {
         "tableName": "fam_role",
@@ -1752,15 +1752,15 @@
         "tableName": "fam_application_admin",
         "tableFileName": "fam_application_admin",
         "tableType": "Table",
-        "keyClass": "",
-        "keyTitle": "",
-        "name": "update_user",
-        "type": "varchar",
-        "length": 100,
-        "nullable": "√",
-        "autoUpdated": "",
+        "keyClass": "primaryKey",
+        "keyTitle": "Primary Key",
+        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>application_admin_id",
+        "type": "int8",
+        "length": 19,
+        "nullable": "",
+        "autoUpdated": "√",
         "defaultValue": "null",
-        "comments": "<p>The user or proxy account that created or last updated the record.<\/p>"
+        "comments": "<p>Automatically generated key used to identify the uniqueness of a User administers the Application.<\/p>"
     },
     {
         "tableName": "fam_application",
@@ -2113,18 +2113,18 @@
         "comments": "<p>Id number as String from external Forest Client source(api/table) that identifies the Forest Client.<\/p>"
     },
     {
-        "tableName": "fam_app_environment",
-        "tableFileName": "fam_app_environment",
+        "tableName": "fam_application_admin",
+        "tableFileName": "fam_application_admin",
         "tableType": "Table",
-        "keyClass": "primaryKey",
-        "keyTitle": "Primary Key",
-        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>app_environment",
-        "type": "varchar",
-        "length": 4,
+        "keyClass": "foreignKey",
+        "keyTitle": "Foreign Key",
+        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>application_id",
+        "type": "int8",
+        "length": 19,
         "nullable": "",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>Application environment.<\/p>"
+        "comments": "<p>Unique ID to reference and identify the application within FAM system.<\/p>"
     }
 ];
                     var config = {
