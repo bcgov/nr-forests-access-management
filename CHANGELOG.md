@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.10.1](https://github.com/bcgov/nr-forests-access-management/compare/v2.10.0...v2.10.1) (2026-03-27)
+
+
+### Bug Fixes
+
+* bump axios from 1.12.2 to 1.13.5 in /client-code-gen/gen/admin-management-api ([#2128](https://github.com/bcgov/nr-forests-access-management/issues/2128)) ([52f87cc](https://github.com/bcgov/nr-forests-access-management/commit/52f87cca7aa5dfff8dbb4fa6ed16fd90ca2d1f78))
+* bump basic-ftp from 5.0.5 to 5.2.0 in /client-code-gen ([#2125](https://github.com/bcgov/nr-forests-access-management/issues/2125)) ([2dd2732](https://github.com/bcgov/nr-forests-access-management/commit/2dd27328c9033969ee7209cf3ead3bab34ef2b9f))
+* bump rollup from 4.46.4 to 4.60.0 in /frontend ([#2127](https://github.com/bcgov/nr-forests-access-management/issues/2127)) ([fdfc4cf](https://github.com/bcgov/nr-forests-access-management/commit/fdfc4cfcbc07e33d2bc566330569d43f6334be98))
+
 ## [2.10.0](https://github.com/bcgov/nr-forests-access-management/compare/v2.9.1...v2.10.0) (2026-03-24)
 
 
