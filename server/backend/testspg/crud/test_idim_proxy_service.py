@@ -88,7 +88,7 @@ class TestIdimProxyServiceClass(object):
     def test_search_idir__valid_idir_search_pass(self):
         idim_proxy_api = IdimProxyService(self.requester_idir)
         search_params = copy.deepcopy(self.search_params_idir)
-        valid_idir_user = "CMENG"
+        valid_idir_user = "MOF_FAMD"
         search_params.userId = valid_idir_user
         search_result = idim_proxy_api.search_idir(search_params)
 
