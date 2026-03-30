@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.10.2](https://github.com/bcgov/nr-forests-access-management/compare/v2.10.1...v2.10.2) (2026-03-30)
+
+
+### Bug Fixes
+
+* **deps:** [#1839](https://github.com/bcgov/nr-forests-access-management/issues/1839) Upgrade cryptography version for api ([#1845](https://github.com/bcgov/nr-forests-access-management/issues/1845)) ([2fc4ada](https://github.com/bcgov/nr-forests-access-management/commit/2fc4adac8bc9286ed2c4c2fb70f8233a93657113))
+* **deps:** update dependency authlib to v1.6.9 [security] ([#2061](https://github.com/bcgov/nr-forests-access-management/issues/2061)) ([04220a9](https://github.com/bcgov/nr-forests-access-management/commit/04220a9073c989c88110ef45c3e7885dfdb6238e))
+
 ## [2.10.1](https://github.com/bcgov/nr-forests-access-management/compare/v2.10.0...v2.10.1) (2026-03-30)
 
 
