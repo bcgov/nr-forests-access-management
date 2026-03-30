@@ -26,18 +26,15 @@ generate "test_tfvars" {
     test = "${local.common_vars.inputs.idp_logout_chain_test_url}"
     prod = "${local.common_vars.inputs.idp_logout_chain_prod_url}"
   }
-  # front_end_redirect_path = "https://fam-tst.nrs.gov.bc.ca"
-  front_end_redirect_path = "https://dmrxf04cbntge.cloudfront.net"
+  front_end_redirect_path = "https://fam-tst.nrs.gov.bc.ca"
   fam_callback_urls = [
     "https://fam-tst.nrs.gov.bc.ca/authCallback",
-    "https://dmrxf04cbntge.cloudfront.net/authCallback",
     "http://localhost:5173/authCallback",
     "http://localhost:8000/docs/oauth2-redirect",
     "http://localhost:8001/docs/oauth2-redirect"
   ]
   fam_logout_urls = [
     "${local.common_vars.inputs.idp_logout_chain_test_url}https://fam-tst.nrs.gov.bc.ca",
-    "${local.common_vars.inputs.idp_logout_chain_test_url}https://dmrxf04cbntge.cloudfront.net",
     "${local.common_vars.inputs.idp_logout_chain_test_url}http://localhost:5173"
   ]
   fam_console_idp_name = "TEST-IDIR"

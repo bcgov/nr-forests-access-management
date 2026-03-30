@@ -5,7 +5,7 @@
 @use "@bcgov-nr/nr-theme/design-tokens/colors.scss" as colors;
 
 // Import all of Bootstrap's CSS
-@import "~bootstrap/scss/bootstrap";
+@use "bootstrap" as *;
 
 // Root styles
 :root {

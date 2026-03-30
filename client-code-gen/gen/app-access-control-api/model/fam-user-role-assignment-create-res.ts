@@ -15,6 +15,9 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
+import { EmailSendingStatus } from './email-sending-status';
+// May contain unused imports in some cases
+// @ts-ignore
 import { FamApplicationUserRoleAssignmentGetSchema } from './fam-application-user-role-assignment-get-schema';
 
 /**
@@ -34,12 +37,20 @@ export interface FamUserRoleAssignmentCreateRes {
      * @type {FamApplicationUserRoleAssignmentGetSchema}
      * @memberof FamUserRoleAssignmentCreateRes
      */
-    'detail': FamApplicationUserRoleAssignmentGetSchema;
+    'detail'?: FamApplicationUserRoleAssignmentGetSchema | null;
     /**
      * 
      * @type {string}
      * @memberof FamUserRoleAssignmentCreateRes
      */
     'error_message'?: string | null;
+    /**
+     * 
+     * @type {EmailSendingStatus}
+     * @memberof FamUserRoleAssignmentCreateRes
+     */
+    'email_sending_status'?: EmailSendingStatus;
 }
+
+
 

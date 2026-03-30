@@ -29,10 +29,19 @@
         }
     },
     "response": {
-        "claimsOverrideDetails": null
+        "claimsAndScopeOverrideDetails": {
+            "groupOverrideDetails": {
+                "groupsToOverride": [],
+                "iamRolesToOverride": [],
+                "preferredRole": ""
+            },
+            "accessTokenGeneration": {
+                "claimsToAddOrOverride": {}
+            }
+        }
     },
     "triggerSource": "TokenGeneration_HostedAuth",
     "userName": "test-bcsc_6rrzfau3anj5wasq4n22gkjxsmangled",
     "userPoolId": "ca-central-1_t2HSZBHur",
-    "version": "1"
+    "version": "2"
 }

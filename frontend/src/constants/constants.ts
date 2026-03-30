@@ -8,7 +8,7 @@ export const FAM_APPLICATION_NAME = "FAM";
 
 export const FAM_APPLICATION_ID = 1;
 
-export const DEFAULT_ROW_PER_PAGE = 50;
+export const DEFAULT_ROW_PER_PAGE = 100;
 
 export const TABLE_PAGINATOR_TEMPLATE =
     "RowsPerPageDropdown CurrentPageReport PrevPageLink NextPageLink";

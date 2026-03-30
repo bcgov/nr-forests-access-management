@@ -71,7 +71,7 @@ const auth = useAuth();
 </template>
 
 <style scoped lang="scss">
-@import "../../assets/styles/landing-page-components-overrides.scss";
+@use "../../assets/styles/landing-page-components-overrides";
 
 .landing-content-left {
     padding-left: 2.5rem;

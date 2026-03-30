@@ -30,7 +30,6 @@ from sqlalchemy.orm import Session
 
 LOGGER = logging.getLogger(__name__)
 
-
 class PermissionAuditService:
 
     def __init__(self, db: Session):
@@ -101,6 +100,11 @@ class PermissionAuditService:
     def to_enduser_privliege_granted_details(
         enduser_privliege_list: List[FamUserRoleAssignmentCreateRes]
     ) -> PrivilegeDetailsSchema | None:
+        """
+        Note:
+        - role_assignment_expiry_date: when role is assigned without scope, the expiry date is saved at role level.
+          When role is assigned with scope(s), each scope has its own role assignment expiry date.
+        """
         if (len(enduser_privliege_list) == 0):
             return
 
@@ -111,18 +115,27 @@ class PermissionAuditService:
             return PrivilegeDetailsScopeSchema(
                 scope_type=PrivilegeDetailsScopeTypeEnum.CLIENT,
                 client_id=assigned_role.forest_client.forest_client_number,
-                client_name=assigned_role.forest_client.client_name
+                client_name=assigned_role.forest_client.client_name,
+                role_assignment_expiry_date=item.detail.expiry_date.isoformat() if item.detail.expiry_date else None
             )
 
         is_forest_client_scoped_role = enduser_privliege_list[0].detail.role.forest_client is not None
-        scopes = list(map(__map_to_privilege_role_scope, enduser_privliege_list)) if is_forest_client_scoped_role else None
-        privilege_details_role = PrivilegeDetailsRoleSchema(
-            role=enduser_privliege_list[0].detail.role.display_name,
-            scopes=scopes
-        )
-        if (privilege_details_role.scopes is None):
-            # delete attribute from schema if None; so it does not show as {scopes: null} in json.
-            del privilege_details_role.scopes
+        if is_forest_client_scoped_role:
+            scopes = list(map(__map_to_privilege_role_scope, enduser_privliege_list))
+            privilege_details_role = PrivilegeDetailsRoleSchema(
+                role=enduser_privliege_list[0].detail.role.display_name,
+                scopes=scopes
+            )
+
+        else:
+            expiry_date = (
+                enduser_privliege_list[0].detail.expiry_date.isoformat() if
+                enduser_privliege_list[0].detail.expiry_date else None
+            )
+            privilege_details_role = PrivilegeDetailsRoleSchema(
+                role=enduser_privliege_list[0].detail.role.display_name,
+                role_assignment_expiry_date=expiry_date
+            )
 
         return PrivilegeDetailsSchema(
             permission_type=PrivilegeDetailsPermissionTypeEnum.END_USER,
@@ -133,21 +146,22 @@ class PermissionAuditService:
     def to_enduser_privliege_revoked_details(
         delete_record: FamUserRoleXref
     ) -> PrivilegeDetailsSchema:
-        # Note, current FAM supports deleting ONLY 1 role with ONLY 1 scope type ("CLIENT") with 1 forst client.
-        # TODO !! When team begins new scoped roles model, it needs refactoring.  # noqa NOSONAR
+        """
+        Note:
+        - role_assignment_expiry_date: when role is without scope, the expiry date is saved at role level.
+          When role is with scope(s), role assignment expiry date is saved at each scope.
+        """
         revoked_permission_role = delete_record.role
+        expiry_date = delete_record.expiry_date.isoformat() if delete_record.expiry_date else None
         is_forest_client_scoped_role = revoked_permission_role.client_number_id
-        forest_client_number = None
-        forest_client_name = None
-        # Search forest client name for storing audit record. Current FAM does not store forest client name in db.
-        if (is_forest_client_scoped_role):
+
+        if is_forest_client_scoped_role:
             forest_client_number = revoked_permission_role.forest_client_relation.forest_client_number
             api_instance_env = crud_utils.use_api_instance_by_app(revoked_permission_role.application)
             forest_client_integration_service = ForestClientIntegrationService(api_instance_env)
             fc_search_result = forest_client_integration_service.search(
                 ForestClientIntegrationSearchParmsSchema(forest_client_numbers=[forest_client_number])
             )
-            # Forest Client search is an exact search.
             if len(fc_search_result) == 1:
                 forest_client_name = fc_search_result[0]["clientName"]
             else:
@@ -164,19 +178,20 @@ class PermissionAuditService:
                         "description": error_msg
                     }
                 )
-
-        revoke_privilege_details_scopes = [PrivilegeDetailsScopeSchema(
-            scope_type=PrivilegeDetailsScopeTypeEnum.CLIENT,
-            client_id=forest_client_number,
-            client_name=forest_client_name
-        )] if is_forest_client_scoped_role else None
-
-        privilege_detail_role = PrivilegeDetailsRoleSchema(
-            role=revoked_permission_role.display_name,
-            scopes=revoke_privilege_details_scopes
-        )
-        if (privilege_detail_role.scopes is None):
-            del privilege_detail_role.scopes  # delete attribute from schema if None.
+            privilege_detail_role = PrivilegeDetailsRoleSchema(
+                role=revoked_permission_role.display_name,
+                scopes=[PrivilegeDetailsScopeSchema(
+                    scope_type=PrivilegeDetailsScopeTypeEnum.CLIENT,
+                    client_id=forest_client_number,
+                    client_name=forest_client_name,
+                    role_assignment_expiry_date=expiry_date
+                )]
+            )
+        else:
+            privilege_detail_role = PrivilegeDetailsRoleSchema(
+                role=revoked_permission_role.display_name,
+                role_assignment_expiry_date=expiry_date
+            )
 
         return PrivilegeDetailsSchema(
             permission_type=PrivilegeDetailsPermissionTypeEnum.END_USER,

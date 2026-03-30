@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { APP_PERMISSION_FORM_KEY } from "@/constants/InjectionKeys";
 import {
     isAbstractRoleSelected,
     type AppPermissionFormType,
@@ -11,7 +10,7 @@ import DataTable from "primevue/datatable";
 import RadioButton from "primevue/radiobutton";
 import { useConfirm } from "primevue/useconfirm";
 import { ErrorMessage, Field } from "vee-validate";
-import { computed, inject, ref, type Ref } from "vue";
+import { computed, ref } from "vue";
 import Label from "../UI/Label.vue";
 import DelegatedAdminSection from "./DelegatedAdminSection.vue";
 import ForestClientAddTable from "./ForestClientAddTable.vue";
@@ -26,20 +25,27 @@ const props = defineProps<{
      * Determines whether the logged in user is only a d-admin and not an app admin
      */
     isDelegatedAdminOnly: boolean;
+    setFieldValue: (field: string, value: any) => void;
+    formValues: AppPermissionFormType;
 }>();
 
-const formData = inject<Ref<AppPermissionFormType>>(APP_PERMISSION_FORM_KEY);
+/**
+ * Checks if attempting to switch to delegated admin role with multiple users selected.
+ * When true, DelegatedAdminSection should be disabled pending user cleanup.
+ */
+const isAttemptingDelegatedAdminWithMultipleUsers = computed(() => {
+    const isDelegatedAdminSelected = selectedRole.value?.id === delegatedAdminRow.id;
+    const hasMultipleUsers = props.formValues.users.length > 1;
+    return isDelegatedAdminSelected && hasMultipleUsers;
+});
 
-if (!formData) {
-    throw new Error("formData is required but not provided");
-}
 
 const confirm = useConfirm();
 
 /**
  * An intermediate value to accommodate the fake delegated admin role.
  */
-const selectedRole = ref<FamRoleGrantDto | null>(formData.value.role);
+const selectedRole = ref<FamRoleGrantDto | null>(props.formValues.role);
 
 /**
  * A fake d-admin row data for display purpose in the role table.
@@ -68,22 +74,25 @@ const rows = computed<FamRoleGrantDto[]>(() => {
 const setRoleAndClearClients = (role: FamRoleGrantDto) => {
     if (role.id === delegatedAdminRow.id) {
         selectedRole.value = role;
-        formData.value.role = null;
-        formData.value.isAddingDelegatedAdmin = true;
+        props.setFieldValue('role', null);
+        props.setFieldValue('isAddingDelegatedAdmin', true);
     } else {
         selectedRole.value = role;
-        formData.value.role = role;
-        formData.value.isAddingDelegatedAdmin = false;
+        props.setFieldValue('role', role);
+        props.setFieldValue('isAddingDelegatedAdmin', false);
     }
 
-    formData.value.forestClients = [];
-    formData.value.forestClientInput.value = "";
-    formData.value.forestClientInput.isValid = true;
-    formData.value.forestClientInput.errorMsg = "";
+    props.setFieldValue('forestClients', []);
+    props.setFieldValue('forestClientInput', {
+        ...props.formValues.forestClientInput,
+        value: '',
+        isValid: true,
+        errorMsg: '',
+    });
 };
 
 const handleRoleSelect = (role: FamRoleGrantDto) => {
-    if (formData.value.forestClients.length) {
+    if ((props.formValues.forestClients?.length ?? 0) > 0) {
         confirm.require({
             group: "changeRole",
             header: "Changing Role",
@@ -107,7 +116,7 @@ const handleRoleSelect = (role: FamRoleGrantDto) => {
             <template #message>
                 <p>
                     Changing the role will remove the associated organization{{
-                        formData.forestClients.length > 1 ? "s" : ""
+                        props.formValues.forestClients.length > 1 ? "s" : ""
                     }}. Are you sure you want to continue?
                 </p>
             </template>
@@ -118,11 +127,11 @@ const handleRoleSelect = (role: FamRoleGrantDto) => {
             class="table-error invalid-feedback"
             :name="props.roleFieldId"
         />
-        <!-- Field validation with v-model bound to computedRole -->
+
         <Field
             :name="props.roleFieldId"
             aria-label="Role Select"
-            v-model="formData.role"
+            :model-value="props.formValues.role"
         >
             <DataTable :value="rows" class="fam-table">
                 <template #empty> No role found. </template>
@@ -132,7 +141,7 @@ const handleRoleSelect = (role: FamRoleGrantDto) => {
                             :value="data"
                             :model-value="selectedRole"
                             @update:model-value="handleRoleSelect"
-                            :disabled="formData.forestClientInput.isVerifying"
+                            :disabled="props.formValues.forestClientInput.isVerifying"
                         />
                     </template>
                 </Column>
@@ -149,21 +158,25 @@ const handleRoleSelect = (role: FamRoleGrantDto) => {
                         <ForestClientSelectTable
                             v-if="
                                 isDelegatedAdminOnly &&
-                                isAbstractRoleSelected(formData) &&
-                                formData.role?.id === data.id
+                                isAbstractRoleSelected(props.formValues) &&
+                                props.formValues.role?.id === data.id
                             "
                             :app-id="props.appId"
                             :field-id="props.forestClientsFieldId"
+                            :form-values="props.formValues"
+                            :set-field-value="props.setFieldValue"
                         />
 
                         <ForestClientAddTable
                             v-else-if="
                                 selectedRole?.id !== delegatedAdminRow.id &&
-                                isAbstractRoleSelected(formData) &&
-                                formData.role?.id === data.id
+                                isAbstractRoleSelected(props.formValues) &&
+                                props.formValues.role?.id === data.id
                             "
                             :app-id="props.appId"
                             :field-id="props.forestClientsFieldId"
+                            :form-values="props.formValues"
+                            :set-field-value="props.setFieldValue"
                         />
 
                         <DelegatedAdminSection
@@ -173,9 +186,10 @@ const handleRoleSelect = (role: FamRoleGrantDto) => {
                             "
                             :role-options="props.roleOptions"
                             :app-id="props.appId"
-                            :forest-clients-field-id="
-                                props.forestClientsFieldId
-                            "
+                            :forest-clients-field-id="props.forestClientsFieldId"
+                            :form-values="props.formValues"
+                            :set-field-value="props.setFieldValue"
+                            :disabled="isAttemptingDelegatedAdminWithMultipleUsers"
                         />
                     </template>
                 </Column>

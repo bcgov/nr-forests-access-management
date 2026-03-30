@@ -50,11 +50,13 @@ resource "aws_cognito_user_pool_client" "test_forest_client_oidc_client" {
   callback_urls = [
     var.oidc_sso_playground_url,
     "http://localhost:3000/dashboard",
+    "https://forestclient-test.apps.silver.devops.gov.bc.ca/dashboard",
     "https://forestclient-tst.nrs.gov.bc.ca/dashboard"
   ]
   logout_urls = [
     var.oidc_sso_playground_url,
     "http://localhost:3000/logout",
+    "https://forestclient-test.apps.silver.devops.gov.bc.ca/logout",
     "https://forestclient-tst.nrs.gov.bc.ca/logout",
   ]
   enable_propagate_additional_user_context_data = "false"

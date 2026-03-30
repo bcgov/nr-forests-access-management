@@ -1,5 +1,152 @@
 # Changelog
 
+## [2.10.0](https://github.com/bcgov/nr-forests-access-management/compare/v2.9.1...v2.10.0) (2026-03-24)
+
+
+### Features
+
+* FAM config for ISP in Dev, Test and prod ([#2114](https://github.com/bcgov/nr-forests-access-management/issues/2114)) ([3cd3333](https://github.com/bcgov/nr-forests-access-management/commit/3cd3333f2d7e4406d2f71be53902597fbba6b081))
+* FAM config for SCS in Dev.Test and Prod ([#2115](https://github.com/bcgov/nr-forests-access-management/issues/2115)) ([bb98a9b](https://github.com/bcgov/nr-forests-access-management/commit/bb98a9b9ed6f58f10063e1408c02b52d50253278))
+* updates for apt2 to work in dev, test and prod ([#2109](https://github.com/bcgov/nr-forests-access-management/issues/2109)) ([272c395](https://github.com/bcgov/nr-forests-access-management/commit/272c395e5fb74195374c8aa16ab4a007c1754301))
+
+
+### Bug Fixes
+
+* add PR urls to waste plus test environment  ([#2117](https://github.com/bcgov/nr-forests-access-management/issues/2117)) ([1c0e68d](https://github.com/bcgov/nr-forests-access-management/commit/1c0e68d7e14938758f751157c50a27ef9e11b899))
+
+## [2.9.1](https://github.com/bcgov/nr-forests-access-management/compare/v2.9.0...v2.9.1) (2026-03-12)
+
+
+### Bug Fixes
+
+* add callback urls for apt2 ([#2104](https://github.com/bcgov/nr-forests-access-management/issues/2104)) ([8a85b8f](https://github.com/bcgov/nr-forests-access-management/commit/8a85b8f69594a7913d7db2499fe1fc89549a09c3))
+
+## [2.9.0](https://github.com/bcgov/nr-forests-access-management/compare/v2.8.2...v2.9.0) (2026-03-12)
+
+
+### Features
+
+* added the SCS client to FAM ([#2096](https://github.com/bcgov/nr-forests-access-management/issues/2096)) ([b3b05ac](https://github.com/bcgov/nr-forests-access-management/commit/b3b05ac0778f68a6ea88e337712afff9c1b75e65))
+
+## [2.8.2](https://github.com/bcgov/nr-forests-access-management/compare/v2.8.1...v2.8.2) (2026-03-10)
+
+
+### Bug Fixes
+
+* callback_url corrections ([#2094](https://github.com/bcgov/nr-forests-access-management/issues/2094)) ([785ac2d](https://github.com/bcgov/nr-forests-access-management/commit/785ac2dca490f3747c1bf1528ad5cc7058c9d3a5))
+
+## [2.8.1](https://github.com/bcgov/nr-forests-access-management/compare/v2.8.0...v2.8.1) (2026-03-05)
+
+
+### Bug Fixes
+
+* trigger derek changes ([#2092](https://github.com/bcgov/nr-forests-access-management/issues/2092)) ([99a6a7b](https://github.com/bcgov/nr-forests-access-management/commit/99a6a7b7785f07d0fbc95688a71d2a7a7e3c60c4))
+
+## [2.8.0](https://github.com/bcgov/nr-forests-access-management/compare/v2.7.0...v2.8.0) (2026-03-04)
+
+
+### Features
+
+* adding new url to silva config ([#2083](https://github.com/bcgov/nr-forests-access-management/issues/2083)) ([bcd930c](https://github.com/bcgov/nr-forests-access-management/commit/bcd930cf16a49f8ca123a44726f94851531a3e07))
+
+
+### Bug Fixes
+
+* [#2079](https://github.com/bcgov/nr-forests-access-management/issues/2079) IPS Dev Client Redirect Change. ([#2081](https://github.com/bcgov/nr-forests-access-management/issues/2081)) ([a332468](https://github.com/bcgov/nr-forests-access-management/commit/a3324680b27a4573f09e18a419e583f8cbb861dd))
+* Added the pub redirect urls for APT2, REPT and ISP ([#2090](https://github.com/bcgov/nr-forests-access-management/issues/2090)) ([48a9f10](https://github.com/bcgov/nr-forests-access-management/commit/48a9f1044a1d0aa4da7abaa39738d04ed463fc13))
+
+## [2.7.0](https://github.com/bcgov/nr-forests-access-management/compare/v2.6.0...v2.7.0) (2026-02-12)
+
+
+### Features
+
+* [#2058](https://github.com/bcgov/nr-forests-access-management/issues/2058) Granting multiple regular users frontend ([#2071](https://github.com/bcgov/nr-forests-access-management/issues/2071)) ([44fc037](https://github.com/bcgov/nr-forests-access-management/commit/44fc03794a40b85b55b0231f2d2475ac6e83e12c))
+
+## [2.6.0](https://github.com/bcgov/nr-forests-access-management/compare/v2.5.0...v2.6.0) (2026-01-29)
+
+
+### Features
+
+* [#2057](https://github.com/bcgov/nr-forests-access-management/issues/2057) Granting Multiple Users backend ([#2064](https://github.com/bcgov/nr-forests-access-management/issues/2064)) ([7049cfc](https://github.com/bcgov/nr-forests-access-management/commit/7049cfc002dce715d02f0cc4358403d13678fb88))
+* [#2066](https://github.com/bcgov/nr-forests-access-management/issues/2066) Onboarding ISP to FAM ([#2068](https://github.com/bcgov/nr-forests-access-management/issues/2068)) ([d8afd30](https://github.com/bcgov/nr-forests-access-management/commit/d8afd30eb7d553b872d3a0093faba7fdf7da3f0f))
+
+## [2.5.0](https://github.com/bcgov/nr-forests-access-management/compare/v2.4.0...v2.5.0) (2025-12-23)
+
+
+### Features
+
+* [#2037](https://github.com/bcgov/nr-forests-access-management/issues/2037) Access Token Enhancement ([#2055](https://github.com/bcgov/nr-forests-access-management/issues/2055)) ([eaaed96](https://github.com/bcgov/nr-forests-access-management/commit/eaaed9638ba7141fa80bab43345bc41bd664e37c))
+
+## [2.4.0](https://github.com/bcgov/nr-forests-access-management/compare/v2.3.0...v2.4.0) (2025-12-18)
+
+
+### Features
+
+* [#2035](https://github.com/bcgov/nr-forests-access-management/issues/2035) User role expiry frontend ([#2049](https://github.com/bcgov/nr-forests-access-management/issues/2049)) ([980d499](https://github.com/bcgov/nr-forests-access-management/commit/980d499c805fd064cbc91ae45649e1ff1202891b))
+
+
+### Bug Fixes
+
+* # Rename APT3 APP Description. ([#2051](https://github.com/bcgov/nr-forests-access-management/issues/2051)) ([acb3559](https://github.com/bcgov/nr-forests-access-management/commit/acb3559d9376d7ffbc66f93b1650f1e7bd253a3d))
+
+## [2.3.0](https://github.com/bcgov/nr-forests-access-management/compare/v2.2.0...v2.3.0) (2025-12-10)
+
+
+### Features
+
+* [#1882](https://github.com/bcgov/nr-forests-access-management/issues/1882) Oboarding REPT ([#2047](https://github.com/bcgov/nr-forests-access-management/issues/2047)) ([7b58762](https://github.com/bcgov/nr-forests-access-management/commit/7b58762c767c259e65c3178185338ea107e4b025))
+* [#2036](https://github.com/bcgov/nr-forests-access-management/issues/2036) auth lambda filter expired roles ([#2041](https://github.com/bcgov/nr-forests-access-management/issues/2041)) ([4f12ee4](https://github.com/bcgov/nr-forests-access-management/commit/4f12ee454b1a8136bffe07afceb6efb53cf4041b))
+
+## [2.2.0](https://github.com/bcgov/nr-forests-access-management/compare/v2.1.0...v2.2.0) (2025-12-05)
+
+
+### Features
+
+* [#2024](https://github.com/bcgov/nr-forests-access-management/issues/2024) User Role Expiry Backend ([#2033](https://github.com/bcgov/nr-forests-access-management/issues/2033)) ([9391365](https://github.com/bcgov/nr-forests-access-management/commit/9391365ec1be3f657b9efe8880839e5f745a5ba5))
+
+
+### Bug Fixes
+
+* [#2038](https://github.com/bcgov/nr-forests-access-management/issues/2038) APT2 DEV Cognito Config Change ([#2039](https://github.com/bcgov/nr-forests-access-management/issues/2039)) ([dde7f4e](https://github.com/bcgov/nr-forests-access-management/commit/dde7f4e495a27fb28d80c78a28bebc1413f09e10))
+
+## [2.1.0](https://github.com/bcgov/nr-forests-access-management/compare/v2.0.0...v2.1.0) (2025-12-01)
+
+
+### Features
+
+* [#2023](https://github.com/bcgov/nr-forests-access-management/issues/2023) user role expiry new columns ([#2027](https://github.com/bcgov/nr-forests-access-management/issues/2027)) ([09b31f2](https://github.com/bcgov/nr-forests-access-management/commit/09b31f2ecc7a0bba890b5d9f05ee42ccca9790f7))
+
+
+### Bug Fixes
+
+* [#2030](https://github.com/bcgov/nr-forests-access-management/issues/2030) Add npm option to prevent Shai Hulud 2 attack ([#2031](https://github.com/bcgov/nr-forests-access-management/issues/2031)) ([eb5c3d1](https://github.com/bcgov/nr-forests-access-management/commit/eb5c3d12af08aa541a2c61d7c6feff942130faac))
+
+## [2.0.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.46.0...v2.0.0) (2025-11-10)
+
+
+### ⚠ BREAKING CHANGES
+
+* #1952 Migration production to LZA AWS from ASEA AWS ([#2016](https://github.com/bcgov/nr-forests-access-management/issues/2016))
+
+### Features
+
+* [#1952](https://github.com/bcgov/nr-forests-access-management/issues/1952) Migration production to LZA AWS from ASEA AWS ([#2016](https://github.com/bcgov/nr-forests-access-management/issues/2016)) ([58dd093](https://github.com/bcgov/nr-forests-access-management/commit/58dd093eca477174cab84bdbb17ed84ce731e066))
+
+## [1.46.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.45.0...v1.46.0) (2025-10-21)
+
+
+### Features
+
+* [#2000](https://github.com/bcgov/nr-forests-access-management/issues/2000) ATP3 Onboarding to FAM ([#2007](https://github.com/bcgov/nr-forests-access-management/issues/2007)) ([569cc25](https://github.com/bcgov/nr-forests-access-management/commit/569cc251fdf68a050bcde92c87add0fa97c3325d))
+
+
+### Bug Fixes
+
+* [#1998](https://github.com/bcgov/nr-forests-access-management/issues/1998) code scanning alert: Workflow does not contain permissions ([#2003](https://github.com/bcgov/nr-forests-access-management/issues/2003)) ([df59995](https://github.com/bcgov/nr-forests-access-management/commit/df599950b5cb0605ef248052ec95f5d91f856312))
+* [#1998](https://github.com/bcgov/nr-forests-access-management/issues/1998) Dependabot alerts ([#2004](https://github.com/bcgov/nr-forests-access-management/issues/2004)) ([9a79b96](https://github.com/bcgov/nr-forests-access-management/commit/9a79b96f8dd097f43561a1d2650e105d79b11cce))
+* [#1998](https://github.com/bcgov/nr-forests-access-management/issues/1998) Dependabot fix for form-data and axios ([#2001](https://github.com/bcgov/nr-forests-access-management/issues/2001)) ([9032801](https://github.com/bcgov/nr-forests-access-management/commit/9032801ff7a3d6150448940d60062fbfdb287523))
+* [#1998](https://github.com/bcgov/nr-forests-access-management/issues/1998) secret scanning ([#1999](https://github.com/bcgov/nr-forests-access-management/issues/1999)) ([d376026](https://github.com/bcgov/nr-forests-access-management/commit/d376026008fc8d8654c9a1a99dff896f5d25e6d6))
+
 ## [1.45.0](https://github.com/bcgov/nr-forests-access-management/compare/v1.44.0...v1.45.0) (2025-10-16)
 
 

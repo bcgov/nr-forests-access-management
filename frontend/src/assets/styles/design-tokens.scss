@@ -1,0 +1,14 @@
+// Design Tokens
+
+// ---------------------------
+// Two Columns Responsive Container Tokens
+// ---------------------------
+$two-col-left-min-width: 320px;   // Minimum width for the left column
+$two-col-right-min-width: 280px;  // Minimum width for the right column
+$two-col-gap-min: 1rem;          // Minimum gap between columns
+$two-col-gap-max: 4.5rem;        // Maximum gap between columns
+
+// ---------------------------
+// Breakpoints
+// ---------------------------
+$breakpoint-sm: 640px; // General breakpoint for small layouts

@@ -272,7 +272,19 @@ data "aws_lambda_invocation" "invoke_flyway_migration" {
           "client_id_prod_ilcr_oidc_client" : "${aws_cognito_user_pool_client.prod_ilcr_oidc_client.id}",
           "client_id_dev_waste_plus_oidc_client" : "${aws_cognito_user_pool_client.dev_waste_plus_oidc_client.id}",
           "client_id_test_waste_plus_oidc_client" : "${aws_cognito_user_pool_client.test_waste_plus_oidc_client.id}",
-          "client_id_prod_waste_plus_oidc_client" : "${aws_cognito_user_pool_client.prod_waste_plus_oidc_client.id}"
+          "client_id_prod_waste_plus_oidc_client" : "${aws_cognito_user_pool_client.prod_waste_plus_oidc_client.id}",
+          "client_id_dev_apt3_oidc_client" : "${aws_cognito_user_pool_client.dev_apt3_oidc_client.id}",
+          "client_id_test_apt3_oidc_client" : "${aws_cognito_user_pool_client.test_apt3_oidc_client.id}",
+          "client_id_prod_apt3_oidc_client" : "${aws_cognito_user_pool_client.prod_apt3_oidc_client.id}",
+          "client_id_dev_rept_oidc_client" : "${aws_cognito_user_pool_client.dev_rept_oidc_client.id}",
+          "client_id_test_rept_oidc_client" : "${aws_cognito_user_pool_client.test_rept_oidc_client.id}",
+          "client_id_prod_rept_oidc_client" : "${aws_cognito_user_pool_client.prod_rept_oidc_client.id}",
+          "client_id_dev_isp_oidc_client" : "${aws_cognito_user_pool_client.dev_isp_oidc_client.id}",
+          "client_id_test_isp_oidc_client" : "${aws_cognito_user_pool_client.test_isp_oidc_client.id}",
+          "client_id_prod_isp_oidc_client" : "${aws_cognito_user_pool_client.prod_isp_oidc_client.id}",
+          "client_id_dev_scs_oidc_client" : "${aws_cognito_user_pool_client.dev_scs_oidc_client.id}",
+          "client_id_test_scs_oidc_client" : "${aws_cognito_user_pool_client.test_scs_oidc_client.id}",
+          "client_id_prod_scs_oidc_client" : "${aws_cognito_user_pool_client.prod_scs_oidc_client.id}"
         },
         "target": "latest"
     },

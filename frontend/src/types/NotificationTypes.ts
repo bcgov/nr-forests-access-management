@@ -8,7 +8,7 @@ export enum Severity {
 }
 
 export type PermissionNotificationType = {
-    serverity: MessageProps["severity"];
+    severity: MessageProps["severity"];
     message: string | VNode | (() => VNode);
     hasFullMsg: boolean;
     fullMessage?: string | VNode | (() => VNode);

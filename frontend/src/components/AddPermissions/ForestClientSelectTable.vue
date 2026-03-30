@@ -6,8 +6,7 @@ import RadioButton from "primevue/radiobutton";
 import { AdminMgmtApiService } from "@/services/ApiServiceFactory";
 import { useQuery } from "@tanstack/vue-query";
 import { Field, useField } from "vee-validate";
-import { computed, inject, watch, type Ref } from "vue";
-import { APP_PERMISSION_FORM_KEY } from "@/constants/InjectionKeys";
+import { computed, watch } from "vue";
 import type { AppPermissionFormType } from "@/views/AddAppPermission/utils";
 import Label from "../UI/Label.vue";
 import SubsectionTitle from "../UI/SubsectionTitle.vue";
@@ -15,18 +14,14 @@ import { getForestClientsUnderApp } from "@/utils/AuthUtils";
 import type { FamForestClientBase } from "fam-admin-mgmt-api/model";
 import ErrorText from "../UI/ErrorText.vue";
 
-const formData = inject<Ref<AppPermissionFormType>>(APP_PERMISSION_FORM_KEY);
-
-if (!formData) {
-    throw new Error("formData is required but not provided");
-}
-
 const props = defineProps<{
     appId: number;
     fieldId: string;
+    formValues: AppPermissionFormType;
+    setFieldValue: (field: string, value: any) => void;
 }>();
 
-const { validate: validateForestClients } = useField(props.fieldId);
+const { validate: validateForestClients, setErrors: setForestClientsError } = useField(props.fieldId);
 
 const adminUserAccessQuery = useQuery({
     queryKey: ["admin-user-access"],
@@ -38,6 +33,15 @@ const adminUserAccessQuery = useQuery({
     refetchOnMount: true,
 });
 
+watch(
+    () => adminUserAccessQuery.isError.value,
+    (isError) => {
+        if (isError) {
+            setForestClientsError("Failed to fetch available organizations. Please try again.");
+        }
+    }
+);
+
 const availableForestClients = computed<FamForestClientBase[]>(() => {
     const data = adminUserAccessQuery.data.value;
     return data ?? [];
@@ -47,31 +51,30 @@ watch(
     availableForestClients,
     () => {
         if (availableForestClients.value.length === 1) {
-            formData.value.forestClients = availableForestClients.value;
+            props.setFieldValue("forestClients", availableForestClients.value);
         }
     },
     { immediate: true }
 );
 
 const isForestClientSelected = (client: FamForestClientBase) =>
-    formData.value.forestClients.some(
+    props.formValues.forestClients.some(
         (selectedClient) =>
             selectedClient.forest_client_number === client.forest_client_number
     );
 
 const toggleForestClient = (client: FamForestClientBase) => {
-    const index = formData.value.forestClients.findIndex(
+    const updatedClients = [...props.formValues.forestClients];
+    const index = updatedClients.findIndex(
         (selectedClient) =>
             selectedClient.forest_client_number === client.forest_client_number
     );
     if (index >= 0) {
-        // Remove client if already selected
-        formData.value.forestClients.splice(index, 1);
+        updatedClients.splice(index, 1);
     } else {
-        // Add client if not selected
-        formData.value.forestClients.push(client);
+        updatedClients.push(client);
     }
-    // Validate again to remove resolved error if there is any
+    props.setFieldValue("forestClients", updatedClients);
     validateForestClients();
 };
 </script>
@@ -86,7 +89,8 @@ const toggleForestClient = (client: FamForestClientBase) => {
         <Field
             :name="props.fieldId"
             v-slot="{ errorMessage }"
-            v-model="formData.forestClients"
+            :model-value="props.formValues.forestClients"
+            @update:model-value="(value) => props.setFieldValue('forestClients', value)"
         >
             <Label label-text="Organizations" required />
 
@@ -105,7 +109,7 @@ const toggleForestClient = (client: FamForestClientBase) => {
                         <RadioButton
                             class="fam-checkbox"
                             :value="data"
-                            v-model="formData.forestClients[0]"
+                            v-model="props.formValues.forestClients[0]"
                             readonly
                         />
                     </template>

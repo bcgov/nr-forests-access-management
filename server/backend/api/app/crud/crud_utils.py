@@ -8,7 +8,6 @@ from api.app.constants import (APPLICATION_FAM,
                                ApiInstanceEnv, AppEnv, AwsTargetEnv)
 from api.app.crud import crud_application
 from api.app.models import model as models
-from api.app.schemas.fam_application import FamApplicationSchema
 from api.app.utils.utils import raise_http_exception
 from sqlalchemy import func
 from sqlalchemy.inspection import inspect

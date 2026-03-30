@@ -41,6 +41,12 @@ export interface PrivilegeDetailsScopeSchema {
      * @memberof PrivilegeDetailsScopeSchema
      */
     'client_name'?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof PrivilegeDetailsScopeSchema
+     */
+    'role_assignment_expiry_date'?: string | null;
 }
 
 

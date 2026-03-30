@@ -15,7 +15,7 @@ defineProps<{
             :key="index"
         >
             <NotificationMessage
-                :severity="value.serverity"
+                :severity="value.severity"
                 :message="value.message"
                 :has-full-msg="value.hasFullMsg"
                 :full-message="value.fullMessage"
@@ -28,9 +28,10 @@ defineProps<{
 </template>
 
 <style lang="scss" scoped>
-@import "@/assets/styles/styles.scss";
+@use "@/assets/styles/styles";
+
 .notification-stack {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
 
     &:deep(.p-message) {
         position: relative;

@@ -35,5 +35,11 @@ export interface PrivilegeDetailsRoleSchema {
      * @memberof PrivilegeDetailsRoleSchema
      */
     'scopes'?: Array<PrivilegeDetailsScopeSchema> | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof PrivilegeDetailsRoleSchema
+     */
+    'role_assignment_expiry_date'?: string | null;
 }
 

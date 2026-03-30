@@ -1,6 +1,7 @@
 
 
 from datetime import datetime
+from typing import Optional
 
 from pydantic import BaseModel, ConfigDict
 
@@ -15,6 +16,7 @@ class FamApplicationUserRoleAssignmentGetSchema(BaseModel):
     user: FamUserInfoSchema
     role: FamRoleWithClientSchema
     create_date: datetime
+    expiry_date: Optional[datetime] = None
 
     # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-config for more information.
     model_config = ConfigDict(from_attributes=True)

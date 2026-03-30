@@ -62,5 +62,11 @@ export interface FamApplicationUserRoleAssignmentGetSchema {
      * @memberof FamApplicationUserRoleAssignmentGetSchema
      */
     'create_date': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof FamApplicationUserRoleAssignmentGetSchema
+     */
+    'expiry_date'?: string | null;
 }
 

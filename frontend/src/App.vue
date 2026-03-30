@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { computed } from "vue";
-import { useRoute } from "vue-router";
+import ProtectedLayout from "@/layouts/ProtectedLayout.vue";
 import AuthProvider from "@/providers/AuthProvider.vue";
 import { VueQueryDevtools } from "@tanstack/vue-query-devtools";
-import ProtectedLayout from "@/layouts/ProtectedLayout.vue";
+import { computed } from "vue";
+import { useRoute } from "vue-router";
 
 // Get the current route
 const route = useRoute();
@@ -25,8 +25,8 @@ const layoutComponent = computed(() => {
 </template>
 
 <style lang="scss">
-@import "@/assets/styles/styles.scss";
-@import "@/assets/styles/themes.scss";
+@use "@/assets/styles/styles";
+@use "@/assets/styles/themes";
 @import "primevue/resources/primevue.min.css";
 @import "primevue/resources/themes/bootstrap4-light-blue/theme.css";
 </style>

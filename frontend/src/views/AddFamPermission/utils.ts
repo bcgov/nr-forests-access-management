@@ -1,39 +1,34 @@
+import type { SelectUser } from "@/types/SelectUserType";
 import type {
     FamAppAdminCreateRequest,
     FamApplicationGrantDto,
 } from "fam-admin-mgmt-api/model";
 import { UserType } from "fam-app-acsctl-api";
-import type { IdimProxyIdirInfoSchema } from "fam-app-acsctl-api/model";
 import { mixed, object } from "yup";
 
-export const AddFamPermissionSuccessQueryKey = "fam-permission-success";
-export const AddFamPermissionErrorQueryKey = "fam-permission-error";
+export const AddAppAdminSuccessQueryKey = "app-admin-success";
+export const AddAppAdminErrorQueryKey = "app-admin-error";
+export const NewAppAdminQueryParamKey = "newAppAdminIds";
 
-export const NewFamAdminQueryParamKey = "newFamAdminIds";
-
-export type FamPermissionFormType = {
-    user: IdimProxyIdirInfoSchema | null;
+export type AppAdminFormType = {
+    user: SelectUser | null;
     application: FamApplicationGrantDto | null;
 };
 
-const defaultFormData: FamPermissionFormType = {
+const defaultFormData: AppAdminFormType = {
     user: null,
     application: null,
 };
 
-export const getDefaultFormData = (): FamPermissionFormType =>
+export const getDefaultFormData = (): AppAdminFormType =>
     structuredClone(defaultFormData);
 
 /**
- * Validation schema for fam admin
+ * Validation schema for application admin
  */
-export const validateFamPermissionForm = () => {
+export const validateAppAdminForm = () => {
     return object({
-        user: mixed<IdimProxyIdirInfoSchema>()
-            .required("A valid user is required")
-            .test("is-user-found", "A valid user ID is required", (value) => {
-                return value?.found === true;
-            }),
+        user: mixed<SelectUser>().required("A valid user is required"),
         application: mixed<FamApplicationGrantDto>().required(
             "Please select an application"
         ),
@@ -41,7 +36,7 @@ export const validateFamPermissionForm = () => {
 };
 
 export const generatePayload = (
-    formData: FamPermissionFormType
+    formData: AppAdminFormType
 ): FamAppAdminCreateRequest => ({
     user_name: formData.user?.userId ?? "",
     user_guid: formData.user?.guid ?? "",

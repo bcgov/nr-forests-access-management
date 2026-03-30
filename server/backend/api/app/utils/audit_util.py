@@ -1,11 +1,11 @@
-import logging
-from typing import List
-from enum import Enum
 import json
+import logging
+from enum import Enum
+from typing import List, Optional
+
 from api.app.models import model as models
 from api.app.schemas import RequesterSchema
-from fastapi import Request, HTTPException
-
+from fastapi import HTTPException, Request
 
 LOGGER = logging.getLogger(__name__)
 
@@ -30,6 +30,8 @@ class AuditEventLog:
     requesting_user: RequesterSchema
     target_user: models.FamUser
     exception: Exception
+    role_assignment_expiry_date: Optional[str] = None
+    user_assignment_results: list = []
 
     def __init__(
         self,
@@ -42,6 +44,8 @@ class AuditEventLog:
         requesting_user: RequesterSchema = None,
         target_user: models.FamUser = None,
         exception: Exception = None,
+        role_assignment_expiry_date: str = None,
+        user_assignment_results: list = [],
     ):
         self.request = request
         self.event_type = event_type
@@ -52,52 +56,38 @@ class AuditEventLog:
         self.requesting_user = requesting_user
         self.target_user = target_user
         self.exception = exception
+        self.role_assignment_expiry_date = role_assignment_expiry_date
+        self.user_assignment_results = user_assignment_results
 
     def log_event(self):
-
         log_item = {
             "auditEventTypeCode": self.event_type.name if self.event_type else None,
-            "auditEventResultCode": self.event_outcome.name
-            if self.event_outcome
-            else None,
-            "applicationId": self.application.application_id
-            if self.application
-            else None,
-            "applicationName": self.application.application_name
-            if self.application
-            else None,
-            "applicationEnv": self.application.app_environment
-            if self.application
-            else None,
+            "auditEventResultCode": self.event_outcome.name if self.event_outcome else None,
+            "applicationId": self.application.application_id if self.application else None,
+            "applicationName": self.application.application_name if self.application else None,
+            "applicationEnv": self.application.app_environment if self.application else None,
             "roleId": self.role.role_id if self.role else None,
             "roleName": self.role.role_name if self.role else None,
             "roleType": self.role.role_type_code if self.role else None,
             "forestClientNumbers": self.forest_client_numbers,
+            "roleAssignmentExpiryDate": self.role_assignment_expiry_date,
             "targetUser": {
                 "userGuid": self.target_user.user_guid if self.target_user else None,
-                "userType": self.target_user.user_type_code
-                if self.target_user
-                else None,
+                "userType": self.target_user.user_type_code if self.target_user else None,
                 "idpUserName": self.target_user.user_name if self.target_user else None,
-                "cognitoUsername": self.target_user.cognito_user_id
-                if self.target_user
-                else None,
+                "cognitoUsername": self.target_user.cognito_user_id if self.target_user else None,
             },
             "requestingUser": {
-                "userGuid": self.requesting_user.user_guid
-                if self.requesting_user
-                else None,
-                "userType": self.requesting_user.user_type_code
-                if self.requesting_user
-                else None,
-                "idpUserName": self.requesting_user.user_name
-                if self.requesting_user
-                else None,
-                "cognitoUsername": self.requesting_user.cognito_user_id
-                if self.requesting_user
-                else None,
+                "userGuid": self.requesting_user.user_guid if self.requesting_user else None,
+                "userType": self.requesting_user.user_type_code if self.requesting_user else None,
+                "idpUserName": self.requesting_user.user_name if self.requesting_user else None,
+                "cognitoUsername": self.requesting_user.cognito_user_id if self.requesting_user else None,
             },
+
             "requestIP": self.request.client.host if self.request.client else "unknown",
+            "userAssignmentResults": [
+                x.model_dump() for x in self.user_assignment_results
+            ],
         }
 
         if self.exception:
@@ -108,4 +98,4 @@ class AuditEventLog:
                     "details": self.exception.detail,
                 }
 
-        LOGGER.info(json.dumps(log_item))
+        LOGGER.info(json.dumps(log_item, default=str))

@@ -15,9 +15,6 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { EmailSendingStatus } from './email-sending-status';
-// May contain unused imports in some cases
-// @ts-ignore
 import { FamUserRoleAssignmentCreateRes } from './fam-user-role-assignment-create-res';
 
 /**
@@ -28,17 +25,9 @@ import { FamUserRoleAssignmentCreateRes } from './fam-user-role-assignment-creat
 export interface FamUserRoleAssignmentRes {
     /**
      * 
-     * @type {EmailSendingStatus}
-     * @memberof FamUserRoleAssignmentRes
-     */
-    'email_sending_status'?: EmailSendingStatus;
-    /**
-     * 
      * @type {Array<FamUserRoleAssignmentCreateRes>}
      * @memberof FamUserRoleAssignmentRes
      */
     'assignments_detail': Array<FamUserRoleAssignmentCreateRes>;
 }
-
-
 

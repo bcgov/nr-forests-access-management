@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { computed, ref, type VNode } from "vue";
-import Message, { type MessageProps } from "primevue/message";
 import CheckMarkIcon from "@carbon/icons-vue/es/checkmark--filled/20";
 import MisuseIcon from "@carbon/icons-vue/es/misuse/20";
 import WarnIcon from "@carbon/icons-vue/es/warning--filled/20";
+import Message, { type MessageProps } from "primevue/message";
+import { computed, ref, type VNode } from "vue";
 
 // Define the properties, allowing `message` and `fullMessage` to support a VNode,
 // a function that returns a VNode, or a string for flexible content rendering.
@@ -39,12 +39,15 @@ const displayMessage = computed(() => {
             :closable="props.closable === undefined ? true : props.closable"
             @close="props.onClose ?? undefined"
         >
-            <CheckMarkIcon v-if="props.severity === 'success'" />
-            <MisuseIcon v-else-if="props.severity === 'error'" />
-            <WarnIcon v-else />
+            <template v-if="typeof displayMessage === 'string'">
+                <CheckMarkIcon v-if="props.severity === 'success'" />
+                <MisuseIcon v-else-if="props.severity === 'error'" />
+                <WarnIcon v-else />
+            </template>
 
             <span class="custom-message-text">
-                <strong v-if="!hideTitle">{{
+                <!-- Render for only string messages; for custom vnode or function, build its own header/title -->
+                <strong v-if="!hideTitle && (typeof displayMessage === 'string')">{{
                     props.title ?? props.severity
                 }}</strong>
                 <!-- Render `displayMessage` based on its type -->
@@ -84,7 +87,7 @@ const displayMessage = computed(() => {
 </template>
 
 <style lang="scss" scoped>
-@import "@/assets/styles/styles.scss";
+@use "@/assets/styles/styles";
 .message-container {
     position: relative;
     align-items: center;

@@ -30,7 +30,7 @@ jobs:
     needs: [vars]
     services:
       postgres:
-        image: postgres:14.17-alpine
+        image: postgres:16.6-alpine
         env:
           POSTGRES_DB: fam
           POSTGRES_USER: ${{ needs.vars.outputs.user }}
@@ -87,6 +87,18 @@ jobs:
           FLYWAY_PLACEHOLDERS_client_id_dev_waste_plus_oidc_client: flywayplaceholder
           FLYWAY_PLACEHOLDERS_client_id_test_waste_plus_oidc_client: flywayplaceholder
           FLYWAY_PLACEHOLDERS_client_id_prod_waste_plus_oidc_client: flywayplaceholder
+          FLYWAY_PLACEHOLDERS_client_id_dev_apt3_oidc_client: flywayplaceholder
+          FLYWAY_PLACEHOLDERS_client_id_test_apt3_oidc_client: flywayplaceholder
+          FLYWAY_PLACEHOLDERS_client_id_prod_apt3_oidc_client: flywayplaceholder
+          FLYWAY_PLACEHOLDERS_client_id_dev_rept_oidc_client: flywayplaceholder
+          FLYWAY_PLACEHOLDERS_client_id_test_rept_oidc_client: flywayplaceholder
+          FLYWAY_PLACEHOLDERS_client_id_prod_rept_oidc_client: flywayplaceholder
+          FLYWAY_PLACEHOLDERS_client_id_dev_isp_oidc_client: flywayplaceholder
+          FLYWAY_PLACEHOLDERS_client_id_test_isp_oidc_client: flywayplaceholder
+          FLYWAY_PLACEHOLDERS_client_id_prod_isp_oidc_client: flywayplaceholder
+          FLYWAY_PLACEHOLDERS_client_id_dev_scs_oidc_client: flywayplaceholder
+          FLYWAY_PLACEHOLDERS_client_id_test_scs_oidc_client: flywayplaceholder
+          FLYWAY_PLACEHOLDERS_client_id_prod_scs_oidc_client: flywayplaceholder
         with:
           args: info migrate info
 

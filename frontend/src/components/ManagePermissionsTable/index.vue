@@ -55,10 +55,10 @@ import { utcToLocalDate } from "@/utils/DateUtils";
 import { formatUserNameAndId } from "@/utils/UserUtils";
 import { scrollToRef } from "@/utils/WindowUtils";
 import {
-    NewAppAdminQueryParamKey,
+    NewRegularUserQueryParamKey,
     NewDelegatedAddminQueryParamKey,
 } from "@/views/AddAppPermission/utils";
-import { NewFamAdminQueryParamKey } from "@/views/AddFamPermission/utils";
+import { NewAppAdminQueryParamKey } from "@/views/AddFamPermission/utils";
 import DownloadIcon from "@carbon/icons-vue/es/download/16";
 import ConfirmDialogText from "./ConfirmDialogText.vue";
 import NewUserTag from "./NewUserTag.vue";
@@ -68,12 +68,12 @@ import {
     deleteAppUserRoleNotificationContext,
     deleteDelegatedAdminNotificationContext,
     deleteFamPermissionNotificationContext,
-    filterList,
+    formatExpiryDate,
     getHeaders,
     getTableHeaderDescription,
     getTableHeaderTitle,
     NEW_ACCESS_STYLE_IN_TABLE,
-    type ConfirmTextType,
+    type ConfirmTextType
 } from "./utils";
 
 type TableRowType =
@@ -84,12 +84,12 @@ type TableRowType =
 const router = useRouter();
 const route = useRoute();
 
-const newFamAdminIds = route.query[NewFamAdminQueryParamKey]
-    ? String(route.query[NewFamAdminQueryParamKey]).split(",").map(Number)
+const newAppAdminIds = route.query[NewAppAdminQueryParamKey]
+    ? String(route.query[NewAppAdminQueryParamKey]).split(",").map(Number)
     : [];
 
-const newAppUserIds = route.query[NewAppAdminQueryParamKey]
-    ? String(route.query[NewAppAdminQueryParamKey]).split(",").map(Number)
+const newAppUserIds = route.query[NewRegularUserQueryParamKey]
+    ? String(route.query[NewRegularUserQueryParamKey]).split(",").map(Number)
     : [];
 
 const newDelegatedAdminIds = route.query[NewDelegatedAddminQueryParamKey]
@@ -130,11 +130,11 @@ const famAppAdminQuery = useQuery({
         );
         return [
             ...sortedByUserName.filter((item: FamAppAdminGetResponse) =>
-                newFamAdminIds.includes(item.application_admin_id)
+                newAppAdminIds.includes(item.application_admin_id)
             ),
             ...sortedByUserName.filter(
                 (item: FamAppAdminGetResponse) =>
-                    !newFamAdminIds.includes(item.application_admin_id)
+                    !newAppAdminIds.includes(item.application_admin_id)
             ),
         ];
     },
@@ -505,7 +505,7 @@ const highlightNewUserAccessRow = (
     switch (props.tableType) {
         case ManagePermissionsTableEnum.FamAppAdmin:
             const famAdin = rowData as FamAppAdminGetResponse;
-            if (newFamAdminIds.includes(famAdin.application_admin_id)) {
+            if (newAppAdminIds.includes(famAdin.application_admin_id)) {
                 return NEW_ACCESS_STYLE_IN_TABLE;
             }
             return undefined;
@@ -826,6 +826,24 @@ const downloadManagePermissionsCSVData = () => {
                     </template>
                 </Column>
 
+                <Column
+                    v-if="!isFamAppAdminTable && !isApplicationAdminTable && !isDelegatedTable"
+                    field="expiry_date"
+                    sortable
+                >
+                    <template #header>
+                        <span v-tooltip.left="{
+                            value: 'Access is available until midnight Pacific Standard Time on the expiry date.',
+                            class: 'custom-tooltip' }"
+                        >
+                            Expiry Date
+                        </span>
+                    </template>
+                    <template #body="{ data }">
+                        <span>{{ formatExpiryDate(data.expiry_date) }}</span>
+                    </template>
+                </Column>
+
                 <Column header="Action" class="action-col">
                     <template #body="{ data }">
                         <div class="nowrap-cell action-button-group">
@@ -905,5 +923,15 @@ const downloadManagePermissionsCSVData = () => {
             border-color: #dfdfe1;
         }
     }
+}
+
+.custom-tooltip {
+    max-width: 320px; /* Set the desired width */
+    white-space: normal;
+    word-wrap: break-word;
+}
+
+.p-paginator .p-dropdown {
+  min-width: 6rem !important;
 }
 </style>
