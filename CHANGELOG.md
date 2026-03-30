@@ -1,5 +1,26 @@
 # Changelog
 
+## [2.10.2](https://github.com/bcgov/nr-forests-access-management/compare/v2.10.1...v2.10.2) (2026-03-30)
+
+
+### Bug Fixes
+
+* **deps:** [#1839](https://github.com/bcgov/nr-forests-access-management/issues/1839) Upgrade cryptography version for api ([#1845](https://github.com/bcgov/nr-forests-access-management/issues/1845)) ([2fc4ada](https://github.com/bcgov/nr-forests-access-management/commit/2fc4adac8bc9286ed2c4c2fb70f8233a93657113))
+* **deps:** update dependency authlib to v1.6.9 [security] ([#2061](https://github.com/bcgov/nr-forests-access-management/issues/2061)) ([04220a9](https://github.com/bcgov/nr-forests-access-management/commit/04220a9073c989c88110ef45c3e7885dfdb6238e))
+
+## [2.10.1](https://github.com/bcgov/nr-forests-access-management/compare/v2.10.0...v2.10.1) (2026-03-30)
+
+
+### Bug Fixes
+
+* bump axios from 1.12.2 to 1.13.5 in /client-code-gen/gen/admin-management-api ([#2128](https://github.com/bcgov/nr-forests-access-management/issues/2128)) ([52f87cc](https://github.com/bcgov/nr-forests-access-management/commit/52f87cca7aa5dfff8dbb4fa6ed16fd90ca2d1f78))
+* bump basic-ftp from 5.0.5 to 5.2.0 in /client-code-gen ([#2125](https://github.com/bcgov/nr-forests-access-management/issues/2125)) ([2dd2732](https://github.com/bcgov/nr-forests-access-management/commit/2dd27328c9033969ee7209cf3ead3bab34ef2b9f))
+* bump requests from 2.32.4 to 2.33.0 in /server/admin_management ([#2129](https://github.com/bcgov/nr-forests-access-management/issues/2129)) ([442d1a5](https://github.com/bcgov/nr-forests-access-management/commit/442d1a54780ffe7f37fc13ef03ca90d7bc23ce43))
+* bump rollup from 4.46.4 to 4.60.0 in /frontend ([#2127](https://github.com/bcgov/nr-forests-access-management/issues/2127)) ([fdfc4cf](https://github.com/bcgov/nr-forests-access-management/commit/fdfc4cfcbc07e33d2bc566330569d43f6334be98))
+* **deps:** bump @tootallnate/once and jsdom in /frontend ([#2132](https://github.com/bcgov/nr-forests-access-management/issues/2132)) ([7b3cc80](https://github.com/bcgov/nr-forests-access-management/commit/7b3cc80388d1384a42c1d265e488008af0697823))
+* **deps:** bump requests from 2.32.4 to 2.33.0 in /scripts/kc_data_transfer/src ([#2131](https://github.com/bcgov/nr-forests-access-management/issues/2131)) ([82e74cd](https://github.com/bcgov/nr-forests-access-management/commit/82e74cd6bf16d94ab6498b6929b04e55ad2ee508))
+* **deps:** bump requests from 2.32.4 to 2.33.0 in /server/backend ([#2130](https://github.com/bcgov/nr-forests-access-management/issues/2130)) ([f55ff88](https://github.com/bcgov/nr-forests-access-management/commit/f55ff880dfde4280b30de5863030e493c1ef20c3))
+
 ## [2.10.0](https://github.com/bcgov/nr-forests-access-management/compare/v2.9.1...v2.10.0) (2026-03-24)
 
 
