@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.10.3](https://github.com/bcgov/nr-forests-access-management/compare/v2.10.2...v2.10.3) (2026-04-13)
+
+
+### Bug Fixes
+
+* Restrict nr-theme Version Bump ([#2138](https://github.com/bcgov/nr-forests-access-management/issues/2138)) ([1bf26f2](https://github.com/bcgov/nr-forests-access-management/commit/1bf26f24f62703a9ee9a1d96850faa5ce4fc5aad))
+
 ## [2.10.2](https://github.com/bcgov/nr-forests-access-management/compare/v2.10.1...v2.10.2) (2026-03-30)
 
 
