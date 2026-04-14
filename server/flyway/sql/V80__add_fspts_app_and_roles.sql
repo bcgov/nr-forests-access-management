@@ -1,4 +1,6 @@
 -- Add FSPTS application and roles
+-- FSPTS: (= FSP legacy app)
+-- FSPTS: all roles are abstract roles (will be associated with forest clients)
 
 -- Add FSPTS_DEV, FSPTS_TEST and FSPTS_PROD applications
 INSERT INTO app_fam.fam_application (
@@ -23,10 +25,10 @@ INSERT INTO app_fam.fam_role (
     create_user,
     create_date
 )
-VALUES ('FSPTS_ADMINISTRATOR', 'Administrator', 'Add, change, delete, and view FSPs.', (select application_id from app_fam.fam_application where application_name = 'FSPTS_DEV'), 'C', CURRENT_USER, CURRENT_DATE),
-       ('FSPTS_DECISION_MAKER', 'Decision Maker', 'Approve FSPs, amendments, and extensions.', (select application_id from app_fam.fam_application where application_name = 'FSPTS_DEV'), 'C', CURRENT_USER, CURRENT_DATE),
-       ('FSPTS_REVIEWER', 'Reviewer', 'Review FSPs, amendments, and extensions.', (select application_id from app_fam.fam_application where application_name = 'FSPTS_DEV'), 'C', CURRENT_USER, CURRENT_DATE),
-       ('FSPTS_VIEW_ALL', 'View All', 'View all approved FSPs.', (select application_id from app_fam.fam_application where application_name = 'FSPTS_DEV'), 'C', CURRENT_USER, CURRENT_DATE),
+VALUES ('FSPTS_ADMINISTRATOR', 'Administrator', 'Add, change, delete, and view FSPs.', (select application_id from app_fam.fam_application where application_name = 'FSPTS_DEV'), 'A', CURRENT_USER, CURRENT_DATE),
+       ('FSPTS_DECISION_MAKER', 'Decision Maker', 'Approve FSPs, amendments, and extensions.', (select application_id from app_fam.fam_application where application_name = 'FSPTS_DEV'), 'A', CURRENT_USER, CURRENT_DATE),
+       ('FSPTS_REVIEWER', 'Reviewer', 'Review FSPs, amendments, and extensions.', (select application_id from app_fam.fam_application where application_name = 'FSPTS_DEV'), 'A', CURRENT_USER, CURRENT_DATE),
+       ('FSPTS_VIEW_ALL', 'View All', 'View all approved FSPs.', (select application_id from app_fam.fam_application where application_name = 'FSPTS_DEV'), 'A', CURRENT_USER, CURRENT_DATE),
        ('FSPTS_SUBMITTER', 'Submitter', 'Submit FSPs, amendments, and extensions.', (select application_id from app_fam.fam_application where application_name = 'FSPTS_DEV'), 'A', CURRENT_USER, CURRENT_DATE),
        ('FSPTS_VIEW_ONLY', 'View Only', 'View approved FSPs submitted by organization.', (select application_id from app_fam.fam_application where application_name = 'FSPTS_DEV'), 'A', CURRENT_USER, CURRENT_DATE)
 ;
@@ -41,10 +43,10 @@ INSERT INTO app_fam.fam_role (
     create_user,
     create_date
 )
-VALUES ('FSPTS_ADMINISTRATOR', 'Administrator', 'Add, change, delete, and view FSPs.', (select application_id from app_fam.fam_application where application_name = 'FSPTS_TEST'), 'C', CURRENT_USER, CURRENT_DATE),
-       ('FSPTS_DECISION_MAKER', 'Decision Maker', 'Approve FSPs, amendments, and extensions.', (select application_id from app_fam.fam_application where application_name = 'FSPTS_TEST'), 'C', CURRENT_USER, CURRENT_DATE),
-       ('FSPTS_REVIEWER', 'Reviewer', 'Review FSPs, amendments, and extensions.', (select application_id from app_fam.fam_application where application_name = 'FSPTS_TEST'), 'C', CURRENT_USER, CURRENT_DATE),
-       ('FSPTS_VIEW_ALL', 'View All', 'View all approved FSPs.', (select application_id from app_fam.fam_application where application_name = 'FSPTS_TEST'), 'C', CURRENT_USER, CURRENT_DATE),
+VALUES ('FSPTS_ADMINISTRATOR', 'Administrator', 'Add, change, delete, and view FSPs.', (select application_id from app_fam.fam_application where application_name = 'FSPTS_TEST'), 'A', CURRENT_USER, CURRENT_DATE),
+       ('FSPTS_DECISION_MAKER', 'Decision Maker', 'Approve FSPs, amendments, and extensions.', (select application_id from app_fam.fam_application where application_name = 'FSPTS_TEST'), 'A', CURRENT_USER, CURRENT_DATE),
+       ('FSPTS_REVIEWER', 'Reviewer', 'Review FSPs, amendments, and extensions.', (select application_id from app_fam.fam_application where application_name = 'FSPTS_TEST'), 'A', CURRENT_USER, CURRENT_DATE),
+       ('FSPTS_VIEW_ALL', 'View All', 'View all approved FSPs.', (select application_id from app_fam.fam_application where application_name = 'FSPTS_TEST'), 'A', CURRENT_USER, CURRENT_DATE),
        ('FSPTS_SUBMITTER', 'Submitter', 'Submit FSPs, amendments, and extensions.', (select application_id from app_fam.fam_application where application_name = 'FSPTS_TEST'), 'A', CURRENT_USER, CURRENT_DATE),
        ('FSPTS_VIEW_ONLY', 'View Only', 'View approved FSPs submitted by organization.', (select application_id from app_fam.fam_application where application_name = 'FSPTS_TEST'), 'A', CURRENT_USER, CURRENT_DATE)
 ;
@@ -59,10 +61,10 @@ INSERT INTO app_fam.fam_role (
     create_user,
     create_date
 )
-VALUES ('FSPTS_ADMINISTRATOR', 'Administrator', 'Add, change, delete, and view FSPs.', (select application_id from app_fam.fam_application where application_name = 'FSPTS_PROD'), 'C', CURRENT_USER, CURRENT_DATE),
-       ('FSPTS_DECISION_MAKER', 'Decision Maker', 'Approve FSPs, amendments, and extensions.', (select application_id from app_fam.fam_application where application_name = 'FSPTS_PROD'), 'C', CURRENT_USER, CURRENT_DATE),
-       ('FSPTS_REVIEWER', 'Reviewer', 'Review FSPs, amendments, and extensions.', (select application_id from app_fam.fam_application where application_name = 'FSPTS_PROD'), 'C', CURRENT_USER, CURRENT_DATE),
-       ('FSPTS_VIEW_ALL', 'View All', 'View all approved FSPs.', (select application_id from app_fam.fam_application where application_name = 'FSPTS_PROD'), 'C', CURRENT_USER, CURRENT_DATE),
+VALUES ('FSPTS_ADMINISTRATOR', 'Administrator', 'Add, change, delete, and view FSPs.', (select application_id from app_fam.fam_application where application_name = 'FSPTS_PROD'), 'A', CURRENT_USER, CURRENT_DATE),
+       ('FSPTS_DECISION_MAKER', 'Decision Maker', 'Approve FSPs, amendments, and extensions.', (select application_id from app_fam.fam_application where application_name = 'FSPTS_PROD'), 'A', CURRENT_USER, CURRENT_DATE),
+       ('FSPTS_REVIEWER', 'Reviewer', 'Review FSPs, amendments, and extensions.', (select application_id from app_fam.fam_application where application_name = 'FSPTS_PROD'), 'A', CURRENT_USER, CURRENT_DATE),
+       ('FSPTS_VIEW_ALL', 'View All', 'View all approved FSPs.', (select application_id from app_fam.fam_application where application_name = 'FSPTS_PROD'), 'A', CURRENT_USER, CURRENT_DATE),
        ('FSPTS_SUBMITTER', 'Submitter', 'Submit FSPs, amendments, and extensions.', (select application_id from app_fam.fam_application where application_name = 'FSPTS_PROD'), 'A', CURRENT_USER, CURRENT_DATE),
        ('FSPTS_VIEW_ONLY', 'View Only', 'View approved FSPs submitted by organization.', (select application_id from app_fam.fam_application where application_name = 'FSPTS_PROD'), 'A', CURRENT_USER, CURRENT_DATE)
 ;
