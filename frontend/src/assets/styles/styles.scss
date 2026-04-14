@@ -19,6 +19,7 @@
     This file contains global styles and overrides for PrimeVue components.
     As of today, the package uses "@bcgov-nr/nr-theme": "~1.8.9".
     The nr-theme package after and including version 1.9.0 introduces "BC Sans 2.0" and some other changes.
+    Ref: https://github.com/bcgov/nr-theme/issues/185?reload=1
     That will result in visual look and feel differences in FAM on fonts and will require to adjust
     font-weight and font-size globally at "body { }" selector below or specifically in components/pages
     to match the look and feel of the existing FAM. For example, even with "font-weight: normal" at both
