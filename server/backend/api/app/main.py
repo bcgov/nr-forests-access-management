@@ -157,8 +157,6 @@ app.include_router(
 # If we initialize this in main then it doesn't call Cognito on every api call
 init_jwks()
 
-# If we initialize the key lookup then it doesn't call KMS on every api call
-
 if is_bcsc_key_enabled():
     LOGGER.info("BCSC Key endpoint enabled")
     init_bcsc_public_key()
