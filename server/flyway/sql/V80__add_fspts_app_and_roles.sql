@@ -14,8 +14,6 @@ VALUES ('FSPTS_DEV', 'Forest Stewardship Plan Tracking System (DEV)', 'DEV', CUR
 ;
 
 -- Add roles for FSPTS_DEV
--- Concrete ('C') roles are IDIR-based, assigned directly to a user.
--- Abstract ('A') roles are BCeID-based, scoped to a forest client (delegated access).
 INSERT INTO app_fam.fam_role (
     role_name,
     display_name,
@@ -30,7 +28,7 @@ VALUES ('FSPTS_ADMINISTRATOR', 'Administrator', 'Add, change, delete, and view F
        ('FSPTS_REVIEWER', 'Reviewer', 'Review FSPs, amendments, and extensions.', (select application_id from app_fam.fam_application where application_name = 'FSPTS_DEV'), 'C', CURRENT_USER, CURRENT_DATE),
        ('FSPTS_VIEW_ALL', 'View All', 'View all approved FSPs.', (select application_id from app_fam.fam_application where application_name = 'FSPTS_DEV'), 'C', CURRENT_USER, CURRENT_DATE),
        ('FSPTS_SUBMITTER', 'Submitter', 'Submit FSPs, amendments, and extensions.', (select application_id from app_fam.fam_application where application_name = 'FSPTS_DEV'), 'A', CURRENT_USER, CURRENT_DATE),
-       ('FSPTS_VIEW_ONLY', 'View Only', 'View approved FSPs submitted by organization, scoped to a forest client.', (select application_id from app_fam.fam_application where application_name = 'FSPTS_DEV'), 'A', CURRENT_USER, CURRENT_DATE)
+       ('FSPTS_VIEW_ONLY', 'View Only', 'View approved FSPs submitted by organization.', (select application_id from app_fam.fam_application where application_name = 'FSPTS_DEV'), 'A', CURRENT_USER, CURRENT_DATE)
 ;
 
 -- Add roles for FSPTS_TEST
@@ -48,7 +46,7 @@ VALUES ('FSPTS_ADMINISTRATOR', 'Administrator', 'Add, change, delete, and view F
        ('FSPTS_REVIEWER', 'Reviewer', 'Review FSPs, amendments, and extensions.', (select application_id from app_fam.fam_application where application_name = 'FSPTS_TEST'), 'C', CURRENT_USER, CURRENT_DATE),
        ('FSPTS_VIEW_ALL', 'View All', 'View all approved FSPs.', (select application_id from app_fam.fam_application where application_name = 'FSPTS_TEST'), 'C', CURRENT_USER, CURRENT_DATE),
        ('FSPTS_SUBMITTER', 'Submitter', 'Submit FSPs, amendments, and extensions.', (select application_id from app_fam.fam_application where application_name = 'FSPTS_TEST'), 'A', CURRENT_USER, CURRENT_DATE),
-       ('FSPTS_VIEW_ONLY', 'View Only', 'View approved FSPs submitted by organization, scoped to a forest client.', (select application_id from app_fam.fam_application where application_name = 'FSPTS_TEST'), 'A', CURRENT_USER, CURRENT_DATE)
+       ('FSPTS_VIEW_ONLY', 'View Only', 'View approved FSPs submitted by organization.', (select application_id from app_fam.fam_application where application_name = 'FSPTS_TEST'), 'A', CURRENT_USER, CURRENT_DATE)
 ;
 
 -- Add roles for FSPTS_PROD
@@ -66,7 +64,7 @@ VALUES ('FSPTS_ADMINISTRATOR', 'Administrator', 'Add, change, delete, and view F
        ('FSPTS_REVIEWER', 'Reviewer', 'Review FSPs, amendments, and extensions.', (select application_id from app_fam.fam_application where application_name = 'FSPTS_PROD'), 'C', CURRENT_USER, CURRENT_DATE),
        ('FSPTS_VIEW_ALL', 'View All', 'View all approved FSPs.', (select application_id from app_fam.fam_application where application_name = 'FSPTS_PROD'), 'C', CURRENT_USER, CURRENT_DATE),
        ('FSPTS_SUBMITTER', 'Submitter', 'Submit FSPs, amendments, and extensions.', (select application_id from app_fam.fam_application where application_name = 'FSPTS_PROD'), 'A', CURRENT_USER, CURRENT_DATE),
-       ('FSPTS_VIEW_ONLY', 'View Only', 'View approved FSPs submitted by organization, scoped to a forest client.', (select application_id from app_fam.fam_application where application_name = 'FSPTS_PROD'), 'A', CURRENT_USER, CURRENT_DATE)
+       ('FSPTS_VIEW_ONLY', 'View Only', 'View approved FSPs submitted by organization.', (select application_id from app_fam.fam_application where application_name = 'FSPTS_PROD'), 'A', CURRENT_USER, CURRENT_DATE)
 ;
 
 -- Create dev, test and prod Cognito app clients for FSPTS
