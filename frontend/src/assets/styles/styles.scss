@@ -13,6 +13,18 @@
     --primevue-striped-row-color: rgba(0, 0, 0, 0.05);
 }
 
+/*
+    Note:
+    FAM uses @bcgov-nr/nr-theme for design tokens and PrimeVue for UI components.
+    This file contains global styles and overrides for PrimeVue components.
+    As of today, the package uses "@bcgov-nr/nr-theme": "~1.8.9".
+    The nr-theme package after and including version 1.9.0 introduces "BC Sans 2.0" and some other changes.
+    That will result in visual look and feel differences in FAM on fonts and will require to adjust
+    font-weight and font-size globally at "body { }" selector below or specifically in components/pages
+    to match the look and feel of the existing FAM. For example, even with "font-weight: normal" at both
+    BC Sans and BC Sans 2.0, the font-weight looks different.
+    We currently decided to keep using ~1.8.9 version of nr-theme package.
+*/
 // Global styles
 body {
     padding: 0;
