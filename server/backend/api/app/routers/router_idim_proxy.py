@@ -33,7 +33,7 @@ def idir_lookup(
 ):
     LOGGER.debug(f"Searching IDIR user with parameter user_id: {user_id}")
     idim_proxy_api = IdimProxyService(requester, api_instance_env)
-    search_result = idim_proxy_api.search_idir(
+    search_result = idim_proxy_api.lookup_idir(
         IdimProxySearchParamSchema(**{"userId": user_id})
     )
     return search_result
@@ -47,7 +47,7 @@ def bceid_lookup(
 ):
     LOGGER.debug(f"Searching BCEID user with parameter user_id: {user_id}")
     idim_proxy_api = IdimProxyService(requester, api_instance_env)
-    search_result = idim_proxy_api.search_business_bceid(
+    search_result = idim_proxy_api.lookup_business_bceid(
         IdimProxyBceidSearchParamSchema(
             **{"searchUserBy": IdimSearchUserParamType.USER_ID, "searchValue": user_id}
         )

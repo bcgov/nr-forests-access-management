@@ -30,7 +30,7 @@ class TargetUserValidator:
         search_result = None
         if self.verified_target_user.user_type_code == UserType.IDIR:
             # IDIM web service doesn't support search IDIR by user_guid, so we search by userID
-            search_result = self.idim_proxy_service.search_idir(
+            search_result = self.idim_proxy_service.lookup_idir(
                 IdimProxySearchParamSchema(
                     **{"userId": self.verified_target_user.user_name}
                 )
@@ -53,7 +53,7 @@ class TargetUserValidator:
                 )
 
         elif self.verified_target_user.user_type_code == UserType.BCEID:
-            search_result = self.idim_proxy_service.search_business_bceid(
+            search_result = self.idim_proxy_service.lookup_business_bceid(
                 IdimProxyBceidSearchParamSchema(
                     **{
                         "searchUserBy": IdimSearchUserParamType.USER_GUID,

@@ -66,7 +66,7 @@ class TestIdimProxyServiceClass(object):
         idim_proxy_api = IdimProxyService(self.requester_idir)
         idim_proxy_api.session.headers.update({"X-API-KEY": "Not-A-Valid-Key"})
         with pytest.raises(Exception) as excinfo:
-            idim_proxy_api.search_idir(self.search_params_idir)
+            idim_proxy_api.lookup_idir(self.search_params_idir)
 
         assert excinfo.type == HTTPError
         assert excinfo.match("401 Client Error: Unauthorized")
@@ -80,7 +80,7 @@ class TestIdimProxyServiceClass(object):
         idim_proxy_api = IdimProxyService(copy.deepcopy(self.requester_idir))
         idim_proxy_api.requester.user_name = "USER_NOT_EXIST"
         with pytest.raises(Exception) as excinfo:
-            idim_proxy_api.search_idir(self.search_params_idir)
+            idim_proxy_api.lookup_idir(self.search_params_idir)
 
         assert excinfo.type == HTTPError
         assert excinfo.match("400 Client Error: Bad Request")
@@ -90,7 +90,7 @@ class TestIdimProxyServiceClass(object):
         search_params = copy.deepcopy(self.search_params_idir)
         valid_idir_user = "MOF_FAMD"
         search_params.userId = valid_idir_user
-        search_result = idim_proxy_api.search_idir(search_params)
+        search_result = idim_proxy_api.lookup_idir(search_params)
 
         assert search_result["found"] == True
         assert search_result["userId"] == valid_idir_user
@@ -102,7 +102,7 @@ class TestIdimProxyServiceClass(object):
         search_params = copy.deepcopy(self.search_params_idir)
         not_exists_idir_user = "USERNOTEXISTS"
         search_params.userId = not_exists_idir_user
-        search_result = idim_proxy_api.search_idir(search_params)
+        search_result = idim_proxy_api.lookup_idir(search_params)
 
         assert search_result["found"] == False
 
@@ -112,7 +112,7 @@ class TestIdimProxyServiceClass(object):
         idim_proxy_api = IdimProxyService(self.requester_idir)
         search_params = copy.deepcopy(self.search_params_business_bceid_same_org)
         search_params.searchValue = "USERNOTEXISTS"
-        search_result = idim_proxy_api.search_business_bceid(search_params)
+        search_result = idim_proxy_api.lookup_business_bceid(search_params)
 
         assert search_result["found"] == False
         assert search_result["userId"] == search_params.searchValue
@@ -122,7 +122,7 @@ class TestIdimProxyServiceClass(object):
         idim_proxy_api = IdimProxyService(self.requester_business_bceid)
         search_params = copy.deepcopy(self.search_params_business_bceid_same_org)
         search_params.searchValue = "USERNOTEXISTS"
-        search_result = idim_proxy_api.search_business_bceid(search_params)
+        search_result = idim_proxy_api.lookup_business_bceid(search_params)
 
         assert search_result["found"] == False
         assert search_result["userId"] == search_params.searchValue
@@ -131,7 +131,7 @@ class TestIdimProxyServiceClass(object):
         idim_proxy_api = IdimProxyService(copy.deepcopy(self.requester_idir))
 
         # for IDIR Requester, it does not matter the "business organization" for BCeID user.
-        search_result = idim_proxy_api.search_business_bceid(
+        search_result = idim_proxy_api.lookup_business_bceid(
             self.search_params_business_bceid_same_org
         )
 
@@ -149,7 +149,7 @@ class TestIdimProxyServiceClass(object):
         idim_proxy_api = IdimProxyService(self.requester_business_bceid)
 
         # This search_params uses "TEST-3-LOAD-CHILD-1", same org with "LOAD-3-TEST"
-        search_result = idim_proxy_api.search_business_bceid(
+        search_result = idim_proxy_api.lookup_business_bceid(
             search_params=self.search_params_business_bceid_same_org
         )
 
@@ -166,7 +166,7 @@ class TestIdimProxyServiceClass(object):
         idim_proxy_api = IdimProxyService(self.requester_business_bceid)
 
         with pytest.raises(HTTPException) as excinfo:
-            idim_proxy_api.search_business_bceid(
+            idim_proxy_api.lookup_business_bceid(
                 search_params=self.search_params_business_bceid_diff_org
             )
 
@@ -183,7 +183,7 @@ class TestIdimProxyServiceClass(object):
                 "searchValue": USER_GUID_BCEID_LOAD_3_TEST,
             }
         )
-        search_result = idim_proxy_api.search_business_bceid(search_params)
+        search_result = idim_proxy_api.lookup_business_bceid(search_params)
 
         assert search_result["found"]
         assert search_result["userId"] == USER_NAME_BCEID_LOAD_3_TEST
@@ -207,7 +207,7 @@ class TestIdimProxyServiceClass(object):
                 "searchValue": USER_GUID_BCEID_LOAD_3_TEST_CHILD_1,
             }
         )
-        search_result = idim_proxy_api.search_business_bceid(search_params)
+        search_result = idim_proxy_api.lookup_business_bceid(search_params)
 
         assert search_result["found"]
         assert search_result["userId"] == USER_NAME_BCEID_LOAD_3_TEST_CHILD_1

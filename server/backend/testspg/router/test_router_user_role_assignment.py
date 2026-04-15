@@ -1361,7 +1361,7 @@ def test_delete_user_role_assignment__bceid_requester_cannot_delete_inactive_tar
     user_role_xref_id = access_grants_created[0]
 
     override_depends__enforce_bceid_terms_conditions_guard()
-    mock_idim_proxy_integratioin_service.search_business_bceid.return_value = {
+    mock_idim_proxy_integratioin_service.lookup_business_bceid.return_value = {
         'found': False, 'userId': new_target_user.user_name
     }
     db_delete_fn_spy = mocker.spy(db_pg_session, "delete")

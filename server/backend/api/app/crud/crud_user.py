@@ -312,7 +312,7 @@ def update_user_info_from_idim_source(
 
             if user.user_type_code == UserType.IDIR:
                 # IDIM web service doesn't support search IDIR by user_guid, so we search by userID
-                search_result = idim_proxy_service.search_idir(
+                search_result = idim_proxy_service.lookup_idir(
                     IdimProxySearchParamSchema(**{"userId": user.user_name})
                 )
 
@@ -320,7 +320,7 @@ def update_user_info_from_idim_source(
                 if user.user_guid:
                     # IDIM recommends searching by user_guid.
                     # if found business bceid user by user_guid, update username if necessary
-                    search_result = idim_proxy_service.search_business_bceid(
+                    search_result = idim_proxy_service.lookup_business_bceid(
                         IdimProxyBceidSearchParamSchema(
                             **{
                                 "searchUserBy": IdimSearchUserParamType.USER_GUID,
@@ -334,7 +334,7 @@ def update_user_info_from_idim_source(
 
                 else:
                     # if user has no user_guid in our database, find by user_name and add user_guid to database
-                    search_result = idim_proxy_service.search_business_bceid(
+                    search_result = idim_proxy_service.lookup_business_bceid(
                         IdimProxyBceidSearchParamSchema(
                             **{
                                 "searchUserBy": IdimSearchUserParamType.USER_ID,
