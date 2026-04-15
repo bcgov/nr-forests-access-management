@@ -71,12 +71,12 @@ class TestIdimProxyServiceClass(object):
         assert excinfo.type == HTTPError
         assert excinfo.match("401 Client Error: Unauthorized")
 
-    # --- Performs search_idir user (This is only for IDIR requester) ---
+    # --- Performs lookup_idir user (This is only for IDIR requester) ---
 
     @pytest.mark.skip(
         reason="Temporary IDIR search production fix break this test. Fix or enable later."
     )
-    def test_search_idir__invalid_idir_requester_error_rasied(self):
+    def test_lookup_idir__invalid_idir_requester_error_rasied(self):
         idim_proxy_api = IdimProxyService(copy.deepcopy(self.requester_idir))
         idim_proxy_api.requester.user_name = "USER_NOT_EXIST"
         with pytest.raises(Exception) as excinfo:
@@ -85,7 +85,7 @@ class TestIdimProxyServiceClass(object):
         assert excinfo.type == HTTPError
         assert excinfo.match("400 Client Error: Bad Request")
 
-    def test_search_idir__valid_idir_search_pass(self):
+    def test_lookup_idir__valid_idir_search_pass(self):
         idim_proxy_api = IdimProxyService(self.requester_idir)
         search_params = copy.deepcopy(self.search_params_idir)
         valid_idir_user = "MOF_FAMD"
@@ -97,7 +97,7 @@ class TestIdimProxyServiceClass(object):
         assert search_result["firstName"] is not None
         assert search_result["lastName"] is not None
 
-    def test_search_idir__user_not_exist_no_user_found(self):
+    def test_lookup_idir__user_not_exist_no_user_found(self):
         idim_proxy_api = IdimProxyService(self.requester_idir)
         search_params = copy.deepcopy(self.search_params_idir)
         not_exists_idir_user = "USERNOTEXISTS"
@@ -106,9 +106,9 @@ class TestIdimProxyServiceClass(object):
 
         assert search_result["found"] == False
 
-    # --- Performs search_business_bceid user (IDIR Requester/BCeID Requester) ---
+    # --- Performs lookup_business_bceid user (IDIR Requester/BCeID Requester) ---
 
-    def test_search_bceid__idir_requester_user_not_exist_not_found(self):
+    def test_lookup_business_bceid__idir_requester_user_not_exist_not_found(self):
         idim_proxy_api = IdimProxyService(self.requester_idir)
         search_params = copy.deepcopy(self.search_params_business_bceid_same_org)
         search_params.searchValue = "USERNOTEXISTS"
@@ -117,7 +117,7 @@ class TestIdimProxyServiceClass(object):
         assert search_result["found"] == False
         assert search_result["userId"] == search_params.searchValue
 
-    def test_search_bceid__bceid_requester_user_not_exist_not_found(self):
+    def test_lookup_business_bceid__bceid_requester_user_not_exist_not_found(self):
         # test bceid search for unknow bceid
         idim_proxy_api = IdimProxyService(self.requester_business_bceid)
         search_params = copy.deepcopy(self.search_params_business_bceid_same_org)
@@ -127,7 +127,7 @@ class TestIdimProxyServiceClass(object):
         assert search_result["found"] == False
         assert search_result["userId"] == search_params.searchValue
 
-    def test_search_bceid__idir_requester_by_userid_search_pass(self):
+    def test_lookup_business_bceid__idir_requester_by_userid_search_pass(self):
         idim_proxy_api = IdimProxyService(copy.deepcopy(self.requester_idir))
 
         # for IDIR Requester, it does not matter the "business organization" for BCeID user.
@@ -143,7 +143,7 @@ class TestIdimProxyServiceClass(object):
         assert search_result["firstName"] is not None
         assert search_result["lastName"] is not None
 
-    def test_search_bceid__bceid_requester_by_userid_same_org_search_pass(self):
+    def test_lookup_business_bceid__bceid_requester_by_userid_same_org_search_pass(self):
         # we use test bceid account for this test, cause we need user's guid, and we don't want to use any IDIR's guid
         # test bceid search for bceid within the same organization
         idim_proxy_api = IdimProxyService(self.requester_business_bceid)
