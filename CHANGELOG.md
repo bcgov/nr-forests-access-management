@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.11.0](https://github.com/bcgov/nr-forests-access-management/compare/v2.10.3...v2.11.0) (2026-04-15)
+
+
+### Features
+
+* [#2140](https://github.com/bcgov/nr-forests-access-management/issues/2140) Onboard FSPTS App to FAM ([#2144](https://github.com/bcgov/nr-forests-access-management/issues/2144)) ([bd65bbd](https://github.com/bcgov/nr-forests-access-management/commit/bd65bbd784f7438c2965f3ab9621715c6c6e948e))
+
+
+### Bug Fixes
+
+* [#2173](https://github.com/bcgov/nr-forests-access-management/issues/2173) Font Weight From nr-theme Package ([#2142](https://github.com/bcgov/nr-forests-access-management/issues/2142)) ([837e9bf](https://github.com/bcgov/nr-forests-access-management/commit/837e9bf93a42bef4029cafc18180d7c169abc2b9))
+
 ## [2.10.3](https://github.com/bcgov/nr-forests-access-management/compare/v2.10.2...v2.10.3) (2026-04-13)
 
 
