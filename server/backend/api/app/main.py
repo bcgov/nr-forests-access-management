@@ -113,7 +113,7 @@ app.include_router(
 )
 app.include_router(
     router_idim_proxy.router,
-    prefix=internal_api_prefix + "/identity-search",
+    prefix=internal_api_prefix + "/identity-lookup",
     dependencies=[Depends(router_guards.authorize)],
     tags=["IDIR/BCeID Proxy"],
 )

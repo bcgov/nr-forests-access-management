@@ -428,13 +428,13 @@
         }
       }
     },
-    "/identity-search/idir": {
+    "/identity-lookup/idir": {
       "get": {
         "tags": [
           "IDIR/BCeID Proxy"
         ],
-        "summary": "Idir Search",
-        "operationId": "idir_search",
+        "summary": "Idir Lookup",
+        "operationId": "idir_lookup",
         "security": [
           {
             "7qtdtska897dt6kandveusvd88": []
@@ -485,13 +485,13 @@
         }
       }
     },
-    "/identity-search/bceid": {
+    "/identity-lookup/bceid": {
       "get": {
         "tags": [
           "IDIR/BCeID Proxy"
         ],
-        "summary": "Bceid Search",
-        "operationId": "bceid_search",
+        "summary": "Bceid Lookup",
+        "operationId": "bceid_lookup",
         "security": [
           {
             "7qtdtska897dt6kandveusvd88": []

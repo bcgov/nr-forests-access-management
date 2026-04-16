@@ -1,12 +1,20 @@
 import logging
+import time
 from http import HTTPStatus
 
 import requests
 from api.app.constants import (IDIM_PROXY_ACCOUNT_TYPE_MAP, ApiInstanceEnv,
                                UserType)
 from api.app.jwt_validation import ERROR_PERMISSION_REQUIRED
-from api.app.schemas import (IdimProxyBceidSearchParamSchema,
-                             IdimProxySearchParamSchema, RequesterSchema)
+from api.app.schemas import (
+    IdimProxyBceidSearchParamSchema,
+    IdimProxySearchParamSchema,
+    RequesterSchema,
+)
+from api.app.schemas.idim_proxy_idir_users_search import (
+    IdimProxyIdirUsersSearchParamReqSchema,
+    IdimProxyIdirUsersSearchResSchema,
+)
 from api.config import config
 from fastapi import HTTPException
 
@@ -15,7 +23,7 @@ LOGGER = logging.getLogger(__name__)
 
 class IdimProxyService:
     """
-    The class is used for making requests to search IDIR/BCeID information from IDIM Proxy API.
+    The class is used for making requests to lookup/search IDIR/BCeID information from IDIM Proxy API.
     See environment setup (local-dev.env) for idim-proxy configuration.
     Note:
         Currently IDIM Proxy is configured to use the same api key value.
@@ -46,38 +54,17 @@ class IdimProxyService:
         self.session = requests.Session()
         self.session.headers.update(self.headers)
 
-    def search_idir(self, search_params: IdimProxySearchParamSchema):
+    def lookup_idir(self, search_params: IdimProxySearchParamSchema):
         """
-        Search on IDIR user.
+        Lookup single IDIR user.
         Note, current idim-proxy only does exact match.
         """
-
-        """
-        TODO: original IDIR search method. Temporarily commented out   # noqa NOSONAR
-        IDIM Consulting currently breaks the production IDIR looks up IDIR user scenario.
-
-        # query_params to request to idim-proxy
-        query_params = vars(search_params)
-        query_params.update({"requesterUserId": self.requester.user_name})
-        # The proxy allows only "Internal" for this search.
-        query_params.update(
-            {"requesterAccountTypeCode": IDIM_PROXY_ACCOUNT_TYPE_MAP[UserType.IDIR]}
-        )
-
-        url = f"{self.api_idim_proxy_url}/idir"
-        LOGGER.info(
-            f"IdimProxyService search_idir() - url: {url} and param: {query_params}"
-        )
-        """
-
-        # --- new temporary IDIR call to fix production issue (see above old code comment)
         query_params = vars(search_params)
         query_params.update({"requesterUserGuid": self.requester.user_guid})
         url = f"{self.api_idim_proxy_url}/idir-account-detail"
         LOGGER.info(
-            f"IdimProxyService search_idir() - url: {url} and param: {query_params}"
+            f"IdimProxyService lookup_idir() - url: {url} and param: {query_params}"
         )
-        # --- end new temporary IDIR call to fix production issue
 
         r = self.session.get(url, timeout=self.TIMEOUT, params=query_params)
         r.raise_for_status()  # There is a general error handler, see: requests_http_error_handler
@@ -85,10 +72,10 @@ class IdimProxyService:
         LOGGER.debug(f"API result: {api_result}")
         return api_result
 
-    def search_business_bceid(self, search_params: IdimProxyBceidSearchParamSchema):
+    def lookup_business_bceid(self, search_params: IdimProxyBceidSearchParamSchema):
         """
-        Search on Business BCEID user.
-        This search can be perfomed by IDIR requester or BCeID requester by passing "user_guid" to
+        Lookup single Business BCEID user.
+        This lookup can be performed by IDIR requester or BCeID requester by passing "user_guid" to
         "requesterUserGuid".
         search_param: is of type "IdimProxyBceidSearchParamSchema" and can be 'searchUserBy'
             - "userId" or
@@ -107,7 +94,7 @@ class IdimProxyService:
 
         url = f"{self.api_idim_proxy_url}/businessBceid"
         LOGGER.info(
-            f"IdimProxyService search_business_bceid() - url: {url} and param: {query_params}"
+            f"IdimProxyService lookup_business_bceid() - url: {url} and param: {query_params}"
         )
 
         r = self.session.get(url, timeout=self.TIMEOUT, params=query_params)
@@ -130,3 +117,39 @@ class IdimProxyService:
 
         LOGGER.debug(f"API result: {api_result}")
         return api_result
+
+    def search_idir_users(
+        self, search_params: IdimProxyIdirUsersSearchParamReqSchema
+    ):
+        """
+        Search IDIR users with optional partial-match query fields.
+        """
+        query_params = search_params.model_dump(exclude_none=True)
+        body = {"requesterUserGuid": self.requester.user_guid}
+        url = f"{self.api_idim_proxy_url}/idir-users/search"
+
+        LOGGER.info(
+            "IdimProxyService search_idir_users() - url: %s and query: %s",
+            url,
+            query_params,
+        )
+
+        start = time.perf_counter()
+        try:
+            r = self.session.post(
+                url,
+                timeout=self.TIMEOUT,
+                params=query_params,
+                json=body,
+            )
+            r.raise_for_status()
+            api_result = IdimProxyIdirUsersSearchResSchema(**r.json()).model_dump()
+            LOGGER.debug("API result: %s", api_result)
+            return api_result
+        finally:
+            elapsed_ms = (time.perf_counter() - start) * 1000
+            LOGGER.info(
+                "IdimProxyService search_idir_users() completed in %.2f ms for url: %s",
+                elapsed_ms,
+                url,
+            )

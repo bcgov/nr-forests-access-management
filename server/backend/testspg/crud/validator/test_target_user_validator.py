@@ -48,9 +48,9 @@ class TestUserValidatorClass(object):
         # local valid mock RequesterSchema
         self.requester_idir = RequesterSchema(**TEST_IDIR_REQUESTER_DICT)
 
-    @patch.object(IdimProxyService, "search_idir")
-    def test_verify_user_exist_idir(self, mock_search_idir):
-        mock_search_idir.return_value = MOCK_SERACH_IDIR_RETURN
+    @patch.object(IdimProxyService, "lookup_idir")
+    def test_verify_user_exist_idir(self, mock_lookup_idir):
+        mock_lookup_idir.return_value = MOCK_SERACH_IDIR_RETURN
         target_user = TargetUserSchema(**TEST_IDIR_REQUESTER_DICT)
         target_user_validaor = TargetUserValidator(
             self.requester_idir, target_user, ApiInstanceEnv.TEST
@@ -61,9 +61,9 @@ class TestUserValidatorClass(object):
         assert verified_target_user.user_type_code == target_user.user_type_code
         assert verified_target_user.user_name == target_user.user_name
 
-    @patch.object(IdimProxyService, "search_idir")
-    def test_verify_user_exist_idir_not_found(self, mock_search_idir):
-        mock_search_idir.return_value = {**MOCK_SERACH_IDIR_RETURN, "found": False}
+    @patch.object(IdimProxyService, "lookup_idir")
+    def test_verify_user_exist_idir_not_found(self, mock_lookup_idir):
+        mock_lookup_idir.return_value = {**MOCK_SERACH_IDIR_RETURN, "found": False}
         target_user = TargetUserSchema(
             **{**TEST_IDIR_REQUESTER_DICT, "user_name": "USER_NOT_EXISTS"}
         )
@@ -84,9 +84,9 @@ class TestUserValidatorClass(object):
             != -1
         )
 
-    @patch.object(IdimProxyService, "search_idir")
-    def test_verify_user_exist_idir_mismatch_info(self, mock_search_idir):
-        mock_search_idir.return_value = MOCK_SERACH_IDIR_RETURN
+    @patch.object(IdimProxyService, "lookup_idir")
+    def test_verify_user_exist_idir_mismatch_info(self, mock_lookup_idir):
+        mock_lookup_idir.return_value = MOCK_SERACH_IDIR_RETURN
         target_user = TargetUserSchema(
             **{
                 **TEST_IDIR_REQUESTER_DICT,
@@ -108,9 +108,9 @@ class TestUserValidatorClass(object):
             != -1
         )
 
-    @patch.object(IdimProxyService, "search_business_bceid")
-    def test_verify_user_exist_bceid(self, mock_search_business_bceid):
-        mock_search_business_bceid.return_value = MOCK_SERACH_BCEID_RETURN
+    @patch.object(IdimProxyService, "lookup_business_bceid")
+    def test_verify_user_exist_bceid(self, mock_lookup_business_bceid):
+        mock_lookup_business_bceid.return_value = MOCK_SERACH_BCEID_RETURN
         target_user = TargetUserSchema(**TEST_TARGET_USER_BCEID_LOAD_2)
         target_user_validaor = TargetUserValidator(
             self.requester_idir, target_user, ApiInstanceEnv.TEST
@@ -122,9 +122,9 @@ class TestUserValidatorClass(object):
         assert verified_target_user.user_name == target_user.user_name
         assert verified_target_user.business_guid is not None
 
-    @patch.object(IdimProxyService, "search_business_bceid")
-    def test_verify_user_exist_bceid_not_found(self, mock_search_business_bceid):
-        mock_search_business_bceid.return_value = {
+    @patch.object(IdimProxyService, "lookup_business_bceid")
+    def test_verify_user_exist_bceid_not_found(self, mock_lookup_business_bceid):
+        mock_lookup_business_bceid.return_value = {
             **MOCK_SERACH_BCEID_RETURN,
             "found": False,
         }
@@ -151,9 +151,9 @@ class TestUserValidatorClass(object):
             != -1
         )
 
-    @patch.object(IdimProxyService, "search_business_bceid")
-    def test_verify_user_exist_bceid_mismatch_info(self, mock_search_business_bceid):
-        mock_search_business_bceid.return_value = MOCK_SERACH_BCEID_RETURN
+    @patch.object(IdimProxyService, "lookup_business_bceid")
+    def test_verify_user_exist_bceid_mismatch_info(self, mock_lookup_business_bceid):
+        mock_lookup_business_bceid.return_value = MOCK_SERACH_BCEID_RETURN
         target_user = TargetUserSchema(
             **{
                 **TEST_TARGET_USER_BCEID_LOAD_2,
@@ -182,12 +182,12 @@ class DummyFamRole:
     def __init__(self, application):
         self.application = application
 
-@patch.object(IdimProxyService, "search_idir")
-def test_validate_target_users_all_verified(mock_search_idir):
+@patch.object(IdimProxyService, "lookup_idir")
+def test_validate_target_users_all_verified(mock_lookup_idir):
     """
     Test validate_target_users where all users are valid and verified.
     """
-    mock_search_idir.return_value = MOCK_SERACH_IDIR_RETURN
+    mock_lookup_idir.return_value = MOCK_SERACH_IDIR_RETURN
     requester = RequesterSchema(**TEST_IDIR_REQUESTER_DICT)
     target_users = [TargetUserSchema(**TEST_IDIR_REQUESTER_DICT)]
     fam_role = DummyFamRole(application="FOM")
@@ -198,8 +198,8 @@ def test_validate_target_users_all_verified(mock_search_idir):
     assert result.verified_users[0].user_guid == target_users[0].user_guid
 
 
-@patch.object(IdimProxyService, "search_idir")
-def test_validate_target_users_some_failed(mock_search_idir):
+@patch.object(IdimProxyService, "lookup_idir")
+def test_validate_target_users_some_failed(mock_lookup_idir):
     """
     Test validate_target_users where some users fail validation.
     """
@@ -208,7 +208,7 @@ def test_validate_target_users_some_failed(mock_search_idir):
         if param.userId == TEST_IDIR_REQUESTER_DICT["user_name"]:
             return MOCK_SERACH_IDIR_RETURN
         return {**MOCK_SERACH_IDIR_RETURN, "found": False}
-    mock_search_idir.side_effect = side_effect
+    mock_lookup_idir.side_effect = side_effect
 
     requester = RequesterSchema(**TEST_IDIR_REQUESTER_DICT)
     valid_user = TargetUserSchema(**TEST_IDIR_REQUESTER_DICT)
@@ -228,12 +228,12 @@ def test_validate_target_users_some_failed(mock_search_idir):
     assert "cannot find user" in failed.error_reason
 
 
-@patch.object(IdimProxyService, "search_idir")
-def test_validate_target_users_all_failed(mock_search_idir):
+@patch.object(IdimProxyService, "lookup_idir")
+def test_validate_target_users_all_failed(mock_lookup_idir):
     """
     Test validate_target_users where all users fail validation.
     """
-    mock_search_idir.return_value = {**MOCK_SERACH_IDIR_RETURN, "found": False}
+    mock_lookup_idir.return_value = {**MOCK_SERACH_IDIR_RETURN, "found": False}
 
     requester = RequesterSchema(**TEST_IDIR_REQUESTER_DICT)
     user1 = TargetUserSchema(**{**TEST_IDIR_REQUESTER_DICT, "user_name": "USER_NOT_EXISTS1", "user_guid": "BADUSERGUID000000000000000000001"})
@@ -248,12 +248,12 @@ def test_validate_target_users_all_failed(mock_search_idir):
         assert "cannot find user" in failed.error_reason
 
 
-@patch.object(IdimProxyService, "search_business_bceid")
-def test_validate_target_users_on_bceid_user(mock_search_business_bceid):
+@patch.object(IdimProxyService, "lookup_business_bceid")
+def test_validate_target_users_on_bceid_user(mock_lookup_business_bceid):
     """
     validate_target_users with a valid BCeID user.
     """
-    mock_search_business_bceid.return_value = MOCK_SERACH_BCEID_RETURN
+    mock_lookup_business_bceid.return_value = MOCK_SERACH_BCEID_RETURN
     requester = RequesterSchema(**TEST_BCEID_REQUESTER_DICT)
     target_users = [TargetUserSchema(**TEST_TARGET_USER_BCEID_LOAD_2)]
     fam_role = DummyFamRole(application="FOM")

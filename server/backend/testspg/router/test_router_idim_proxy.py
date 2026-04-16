@@ -21,9 +21,9 @@ from testspg.constants import (FOM_DEV_APPLICATION_ID,
 LOGGER = logging.getLogger(__name__)
 
 
-endPoint_search_idir = f"{internal_api_prefix}/identity-search/idir"
-endPoint_search_bceid = f"{internal_api_prefix}/identity-search/bceid"
-endPoint_search_param_application_id = f"&application_id={FOM_DEV_APPLICATION_ID}"
+endPoint_lookup_idir = f"{internal_api_prefix}/identity-lookup/idir"
+endPoint_lookup_bceid = f"{internal_api_prefix}/identity-lookup/bceid"
+endPoint_lookup_param_application_id = f"&application_id={FOM_DEV_APPLICATION_ID}"
 valid_user_id_param = "CMENG"
 valid_user_id_param_business_bceid = "LOAD-2-TEST"
 
@@ -57,7 +57,7 @@ async def mock_get_current_requester_user_not_exists():
 @pytest.mark.skip(
     reason="Temporary IDIR search production fix break this test. Fix or enable later."
 )
-def test_search_idir_with_valid_user_found_result(
+def test_lookup_idir_with_valid_user_found_result(
     test_client_fixture: test_client_fixture, test_rsa_key
 ):
     """
@@ -70,9 +70,9 @@ def test_search_idir_with_valid_user_found_result(
     )
 
     test_end_point = (
-        endPoint_search_idir
+        endPoint_lookup_idir
         + f"?user_id={valid_user_id_param}"
-        + endPoint_search_param_application_id
+        + endPoint_lookup_param_application_id
     )
     LOGGER.debug(f"test_end_point: {test_end_point}")
     token = jwt_utils.create_jwt_token(test_rsa_key)
@@ -90,7 +90,7 @@ def test_search_idir_with_valid_user_found_result(
 @pytest.mark.skip(
     reason="Temporary IDIR search production fix break this test. Fix or enable later."
 )
-def test_search_idir_with_invalid_user_return_not_found(
+def test_lookup_idir_with_invalid_user_return_not_found(
     test_client_fixture: test_client_fixture, test_rsa_key
 ):
     """
@@ -104,9 +104,9 @@ def test_search_idir_with_invalid_user_return_not_found(
 
     invalid_user_id_param = "USERNOTEXISTS"
     test_end_point = (
-        endPoint_search_idir
+        endPoint_lookup_idir
         + f"?user_id={invalid_user_id_param}"
-        + endPoint_search_param_application_id
+        + endPoint_lookup_param_application_id
     )
     LOGGER.debug(f"test_end_point: {test_end_point}")
     token = jwt_utils.create_jwt_token(test_rsa_key)
@@ -121,7 +121,7 @@ def test_search_idir_with_invalid_user_return_not_found(
     assert response.json()["lastName"] is None
 
 
-def test_none_idir_user_cannot_search_idir_user(
+def test_none_idir_user_cannot_lookup_idir_user(
     test_client_fixture: TestClient, test_rsa_key
 ):
     """
@@ -135,9 +135,9 @@ def test_none_idir_user_cannot_search_idir_user(
     )
 
     test_end_point = (
-        endPoint_search_idir
+        endPoint_lookup_idir
         + f"?user_id={valid_user_id_param}"
-        + endPoint_search_param_application_id
+        + endPoint_lookup_param_application_id
     )
     token = jwt_utils.create_jwt_token(test_rsa_key)
     response = test_client_fixture.get(
@@ -148,7 +148,7 @@ def test_none_idir_user_cannot_search_idir_user(
     assert "Action is not allowed for external user." in response.text
 
 
-def test_search_idir_user_requester_not_found_error_raised(
+def test_lookup_idir_user_requester_not_found_error_raised(
     test_client_fixture: TestClient, test_rsa_key
 ):
     """
@@ -162,9 +162,9 @@ def test_search_idir_user_requester_not_found_error_raised(
     )
 
     test_end_point = (
-        endPoint_search_idir
+        endPoint_lookup_idir
         + f"?user_id={valid_user_id_param}"
-        + endPoint_search_param_application_id
+        + endPoint_lookup_param_application_id
     )
     token = jwt_utils.create_jwt_token(test_rsa_key)
     response = test_client_fixture.get(
@@ -175,12 +175,12 @@ def test_search_idir_user_requester_not_found_error_raised(
     assert "Requester does not exist" in response.text
 
 
-# --------------------- Test search for Business BCEID --------------------------- #
-def test_search_bceid_with_valid_user_same_org_found_result(
+# --------------------- Test lookup for Business BCEID --------------------------- #
+def test_lookup_business_bceid_with_valid_user_same_org_found_result(
     test_client_fixture: test_client_fixture, test_rsa_key
 ):
     """
-    Test business bceid user search valid business bceid user_id within same organization
+    Test business bceid user lookup valid business bceid user_id within same organization
     """
     # override dependency for Requester on router.
     app = test_client_fixture.app
@@ -188,9 +188,9 @@ def test_search_bceid_with_valid_user_same_org_found_result(
         mock_get_current_requester_with_business_bceid_user
     )
     test_end_point = (
-        endPoint_search_bceid
+        endPoint_lookup_bceid
         + f"?user_id={TEST_VALID_BUSINESS_BCEID_USERNAME_ONE}"
-        + endPoint_search_param_application_id
+        + endPoint_lookup_param_application_id
     )
     LOGGER.debug(f"test_end_point: {test_end_point}")
     token = jwt_utils.create_jwt_token(test_rsa_key)
@@ -208,11 +208,11 @@ def test_search_bceid_with_valid_user_same_org_found_result(
     assert response.json()["lastName"] is not None
 
 
-def test_search_bceid_with_valid_user_diff_org_fail(
+def test_lookup_business_bceid_with_valid_user_diff_org_fail(
     test_client_fixture: test_client_fixture, test_rsa_key
 ):
     """
-    Test business bceid user search valid business bceid user_id from different organization
+    Test business bceid user lookup valid business bceid user_id from different organization
     """
     # override dependency for Requester on router.
     app = test_client_fixture.app
@@ -220,9 +220,9 @@ def test_search_bceid_with_valid_user_diff_org_fail(
         mock_get_current_requester_with_business_bceid_user
     )
     test_end_point = (
-        endPoint_search_bceid
+        endPoint_lookup_bceid
         + f"?user_id={TEST_VALID_BUSINESS_BCEID_USERNAME_TWO}"
-        + endPoint_search_param_application_id
+        + endPoint_lookup_param_application_id
     )
     LOGGER.debug(f"test_end_point: {test_end_point}")
     token = jwt_utils.create_jwt_token(test_rsa_key)
@@ -235,7 +235,7 @@ def test_search_bceid_with_valid_user_diff_org_fail(
     assert str(response.json()["detail"]).find(ERROR_PERMISSION_REQUIRED) != -1
 
 
-def test_search_bceid_with_valid_user_without_authorization_fail(
+def test_lookup_business_bceid_with_valid_user_without_authorization_fail(
     test_client_fixture: test_client_fixture, test_rsa_key
 ):
     """
@@ -247,9 +247,9 @@ def test_search_bceid_with_valid_user_without_authorization_fail(
         mock_get_current_requester_with_business_bceid_user
     )
     test_end_point = (
-        endPoint_search_bceid
+        endPoint_lookup_bceid
         + f"?user_id={TEST_VALID_BUSINESS_BCEID_USERNAME_ONE}"
-        + endPoint_search_param_application_id
+        + endPoint_lookup_param_application_id
     )
     LOGGER.debug(f"test_end_point: {test_end_point}")
     token = jwt_utils.create_jwt_token(test_rsa_key, [])
@@ -262,11 +262,11 @@ def test_search_bceid_with_valid_user_without_authorization_fail(
     assert str(response.json()["detail"]).find(ERROR_GROUPS_REQUIRED) != -1
 
 
-def test_search_bceid_with_invalid_user_return_not_found(
+def test_lookup_business_bceid_with_invalid_user_return_not_found(
     test_client_fixture: test_client_fixture, test_rsa_key
 ):
     """
-    Test idir user search invalid business bceid user_id.
+    Test idir user lookup invalid business bceid user_id.
     """
     # override dependency for Requester on router.
     app = test_client_fixture.app
@@ -276,9 +276,9 @@ def test_search_bceid_with_invalid_user_return_not_found(
 
     invalid_user_id_param = "USERNOTEXISTS"
     test_end_point = (
-        endPoint_search_bceid
+        endPoint_lookup_bceid
         + f"?user_id={invalid_user_id_param}"
-        + endPoint_search_param_application_id
+        + endPoint_lookup_param_application_id
     )
     LOGGER.debug(f"test_end_point: {test_end_point}")
     token = jwt_utils.create_jwt_token(test_rsa_key)
@@ -291,7 +291,7 @@ def test_search_bceid_with_invalid_user_return_not_found(
     assert response.json()["userId"] == invalid_user_id_param
 
 
-def test_search_bceid_user_requester_not_found_error_raised(
+def test_lookup_bceid_user_requester_not_found_error_raised(
     test_client_fixture: TestClient, test_rsa_key
 ):
     """
@@ -305,9 +305,9 @@ def test_search_bceid_user_requester_not_found_error_raised(
     )
 
     test_end_point = (
-        endPoint_search_bceid
+        endPoint_lookup_bceid
         + f"?user_id={TEST_VALID_BUSINESS_BCEID_USERNAME_ONE}"
-        + endPoint_search_param_application_id
+        + endPoint_lookup_param_application_id
     )
     token = jwt_utils.create_jwt_token(test_rsa_key)
     response = test_client_fixture.get(

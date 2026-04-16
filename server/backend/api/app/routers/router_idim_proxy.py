@@ -22,7 +22,7 @@ router = APIRouter()
     response_model=IdimProxyIdirInfoSchema,
     dependencies=[Depends(internal_only_action)],
 )
-def idir_search(
+def idir_lookup(
     user_id: str = Query(max_length=20),
     # user_id: str = Annotated[str, Query(max_length=15)], # Although 'Annotated' is recommended by FastAPI, however, using Annotated has a bug
     # It will throw pydantic.error_wrappers.ValidationError which is 500, not 422 we need.
@@ -33,22 +33,21 @@ def idir_search(
 ):
     LOGGER.debug(f"Searching IDIR user with parameter user_id: {user_id}")
     idim_proxy_api = IdimProxyService(requester, api_instance_env)
-    search_result = idim_proxy_api.search_idir(
+    search_result = idim_proxy_api.lookup_idir(
         IdimProxySearchParamSchema(**{"userId": user_id})
     )
     return search_result
 
 
-# TODO later change this to "/business_bceid"
 @router.get("/bceid", response_model=IdimProxyBceidInfoSchema)
-def bceid_search(
+def bceid_lookup(
     user_id: str = Query(max_length=20),
     requester=Depends(get_current_requester),
     api_instance_env: ApiInstanceEnv = Depends(get_api_instance_env),
 ):
     LOGGER.debug(f"Searching BCEID user with parameter user_id: {user_id}")
     idim_proxy_api = IdimProxyService(requester, api_instance_env)
-    search_result = idim_proxy_api.search_business_bceid(
+    search_result = idim_proxy_api.lookup_business_bceid(
         IdimProxyBceidSearchParamSchema(
             **{"searchUserBy": IdimSearchUserParamType.USER_ID, "searchValue": user_id}
         )

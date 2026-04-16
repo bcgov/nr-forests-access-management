@@ -26,12 +26,12 @@ class TargetUserValidator:
     def verify_user_exist(self) -> TargetUser:
         search_result = None
         if self.verified_target_user.user_type_code == UserType.IDIR:
-            # IDIM web service doesn't support search IDIR by user_guid, so we search by userID
-            search_result = self.idim_proxy_service.search_idir(
+            # IDIM web service doesn't support IDIR lookup by user_guid, so we lookup by userID.
+            search_result = self.idim_proxy_service.lookup_idir(
                 IdimProxySearchParam(**{"userId": self.verified_target_user.user_name})
             )
 
-            # in edge case, the return guid from search doesn't match the guid given from request parameter
+            # In an edge case, the returned guid from the lookup can differ from the request.
             # this is unlikely to happen if the request comes from frontend because we also validate user in frontend
             # but could happen if make backend api call directly
             if (
@@ -48,7 +48,7 @@ class TargetUserValidator:
                 )
 
         elif self.verified_target_user.user_type_code == UserType.BCEID:
-            search_result = self.idim_proxy_service.search_business_bceid(
+            search_result = self.idim_proxy_service.lookup_business_bceid(
                 IdimProxyBceidSearchParam(
                     **{
                         "searchUserBy": IdimSearchUserParamType.USER_GUID,
@@ -57,7 +57,7 @@ class TargetUserValidator:
                 )
             )
 
-            # in edge case, the return username from search doesn't match the username given from request parameter
+            # In an edge case, the returned username from the lookup can differ from the request.
             # this is unlikely to happen if the request comes from frontend because we also validate user in frontend
             # but could happen if make backend api call directly
             if (
@@ -74,7 +74,7 @@ class TargetUserValidator:
                     error_msg=error_msg,
                 )
 
-        # Update various target_user fields from idim search if exists
+        # Update various target_user fields from the IDIM lookup if the user exists.
         if search_result and search_result.get("found"):
             self.verified_target_user.business_guid = search_result.get("businessGuid")
             self.verified_target_user.email = search_result.get("email")

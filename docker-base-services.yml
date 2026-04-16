@@ -75,5 +75,8 @@ services:
             - FLYWAY_PLACEHOLDERS_client_id_dev_scs_oidc_client="flywayplaceholder"
             - FLYWAY_PLACEHOLDERS_client_id_test_scs_oidc_client="flywayplaceholder"
             - FLYWAY_PLACEHOLDERS_client_id_prod_scs_oidc_client="flywayplaceholder"
+            - FLYWAY_PLACEHOLDERS_client_id_dev_fspts_oidc_client="flywayplaceholder"
+            - FLYWAY_PLACEHOLDERS_client_id_test_fspts_oidc_client="flywayplaceholder"
+            - FLYWAY_PLACEHOLDERS_client_id_prod_fspts_oidc_client="flywayplaceholder"
         networks:
             - fam
