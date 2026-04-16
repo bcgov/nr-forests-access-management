@@ -1,12 +1,20 @@
 import logging
+import time
 from http import HTTPStatus
 
 import requests
 from api.app.constants import (IDIM_PROXY_ACCOUNT_TYPE_MAP, ApiInstanceEnv,
                                UserType)
 from api.app.jwt_validation import ERROR_PERMISSION_REQUIRED
-from api.app.schemas import (IdimProxyBceidSearchParamSchema,
-                             IdimProxySearchParamSchema, RequesterSchema)
+from api.app.schemas import (
+    IdimProxyBceidSearchParamSchema,
+    IdimProxySearchParamSchema,
+    RequesterSchema,
+)
+from api.app.schemas.idim_proxy_idir_users_search import (
+    IdimProxyIdirUsersSearchParamReqSchema,
+    IdimProxyIdirUsersSearchResSchema,
+)
 from api.config import config
 from fastapi import HTTPException
 
@@ -109,3 +117,39 @@ class IdimProxyService:
 
         LOGGER.debug(f"API result: {api_result}")
         return api_result
+
+    def search_idir_users(
+        self, search_params: IdimProxyIdirUsersSearchParamReqSchema
+    ):
+        """
+        Search IDIR users with optional partial-match query fields.
+        """
+        query_params = search_params.model_dump(exclude_none=True)
+        body = {"requesterUserGuid": self.requester.user_guid}
+        url = f"{self.api_idim_proxy_url}/idir-users/search"
+
+        LOGGER.info(
+            "IdimProxyService search_idir_users() - url: %s and query: %s",
+            url,
+            query_params,
+        )
+
+        start = time.perf_counter()
+        try:
+            r = self.session.post(
+                url,
+                timeout=self.TIMEOUT,
+                params=query_params,
+                json=body,
+            )
+            r.raise_for_status()
+            api_result = IdimProxyIdirUsersSearchResSchema(**r.json()).model_dump()
+            LOGGER.debug("API result: %s", api_result)
+            return api_result
+        finally:
+            elapsed_ms = (time.perf_counter() - start) * 1000
+            LOGGER.info(
+                "IdimProxyService search_idir_users() completed in %.2f ms for url: %s",
+                elapsed_ms,
+                url,
+            )
