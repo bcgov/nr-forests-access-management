@@ -1,5 +1,7 @@
 import logging
+from contextlib import contextmanager
 from http import HTTPStatus
+from unittest.mock import MagicMock, patch
 
 import pytest
 import testspg.jwt_utils as jwt_utils
@@ -10,7 +12,9 @@ from api.app.main import internal_api_prefix
 from api.app.routers.router_guards import get_current_requester
 from api.app.schemas import RequesterSchema
 from api.app.utils.utils import raise_http_exception
+from fastapi import status
 from fastapi.testclient import TestClient
+from requests import HTTPError
 from testspg.conftest import test_client_fixture
 from testspg.constants import (FOM_DEV_APPLICATION_ID,
                                TEST_BCEID_REQUESTER_DICT,
@@ -316,3 +320,271 @@ def test_lookup_bceid_user_requester_not_found_error_raised(
 
     assert response.status_code == HTTPStatus.FORBIDDEN
     assert "Requester does not exist" in response.text
+
+
+# --------------------- IDIR users search tests --------------------------- #
+idir_search_users_endpoint = (
+    f"{internal_api_prefix}/identity-lookup/users/idir/search"
+)
+
+class TestIdirSearchUsers:
+    """
+    Test class for IDIR users search endpoint.
+    """
+
+    @staticmethod
+    def _search_endpoint_with_app_id():
+        return idir_search_users_endpoint
+
+    @staticmethod
+    def _with_app_id(params=None):
+        merged = {"application_id": FOM_DEV_APPLICATION_ID}
+        if params:
+            merged.update(params)
+        return merged
+
+    @staticmethod
+    @contextmanager
+    def _patch_idim_service(search_result=None, side_effect=None):
+        if search_result is None:
+            search_result = {
+                "totalItems": 0,
+                "pageSize": 10,
+                "items": [],
+            }
+
+        with patch("api.app.routers.router_idim_proxy.IdimProxyService") as mock_service_cls:
+            mock_instance = MagicMock()
+            mock_instance.search_idir_users.return_value = search_result
+            if side_effect is not None:
+                mock_instance.search_idir_users.side_effect = side_effect
+            mock_service_cls.return_value = mock_instance
+            yield mock_instance
+
+    def test_bearer_token_required(self, test_client_fixture: TestClient, test_rsa_key):
+        app = test_client_fixture.app
+        app.dependency_overrides[get_current_requester] = (
+            mock_get_current_requester_with_idir_user
+        )
+
+        endpoint = self._search_endpoint_with_app_id()
+
+        response = test_client_fixture.get(
+            endpoint,
+            params=self._with_app_id({"firstName": "Chen"}),
+        )
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+        claims = jwt_utils.create_jwt_claims()
+        claims["exp"] = 1
+        expired_token = jwt_utils.create_jwt_token(test_rsa_key, claims=claims)
+        response = test_client_fixture.get(
+            endpoint,
+            headers=jwt_utils.headers(expired_token),
+            params=self._with_app_id({"firstName": "Chen"}),
+        )
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+    def test_success_returns_single_result(
+        self, test_client_fixture: TestClient, test_rsa_key
+    ):
+        app = test_client_fixture.app
+        app.dependency_overrides[get_current_requester] = (
+            mock_get_current_requester_with_idir_user
+        )
+
+        token = jwt_utils.create_jwt_token(test_rsa_key)
+        endpoint = self._search_endpoint_with_app_id()
+        expected = {
+            "totalItems": 1,
+            "pageSize": 10,
+            "items": [
+                {
+                    "userId": "CMENG",
+                    "guid": "00000001000000000000001",
+                    "firstName": "Chen",
+                    "lastName": "Meng",
+                    "email": "c.me@gov.bc.ca",
+                }
+            ],
+        }
+
+        with self._patch_idim_service(search_result=expected):
+            response = test_client_fixture.get(
+                endpoint,
+                headers=jwt_utils.headers(token),
+                params=self._with_app_id({"firstName": "Chen"}),
+            )
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json() == expected
+
+    def test_success_returns_empty_result(
+        self, test_client_fixture: TestClient, test_rsa_key
+    ):
+        app = test_client_fixture.app
+        app.dependency_overrides[get_current_requester] = (
+            mock_get_current_requester_with_idir_user
+        )
+
+        token = jwt_utils.create_jwt_token(test_rsa_key)
+        endpoint = self._search_endpoint_with_app_id()
+
+        with self._patch_idim_service(search_result={"totalItems": 0, "pageSize": 10, "items": []}):
+            response = test_client_fixture.get(
+                endpoint,
+                headers=jwt_utils.headers(token),
+                params=self._with_app_id({"firstName": "NotExists"}),
+            )
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json()["totalItems"] == 0
+        assert response.json()["items"] == []
+
+    def test_validation_no_search_field(
+        self, test_client_fixture: TestClient, test_rsa_key
+    ):
+        app = test_client_fixture.app
+        app.dependency_overrides[get_current_requester] = (
+            mock_get_current_requester_with_idir_user
+        )
+
+        token = jwt_utils.create_jwt_token(test_rsa_key)
+        endpoint = self._search_endpoint_with_app_id()
+
+        response = test_client_fixture.get(
+            endpoint,
+            headers=jwt_utils.headers(token),
+            params=self._with_app_id(),
+        )
+
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+    def test_validation_search_field_too_short(
+        self, test_client_fixture: TestClient, test_rsa_key
+    ):
+        app = test_client_fixture.app
+        app.dependency_overrides[get_current_requester] = (
+            mock_get_current_requester_with_idir_user
+        )
+
+        token = jwt_utils.create_jwt_token(test_rsa_key)
+        endpoint = self._search_endpoint_with_app_id()
+
+        invalid_params_list = [
+            {"firstName": "A"},
+            {"lastName": "B"},
+            {"userId": "X"},
+            {"firstName": "A", "lastName": "Test"},
+        ]
+
+        for invalid_params in invalid_params_list:
+            response = test_client_fixture.get(
+                endpoint,
+                headers=jwt_utils.headers(token),
+                params=self._with_app_id(invalid_params),
+            )
+            assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+    def test_match_mode_user_provided(
+        self, test_client_fixture: TestClient, test_rsa_key
+    ):
+        app = test_client_fixture.app
+        app.dependency_overrides[get_current_requester] = (
+            mock_get_current_requester_with_idir_user
+        )
+
+        token = jwt_utils.create_jwt_token(test_rsa_key)
+        endpoint = self._search_endpoint_with_app_id()
+
+        with self._patch_idim_service(search_result={"totalItems": 0, "pageSize": 10, "items": []}) as mock_instance:
+            response = test_client_fixture.get(
+                endpoint,
+                headers=jwt_utils.headers(token),
+                params=self._with_app_id({
+                    "firstName": "Chen",
+                    "firstNameMatchMode": "StartsWith",
+                    "lastName": "Meng",
+                    "lastNameMatchMode": "Exact",
+                }),
+            )
+
+        assert response.status_code == status.HTTP_200_OK
+        called_search_params = mock_instance.search_idir_users.call_args[0][0]
+        assert called_search_params.firstNameMatchMode.value == "StartsWith"
+        assert called_search_params.lastNameMatchMode.value == "Exact"
+
+    def test_match_mode_defaults_to_contains(
+        self, test_client_fixture: TestClient, test_rsa_key
+    ):
+        app = test_client_fixture.app
+        app.dependency_overrides[get_current_requester] = (
+            mock_get_current_requester_with_idir_user
+        )
+
+        token = jwt_utils.create_jwt_token(test_rsa_key)
+        endpoint = self._search_endpoint_with_app_id()
+
+        with self._patch_idim_service(search_result={"totalItems": 0, "pageSize": 10, "items": []}) as mock_instance:
+            response = test_client_fixture.get(
+                endpoint,
+                headers=jwt_utils.headers(token),
+                params=self._with_app_id({"firstName": "Chen", "lastName": "Meng"}),
+            )
+
+        assert response.status_code == status.HTTP_200_OK
+        called_search_params = mock_instance.search_idir_users.call_args[0][0]
+        assert called_search_params.firstNameMatchMode.value == "Contains"
+        assert called_search_params.lastNameMatchMode.value == "Contains"
+
+    def test_error_propagation_with_code(
+        self, test_client_fixture: TestClient, test_rsa_key
+    ):
+        app = test_client_fixture.app
+        app.dependency_overrides[get_current_requester] = (
+            mock_get_current_requester_with_idir_user
+        )
+
+        token = jwt_utils.create_jwt_token(test_rsa_key)
+        endpoint = self._search_endpoint_with_app_id()
+
+        mock_response = MagicMock()
+        mock_response.status_code = status.HTTP_400_BAD_REQUEST
+        mock_response.reason = "Bad Request"
+        mock_response.text = (
+            '{"message": ["requesterUserGuid must be longer than or equal to 32 characters"], '
+            '"error": "Bad Request", "statusCode": 400}'
+        )
+
+        with self._patch_idim_service(side_effect=HTTPError(response=mock_response)):
+            response = test_client_fixture.get(
+                endpoint,
+                headers=jwt_utils.headers(token),
+                params=self._with_app_id({"firstName": "Chen"}),
+            )
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.json() == {
+            "failureCode": None,
+            "message": ["requesterUserGuid must be longer than or equal to 32 characters"],
+        }
+
+    def test_unauthorized_without_required_group(
+        self, test_client_fixture: TestClient, test_rsa_key
+    ):
+        app = test_client_fixture.app
+        app.dependency_overrides[get_current_requester] = (
+            mock_get_current_requester_with_idir_user
+        )
+
+        token_without_roles = jwt_utils.create_jwt_token(test_rsa_key, roles=[])
+        endpoint = self._search_endpoint_with_app_id()
+
+        response = test_client_fixture.get(
+            endpoint,
+            headers=jwt_utils.headers(token_without_roles),
+            params=self._with_app_id({"firstName": "Chen"}),
+        )
+
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert ERROR_GROUPS_REQUIRED in str(response.json()["detail"])
