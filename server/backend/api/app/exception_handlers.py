@@ -17,6 +17,15 @@ async def requests_http_error_handler(request: Request, exc: HTTPError):
     it raises requests.exceptions.HTTPError for 4xx.
     However, FastAPI sees this as Exception other than its' own HTTPException and will instead return 500 error.
     So we handle this HTTPError as a custom error handler specifically here.
+
+    scope:
+    * This handler is registered for requests.HTTPError only, typically raised from outbound requests calls (such as GC Notify, IDIM Proxy API call).
+    * FastAPI and generic Python exceptions, or Pydantic validation errors are not handled by this handler.
+    * It tries to parse response text as JSON from different error payload shapes
+      returned from upstream services:
+      - failureCode/message style
+      - errors[0].error / errors[0].message style
+      - non-JSON or unknown shape fallback to raw text or HTTP reason
     """
     status_code = exc.response.status_code
     host = getattr(getattr(request, "client", None), "host", None)
@@ -26,21 +35,36 @@ async def requests_http_error_handler(request: Request, exc: HTTPError):
         if request.query_params
         else request.url.path
     )
-    response_text = json.loads(exc.response.text)
+    raw_response_text = exc.response.text
+
+    try:
+        response_text = json.loads(raw_response_text) if raw_response_text else {}
+    except json.JSONDecodeError:
+        response_text = {}
 
     failure_code = None
-    if "failureCode" in response_text:
+    if isinstance(response_text, dict) and "failureCode" in response_text:
         failure_code = response_text["failureCode"]
-    elif "errors" in response_text and "error" in response_text["errors"][0]:
+    elif (
+        isinstance(response_text, dict)
+        and "errors" in response_text
+        and "error" in response_text["errors"][0]
+    ):
         # this is the error format for gc notify
         failure_code = response_text["errors"][0]["error"]
 
     error_message = None
-    if "message" in response_text:
+    if isinstance(response_text, dict) and "message" in response_text:
         error_message = response_text["message"]
-    elif "errors" in response_text and "message" in response_text["errors"][0]:
+    elif (
+        isinstance(response_text, dict)
+        and "errors" in response_text
+        and "message" in response_text["errors"][0]
+    ):
         # this is the error format for gc notify
         error_message = response_text["errors"][0]["message"]
+    else:
+        error_message = raw_response_text or exc.response.reason
 
     error_content = {
         "failureCode": failure_code,

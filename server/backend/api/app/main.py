@@ -151,6 +151,7 @@ external_v1_api_prefix = "/external/v1"
 app.include_router(
     router_user_external.router,
     prefix=external_v1_api_prefix + "/users",
+    # FAM database users and external IDIM-Proxy search for downstream applications.
     tags=["External - FAM User Search"],
 )
 

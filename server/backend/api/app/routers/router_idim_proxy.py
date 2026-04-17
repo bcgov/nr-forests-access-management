@@ -1,6 +1,7 @@
 import logging
 
 from api.app.constants import IdimSearchUserParamType, ApiInstanceEnv
+from api.app.decorators.endpoint_timing_dec import endpoint_timing_dec
 from api.app.integration.idim_proxy import IdimProxyService
 from api.app.routers.router_guards import get_current_requester, internal_only_action
 from api.app.routers.router_utils import get_api_instance_env
@@ -9,6 +10,10 @@ from api.app.schemas import (
     IdimProxyBceidSearchParamSchema,
     IdimProxyIdirInfoSchema,
     IdimProxySearchParamSchema,
+)
+from api.app.schemas.idim_proxy_idir_users_search import (
+    IdimProxyIdirUsersSearchParamReqSchema,
+    IdimProxyIdirUsersSearchResSchema,
 )
 from fastapi import APIRouter, Depends, Query
 
@@ -53,3 +58,27 @@ def bceid_lookup(
         )
     )
     return search_result
+
+
+@router.get(
+    "/users/idir/search",
+    response_model=IdimProxyIdirUsersSearchResSchema,
+    status_code=200,
+)
+@endpoint_timing_dec("fam-search_idir_users")
+def search_idir_users(
+    search_params: IdimProxyIdirUsersSearchParamReqSchema = Depends(),
+    requester=Depends(get_current_requester),
+    api_instance_env: ApiInstanceEnv = Depends(get_api_instance_env),
+):
+    """
+    FAM-side API for admins to search IDIR users through IDIM Proxy.
+    """
+    LOGGER.info(
+        "FAM API - searching IDIR users by requester=%s (id=%s)",
+        requester.user_name,
+        requester.user_id,
+    )
+
+    idim_proxy_api = IdimProxyService(requester, api_instance_env)
+    return idim_proxy_api.search_idir_users(search_params)

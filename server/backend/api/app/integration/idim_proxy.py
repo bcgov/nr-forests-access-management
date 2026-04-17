@@ -142,6 +142,7 @@ class IdimProxyService:
                 params=query_params,
                 json=body,
             )
+            # HTTP 4xx/5xx become HTTPError and are handled by requests_http_error_handler.
             r.raise_for_status()
             api_result = IdimProxyIdirUsersSearchResSchema(**r.json()).model_dump()
             LOGGER.debug("API result: %s", api_result)
