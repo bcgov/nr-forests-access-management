@@ -152,7 +152,7 @@ app.include_router(
     router_user_external.router,
     prefix=external_v1_api_prefix + "/users",
     # FAM database users and external IDIM-Proxy search for downstream applications.
-    tags=["External - FAM User Search"],
+    tags=["FAM External API"],
 )
 
 # If we initialize this in main then it doesn't call Cognito on every api call

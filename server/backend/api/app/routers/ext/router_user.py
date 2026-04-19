@@ -28,7 +28,9 @@ router = APIRouter()
 @router.get(
     "",
     response_model=ExtUserSearchPagedResultsSchema[ExtApplicationUserSearchGetSchema],
-    status_code=200
+    status_code=200,
+    summary="Search FAM users",
+    description="Search FAM users information associated with an application."
 )
 def user_search(
     db: Session = Depends(database.get_db),
@@ -61,12 +63,14 @@ def user_search(
     return paged_results
 
 
-### --- Below is the lookup/search through IDIM Proxy API for users. Not to the FAM database 'user'.
+### --- Below is the search through IDIM Proxy API for users. Not to the FAM database 'user'.
 
 @router.get(
     "/identity/idir/search",
     response_model=IdimProxyIdirUsersSearchResSchema,
     status_code=200,
+    summary="Search IDIR users",
+    description="Search IDIR users identity through IDIM.",
 )
 @endpoint_timing_dec("external-search_idir_users")
 def search_idir_users(
