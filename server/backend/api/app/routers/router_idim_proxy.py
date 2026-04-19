@@ -26,6 +26,8 @@ router = APIRouter()
     "/idir",
     response_model=IdimProxyIdirInfoSchema,
     dependencies=[Depends(internal_only_action)],
+    summary="Lookup IDIR user",
+    description="Lookup an IDIR user by user ID.",
 )
 def idir_lookup(
     user_id: str = Query(max_length=20),
@@ -44,7 +46,12 @@ def idir_lookup(
     return search_result
 
 
-@router.get("/bceid", response_model=IdimProxyBceidInfoSchema)
+@router.get(
+    "/bceid",
+    response_model=IdimProxyBceidInfoSchema,
+    summary="Lookup BCEID user",
+    description="Lookup a BCeID Business user by user ID.",
+)
 def bceid_lookup(
     user_id: str = Query(max_length=20),
     requester=Depends(get_current_requester),
@@ -64,6 +71,8 @@ def bceid_lookup(
     "/users/idir/search",
     response_model=IdimProxyIdirUsersSearchResSchema,
     status_code=200,
+    summary="Search IDIR users",
+    description="Search for IDIR users.",
 )
 @endpoint_timing_dec("fam-search_idir_users")
 def search_idir_users(
