@@ -5,12 +5,10 @@ from pydantic import (BaseModel, Field, StringConstraints, field_validator,
                       model_validator)
 from typing_extensions import Annotated
 
-from api.app.constants import (EMAIL_MAX_LEN, EXT_DEFAULT_PAGE_SIZE,
+from api.app.constants import (EMAIL_MAX_LEN, EXT_DEFAULT_PAGE_SIZE, EXT_IDIM_SEARCH_MAX_PAGE_SIZE,
                                EXT_MAX_FIRST_NAME_LEN, EXT_MAX_LAST_NAME_LEN,
-                               EXT_MAX_PAGE_SIZE, EXT_MAX_IDP_USERNAME_LEN,
-                               EXT_MIN_PAGE_SIZE, FIRST_NAME_MAX_LEN,
+                               EXT_MAX_IDP_USERNAME_LEN, EXT_MIN_PAGE_SIZE, FIRST_NAME_MAX_LEN,
                                LAST_NAME_MAX_LEN, USER_NAME_MAX_LEN)
-
 
 class IdimSearchMatchMode(str, Enum):
     EXACT = "Exact"
@@ -43,10 +41,12 @@ class IdimProxyIdirUsersSearchParamReqSchema(BaseModel):
         description="Match mode for userId. Defaults to Contains.",
     )
 
+    # Note, IDIM Webservice does not provide page number for filtering. If the values in the search parameters are too broad,
+    # the API will will only return the page_size number of records from the top of the search result.
     pageSize: int = Field(
         default=EXT_DEFAULT_PAGE_SIZE,
         ge=EXT_MIN_PAGE_SIZE,
-        le=EXT_MAX_PAGE_SIZE,
+        le=EXT_IDIM_SEARCH_MAX_PAGE_SIZE,
         description="Number of records to return",
     )
 
