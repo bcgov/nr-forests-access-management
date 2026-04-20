@@ -3,10 +3,9 @@
 from typing import List, Optional, Self
 
 from api.app.constants import (EXT_APPLICATION_NAME_MAX_LEN,
-                               EXT_DEFAULT_PAGE_SIZE,
+                               EXT_DEFAULT_PAGE_SIZE, EXT_IDIM_SEARCH_MAX_PAGE_SIZE,
                                EXT_MAX_FIRST_NAME_LEN,
                                EXT_MAX_IDP_USERNAME_LEN, EXT_MAX_LAST_NAME_LEN,
-                               EXT_MAX_PAGE_SIZE,
                                EXT_MIN_PAGE_SIZE,
                                EXT_MAX_ROLE_LEN, EXT_MAX_ROLE_LIST_LEN,
                                EXT_ROLE_DISPLAY_NAME_MAX_LEN,
@@ -127,11 +126,13 @@ class ExtIdirUserSearchParamSchema(BaseModel):
         alias="userIdMatchMode",
     )
 
+    # Note, IDIM Webservice does not provide page number for filtering. If the values in the search parameters are too broad,
+    # the API will will only return the page_size number of records from the top of the search result.
     page_size: int = Field(
         Query(
             default=EXT_DEFAULT_PAGE_SIZE,
             ge=EXT_MIN_PAGE_SIZE,
-            le=EXT_MAX_PAGE_SIZE,
+            le=EXT_IDIM_SEARCH_MAX_PAGE_SIZE,
             description="Number of records to return",
         ),
         alias="pageSize",
