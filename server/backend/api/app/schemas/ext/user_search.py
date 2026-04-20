@@ -127,7 +127,7 @@ class ExtIdirUserSearchParamSchema(BaseModel):
     )
 
     # Note, IDIM Webservice does not provide page number for filtering. If the values in the search parameters are too broad,
-    # the API will will only return the page_size number of records from the top of the search result.
+    # the API will only return the page_size number of records from the top of the search result.
     page_size: int = Field(
         Query(
             default=EXT_DEFAULT_PAGE_SIZE,

@@ -42,7 +42,7 @@ class IdimProxyIdirUsersSearchParamReqSchema(BaseModel):
     )
 
     # Note, IDIM Webservice does not provide page number for filtering. If the values in the search parameters are too broad,
-    # the API will will only return the page_size number of records from the top of the search result.
+    # the API will only return the page_size number of records from the top of the search result.
     pageSize: int = Field(
         default=EXT_DEFAULT_PAGE_SIZE,
         ge=EXT_MIN_PAGE_SIZE,
