@@ -216,7 +216,7 @@ def test_user_search_filter_params_schema_validation(
 
 
 
-# ========== Tests for search_idir_users endpoint (/identity/idir/search) ========== #
+# ========== Tests for search_idim_idir_users endpoint (/identity/idir/search) ========== #
 
 searchIdirUsersEndpoint = f"{external_v1_api_prefix}/users/identity/idir/search"
 
@@ -262,16 +262,16 @@ mock_idir_multiple_results = {
     ]
 }
 
-# Helper context manager to patch search_idir_users service and auth
+# Helper context manager to patch search_idim_idir_users service and auth
 @contextmanager
-def patched_search_idir_users(mock_app, mock_idim_response=None):
+def patched_search_idim_idir_users(mock_app, mock_idim_response=None):
     if mock_idim_response is None:
         mock_idim_response = mock_idir_empty_result
 
     with patch.object(crud_application, "get_application_by_app_client_id", return_value=mock_app), \
          patch.object(crud_utils, "allow_ext_call_api_permission", return_value=True), \
          patch("api.app.routers.ext.router_user.IdimProxyService") as MockIdimServiceClass:
-        # Configure the mock to return mock_idim_response when search_idir_users is called
+        # Configure the mock to return mock_idim_response when the endpoint is called
         mock_instance = MagicMock()
         mock_instance.search_idir_users.return_value = mock_idim_response
         MockIdimServiceClass.return_value = mock_instance
@@ -284,7 +284,7 @@ class TestSearchIdirUsers:
     """
 
     def test_bearer_token_required(self, test_client_fixture: TestClient, test_rsa_key):
-        """Test that bearer token is required for search_idir_users endpoint."""
+        """Test that bearer token is required for search_idim_idir_users endpoint."""
         # No token - without search params, validation happens first and returns 422
         response = test_client_fixture.get(searchIdirUsersEndpoint)
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
@@ -301,7 +301,7 @@ class TestSearchIdirUsers:
         jwt_utils.assert_error_response(response, 401, ERROR_EXPIRED_TOKEN)
 
     def test_authorization_guard(self, test_client_fixture: TestClient, auth_headers, override_depends__get_current_requester):
-        """Test that search_idir_users enforces authorize_ext_api_by_app_role guard."""
+        """Test that search_idim_idir_users enforces authorize_ext_api_by_app_role guard."""
         override_depends__get_current_requester()
 
         # Case 1: Application not found
@@ -320,7 +320,7 @@ class TestSearchIdirUsers:
         """Test successful search by firstName field, returning single result."""
         override_depends__get_current_requester()
 
-        with patched_search_idir_users(mock_app, mock_idir_single_result):
+        with patched_search_idim_idir_users(mock_app, mock_idir_single_result):
             response = test_client_fixture.get(
                 searchIdirUsersEndpoint,
                 headers=auth_headers,
@@ -339,7 +339,7 @@ class TestSearchIdirUsers:
         """Test successful search by lastName field, returning multiple results."""
         override_depends__get_current_requester()
 
-        with patched_search_idir_users(mock_app, mock_idir_multiple_results):
+        with patched_search_idim_idir_users(mock_app, mock_idir_multiple_results):
             response = test_client_fixture.get(
                 searchIdirUsersEndpoint,
                 headers=auth_headers,
@@ -355,7 +355,7 @@ class TestSearchIdirUsers:
         """Test successful search by userId field."""
         override_depends__get_current_requester()
 
-        with patched_search_idir_users(mock_app, mock_idir_single_result):
+        with patched_search_idim_idir_users(mock_app, mock_idir_single_result):
             response = test_client_fixture.get(
                 searchIdirUsersEndpoint,
                 headers=auth_headers,
@@ -371,7 +371,7 @@ class TestSearchIdirUsers:
         """Test search with multiple fields (firstName and lastName)."""
         override_depends__get_current_requester()
 
-        with patched_search_idir_users(mock_app, mock_idir_single_result):
+        with patched_search_idim_idir_users(mock_app, mock_idir_single_result):
             response = test_client_fixture.get(
                 searchIdirUsersEndpoint,
                 headers=auth_headers,
@@ -386,7 +386,7 @@ class TestSearchIdirUsers:
         """Test search that returns empty result set."""
         override_depends__get_current_requester()
 
-        with patched_search_idir_users(mock_app, mock_idir_empty_result):
+        with patched_search_idim_idir_users(mock_app, mock_idir_empty_result):
             response = test_client_fixture.get(
                 searchIdirUsersEndpoint,
                 headers=auth_headers,
@@ -432,7 +432,7 @@ class TestSearchIdirUsers:
         """Test that user-provided match modes are passed to IDIM service."""
         override_depends__get_current_requester()
 
-        with patched_search_idir_users(mock_app, mock_idir_single_result):
+        with patched_search_idim_idir_users(mock_app, mock_idir_single_result):
             response = test_client_fixture.get(
                 searchIdirUsersEndpoint,
                 headers=auth_headers,
@@ -449,7 +449,7 @@ class TestSearchIdirUsers:
         """Test that match modes default to 'Contains' when not explicitly provided."""
         override_depends__get_current_requester()
 
-        with patched_search_idir_users(mock_app, mock_idir_multiple_results):
+        with patched_search_idim_idir_users(mock_app, mock_idir_multiple_results):
             response = test_client_fixture.get(
                 searchIdirUsersEndpoint,
                 headers=auth_headers,
@@ -502,7 +502,7 @@ class TestSearchIdirUsers:
         """Test that pageSize parameter is correctly passed through."""
         override_depends__get_current_requester()
 
-        with patched_search_idir_users(mock_app, mock_idir_single_result):
+        with patched_search_idim_idir_users(mock_app, mock_idir_single_result):
             response = test_client_fixture.get(
                 searchIdirUsersEndpoint,
                 headers=auth_headers,
@@ -515,7 +515,7 @@ class TestSearchIdirUsers:
         """Test that input fields are trimmed before validation."""
         override_depends__get_current_requester()
 
-        with patched_search_idir_users(mock_app, mock_idir_single_result):
+        with patched_search_idim_idir_users(mock_app, mock_idir_single_result):
             # Input with leading/trailing whitespace
             response = test_client_fixture.get(
                 searchIdirUsersEndpoint,

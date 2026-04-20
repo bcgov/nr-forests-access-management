@@ -72,8 +72,8 @@ def user_search(
     summary="Search IDIR users",
     description="Search IDIR users identity through IDIM.",
 )
-@endpoint_timing_dec("external-search_idir_users")
-def search_idir_users(
+@endpoint_timing_dec("external-search_idim_idir_users")
+def search_idim_idir_users(
     search_params: ExtIdirUserSearchParamSchema = Depends(),
     requester: RequesterSchema = Depends(get_current_requester),
     application: FamApplicationSchema = Depends(authorize_ext_api_by_app_role),

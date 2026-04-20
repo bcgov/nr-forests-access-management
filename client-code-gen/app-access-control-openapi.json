@@ -433,7 +433,8 @@
         "tags": [
           "IDIR/BCeID Proxy"
         ],
-        "summary": "Idir Lookup",
+        "summary": "Lookup IDIR user",
+        "description": "Lookup an IDIR user by user ID.",
         "operationId": "idir_lookup",
         "security": [
           {
@@ -490,7 +491,8 @@
         "tags": [
           "IDIR/BCeID Proxy"
         ],
-        "summary": "Bceid Lookup",
+        "summary": "Lookup BCEID user",
+        "description": "Lookup a BCeID Business user by user ID.",
         "operationId": "bceid_lookup",
         "security": [
           {
@@ -525,6 +527,165 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/IdimProxyBceidInfoSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/identity-lookup/users/idir/search": {
+      "get": {
+        "tags": [
+          "IDIR/BCeID Proxy"
+        ],
+        "summary": "Search IDIR users",
+        "description": "Search for IDIR users.",
+        "operationId": "search_idir_users",
+        "security": [
+          {
+            "7qtdtska897dt6kandveusvd88": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "firstName",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 50
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Firstname"
+            }
+          },
+          {
+            "name": "lastName",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 50
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Lastname"
+            }
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 20
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Userid"
+            }
+          },
+          {
+            "name": "firstNameMatchMode",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/IdimSearchMatchMode"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Firstnamematchmode"
+            }
+          },
+          {
+            "name": "lastNameMatchMode",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/IdimSearchMatchMode"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Lastnamematchmode"
+            }
+          },
+          {
+            "name": "userIdMatchMode",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/IdimSearchMatchMode"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Useridmatchmode"
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 250,
+              "minimum": 10,
+              "default": 50,
+              "title": "Pagesize"
+            }
+          },
+          {
+            "name": "application_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Application Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IdimProxyIdirUsersSearchResSchema"
                 }
               }
             }
@@ -898,10 +1059,10 @@
     "/external/v1/users": {
       "get": {
         "tags": [
-          "External - FAM User Search"
+          "FAM External API"
         ],
-        "summary": "User Search",
-        "description": "External API to search users information associated with an application.\nSee API spec at https://apps.nrs.gov.bc.ca/int/confluence/display/FSAST1/Users+Search+API",
+        "summary": "Search FAM users",
+        "description": "Search FAM users information associated with an application.",
         "operationId": "user_search",
         "security": [
           {
@@ -1055,6 +1216,170 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ExtUserSearchPagedResultsSchema_ExtApplicationUserSearchGetSchema_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/external/v1/users/identity/idir/search": {
+      "get": {
+        "tags": [
+          "FAM External API"
+        ],
+        "summary": "Search IDIR users",
+        "description": "Search IDIR users identity through IDIM.",
+        "operationId": "search_idim_idir_users",
+        "security": [
+          {
+            "7qtdtska897dt6kandveusvd88": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "firstName",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 50
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "IDIR first name search value (min 2 chars)",
+              "title": "Firstname"
+            },
+            "description": "IDIR first name search value (min 2 chars)"
+          },
+          {
+            "name": "lastName",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 50
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "IDIR last name search value (min 2 chars)",
+              "title": "Lastname"
+            },
+            "description": "IDIR last name search value (min 2 chars)"
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 20
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "IDIR user id search value (min 2 chars)",
+              "title": "Userid"
+            },
+            "description": "IDIR user id search value (min 2 chars)"
+          },
+          {
+            "name": "firstNameMatchMode",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/IdimSearchMatchMode"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Match mode for firstName. Defaults to Contains.",
+              "title": "Firstnamematchmode"
+            },
+            "description": "Match mode for firstName. Defaults to Contains."
+          },
+          {
+            "name": "lastNameMatchMode",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/IdimSearchMatchMode"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Match mode for lastName. Defaults to Contains.",
+              "title": "Lastnamematchmode"
+            },
+            "description": "Match mode for lastName. Defaults to Contains."
+          },
+          {
+            "name": "userIdMatchMode",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/IdimSearchMatchMode"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Match mode for userId. Defaults to Contains.",
+              "title": "Useridmatchmode"
+            },
+            "description": "Match mode for userId. Defaults to Contains."
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 250,
+              "minimum": 10,
+              "description": "Number of records to return",
+              "default": 50,
+              "title": "Pagesize"
+            },
+            "description": "Number of records to return"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IdimProxyIdirUsersSearchResSchema"
                 }
               }
             }
@@ -1958,6 +2283,79 @@
           "userId"
         ],
         "title": "IdimProxyIdirInfoSchema"
+      },
+      "IdimProxyIdirUserSearchItemResSchema": {
+        "properties": {
+          "userId": {
+            "type": "string",
+            "maxLength": 20,
+            "title": "Userid"
+          },
+          "guid": {
+            "type": "string",
+            "maxLength": 32,
+            "title": "Guid"
+          },
+          "firstName": {
+            "type": "string",
+            "maxLength": 50,
+            "title": "Firstname"
+          },
+          "lastName": {
+            "type": "string",
+            "maxLength": 50,
+            "title": "Lastname"
+          },
+          "email": {
+            "type": "string",
+            "maxLength": 250,
+            "title": "Email"
+          }
+        },
+        "type": "object",
+        "required": [
+          "userId",
+          "guid",
+          "firstName",
+          "lastName",
+          "email"
+        ],
+        "title": "IdimProxyIdirUserSearchItemResSchema"
+      },
+      "IdimProxyIdirUsersSearchResSchema": {
+        "properties": {
+          "totalItems": {
+            "type": "integer",
+            "title": "Totalitems"
+          },
+          "pageSize": {
+            "type": "integer",
+            "title": "Pagesize"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/IdimProxyIdirUserSearchItemResSchema"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "type": "object",
+        "required": [
+          "totalItems",
+          "pageSize",
+          "items"
+        ],
+        "title": "IdimProxyIdirUsersSearchResSchema"
+      },
+      "IdimSearchMatchMode": {
+        "type": "string",
+        "enum": [
+          "Exact",
+          "Contains",
+          "StartsWith"
+        ],
+        "title": "IdimSearchMatchMode"
       },
       "PageResultMetaSchema": {
         "properties": {

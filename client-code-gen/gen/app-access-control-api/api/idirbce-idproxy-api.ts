@@ -27,6 +27,10 @@ import { HTTPValidationError } from '../model';
 import { IdimProxyBceidInfoSchema } from '../model';
 // @ts-ignore
 import { IdimProxyIdirInfoSchema } from '../model';
+// @ts-ignore
+import { IdimProxyIdirUsersSearchResSchema } from '../model';
+// @ts-ignore
+import { IdimSearchMatchMode } from '../model';
 /**
  * IDIRBCeIDProxyApi - axios parameter creator
  * @export
@@ -34,8 +38,8 @@ import { IdimProxyIdirInfoSchema } from '../model';
 export const IDIRBCeIDProxyApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
-         * 
-         * @summary Bceid Lookup
+         * Lookup a BCeID Business user by user ID.
+         * @summary Lookup BCEID user
          * @param {string} userId 
          * @param {number} applicationId 
          * @param {*} [options] Override http request option.
@@ -82,8 +86,8 @@ export const IDIRBCeIDProxyApiAxiosParamCreator = function (configuration?: Conf
             };
         },
         /**
-         * 
-         * @summary Idir Lookup
+         * Lookup an IDIR user by user ID.
+         * @summary Lookup IDIR user
          * @param {string} userId 
          * @param {number} applicationId 
          * @param {*} [options] Override http request option.
@@ -129,6 +133,82 @@ export const IDIRBCeIDProxyApiAxiosParamCreator = function (configuration?: Conf
                 options: localVarRequestOptions,
             };
         },
+        /**
+         * Search for IDIR users.
+         * @summary Search IDIR users
+         * @param {number} applicationId 
+         * @param {string | null} [firstName] 
+         * @param {string | null} [lastName] 
+         * @param {string | null} [userId] 
+         * @param {IdimSearchMatchMode | null} [firstNameMatchMode] 
+         * @param {IdimSearchMatchMode | null} [lastNameMatchMode] 
+         * @param {IdimSearchMatchMode | null} [userIdMatchMode] 
+         * @param {number} [pageSize] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        searchIdirUsers: async (applicationId: number, firstName?: string | null, lastName?: string | null, userId?: string | null, firstNameMatchMode?: IdimSearchMatchMode | null, lastNameMatchMode?: IdimSearchMatchMode | null, userIdMatchMode?: IdimSearchMatchMode | null, pageSize?: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'applicationId' is not null or undefined
+            assertParamExists('searchIdirUsers', 'applicationId', applicationId)
+            const localVarPath = `/identity-lookup/users/idir/search`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication 7qtdtska897dt6kandveusvd88 required
+            // oauth required
+            await setOAuthToObject(localVarHeaderParameter, "7qtdtska897dt6kandveusvd88", [], configuration)
+
+            if (firstName !== undefined) {
+                localVarQueryParameter['firstName'] = firstName;
+            }
+
+            if (lastName !== undefined) {
+                localVarQueryParameter['lastName'] = lastName;
+            }
+
+            if (userId !== undefined) {
+                localVarQueryParameter['userId'] = userId;
+            }
+
+            if (firstNameMatchMode !== undefined) {
+                localVarQueryParameter['firstNameMatchMode'] = firstNameMatchMode;
+            }
+
+            if (lastNameMatchMode !== undefined) {
+                localVarQueryParameter['lastNameMatchMode'] = lastNameMatchMode;
+            }
+
+            if (userIdMatchMode !== undefined) {
+                localVarQueryParameter['userIdMatchMode'] = userIdMatchMode;
+            }
+
+            if (pageSize !== undefined) {
+                localVarQueryParameter['pageSize'] = pageSize;
+            }
+
+            if (applicationId !== undefined) {
+                localVarQueryParameter['application_id'] = applicationId;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
     }
 };
 
@@ -140,8 +220,8 @@ export const IDIRBCeIDProxyApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = IDIRBCeIDProxyApiAxiosParamCreator(configuration)
     return {
         /**
-         * 
-         * @summary Bceid Lookup
+         * Lookup a BCeID Business user by user ID.
+         * @summary Lookup BCEID user
          * @param {string} userId 
          * @param {number} applicationId 
          * @param {*} [options] Override http request option.
@@ -154,8 +234,8 @@ export const IDIRBCeIDProxyApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
-         * 
-         * @summary Idir Lookup
+         * Lookup an IDIR user by user ID.
+         * @summary Lookup IDIR user
          * @param {string} userId 
          * @param {number} applicationId 
          * @param {*} [options] Override http request option.
@@ -165,6 +245,26 @@ export const IDIRBCeIDProxyApiFp = function(configuration?: Configuration) {
             const localVarAxiosArgs = await localVarAxiosParamCreator.idirLookup(userId, applicationId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['IDIRBCeIDProxyApi.idirLookup']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Search for IDIR users.
+         * @summary Search IDIR users
+         * @param {number} applicationId 
+         * @param {string | null} [firstName] 
+         * @param {string | null} [lastName] 
+         * @param {string | null} [userId] 
+         * @param {IdimSearchMatchMode | null} [firstNameMatchMode] 
+         * @param {IdimSearchMatchMode | null} [lastNameMatchMode] 
+         * @param {IdimSearchMatchMode | null} [userIdMatchMode] 
+         * @param {number} [pageSize] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async searchIdirUsers(applicationId: number, firstName?: string | null, lastName?: string | null, userId?: string | null, firstNameMatchMode?: IdimSearchMatchMode | null, lastNameMatchMode?: IdimSearchMatchMode | null, userIdMatchMode?: IdimSearchMatchMode | null, pageSize?: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<IdimProxyIdirUsersSearchResSchema>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.searchIdirUsers(applicationId, firstName, lastName, userId, firstNameMatchMode, lastNameMatchMode, userIdMatchMode, pageSize, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['IDIRBCeIDProxyApi.searchIdirUsers']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
     }
@@ -178,8 +278,8 @@ export const IDIRBCeIDProxyApiFactory = function (configuration?: Configuration,
     const localVarFp = IDIRBCeIDProxyApiFp(configuration)
     return {
         /**
-         * 
-         * @summary Bceid Lookup
+         * Lookup a BCeID Business user by user ID.
+         * @summary Lookup BCEID user
          * @param {string} userId 
          * @param {number} applicationId 
          * @param {*} [options] Override http request option.
@@ -189,8 +289,8 @@ export const IDIRBCeIDProxyApiFactory = function (configuration?: Configuration,
             return localVarFp.bceidLookup(userId, applicationId, options).then((request) => request(axios, basePath));
         },
         /**
-         * 
-         * @summary Idir Lookup
+         * Lookup an IDIR user by user ID.
+         * @summary Lookup IDIR user
          * @param {string} userId 
          * @param {number} applicationId 
          * @param {*} [options] Override http request option.
@@ -198,6 +298,23 @@ export const IDIRBCeIDProxyApiFactory = function (configuration?: Configuration,
          */
         idirLookup(userId: string, applicationId: number, options?: any): AxiosPromise<IdimProxyIdirInfoSchema> {
             return localVarFp.idirLookup(userId, applicationId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Search for IDIR users.
+         * @summary Search IDIR users
+         * @param {number} applicationId 
+         * @param {string | null} [firstName] 
+         * @param {string | null} [lastName] 
+         * @param {string | null} [userId] 
+         * @param {IdimSearchMatchMode | null} [firstNameMatchMode] 
+         * @param {IdimSearchMatchMode | null} [lastNameMatchMode] 
+         * @param {IdimSearchMatchMode | null} [userIdMatchMode] 
+         * @param {number} [pageSize] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        searchIdirUsers(applicationId: number, firstName?: string | null, lastName?: string | null, userId?: string | null, firstNameMatchMode?: IdimSearchMatchMode | null, lastNameMatchMode?: IdimSearchMatchMode | null, userIdMatchMode?: IdimSearchMatchMode | null, pageSize?: number, options?: any): AxiosPromise<IdimProxyIdirUsersSearchResSchema> {
+            return localVarFp.searchIdirUsers(applicationId, firstName, lastName, userId, firstNameMatchMode, lastNameMatchMode, userIdMatchMode, pageSize, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -209,8 +326,8 @@ export const IDIRBCeIDProxyApiFactory = function (configuration?: Configuration,
  */
 export interface IDIRBCeIDProxyApiInterface {
     /**
-     * 
-     * @summary Bceid Lookup
+     * Lookup a BCeID Business user by user ID.
+     * @summary Lookup BCEID user
      * @param {string} userId 
      * @param {number} applicationId 
      * @param {*} [options] Override http request option.
@@ -220,8 +337,8 @@ export interface IDIRBCeIDProxyApiInterface {
     bceidLookup(userId: string, applicationId: number, options?: RawAxiosRequestConfig): AxiosPromise<IdimProxyBceidInfoSchema>;
 
     /**
-     * 
-     * @summary Idir Lookup
+     * Lookup an IDIR user by user ID.
+     * @summary Lookup IDIR user
      * @param {string} userId 
      * @param {number} applicationId 
      * @param {*} [options] Override http request option.
@@ -229,6 +346,23 @@ export interface IDIRBCeIDProxyApiInterface {
      * @memberof IDIRBCeIDProxyApiInterface
      */
     idirLookup(userId: string, applicationId: number, options?: RawAxiosRequestConfig): AxiosPromise<IdimProxyIdirInfoSchema>;
+
+    /**
+     * Search for IDIR users.
+     * @summary Search IDIR users
+     * @param {number} applicationId 
+     * @param {string | null} [firstName] 
+     * @param {string | null} [lastName] 
+     * @param {string | null} [userId] 
+     * @param {IdimSearchMatchMode | null} [firstNameMatchMode] 
+     * @param {IdimSearchMatchMode | null} [lastNameMatchMode] 
+     * @param {IdimSearchMatchMode | null} [userIdMatchMode] 
+     * @param {number} [pageSize] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof IDIRBCeIDProxyApiInterface
+     */
+    searchIdirUsers(applicationId: number, firstName?: string | null, lastName?: string | null, userId?: string | null, firstNameMatchMode?: IdimSearchMatchMode | null, lastNameMatchMode?: IdimSearchMatchMode | null, userIdMatchMode?: IdimSearchMatchMode | null, pageSize?: number, options?: RawAxiosRequestConfig): AxiosPromise<IdimProxyIdirUsersSearchResSchema>;
 
 }
 
@@ -240,8 +374,8 @@ export interface IDIRBCeIDProxyApiInterface {
  */
 export class IDIRBCeIDProxyApi extends BaseAPI implements IDIRBCeIDProxyApiInterface {
     /**
-     * 
-     * @summary Bceid Lookup
+     * Lookup a BCeID Business user by user ID.
+     * @summary Lookup BCEID user
      * @param {string} userId 
      * @param {number} applicationId 
      * @param {*} [options] Override http request option.
@@ -253,8 +387,8 @@ export class IDIRBCeIDProxyApi extends BaseAPI implements IDIRBCeIDProxyApiInter
     }
 
     /**
-     * 
-     * @summary Idir Lookup
+     * Lookup an IDIR user by user ID.
+     * @summary Lookup IDIR user
      * @param {string} userId 
      * @param {number} applicationId 
      * @param {*} [options] Override http request option.
@@ -263,6 +397,25 @@ export class IDIRBCeIDProxyApi extends BaseAPI implements IDIRBCeIDProxyApiInter
      */
     public idirLookup(userId: string, applicationId: number, options?: RawAxiosRequestConfig) {
         return IDIRBCeIDProxyApiFp(this.configuration).idirLookup(userId, applicationId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Search for IDIR users.
+     * @summary Search IDIR users
+     * @param {number} applicationId 
+     * @param {string | null} [firstName] 
+     * @param {string | null} [lastName] 
+     * @param {string | null} [userId] 
+     * @param {IdimSearchMatchMode | null} [firstNameMatchMode] 
+     * @param {IdimSearchMatchMode | null} [lastNameMatchMode] 
+     * @param {IdimSearchMatchMode | null} [userIdMatchMode] 
+     * @param {number} [pageSize] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof IDIRBCeIDProxyApi
+     */
+    public searchIdirUsers(applicationId: number, firstName?: string | null, lastName?: string | null, userId?: string | null, firstNameMatchMode?: IdimSearchMatchMode | null, lastNameMatchMode?: IdimSearchMatchMode | null, userIdMatchMode?: IdimSearchMatchMode | null, pageSize?: number, options?: RawAxiosRequestConfig) {
+        return IDIRBCeIDProxyApiFp(this.configuration).searchIdirUsers(applicationId, firstName, lastName, userId, firstNameMatchMode, lastNameMatchMode, userIdMatchMode, pageSize, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
