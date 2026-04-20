@@ -322,6 +322,60 @@ def test_lookup_bceid_user_requester_not_found_error_raised(
     assert "Requester does not exist" in response.text
 
 
+def test_lookup_idir_user_id_too_long_returns_422(
+    test_client_fixture: TestClient, test_rsa_key
+):
+    """
+    Ensure that passing a user_id exceeding max_length=20 returns 422 (not 500).
+    Validates that Annotated[str, Query(max_length=20)] is handled correctly
+    by FastAPI's validation layer.
+    """
+    app = test_client_fixture.app
+    app.dependency_overrides[get_current_requester] = (
+        mock_get_current_requester_with_idir_user
+    )
+
+    token = jwt_utils.create_jwt_token(test_rsa_key)
+    too_long_user_id = "A" * 21  # exceeds max_length=20
+    test_end_point = (
+        endPoint_lookup_idir
+        + f"?user_id={too_long_user_id}"
+        + endPoint_lookup_param_application_id
+    )
+    response = test_client_fixture.get(
+        test_end_point, headers=jwt_utils.headers(token)
+    )
+
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+
+def test_lookup_bceid_user_id_too_long_returns_422(
+    test_client_fixture: TestClient, test_rsa_key
+):
+    """
+    Ensure that passing a user_id exceeding max_length=20 returns 422 (not 500).
+    Validates that Annotated[str, Query(max_length=20)] is handled correctly
+    by FastAPI's validation layer.
+    """
+    app = test_client_fixture.app
+    app.dependency_overrides[get_current_requester] = (
+        mock_get_current_requester_with_business_bceid_user
+    )
+
+    token = jwt_utils.create_jwt_token(test_rsa_key)
+    too_long_user_id = "A" * 21  # exceeds max_length=20
+    test_end_point = (
+        endPoint_lookup_bceid
+        + f"?user_id={too_long_user_id}"
+        + endPoint_lookup_param_application_id
+    )
+    response = test_client_fixture.get(
+        test_end_point, headers=jwt_utils.headers(token)
+    )
+
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+
 # --------------------- IDIR users search tests --------------------------- #
 idir_search_users_endpoint = (
     f"{internal_api_prefix}/identity-lookup/users/idir/search"
@@ -588,3 +642,4 @@ class TestIdirSearchUsers:
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
         assert ERROR_GROUPS_REQUIRED in str(response.json()["detail"])
+

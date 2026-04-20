@@ -1,4 +1,5 @@
 import logging
+from typing import Annotated
 
 from api.app.constants import IdimSearchUserParamType, ApiInstanceEnv
 from api.app.decorators.endpoint_timing_dec import endpoint_timing_dec
@@ -11,6 +12,7 @@ from api.app.schemas import (
     IdimProxyIdirInfoSchema,
     IdimProxySearchParamSchema,
 )
+from api.app.schemas.requester import RequesterSchema
 from api.app.schemas.idim_proxy_idir_users_search import (
     IdimProxyIdirUsersSearchParamReqSchema,
     IdimProxyIdirUsersSearchResSchema,
@@ -30,13 +32,9 @@ router = APIRouter()
     description="Lookup an IDIR user by user ID.",
 )
 def idir_lookup(
-    user_id: str = Query(max_length=20),
-    # user_id: str = Annotated[str, Query(max_length=15)], # Although 'Annotated' is recommended by FastAPI, however, using Annotated has a bug
-    # It will throw pydantic.error_wrappers.ValidationError which is 500, not 422 we need.
-    # known issue: https://github.com/tiangolo/fastapi/issues/4974
-    # Fallback to use Query only.
-    requester=Depends(get_current_requester),
-    api_instance_env: ApiInstanceEnv = Depends(get_api_instance_env),
+    user_id: Annotated[str, Query(max_length=20)],
+    requester: Annotated[RequesterSchema, Depends(get_current_requester)],
+    api_instance_env: Annotated[ApiInstanceEnv, Depends(get_api_instance_env)],
 ):
     LOGGER.debug(f"Searching IDIR user with parameter user_id: {user_id}")
     idim_proxy_api = IdimProxyService(requester, api_instance_env)
@@ -53,9 +51,9 @@ def idir_lookup(
     description="Lookup a BCeID Business user by user ID.",
 )
 def bceid_lookup(
-    user_id: str = Query(max_length=20),
-    requester=Depends(get_current_requester),
-    api_instance_env: ApiInstanceEnv = Depends(get_api_instance_env),
+    user_id: Annotated[str, Query(max_length=20)],
+    requester: Annotated[RequesterSchema, Depends(get_current_requester)],
+    api_instance_env: Annotated[ApiInstanceEnv, Depends(get_api_instance_env)],
 ):
     LOGGER.debug(f"Searching BCEID user with parameter user_id: {user_id}")
     idim_proxy_api = IdimProxyService(requester, api_instance_env)
@@ -76,9 +74,9 @@ def bceid_lookup(
 )
 @endpoint_timing_dec("fam-search_idir_users")
 def search_idir_users(
-    search_params: IdimProxyIdirUsersSearchParamReqSchema = Depends(),
-    requester=Depends(get_current_requester),
-    api_instance_env: ApiInstanceEnv = Depends(get_api_instance_env),
+    search_params: Annotated[IdimProxyIdirUsersSearchParamReqSchema, Depends()],
+    requester: Annotated[RequesterSchema, Depends(get_current_requester)],
+    api_instance_env: Annotated[ApiInstanceEnv, Depends(get_api_instance_env)],
 ):
     """
     FAM-side API for admins to search IDIR users through IDIM Proxy.

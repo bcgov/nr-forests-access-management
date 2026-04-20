@@ -1,4 +1,5 @@
 import logging
+from typing import Annotated
 
 from api.app import database
 from api.app.crud import crud_utils
@@ -33,11 +34,14 @@ router = APIRouter()
     description="Search FAM users information associated with an application."
 )
 def user_search(
-    db: Session = Depends(database.get_db),
-    requester: RequesterSchema = Depends(get_current_requester),
-    page_params: ExtUserSearchParamSchema = Depends(),
-    filter_params: ExtApplicationUserSearchSchema = Depends(),
-    application: FamApplicationSchema = Depends(authorize_ext_api_by_app_role)
+    db: Annotated[Session, Depends(database.get_db)],
+    requester: Annotated[RequesterSchema, Depends(get_current_requester)],
+    page_params: Annotated[ExtUserSearchParamSchema, Depends()],
+    filter_params: Annotated[ExtApplicationUserSearchSchema, Depends()],
+    application: Annotated[
+        FamApplicationSchema,
+        Depends(authorize_ext_api_by_app_role),
+    ],
 ):
     """
     External API to search users information (in FAM) associated with an application.
@@ -74,10 +78,13 @@ def user_search(
 )
 @endpoint_timing_dec("external-search_idim_idir_users")
 def search_idim_idir_users(
-    search_params: ExtIdirUserSearchParamSchema = Depends(),
-    requester: RequesterSchema = Depends(get_current_requester),
-    application: FamApplicationSchema = Depends(authorize_ext_api_by_app_role),
-) -> IdimProxyIdirUsersSearchResSchema:
+    search_params: Annotated[ExtIdirUserSearchParamSchema, Depends()],
+    requester: Annotated[RequesterSchema, Depends(get_current_requester)],
+    application: Annotated[
+        FamApplicationSchema,
+        Depends(authorize_ext_api_by_app_role),
+    ],
+):
     """
     External API for downstream applications to search IDIR users.
     """
