@@ -540,6 +540,10 @@ def authorize_ext_api_by_app_role(
     has_call_api_permission: bool = crud_utils.allow_ext_call_api_permission(
         db, application.application_id, requester.user_name
     )
+    LOGGER.debug(f"Authorizing external API call for requester: {requester.user_name} (id: {requester.user_id}), "
+        f"app: {application.application_name}, permission check result: {has_call_api_permission}."
+        f" Requester has no role within application '{application.application_name}' with permission to call the external API."
+    )
     if not has_call_api_permission:
         utils.raise_http_exception(
             status_code=HTTPStatus.FORBIDDEN,

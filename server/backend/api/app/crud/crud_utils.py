@@ -12,6 +12,7 @@ from api.app.utils.utils import raise_http_exception
 from sqlalchemy import func
 from sqlalchemy.inspection import inspect
 from sqlalchemy.orm import Session
+from sqlalchemy import exists, select
 
 LOGGER = logging.getLogger(__name__)
 
@@ -143,7 +144,6 @@ def allow_ext_call_api_permission(db: Session, application_id: int, user_name: s
     :param user_name: User name to check
     :return: True if allowed, False otherwise
     """
-    from sqlalchemy import exists, select
     stmt = (
         select(models.FamUserRoleXref)
         .join(models.FamUser)
