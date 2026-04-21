@@ -23,7 +23,6 @@ export * from './idim-proxy-bceid-info-schema';
 export * from './idim-proxy-idir-info-schema';
 export * from './idim-proxy-idir-user-search-item-res-schema';
 export * from './idim-proxy-idir-users-search-res-schema';
-export * from './idim-search-match-mode';
 export * from './location-inner';
 export * from './page-result-meta-schema';
 export * from './paged-results-schema-fam-application-user-role-assignment-get-schema';

@@ -610,54 +610,6 @@
             }
           },
           {
-            "name": "firstNameMatchMode",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "$ref": "#/components/schemas/IdimSearchMatchMode"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Firstnamematchmode"
-            }
-          },
-          {
-            "name": "lastNameMatchMode",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "$ref": "#/components/schemas/IdimSearchMatchMode"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Lastnamematchmode"
-            }
-          },
-          {
-            "name": "userIdMatchMode",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "$ref": "#/components/schemas/IdimSearchMatchMode"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Useridmatchmode"
-            }
-          },
-          {
             "name": "pageSize",
             "in": "query",
             "required": false,
@@ -1303,60 +1255,6 @@
               "title": "Userid"
             },
             "description": "IDIR user id search value (min 2 chars)"
-          },
-          {
-            "name": "firstNameMatchMode",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "$ref": "#/components/schemas/IdimSearchMatchMode"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "Match mode for firstName. Defaults to Contains.",
-              "title": "Firstnamematchmode"
-            },
-            "description": "Match mode for firstName. Defaults to Contains."
-          },
-          {
-            "name": "lastNameMatchMode",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "$ref": "#/components/schemas/IdimSearchMatchMode"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "Match mode for lastName. Defaults to Contains.",
-              "title": "Lastnamematchmode"
-            },
-            "description": "Match mode for lastName. Defaults to Contains."
-          },
-          {
-            "name": "userIdMatchMode",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "$ref": "#/components/schemas/IdimSearchMatchMode"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "Match mode for userId. Defaults to Contains.",
-              "title": "Useridmatchmode"
-            },
-            "description": "Match mode for userId. Defaults to Contains."
           },
           {
             "name": "pageSize",
@@ -2347,15 +2245,6 @@
           "items"
         ],
         "title": "IdimProxyIdirUsersSearchResSchema"
-      },
-      "IdimSearchMatchMode": {
-        "type": "string",
-        "enum": [
-          "Exact",
-          "Contains",
-          "StartsWith"
-        ],
-        "title": "IdimSearchMatchMode"
       },
       "PageResultMetaSchema": {
         "properties": {

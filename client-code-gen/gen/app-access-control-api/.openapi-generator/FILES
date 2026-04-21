@@ -1,5 +1,6 @@
 .gitignore
 .npmignore
+.openapi-generator-ignore
 README.md
 api.ts
 api/bcscproxy-api.ts
@@ -41,7 +42,6 @@ model/idim-proxy-bceid-info-schema.ts
 model/idim-proxy-idir-info-schema.ts
 model/idim-proxy-idir-user-search-item-res-schema.ts
 model/idim-proxy-idir-users-search-res-schema.ts
-model/idim-search-match-mode.ts
 model/idptype.ts
 model/index.ts
 model/location-inner.ts

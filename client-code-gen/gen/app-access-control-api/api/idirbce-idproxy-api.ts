@@ -29,8 +29,6 @@ import { IdimProxyBceidInfoSchema } from '../model';
 import { IdimProxyIdirInfoSchema } from '../model';
 // @ts-ignore
 import { IdimProxyIdirUsersSearchResSchema } from '../model';
-// @ts-ignore
-import { IdimSearchMatchMode } from '../model';
 /**
  * IDIRBCeIDProxyApi - axios parameter creator
  * @export
@@ -140,14 +138,11 @@ export const IDIRBCeIDProxyApiAxiosParamCreator = function (configuration?: Conf
          * @param {string | null} [firstName] 
          * @param {string | null} [lastName] 
          * @param {string | null} [userId] 
-         * @param {IdimSearchMatchMode | null} [firstNameMatchMode] 
-         * @param {IdimSearchMatchMode | null} [lastNameMatchMode] 
-         * @param {IdimSearchMatchMode | null} [userIdMatchMode] 
          * @param {number} [pageSize] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        searchIdirUsers: async (applicationId: number, firstName?: string | null, lastName?: string | null, userId?: string | null, firstNameMatchMode?: IdimSearchMatchMode | null, lastNameMatchMode?: IdimSearchMatchMode | null, userIdMatchMode?: IdimSearchMatchMode | null, pageSize?: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        searchIdirUsers: async (applicationId: number, firstName?: string | null, lastName?: string | null, userId?: string | null, pageSize?: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'applicationId' is not null or undefined
             assertParamExists('searchIdirUsers', 'applicationId', applicationId)
             const localVarPath = `/identity-lookup/users/idir/search`;
@@ -176,18 +171,6 @@ export const IDIRBCeIDProxyApiAxiosParamCreator = function (configuration?: Conf
 
             if (userId !== undefined) {
                 localVarQueryParameter['userId'] = userId;
-            }
-
-            if (firstNameMatchMode !== undefined) {
-                localVarQueryParameter['firstNameMatchMode'] = firstNameMatchMode;
-            }
-
-            if (lastNameMatchMode !== undefined) {
-                localVarQueryParameter['lastNameMatchMode'] = lastNameMatchMode;
-            }
-
-            if (userIdMatchMode !== undefined) {
-                localVarQueryParameter['userIdMatchMode'] = userIdMatchMode;
             }
 
             if (pageSize !== undefined) {
@@ -254,15 +237,12 @@ export const IDIRBCeIDProxyApiFp = function(configuration?: Configuration) {
          * @param {string | null} [firstName] 
          * @param {string | null} [lastName] 
          * @param {string | null} [userId] 
-         * @param {IdimSearchMatchMode | null} [firstNameMatchMode] 
-         * @param {IdimSearchMatchMode | null} [lastNameMatchMode] 
-         * @param {IdimSearchMatchMode | null} [userIdMatchMode] 
          * @param {number} [pageSize] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async searchIdirUsers(applicationId: number, firstName?: string | null, lastName?: string | null, userId?: string | null, firstNameMatchMode?: IdimSearchMatchMode | null, lastNameMatchMode?: IdimSearchMatchMode | null, userIdMatchMode?: IdimSearchMatchMode | null, pageSize?: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<IdimProxyIdirUsersSearchResSchema>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.searchIdirUsers(applicationId, firstName, lastName, userId, firstNameMatchMode, lastNameMatchMode, userIdMatchMode, pageSize, options);
+        async searchIdirUsers(applicationId: number, firstName?: string | null, lastName?: string | null, userId?: string | null, pageSize?: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<IdimProxyIdirUsersSearchResSchema>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.searchIdirUsers(applicationId, firstName, lastName, userId, pageSize, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['IDIRBCeIDProxyApi.searchIdirUsers']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -306,15 +286,12 @@ export const IDIRBCeIDProxyApiFactory = function (configuration?: Configuration,
          * @param {string | null} [firstName] 
          * @param {string | null} [lastName] 
          * @param {string | null} [userId] 
-         * @param {IdimSearchMatchMode | null} [firstNameMatchMode] 
-         * @param {IdimSearchMatchMode | null} [lastNameMatchMode] 
-         * @param {IdimSearchMatchMode | null} [userIdMatchMode] 
          * @param {number} [pageSize] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        searchIdirUsers(applicationId: number, firstName?: string | null, lastName?: string | null, userId?: string | null, firstNameMatchMode?: IdimSearchMatchMode | null, lastNameMatchMode?: IdimSearchMatchMode | null, userIdMatchMode?: IdimSearchMatchMode | null, pageSize?: number, options?: any): AxiosPromise<IdimProxyIdirUsersSearchResSchema> {
-            return localVarFp.searchIdirUsers(applicationId, firstName, lastName, userId, firstNameMatchMode, lastNameMatchMode, userIdMatchMode, pageSize, options).then((request) => request(axios, basePath));
+        searchIdirUsers(applicationId: number, firstName?: string | null, lastName?: string | null, userId?: string | null, pageSize?: number, options?: any): AxiosPromise<IdimProxyIdirUsersSearchResSchema> {
+            return localVarFp.searchIdirUsers(applicationId, firstName, lastName, userId, pageSize, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -354,15 +331,12 @@ export interface IDIRBCeIDProxyApiInterface {
      * @param {string | null} [firstName] 
      * @param {string | null} [lastName] 
      * @param {string | null} [userId] 
-     * @param {IdimSearchMatchMode | null} [firstNameMatchMode] 
-     * @param {IdimSearchMatchMode | null} [lastNameMatchMode] 
-     * @param {IdimSearchMatchMode | null} [userIdMatchMode] 
      * @param {number} [pageSize] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof IDIRBCeIDProxyApiInterface
      */
-    searchIdirUsers(applicationId: number, firstName?: string | null, lastName?: string | null, userId?: string | null, firstNameMatchMode?: IdimSearchMatchMode | null, lastNameMatchMode?: IdimSearchMatchMode | null, userIdMatchMode?: IdimSearchMatchMode | null, pageSize?: number, options?: RawAxiosRequestConfig): AxiosPromise<IdimProxyIdirUsersSearchResSchema>;
+    searchIdirUsers(applicationId: number, firstName?: string | null, lastName?: string | null, userId?: string | null, pageSize?: number, options?: RawAxiosRequestConfig): AxiosPromise<IdimProxyIdirUsersSearchResSchema>;
 
 }
 
@@ -406,16 +380,13 @@ export class IDIRBCeIDProxyApi extends BaseAPI implements IDIRBCeIDProxyApiInter
      * @param {string | null} [firstName] 
      * @param {string | null} [lastName] 
      * @param {string | null} [userId] 
-     * @param {IdimSearchMatchMode | null} [firstNameMatchMode] 
-     * @param {IdimSearchMatchMode | null} [lastNameMatchMode] 
-     * @param {IdimSearchMatchMode | null} [userIdMatchMode] 
      * @param {number} [pageSize] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof IDIRBCeIDProxyApi
      */
-    public searchIdirUsers(applicationId: number, firstName?: string | null, lastName?: string | null, userId?: string | null, firstNameMatchMode?: IdimSearchMatchMode | null, lastNameMatchMode?: IdimSearchMatchMode | null, userIdMatchMode?: IdimSearchMatchMode | null, pageSize?: number, options?: RawAxiosRequestConfig) {
-        return IDIRBCeIDProxyApiFp(this.configuration).searchIdirUsers(applicationId, firstName, lastName, userId, firstNameMatchMode, lastNameMatchMode, userIdMatchMode, pageSize, options).then((request) => request(this.axios, this.basePath));
+    public searchIdirUsers(applicationId: number, firstName?: string | null, lastName?: string | null, userId?: string | null, pageSize?: number, options?: RawAxiosRequestConfig) {
+        return IDIRBCeIDProxyApiFp(this.configuration).searchIdirUsers(applicationId, firstName, lastName, userId, pageSize, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

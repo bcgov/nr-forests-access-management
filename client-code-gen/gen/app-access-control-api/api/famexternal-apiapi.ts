@@ -29,8 +29,6 @@ import { HTTPValidationError } from '../model';
 import { IDPType } from '../model';
 // @ts-ignore
 import { IdimProxyIdirUsersSearchResSchema } from '../model';
-// @ts-ignore
-import { IdimSearchMatchMode } from '../model';
 /**
  * FAMExternalAPIApi - axios parameter creator
  * @export
@@ -43,14 +41,11 @@ export const FAMExternalAPIApiAxiosParamCreator = function (configuration?: Conf
          * @param {string | null} [firstName] IDIR first name search value (min 2 chars)
          * @param {string | null} [lastName] IDIR last name search value (min 2 chars)
          * @param {string | null} [userId] IDIR user id search value (min 2 chars)
-         * @param {IdimSearchMatchMode | null} [firstNameMatchMode] Match mode for firstName. Defaults to Contains.
-         * @param {IdimSearchMatchMode | null} [lastNameMatchMode] Match mode for lastName. Defaults to Contains.
-         * @param {IdimSearchMatchMode | null} [userIdMatchMode] Match mode for userId. Defaults to Contains.
          * @param {number} [pageSize] Number of records to return
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        searchIdimIdirUsers: async (firstName?: string | null, lastName?: string | null, userId?: string | null, firstNameMatchMode?: IdimSearchMatchMode | null, lastNameMatchMode?: IdimSearchMatchMode | null, userIdMatchMode?: IdimSearchMatchMode | null, pageSize?: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        searchIdimIdirUsers: async (firstName?: string | null, lastName?: string | null, userId?: string | null, pageSize?: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/external/v1/users/identity/idir/search`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -77,18 +72,6 @@ export const FAMExternalAPIApiAxiosParamCreator = function (configuration?: Conf
 
             if (userId !== undefined) {
                 localVarQueryParameter['userId'] = userId;
-            }
-
-            if (firstNameMatchMode !== undefined) {
-                localVarQueryParameter['firstNameMatchMode'] = firstNameMatchMode;
-            }
-
-            if (lastNameMatchMode !== undefined) {
-                localVarQueryParameter['lastNameMatchMode'] = lastNameMatchMode;
-            }
-
-            if (userIdMatchMode !== undefined) {
-                localVarQueryParameter['userIdMatchMode'] = userIdMatchMode;
             }
 
             if (pageSize !== undefined) {
@@ -191,15 +174,12 @@ export const FAMExternalAPIApiFp = function(configuration?: Configuration) {
          * @param {string | null} [firstName] IDIR first name search value (min 2 chars)
          * @param {string | null} [lastName] IDIR last name search value (min 2 chars)
          * @param {string | null} [userId] IDIR user id search value (min 2 chars)
-         * @param {IdimSearchMatchMode | null} [firstNameMatchMode] Match mode for firstName. Defaults to Contains.
-         * @param {IdimSearchMatchMode | null} [lastNameMatchMode] Match mode for lastName. Defaults to Contains.
-         * @param {IdimSearchMatchMode | null} [userIdMatchMode] Match mode for userId. Defaults to Contains.
          * @param {number} [pageSize] Number of records to return
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async searchIdimIdirUsers(firstName?: string | null, lastName?: string | null, userId?: string | null, firstNameMatchMode?: IdimSearchMatchMode | null, lastNameMatchMode?: IdimSearchMatchMode | null, userIdMatchMode?: IdimSearchMatchMode | null, pageSize?: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<IdimProxyIdirUsersSearchResSchema>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.searchIdimIdirUsers(firstName, lastName, userId, firstNameMatchMode, lastNameMatchMode, userIdMatchMode, pageSize, options);
+        async searchIdimIdirUsers(firstName?: string | null, lastName?: string | null, userId?: string | null, pageSize?: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<IdimProxyIdirUsersSearchResSchema>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.searchIdimIdirUsers(firstName, lastName, userId, pageSize, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['FAMExternalAPIApi.searchIdimIdirUsers']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -239,15 +219,12 @@ export const FAMExternalAPIApiFactory = function (configuration?: Configuration,
          * @param {string | null} [firstName] IDIR first name search value (min 2 chars)
          * @param {string | null} [lastName] IDIR last name search value (min 2 chars)
          * @param {string | null} [userId] IDIR user id search value (min 2 chars)
-         * @param {IdimSearchMatchMode | null} [firstNameMatchMode] Match mode for firstName. Defaults to Contains.
-         * @param {IdimSearchMatchMode | null} [lastNameMatchMode] Match mode for lastName. Defaults to Contains.
-         * @param {IdimSearchMatchMode | null} [userIdMatchMode] Match mode for userId. Defaults to Contains.
          * @param {number} [pageSize] Number of records to return
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        searchIdimIdirUsers(firstName?: string | null, lastName?: string | null, userId?: string | null, firstNameMatchMode?: IdimSearchMatchMode | null, lastNameMatchMode?: IdimSearchMatchMode | null, userIdMatchMode?: IdimSearchMatchMode | null, pageSize?: number, options?: any): AxiosPromise<IdimProxyIdirUsersSearchResSchema> {
-            return localVarFp.searchIdimIdirUsers(firstName, lastName, userId, firstNameMatchMode, lastNameMatchMode, userIdMatchMode, pageSize, options).then((request) => request(axios, basePath));
+        searchIdimIdirUsers(firstName?: string | null, lastName?: string | null, userId?: string | null, pageSize?: number, options?: any): AxiosPromise<IdimProxyIdirUsersSearchResSchema> {
+            return localVarFp.searchIdimIdirUsers(firstName, lastName, userId, pageSize, options).then((request) => request(axios, basePath));
         },
         /**
          * Search FAM users information associated with an application.
@@ -280,15 +257,12 @@ export interface FAMExternalAPIApiInterface {
      * @param {string | null} [firstName] IDIR first name search value (min 2 chars)
      * @param {string | null} [lastName] IDIR last name search value (min 2 chars)
      * @param {string | null} [userId] IDIR user id search value (min 2 chars)
-     * @param {IdimSearchMatchMode | null} [firstNameMatchMode] Match mode for firstName. Defaults to Contains.
-     * @param {IdimSearchMatchMode | null} [lastNameMatchMode] Match mode for lastName. Defaults to Contains.
-     * @param {IdimSearchMatchMode | null} [userIdMatchMode] Match mode for userId. Defaults to Contains.
      * @param {number} [pageSize] Number of records to return
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof FAMExternalAPIApiInterface
      */
-    searchIdimIdirUsers(firstName?: string | null, lastName?: string | null, userId?: string | null, firstNameMatchMode?: IdimSearchMatchMode | null, lastNameMatchMode?: IdimSearchMatchMode | null, userIdMatchMode?: IdimSearchMatchMode | null, pageSize?: number, options?: RawAxiosRequestConfig): AxiosPromise<IdimProxyIdirUsersSearchResSchema>;
+    searchIdimIdirUsers(firstName?: string | null, lastName?: string | null, userId?: string | null, pageSize?: number, options?: RawAxiosRequestConfig): AxiosPromise<IdimProxyIdirUsersSearchResSchema>;
 
     /**
      * Search FAM users information associated with an application.
@@ -321,16 +295,13 @@ export class FAMExternalAPIApi extends BaseAPI implements FAMExternalAPIApiInter
      * @param {string | null} [firstName] IDIR first name search value (min 2 chars)
      * @param {string | null} [lastName] IDIR last name search value (min 2 chars)
      * @param {string | null} [userId] IDIR user id search value (min 2 chars)
-     * @param {IdimSearchMatchMode | null} [firstNameMatchMode] Match mode for firstName. Defaults to Contains.
-     * @param {IdimSearchMatchMode | null} [lastNameMatchMode] Match mode for lastName. Defaults to Contains.
-     * @param {IdimSearchMatchMode | null} [userIdMatchMode] Match mode for userId. Defaults to Contains.
      * @param {number} [pageSize] Number of records to return
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof FAMExternalAPIApi
      */
-    public searchIdimIdirUsers(firstName?: string | null, lastName?: string | null, userId?: string | null, firstNameMatchMode?: IdimSearchMatchMode | null, lastNameMatchMode?: IdimSearchMatchMode | null, userIdMatchMode?: IdimSearchMatchMode | null, pageSize?: number, options?: RawAxiosRequestConfig) {
-        return FAMExternalAPIApiFp(this.configuration).searchIdimIdirUsers(firstName, lastName, userId, firstNameMatchMode, lastNameMatchMode, userIdMatchMode, pageSize, options).then((request) => request(this.axios, this.basePath));
+    public searchIdimIdirUsers(firstName?: string | null, lastName?: string | null, userId?: string | null, pageSize?: number, options?: RawAxiosRequestConfig) {
+        return FAMExternalAPIApiFp(this.configuration).searchIdimIdirUsers(firstName, lastName, userId, pageSize, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
