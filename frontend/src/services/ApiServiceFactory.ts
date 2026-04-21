@@ -1,5 +1,5 @@
 import { EnvironmentSettings } from "@/services/EnvironmentSettings";
-import axios, { type AxiosInstance } from "axios";
+import axios from "axios";
 import {
     AdminUserAccessesApi,
     FAMAccessControlPrivilegesApi,
@@ -121,12 +121,10 @@ export default class ApiServiceFactory {
      */
     private createApiInstance<C>(
         // Class Types in Generics: see Typescript ref - https://www.typescriptlang.org/docs/handbook/2/generics.html
-        // Obey the constructor signature of the BaseAPI.
-        c: new (
-            configuration?: Configuration,
-            basePath?: string,
-            axios?: AxiosInstance
-        ) => C,
+        // Use a flexible constructor signature to avoid Axios type identity conflicts that arise when
+        // generated client packages bundle their own axios copy (different module path = different TS type).
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        c: new (...args: any[]) => C,
         baseURL?: string
     ): C {
         const configuration = baseURL
