@@ -303,7 +303,6 @@ class TestIdimProxyServiceSearchIdirUsers:
         search_params = IdimProxyIdirUsersSearchParamReqSchema(
             firstName="John",
             lastName="Doe",
-            firstNameMatchMode=IdimSearchMatchMode.CONTAINS,
             pageSize=25,
         )
 
@@ -489,33 +488,17 @@ class TestIdimProxyIdirUsersSearchSchemas:
                 pageSize=1001,  # Above maximum
             )
 
-    def test_search_param_schema_invalid_match_mode_fails(self):
-        """Test that invalid match mode fails validation."""
-        with pytest.raises(ValueError):
-            IdimProxyIdirUsersSearchParamReqSchema(
-                firstName="John",
-                firstNameMatchMode="InvalidMode",  # Invalid enum value
-            )
-
-    def test_search_param_schema_valid_match_modes(self):
-        """Test that all valid match modes are accepted."""
-        schema1 = IdimProxyIdirUsersSearchParamReqSchema(
+    def test_search_param_schema_builds_contains_match_modes(self):
+        """Test that outgoing IDIM params always use the fixed Contains mode."""
+        schema = IdimProxyIdirUsersSearchParamReqSchema(
             firstName="John",
-            firstNameMatchMode=IdimSearchMatchMode.EXACT,
+            lastName="Doe",
+            userId="jdoe",
         )
-        assert schema1.firstNameMatchMode == IdimSearchMatchMode.EXACT
 
-        schema2 = IdimProxyIdirUsersSearchParamReqSchema(
-            firstName="John",
-            firstNameMatchMode=IdimSearchMatchMode.CONTAINS,
-        )
-        assert schema2.firstNameMatchMode == IdimSearchMatchMode.CONTAINS
-
-        schema3 = IdimProxyIdirUsersSearchParamReqSchema(
-            firstName="John",
-            firstNameMatchMode=IdimSearchMatchMode.STARTS_WITH,
-        )
-        assert schema3.firstNameMatchMode == IdimSearchMatchMode.STARTS_WITH
+        assert schema.to_query_params()["firstNameMatchMode"] == "Contains"
+        assert schema.to_query_params()["lastNameMatchMode"] == "Contains"
+        assert schema.to_query_params()["userIdMatchMode"] == "Contains"
 
     def test_response_schema_parse_empty_items(self):
         """Test that response schema parses empty items list."""

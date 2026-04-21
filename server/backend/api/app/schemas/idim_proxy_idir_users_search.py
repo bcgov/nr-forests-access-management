@@ -28,19 +28,6 @@ class IdimProxyIdirUsersSearchParamReqSchema(BaseModel):
         Annotated[str, StringConstraints(max_length=EXT_MAX_IDP_USERNAME_LEN)]
     ] = Field(default=None, description="IDIR user id search value (min 2 chars)")
 
-    firstNameMatchMode: Optional[IdimSearchMatchMode] = Field(
-        default=None,
-        description="Match mode for firstName. Defaults to Contains.",
-    )
-    lastNameMatchMode: Optional[IdimSearchMatchMode] = Field(
-        default=None,
-        description="Match mode for lastName. Defaults to Contains.",
-    )
-    userIdMatchMode: Optional[IdimSearchMatchMode] = Field(
-        default=None,
-        description="Match mode for userId. Defaults to Contains.",
-    )
-
     # Note, IDIM Webservice does not provide page number for filtering. If the values in the search parameters are too broad,
     # the API will only return the page_size number of records from the top of the search result.
     pageSize: int = Field(
@@ -79,14 +66,20 @@ class IdimProxyIdirUsersSearchParamReqSchema(BaseModel):
                     f"{field_name} must be at least 2 characters when provided"
                 )
 
-        if self.firstName is not None and self.firstNameMatchMode is None:
-            self.firstNameMatchMode = IdimSearchMatchMode.CONTAINS
-        if self.lastName is not None and self.lastNameMatchMode is None:
-            self.lastNameMatchMode = IdimSearchMatchMode.CONTAINS
-        if self.userId is not None and self.userIdMatchMode is None:
-            self.userIdMatchMode = IdimSearchMatchMode.CONTAINS
-
         return self
+
+    def to_query_params(self) -> dict[str, int | str]:
+        """Build IDIM query params with the fixed `Contains` match mode."""
+        query_params = self.model_dump(exclude_none=True)
+
+        if self.firstName is not None:
+            query_params["firstNameMatchMode"] = IdimSearchMatchMode.CONTAINS.value
+        if self.lastName is not None:
+            query_params["lastNameMatchMode"] = IdimSearchMatchMode.CONTAINS.value
+        if self.userId is not None:
+            query_params["userIdMatchMode"] = IdimSearchMatchMode.CONTAINS.value
+
+        return query_params
 
 
 class IdimProxyIdirUserSearchItemResSchema(BaseModel):

@@ -428,11 +428,11 @@ class TestSearchIdirUsers:
             )
             assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
-    def test_match_mode_user_provided(self, test_client_fixture: TestClient, auth_headers, override_depends__get_current_requester):
-        """Test that user-provided match modes are passed to IDIM service."""
+    def test_search_ignores_public_match_mode_params(self, test_client_fixture: TestClient, auth_headers, override_depends__get_current_requester):
+        """Test that public match mode params do not change the IDIM request."""
         override_depends__get_current_requester()
 
-        with patched_search_idim_idir_users(mock_app, mock_idir_single_result):
+        with patched_search_idim_idir_users(mock_app, mock_idir_single_result) as mock_service_class:
             response = test_client_fixture.get(
                 searchIdirUsersEndpoint,
                 headers=auth_headers,
@@ -444,12 +444,16 @@ class TestSearchIdirUsers:
             )
 
             assert response.status_code == status.HTTP_200_OK
+            called_search_params = (
+                mock_service_class.return_value.search_idir_users.call_args[0][0]
+            )
+            assert called_search_params.to_query_params()["firstNameMatchMode"] == "Contains"
 
-    def test_match_mode_defaults_to_contains(self, test_client_fixture: TestClient, auth_headers, override_depends__get_current_requester):
-        """Test that match modes default to 'Contains' when not explicitly provided."""
+    def test_search_always_uses_contains_match_mode(self, test_client_fixture: TestClient, auth_headers, override_depends__get_current_requester):
+        """Test that IDIM search always uses the internal Contains match mode."""
         override_depends__get_current_requester()
 
-        with patched_search_idim_idir_users(mock_app, mock_idir_multiple_results):
+        with patched_search_idim_idir_users(mock_app, mock_idir_multiple_results) as mock_service_class:
             response = test_client_fixture.get(
                 searchIdirUsersEndpoint,
                 headers=auth_headers,
@@ -458,6 +462,12 @@ class TestSearchIdirUsers:
             )
 
             assert response.status_code == status.HTTP_200_OK
+            called_search_params = (
+                mock_service_class.return_value.search_idir_users.call_args[0][0]
+            )
+            query_params = called_search_params.to_query_params()
+            assert query_params["firstNameMatchMode"] == "Contains"
+            assert query_params["lastNameMatchMode"] == "Contains"
 
     def test_idim_proxy_error_with_code(self, test_client_fixture: TestClient, auth_headers, override_depends__get_current_requester):
         """Test error handling when IDIM Proxy returns error."""

@@ -99,9 +99,6 @@ def search_idim_idir_users(
         firstName=search_params.first_name,
         lastName=search_params.last_name,
         userId=search_params.user_id,
-        firstNameMatchMode=search_params.first_name_match_mode,
-        lastNameMatchMode=search_params.last_name_match_mode,
-        userIdMatchMode=search_params.user_id_match_mode,
         pageSize=search_params.page_size,
     )
 

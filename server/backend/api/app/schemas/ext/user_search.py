@@ -11,7 +11,6 @@ from api.app.constants import (EXT_APPLICATION_NAME_MAX_LEN,
                                EXT_ROLE_DISPLAY_NAME_MAX_LEN,
                                FIRST_NAME_MAX_LEN, LAST_NAME_MAX_LEN,
                                USER_NAME_MAX_LEN, IDPType, ScopeType)
-from api.app.schemas.idim_proxy_idir_users_search import IdimSearchMatchMode
 from fastapi import Query
 from pydantic import (BaseModel, ConfigDict, Field, StringConstraints,
                       field_validator, model_validator)
@@ -104,28 +103,6 @@ class ExtIdirUserSearchParamSchema(BaseModel):
         alias="userId",
     )
 
-    first_name_match_mode: Optional[IdimSearchMatchMode] = Field(
-        Query(
-            default=None,
-            description="Match mode for firstName. Defaults to Contains.",
-        ),
-        alias="firstNameMatchMode",
-    )
-    last_name_match_mode: Optional[IdimSearchMatchMode] = Field(
-        Query(
-            default=None,
-            description="Match mode for lastName. Defaults to Contains.",
-        ),
-        alias="lastNameMatchMode",
-    )
-    user_id_match_mode: Optional[IdimSearchMatchMode] = Field(
-        Query(
-            default=None,
-            description="Match mode for userId. Defaults to Contains.",
-        ),
-        alias="userIdMatchMode",
-    )
-
     # Note, IDIM Webservice does not provide page number for filtering. If the values in the search parameters are too broad,
     # the API will only return the page_size number of records from the top of the search result.
     page_size: int = Field(
@@ -166,13 +143,6 @@ class ExtIdirUserSearchParamSchema(BaseModel):
                 raise ValueError(
                     f"{field_name} must be at least 2 characters when provided"
                 )
-
-        if self.first_name is not None and self.first_name_match_mode is None:
-            self.first_name_match_mode = IdimSearchMatchMode.CONTAINS
-        if self.last_name is not None and self.last_name_match_mode is None:
-            self.last_name_match_mode = IdimSearchMatchMode.CONTAINS
-        if self.user_id is not None and self.user_id_match_mode is None:
-            self.user_id_match_mode = IdimSearchMatchMode.CONTAINS
 
         return self
 

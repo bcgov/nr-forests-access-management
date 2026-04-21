@@ -124,7 +124,7 @@ class IdimProxyService:
         """
         Search IDIR users with optional partial-match query fields.
         """
-        query_params = search_params.model_dump(exclude_none=True)
+        query_params = search_params.to_query_params()
         body = {"requesterUserGuid": self.requester.user_guid}
         url = f"{self.api_idim_proxy_url}/idir-users/search"
 

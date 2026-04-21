@@ -540,7 +540,7 @@ class TestIdirSearchUsers:
             )
             assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
-    def test_match_mode_user_provided(
+    def test_search_ignores_public_match_mode_params(
         self, test_client_fixture: TestClient, test_rsa_key
     ):
         app = test_client_fixture.app
@@ -565,10 +565,10 @@ class TestIdirSearchUsers:
 
         assert response.status_code == status.HTTP_200_OK
         called_search_params = mock_instance.search_idir_users.call_args[0][0]
-        assert called_search_params.firstNameMatchMode.value == "StartsWith"
-        assert called_search_params.lastNameMatchMode.value == "Exact"
+        assert called_search_params.to_query_params()["firstNameMatchMode"] == "Contains"
+        assert called_search_params.to_query_params()["lastNameMatchMode"] == "Contains"
 
-    def test_match_mode_defaults_to_contains(
+    def test_search_always_uses_contains_match_mode(
         self, test_client_fixture: TestClient, test_rsa_key
     ):
         app = test_client_fixture.app
@@ -588,8 +588,8 @@ class TestIdirSearchUsers:
 
         assert response.status_code == status.HTTP_200_OK
         called_search_params = mock_instance.search_idir_users.call_args[0][0]
-        assert called_search_params.firstNameMatchMode.value == "Contains"
-        assert called_search_params.lastNameMatchMode.value == "Contains"
+        assert called_search_params.to_query_params()["firstNameMatchMode"] == "Contains"
+        assert called_search_params.to_query_params()["lastNameMatchMode"] == "Contains"
 
     def test_error_propagation_with_code(
         self, test_client_fixture: TestClient, test_rsa_key
