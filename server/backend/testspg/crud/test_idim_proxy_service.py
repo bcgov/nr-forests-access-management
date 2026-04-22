@@ -558,6 +558,4 @@ class TestIdimProxyIdirUsersSearchSchemas:
 
     def test_search_match_mode_enum_values(self):
         """Test that match mode enum has expected values."""
-        assert IdimSearchMatchMode.EXACT.value == "Exact"
         assert IdimSearchMatchMode.CONTAINS.value == "Contains"
-        assert IdimSearchMatchMode.STARTS_WITH.value == "StartsWith"

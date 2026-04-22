@@ -11,9 +11,12 @@ from api.app.constants import (EMAIL_MAX_LEN, EXT_DEFAULT_PAGE_SIZE, EXT_IDIM_SE
                                LAST_NAME_MAX_LEN, USER_NAME_MAX_LEN)
 
 class IdimSearchMatchMode(str, Enum):
-    EXACT = "Exact"
+    """
+    IDIM webservice supports three match modes for searching IDIR users: Exact, StartsWith, and Contains.
+    For simplicity, FAM will use the Contains match mode internally for all search parameters in the search endpoint.
+    FAM does not expose these mode for consume.
+    """
     CONTAINS = "Contains"
-    STARTS_WITH = "StartsWith"
 
 
 class IdimProxyIdirUsersSearchParamReqSchema(BaseModel):
