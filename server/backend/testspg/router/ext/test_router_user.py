@@ -449,8 +449,25 @@ class TestSearchIdirUsers:
             )
             assert called_search_params.to_query_params()["firstNameMatchMode"] == "Contains"
 
-    def test_search_always_uses_contains_match_mode(self, test_client_fixture: TestClient, auth_headers, override_depends__get_current_requester):
-        """Test that IDIM search always uses the internal Contains match mode."""
+    def test_search_uses_exact_mode_for_userid(self, test_client_fixture: TestClient, auth_headers, override_depends__get_current_requester):
+        """Test that userId search uses Exact match mode internally."""
+        override_depends__get_current_requester()
+
+        with patched_search_idim_idir_users(mock_app, mock_idir_single_result) as mock_service_class:
+            response = test_client_fixture.get(
+                searchIdirUsersEndpoint,
+                headers=auth_headers,
+                params={"userId": "jdoe"}
+            )
+
+            assert response.status_code == status.HTTP_200_OK
+            called_search_params = (
+                mock_service_class.return_value.search_idir_users.call_args[0][0]
+            )
+            assert called_search_params.to_query_params()["userIdMatchMode"] == "Exact"
+
+    def test_search_uses_contains_mode_for_names(self, test_client_fixture: TestClient, auth_headers, override_depends__get_current_requester):
+        """Test that name searches use Contains match mode internally."""
         override_depends__get_current_requester()
 
         with patched_search_idim_idir_users(mock_app, mock_idir_multiple_results) as mock_service_class:

@@ -568,7 +568,29 @@ class TestIdirSearchUsers:
         assert called_search_params.to_query_params()["firstNameMatchMode"] == "Contains"
         assert called_search_params.to_query_params()["lastNameMatchMode"] == "Contains"
 
-    def test_search_always_uses_contains_match_mode(
+    def test_search_uses_exact_mode_for_userid(
+        self, test_client_fixture: TestClient, test_rsa_key
+    ):
+        app = test_client_fixture.app
+        app.dependency_overrides[get_current_requester] = (
+            mock_get_current_requester_with_idir_user
+        )
+
+        token = jwt_utils.create_jwt_token(test_rsa_key)
+        endpoint = self._search_endpoint_with_app_id()
+
+        with self._patch_idim_service(search_result={"totalItems": 0, "pageSize": 10, "items": []}) as mock_instance:
+            response = test_client_fixture.get(
+                endpoint,
+                headers=jwt_utils.headers(token),
+                params=self._with_app_id({"userId": "jdoe"}),
+            )
+
+        assert response.status_code == status.HTTP_200_OK
+        called_search_params = mock_instance.search_idir_users.call_args[0][0]
+        assert called_search_params.to_query_params()["userIdMatchMode"] == "Exact"
+
+    def test_search_uses_contains_mode_for_names(
         self, test_client_fixture: TestClient, test_rsa_key
     ):
         app = test_client_fixture.app

@@ -488,8 +488,8 @@ class TestIdimProxyIdirUsersSearchSchemas:
                 pageSize=1001,  # Above maximum
             )
 
-    def test_search_param_schema_builds_contains_match_modes(self):
-        """Test that outgoing IDIM params always use the fixed Contains mode."""
+    def test_search_param_schema_builds(self):
+        """Test that userId uses Exact match mode while firstName/lastName use Contains mode."""
         schema = IdimProxyIdirUsersSearchParamReqSchema(
             firstName="John",
             lastName="Doe",
@@ -498,7 +498,7 @@ class TestIdimProxyIdirUsersSearchSchemas:
 
         assert schema.to_query_params()["firstNameMatchMode"] == "Contains"
         assert schema.to_query_params()["lastNameMatchMode"] == "Contains"
-        assert schema.to_query_params()["userIdMatchMode"] == "Contains"
+        assert schema.to_query_params()["userIdMatchMode"] == "Exact"
 
     def test_response_schema_parse_empty_items(self):
         """Test that response schema parses empty items list."""

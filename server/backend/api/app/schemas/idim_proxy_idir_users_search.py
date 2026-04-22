@@ -13,9 +13,10 @@ from api.app.constants import (EMAIL_MAX_LEN, EXT_DEFAULT_PAGE_SIZE, EXT_IDIM_SE
 class IdimSearchMatchMode(str, Enum):
     """
     IDIM webservice supports three match modes for searching IDIR users: Exact, StartsWith, and Contains.
-    For simplicity, FAM will use the Contains match mode internally for all search parameters in the search endpoint.
-    FAM does not expose these mode for consume.
+    FAM internally uses Exact mode for userId searches and Contains mode for firstName/lastName searches.
+    FAM does not expose these modes to consumers.
     """
+    EXACT = "Exact"
     CONTAINS = "Contains"
 
 
@@ -72,7 +73,7 @@ class IdimProxyIdirUsersSearchParamReqSchema(BaseModel):
         return self
 
     def to_query_params(self) -> dict[str, int | str]:
-        """Build IDIM query params with the fixed `Contains` match mode."""
+        """Build IDIM query params with Contains mode for names and Exact mode for userId."""
         query_params = self.model_dump(exclude_none=True)
 
         if self.firstName is not None:
@@ -80,7 +81,7 @@ class IdimProxyIdirUsersSearchParamReqSchema(BaseModel):
         if self.lastName is not None:
             query_params["lastNameMatchMode"] = IdimSearchMatchMode.CONTAINS.value
         if self.userId is not None:
-            query_params["userIdMatchMode"] = IdimSearchMatchMode.CONTAINS.value
+            query_params["userIdMatchMode"] = IdimSearchMatchMode.EXACT.value
 
         return query_params
 
