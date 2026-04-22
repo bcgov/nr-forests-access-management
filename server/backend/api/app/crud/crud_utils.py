@@ -149,18 +149,18 @@ def allow_ext_call_api_permission(db: Session, application_id: int, user_name: s
     :param user_name: User name to check
     :return: True if allowed, False otherwise
     """
-    ParentRole = aliased(models.FamRole)
+    parent_role = aliased(models.FamRole)
     stmt = (
         select(models.FamUserRoleXref)
         .join(models.FamUser)
         .join(models.FamRole)
-        .outerjoin(ParentRole, models.FamRole.parent_role_id == ParentRole.role_id)
+        .outerjoin(parent_role, models.FamRole.parent_role_id == parent_role.role_id)
         .where(models.FamUser.user_name == user_name)
         .where(models.FamRole.application_id == application_id)
         .where(
             or_(
                 models.FamRole.call_api_flag == True,
-                ParentRole.call_api_flag == True,
+                parent_role.call_api_flag == True,
             )
         )
     )
