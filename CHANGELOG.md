@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.12.0](https://github.com/bcgov/nr-forests-access-management/compare/v2.11.0...v2.12.0) (2026-04-23)
+
+
+### Features
+
+* [#2059](https://github.com/bcgov/nr-forests-access-management/issues/2059) IDIR Search by Names ([#2153](https://github.com/bcgov/nr-forests-access-management/issues/2153)) ([affa10d](https://github.com/bcgov/nr-forests-access-management/commit/affa10db336c0733889e8d362231bb120fe36e69))
+
+
+### Bug Fixes
+
+* [#2157](https://github.com/bcgov/nr-forests-access-management/issues/2157) Refresh Token Validity and Set REPT Roles for call_api_flag ([#2158](https://github.com/bcgov/nr-forests-access-management/issues/2158)) ([cfc5f74](https://github.com/bcgov/nr-forests-access-management/commit/cfc5f748b3f9238d471448925509e028159bee95))
+
 ## [2.11.0](https://github.com/bcgov/nr-forests-access-management/compare/v2.10.3...v2.11.0) (2026-04-15)
 
 
