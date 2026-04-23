@@ -15,8 +15,8 @@
 
 
 export * from './api/bcscproxy-api';
-export * from './api/external-famuser-search-api';
 export * from './api/famapplications-api';
+export * from './api/famexternal-apiapi';
 export * from './api/famforest-clients-api';
 export * from './api/famuser-api';
 export * from './api/famuser-role-assignment-api';

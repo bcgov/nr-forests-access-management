@@ -20,5 +20,5 @@ class FamRoleCreateSchema(BaseModel):
         Annotated[str, StringConstraints(max_length=8)], None
     ] = Field(default=None, title="Forest Client this role is associated with")
     create_user: Annotated[str, StringConstraints(max_length=100)]
-
+    call_api_flag: bool = Field(default=False, title="Whether role has permission to call API")
     model_config = ConfigDict(from_attributes=True)

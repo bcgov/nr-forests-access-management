@@ -95,7 +95,7 @@ const verifyIdirMutation = useMutation({
             props.setIsVerifying(true);
         }
         return AppActlApiService.idirBceidProxyApi
-            .idirSearch(usernameInput.value, props.appId)
+            .idirLookup(usernameInput.value, props.appId)
             .then((res) => res.data);
     },
     onSuccess: (data) => {
@@ -119,7 +119,7 @@ const verifyBceidMutation = useMutation({
             props.setIsVerifying(true);
         }
         return AppActlApiService.idirBceidProxyApi
-            .bceidSearch(usernameInput.value, props.appId)
+            .bceidLookup(usernameInput.value, props.appId)
             .then((res) => res.data);
     },
     onSuccess: (data) => {

@@ -55,14 +55,32 @@ The generated client is located at "./gen/[xyz]-api" directory specified by the 
 
 After api client code is generated:
 ```
->> update `axios` version in generated package to be consistent with "frontend" axios version.
-- This is important. During generation, this version could be changed by generation script. See note below.
+>> This is important. During generation, axios dependency settings could be changed by generation script. See note below.
+
+>> re-apply `peerDependencies` for axios in both generated client package.json files:
+   - `./gen/app-access-control-api/package.json`
+   - `./gen/admin-management-api/package.json`
+
+   Replace:
+   "dependencies": {
+     "axios": "..."
+   }
+
+   With:
+   "peerDependencies": {
+     "axios": "^1.15.1"  # or some good version without security issue.
+   }
+
+>> then run frontend install flow:
+   cd ../frontend
+   npm run install-frontend
 ```
 
 Note:
 ```
-Depending on the Axios version used at frontend, please be aware different axios versions used between in generatred code and frontend dependency will cause integration headache, even if it is a patch version change.
-Currently for openapi-generator with `typescript-axios`, there is no option available to spcify which `axios` version to use. If there is a need to upgrade frontend axios to higher version, then the generated code will also need to use the same version of axios. Use `npm ls axios` to check dependency tree after installation if not sure.
+The generator may overwrite the generated package.json files each time, so the axios `peerDependencies` change above may need to be re-applied after every client regeneration.
+
+Why this matters: TypeScript can treat axios types as different when they come from different module paths (for example, frontend node_modules vs generated client node_modules), even if versions look compatible. Using `peerDependencies` in generated clients reduces this mismatch risk by making frontend the owner of axios.
 
 ```
 

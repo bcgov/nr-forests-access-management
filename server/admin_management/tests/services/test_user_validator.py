@@ -58,9 +58,9 @@ class TestUserValidatorClass(object):
         # local valid mock requester
         self.requester_idir = Requester(**TEST_REQUESTER)
 
-    @patch.object(IdimProxyService, "search_idir")
-    def test_verify_user_exist_idir(self, mock_search_idir):
-        mock_search_idir.return_value = MOCK_SERACH_IDIR_RETURN
+    @patch.object(IdimProxyService, "lookup_idir")
+    def test_verify_user_exist_idir(self, mock_lookup_idir):
+        mock_lookup_idir.return_value = MOCK_SERACH_IDIR_RETURN
         target_user = TargetUser(**TEST_NEW_TARGET_USER_IDIR)
         target_user_validaor = TargetUserValidator(self.requester_idir, target_user, ApiInstanceEnv.TEST)
         verified_target_user = target_user_validaor.verify_user_exist()
@@ -70,9 +70,9 @@ class TestUserValidatorClass(object):
         assert verified_target_user.user_type_code == target_user.user_type_code
         assert verified_target_user.user_name == target_user.user_name
 
-    @patch.object(IdimProxyService, "search_idir")
-    def test_verify_user_exist_idir_not_found(self, mock_search_idir):
-        mock_search_idir.return_value = {**MOCK_SERACH_IDIR_RETURN, "found": False}
+    @patch.object(IdimProxyService, "lookup_idir")
+    def test_verify_user_exist_idir_not_found(self, mock_lookup_idir):
+        mock_lookup_idir.return_value = {**MOCK_SERACH_IDIR_RETURN, "found": False}
         target_user = TargetUser(
             **{**TEST_NEW_TARGET_USER_IDIR, "user_name": "USER_NOT_EXISTS"}
         )
@@ -91,9 +91,9 @@ class TestUserValidatorClass(object):
             != -1
         )
 
-    @patch.object(IdimProxyService, "search_idir")
-    def test_verify_user_exist_idir_mismatch_info(self, mock_search_idir):
-        mock_search_idir.return_value = MOCK_SERACH_IDIR_RETURN
+    @patch.object(IdimProxyService, "lookup_idir")
+    def test_verify_user_exist_idir_mismatch_info(self, mock_lookup_idir):
+        mock_lookup_idir.return_value = MOCK_SERACH_IDIR_RETURN
         target_user = TargetUser(
             **{
                 **TEST_NEW_TARGET_USER_IDIR,
@@ -113,9 +113,9 @@ class TestUserValidatorClass(object):
             != -1
         )
 
-    @patch.object(IdimProxyService, "search_business_bceid")
-    def test_verify_user_exist_bceid(self, mock_search_business_bceid):
-        mock_search_business_bceid.return_value = MOCK_SERACH_BCEID_RETURN
+    @patch.object(IdimProxyService, "lookup_business_bceid")
+    def test_verify_user_exist_bceid(self, mock_lookup_business_bceid):
+        mock_lookup_business_bceid.return_value = MOCK_SERACH_BCEID_RETURN
         target_user = TargetUser(**TEST_NEW_TARGET_USER_BCEID_LOAD_2)
         target_user_validaor = TargetUserValidator(self.requester_idir, target_user, ApiInstanceEnv.TEST)
         verified_target_user = target_user_validaor.verify_user_exist()
@@ -125,9 +125,9 @@ class TestUserValidatorClass(object):
         assert verified_target_user.user_name == target_user.user_name
         assert verified_target_user.business_guid is not None
 
-    @patch.object(IdimProxyService, "search_business_bceid")
-    def test_verify_user_exist_bceid_not_found(self, mock_search_business_bceid):
-        mock_search_business_bceid.return_value = {
+    @patch.object(IdimProxyService, "lookup_business_bceid")
+    def test_verify_user_exist_bceid_not_found(self, mock_lookup_business_bceid):
+        mock_lookup_business_bceid.return_value = {
             **MOCK_SERACH_BCEID_RETURN,
             "found": False,
         }
@@ -152,9 +152,9 @@ class TestUserValidatorClass(object):
             != -1
         )
 
-    @patch.object(IdimProxyService, "search_business_bceid")
-    def test_verify_user_exist_bceid_mismatch_info(self, mock_search_business_bceid):
-        mock_search_business_bceid.return_value = MOCK_SERACH_BCEID_RETURN
+    @patch.object(IdimProxyService, "lookup_business_bceid")
+    def test_verify_user_exist_bceid_mismatch_info(self, mock_lookup_business_bceid):
+        mock_lookup_business_bceid.return_value = MOCK_SERACH_BCEID_RETURN
         target_user = TargetUser(
             **{
                 **TEST_NEW_TARGET_USER_BCEID_LOAD_2,

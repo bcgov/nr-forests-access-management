@@ -330,6 +330,7 @@ def find_or_create_forest_client_child_role(
                         forest_client_number=forest_client_number,
                     ),
                     "create_user": requester_cognito_user_id,
+                    "call_api_flag": parent_role.call_api_flag,
                     "role_type_code": famConstants.RoleType.ROLE_TYPE_CONCRETE,
                 }
             ),

@@ -27,15 +27,71 @@ import { ExtUserSearchPagedResultsSchemaExtApplicationUserSearchGetSchema } from
 import { HTTPValidationError } from '../model';
 // @ts-ignore
 import { IDPType } from '../model';
+// @ts-ignore
+import { IdimProxyIdirUsersSearchResSchema } from '../model';
 /**
- * ExternalFAMUserSearchApi - axios parameter creator
+ * FAMExternalAPIApi - axios parameter creator
  * @export
  */
-export const ExternalFAMUserSearchApiAxiosParamCreator = function (configuration?: Configuration) {
+export const FAMExternalAPIApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
-         * External API to search users information associated with an application. See API spec at https://apps.nrs.gov.bc.ca/int/confluence/display/FSAST1/Users+Search+API
-         * @summary User Search
+         * Search IDIR users identity through IDIM.
+         * @summary Search IDIR users
+         * @param {string | null} [firstName] IDIR first name search value (min 2 chars)
+         * @param {string | null} [lastName] IDIR last name search value (min 2 chars)
+         * @param {string | null} [userId] IDIR user id search value (min 2 chars)
+         * @param {number} [pageSize] Number of records to return
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        searchIdimIdirUsers: async (firstName?: string | null, lastName?: string | null, userId?: string | null, pageSize?: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/external/v1/users/identity/idir/search`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication 7qtdtska897dt6kandveusvd88 required
+            // oauth required
+            await setOAuthToObject(localVarHeaderParameter, "7qtdtska897dt6kandveusvd88", [], configuration)
+
+            if (firstName !== undefined) {
+                localVarQueryParameter['firstName'] = firstName;
+            }
+
+            if (lastName !== undefined) {
+                localVarQueryParameter['lastName'] = lastName;
+            }
+
+            if (userId !== undefined) {
+                localVarQueryParameter['userId'] = userId;
+            }
+
+            if (pageSize !== undefined) {
+                localVarQueryParameter['pageSize'] = pageSize;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Search FAM users information associated with an application.
+         * @summary Search FAM users
          * @param {number | null} [page] Page number - 1 index
          * @param {number | null} [size] Number of records per page
          * @param {IDPType | null} [idpType] Identity provider type. Available values: IDIR, BCEID, BCSC
@@ -106,15 +162,31 @@ export const ExternalFAMUserSearchApiAxiosParamCreator = function (configuration
 };
 
 /**
- * ExternalFAMUserSearchApi - functional programming interface
+ * FAMExternalAPIApi - functional programming interface
  * @export
  */
-export const ExternalFAMUserSearchApiFp = function(configuration?: Configuration) {
-    const localVarAxiosParamCreator = ExternalFAMUserSearchApiAxiosParamCreator(configuration)
+export const FAMExternalAPIApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = FAMExternalAPIApiAxiosParamCreator(configuration)
     return {
         /**
-         * External API to search users information associated with an application. See API spec at https://apps.nrs.gov.bc.ca/int/confluence/display/FSAST1/Users+Search+API
-         * @summary User Search
+         * Search IDIR users identity through IDIM.
+         * @summary Search IDIR users
+         * @param {string | null} [firstName] IDIR first name search value (min 2 chars)
+         * @param {string | null} [lastName] IDIR last name search value (min 2 chars)
+         * @param {string | null} [userId] IDIR user id search value (min 2 chars)
+         * @param {number} [pageSize] Number of records to return
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async searchIdimIdirUsers(firstName?: string | null, lastName?: string | null, userId?: string | null, pageSize?: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<IdimProxyIdirUsersSearchResSchema>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.searchIdimIdirUsers(firstName, lastName, userId, pageSize, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['FAMExternalAPIApi.searchIdimIdirUsers']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Search FAM users information associated with an application.
+         * @summary Search FAM users
          * @param {number | null} [page] Page number - 1 index
          * @param {number | null} [size] Number of records per page
          * @param {IDPType | null} [idpType] Identity provider type. Available values: IDIR, BCEID, BCSC
@@ -128,22 +200,35 @@ export const ExternalFAMUserSearchApiFp = function(configuration?: Configuration
         async userSearch(page?: number | null, size?: number | null, idpType?: IDPType | null, idpUsername?: string | null, firstName?: string | null, lastName?: string | null, role?: Array<string> | null, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ExtUserSearchPagedResultsSchemaExtApplicationUserSearchGetSchema>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.userSearch(page, size, idpType, idpUsername, firstName, lastName, role, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['ExternalFAMUserSearchApi.userSearch']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['FAMExternalAPIApi.userSearch']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
     }
 };
 
 /**
- * ExternalFAMUserSearchApi - factory interface
+ * FAMExternalAPIApi - factory interface
  * @export
  */
-export const ExternalFAMUserSearchApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
-    const localVarFp = ExternalFAMUserSearchApiFp(configuration)
+export const FAMExternalAPIApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = FAMExternalAPIApiFp(configuration)
     return {
         /**
-         * External API to search users information associated with an application. See API spec at https://apps.nrs.gov.bc.ca/int/confluence/display/FSAST1/Users+Search+API
-         * @summary User Search
+         * Search IDIR users identity through IDIM.
+         * @summary Search IDIR users
+         * @param {string | null} [firstName] IDIR first name search value (min 2 chars)
+         * @param {string | null} [lastName] IDIR last name search value (min 2 chars)
+         * @param {string | null} [userId] IDIR user id search value (min 2 chars)
+         * @param {number} [pageSize] Number of records to return
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        searchIdimIdirUsers(firstName?: string | null, lastName?: string | null, userId?: string | null, pageSize?: number, options?: any): AxiosPromise<IdimProxyIdirUsersSearchResSchema> {
+            return localVarFp.searchIdimIdirUsers(firstName, lastName, userId, pageSize, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Search FAM users information associated with an application.
+         * @summary Search FAM users
          * @param {number | null} [page] Page number - 1 index
          * @param {number | null} [size] Number of records per page
          * @param {IDPType | null} [idpType] Identity provider type. Available values: IDIR, BCEID, BCSC
@@ -161,14 +246,27 @@ export const ExternalFAMUserSearchApiFactory = function (configuration?: Configu
 };
 
 /**
- * ExternalFAMUserSearchApi - interface
+ * FAMExternalAPIApi - interface
  * @export
- * @interface ExternalFAMUserSearchApi
+ * @interface FAMExternalAPIApi
  */
-export interface ExternalFAMUserSearchApiInterface {
+export interface FAMExternalAPIApiInterface {
     /**
-     * External API to search users information associated with an application. See API spec at https://apps.nrs.gov.bc.ca/int/confluence/display/FSAST1/Users+Search+API
-     * @summary User Search
+     * Search IDIR users identity through IDIM.
+     * @summary Search IDIR users
+     * @param {string | null} [firstName] IDIR first name search value (min 2 chars)
+     * @param {string | null} [lastName] IDIR last name search value (min 2 chars)
+     * @param {string | null} [userId] IDIR user id search value (min 2 chars)
+     * @param {number} [pageSize] Number of records to return
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof FAMExternalAPIApiInterface
+     */
+    searchIdimIdirUsers(firstName?: string | null, lastName?: string | null, userId?: string | null, pageSize?: number, options?: RawAxiosRequestConfig): AxiosPromise<IdimProxyIdirUsersSearchResSchema>;
+
+    /**
+     * Search FAM users information associated with an application.
+     * @summary Search FAM users
      * @param {number | null} [page] Page number - 1 index
      * @param {number | null} [size] Number of records per page
      * @param {IDPType | null} [idpType] Identity provider type. Available values: IDIR, BCEID, BCSC
@@ -178,22 +276,37 @@ export interface ExternalFAMUserSearchApiInterface {
      * @param {Array<string> | null} [role] List of user roles (code, e.g., \&#39;ILCR_SUBMITTER\&#39;) to filter by (each max 25 chars)
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof ExternalFAMUserSearchApiInterface
+     * @memberof FAMExternalAPIApiInterface
      */
     userSearch(page?: number | null, size?: number | null, idpType?: IDPType | null, idpUsername?: string | null, firstName?: string | null, lastName?: string | null, role?: Array<string> | null, options?: RawAxiosRequestConfig): AxiosPromise<ExtUserSearchPagedResultsSchemaExtApplicationUserSearchGetSchema>;
 
 }
 
 /**
- * ExternalFAMUserSearchApi - object-oriented interface
+ * FAMExternalAPIApi - object-oriented interface
  * @export
- * @class ExternalFAMUserSearchApi
+ * @class FAMExternalAPIApi
  * @extends {BaseAPI}
  */
-export class ExternalFAMUserSearchApi extends BaseAPI implements ExternalFAMUserSearchApiInterface {
+export class FAMExternalAPIApi extends BaseAPI implements FAMExternalAPIApiInterface {
     /**
-     * External API to search users information associated with an application. See API spec at https://apps.nrs.gov.bc.ca/int/confluence/display/FSAST1/Users+Search+API
-     * @summary User Search
+     * Search IDIR users identity through IDIM.
+     * @summary Search IDIR users
+     * @param {string | null} [firstName] IDIR first name search value (min 2 chars)
+     * @param {string | null} [lastName] IDIR last name search value (min 2 chars)
+     * @param {string | null} [userId] IDIR user id search value (min 2 chars)
+     * @param {number} [pageSize] Number of records to return
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof FAMExternalAPIApi
+     */
+    public searchIdimIdirUsers(firstName?: string | null, lastName?: string | null, userId?: string | null, pageSize?: number, options?: RawAxiosRequestConfig) {
+        return FAMExternalAPIApiFp(this.configuration).searchIdimIdirUsers(firstName, lastName, userId, pageSize, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Search FAM users information associated with an application.
+     * @summary Search FAM users
      * @param {number | null} [page] Page number - 1 index
      * @param {number | null} [size] Number of records per page
      * @param {IDPType | null} [idpType] Identity provider type. Available values: IDIR, BCEID, BCSC
@@ -203,10 +316,10 @@ export class ExternalFAMUserSearchApi extends BaseAPI implements ExternalFAMUser
      * @param {Array<string> | null} [role] List of user roles (code, e.g., \&#39;ILCR_SUBMITTER\&#39;) to filter by (each max 25 chars)
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof ExternalFAMUserSearchApi
+     * @memberof FAMExternalAPIApi
      */
     public userSearch(page?: number | null, size?: number | null, idpType?: IDPType | null, idpUsername?: string | null, firstName?: string | null, lastName?: string | null, role?: Array<string> | null, options?: RawAxiosRequestConfig) {
-        return ExternalFAMUserSearchApiFp(this.configuration).userSearch(page, size, idpType, idpUsername, firstName, lastName, role, options).then((request) => request(this.axios, this.basePath));
+        return FAMExternalAPIApiFp(this.configuration).userSearch(page, size, idpType, idpUsername, firstName, lastName, role, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

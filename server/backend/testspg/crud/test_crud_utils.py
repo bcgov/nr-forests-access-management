@@ -134,3 +134,43 @@ def test_allow_ext_call_api_permission_false(db_pg_session, setup_new_user):
     db_pg_session.flush()
     # Should return False
     assert crud_utils.allow_ext_call_api_permission(db_pg_session, app.application_id, user.user_name) is False
+
+
+def test_allow_ext_call_api_permission_parent_role_flag(db_pg_session, setup_new_user):
+    """
+    Test that allow_ext_call_api_permission returns True when the user's assigned (child)
+    role does NOT have call_api_flag=True, but its parent (abstract) role does.
+    """
+    app = db_pg_session.query(FamApplication).filter_by(application_id=FOM_DEV_APPLICATION_ID).first()
+    user = setup_new_user(**{ "user_type": UserType.IDIR, "user_name": "test_user_parent", "user_guid": TEST_USER_GUID_IDIR })
+
+    # Parent (abstract) role has call_api_flag=True
+    parent_role = FamRole(
+        role_name="PARENT_ROLE",
+        application_id=app.application_id,
+        role_type_code="A",
+        call_api_flag=True,
+        create_user=TEST_CREATOR,
+    )
+    db_pg_session.add(parent_role)
+    db_pg_session.flush()
+
+    # Child (concrete) role scoped to a forest client, call_api_flag=False, linked to parent
+    child_role = FamRole(
+        role_name="CHILD_ROLE",
+        application_id=app.application_id,
+        role_type_code="C",
+        call_api_flag=False,
+        parent_role_id=parent_role.role_id,
+        create_user=TEST_CREATOR,
+    )
+    db_pg_session.add(child_role)
+    db_pg_session.flush()
+
+    # Assign the child role to the user (as would happen for a forest-client-scoped assignment)
+    xref = FamUserRoleXref(user_id=user.user_id, role_id=child_role.role_id, create_user=TEST_CREATOR)
+    db_pg_session.add(xref)
+    db_pg_session.flush()
+
+    # Should return True because the parent role has call_api_flag=True
+    assert crud_utils.allow_ext_call_api_permission(db_pg_session, app.application_id, user.user_name) is True

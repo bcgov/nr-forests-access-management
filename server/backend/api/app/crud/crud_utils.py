@@ -11,7 +11,8 @@ from api.app.models import model as models
 from api.app.utils.utils import raise_http_exception
 from sqlalchemy import func
 from sqlalchemy.inspection import inspect
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, aliased
+from sqlalchemy import exists, or_, select
 
 LOGGER = logging.getLogger(__name__)
 
@@ -138,18 +139,29 @@ def allow_ext_call_api_permission(db: Session, application_id: int, user_name: s
     This is used for external API call
     Returns True if the request(user) has permission to call the API for the given
     application with permission call_api_flag=True at associated roles.
+
+    A role may be scoped to a forest_client_number (child role) whose parent role
+    holds call_api_flag=True. The check considers both the direct role and its
+    parent role so that forest-client-scoped roles are handled
+    correctly.
     :param db: SQLAlchemy session
     :param application_id: Application ID
     :param user_name: User name to check
     :return: True if allowed, False otherwise
     """
-    from sqlalchemy import exists, select
+    parent_role = aliased(models.FamRole)
     stmt = (
         select(models.FamUserRoleXref)
         .join(models.FamUser)
         .join(models.FamRole)
+        .outerjoin(parent_role, models.FamRole.parent_role_id == parent_role.role_id)
         .where(models.FamUser.user_name == user_name)
         .where(models.FamRole.application_id == application_id)
-        .where(models.FamRole.call_api_flag == True)
+        .where(
+            or_(
+                models.FamRole.call_api_flag == True,
+                parent_role.call_api_flag == True,
+            )
+        )
     )
     return db.execute(select(exists(stmt))).scalar()

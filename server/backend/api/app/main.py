@@ -113,7 +113,7 @@ app.include_router(
 )
 app.include_router(
     router_idim_proxy.router,
-    prefix=internal_api_prefix + "/identity-search",
+    prefix=internal_api_prefix + "/identity-lookup",
     dependencies=[Depends(router_guards.authorize)],
     tags=["IDIR/BCeID Proxy"],
 )
@@ -151,13 +151,12 @@ external_v1_api_prefix = "/external/v1"
 app.include_router(
     router_user_external.router,
     prefix=external_v1_api_prefix + "/users",
-    tags=["External - FAM User Search"],
+    # FAM database users and external IDIM-Proxy search for downstream applications.
+    tags=["FAM External API"],
 )
 
 # If we initialize this in main then it doesn't call Cognito on every api call
 init_jwks()
-
-# If we initialize the key lookup then it doesn't call KMS on every api call
 
 if is_bcsc_key_enabled():
     LOGGER.info("BCSC Key endpoint enabled")

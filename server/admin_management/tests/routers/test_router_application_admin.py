@@ -93,8 +93,11 @@ def test_create_application_admin(
         headers=jwt_utils.headers(token),
     )
     assert response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
-    assert response.content is not None
-    assert str(response.content).find("Input should be 'I' or 'B'") != -1
+    # New handler returns JSON with detail list
+    error_detail = response.json()["detail"]
+    assert any(
+        "Input should be 'I' or 'B'" in err["msg"] for err in error_detail
+    )
 
     # test not allowed user type, only allow IDIR
     response = test_client_fixture.post(
