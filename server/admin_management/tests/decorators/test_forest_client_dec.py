@@ -2,6 +2,7 @@ import logging
 from typing import List
 
 import pytest
+import requests
 from api.app.constants import AdminRoleAuthGroup
 from api.app.decorators.forest_client_dec import post_sync_forest_clients_dec
 from api.app.integration.forest_client_integration import \
@@ -177,3 +178,67 @@ def __collect_access_grants_forest_client(access_grants: List[FamAuthGrantDto]):
     ]
 
     return search_forest_client_numbers
+
+
+@patch.object(ForestClientIntegrationService, "search")
+@pytest.mark.parametrize(
+    "search_error",
+    [
+        requests.exceptions.ReadTimeout("timeout"),
+        requests.exceptions.ConnectionError("connection-error"),
+    ],
+)
+def test_should_skip_client_name_update_when_fc_search_timeout_for_delegated_admin_assignment(
+    mock_fc_search,
+    search_error,
+):
+    mock_fc_search.side_effect = search_error
+    mock_fn_return = APP_DELEGATED_ADMIN_ROLE_GET_RESULTS_NO_PAGE_META[
+        TestFcDecoratorFnResultConditions.WITH_FC_IN_RESULTS
+    ]
+    for item in mock_fn_return:
+        if item.role.forest_client is not None:
+            item.role.forest_client.client_name = None
+
+    fn_dec_return = dummy_decorated_delegated_admin_assignment_fn(
+        some_results=mock_fn_return
+    )
+
+    result_fcs = [
+        item.role.forest_client for item in fn_dec_return.results
+        if item.role.forest_client is not None
+    ]
+    assert all(fc.client_name is None for fc in result_fcs)
+    assert mock_fc_search.call_count == 1
+    assert mock_fc_search.call_args.kwargs.get("retry_on_timeout") is True
+
+
+@patch.object(ForestClientIntegrationService, "search")
+@pytest.mark.parametrize(
+    "search_error",
+    [
+        requests.exceptions.ReadTimeout("timeout"),
+        requests.exceptions.ConnectionError("connection-error"),
+    ],
+)
+def test_should_skip_client_name_update_when_fc_search_timeout_for_get_access_grants(
+    mock_fc_search,
+    search_error,
+):
+    mock_fc_search.side_effect = search_error
+    mock_fn_return = ADMIN_GET_ACCESS_PRIVILEGE_RESULTS[
+        TestFcDecoratorFnResultConditions.WITH_FC_IN_RESULTS
+    ]
+    for forest_client in __collect_access_grants_forest_client(mock_fn_return.access):
+        forest_client.client_name = None
+
+    fn_dec_return = dummy_decorated_get_access_grants_fn(some_results=mock_fn_return)
+
+    result_fcs = __collect_access_grants_forest_client(fn_dec_return.access)
+    assert result_fcs
+    assert all(fc.client_name is None for fc in result_fcs)
+    assert mock_fc_search.call_count >= 1
+    assert all(
+        call.kwargs.get("retry_on_timeout") is True
+        for call in mock_fc_search.call_args_list
+    )
