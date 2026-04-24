@@ -2,6 +2,7 @@ import logging
 from typing import List
 
 import pytest
+import requests
 from api.app.constants import AppEnv
 from api.app.decorators.forest_client_dec import post_sync_forest_clients_dec
 from api.app.integration.forest_client_integration import \
@@ -89,3 +90,52 @@ def test_should_update_client_name_for_get_app_role_assignments_fn_results(
         expeced_client_name_set = {item["clientName"] for item in fcapi_search_return_dict}
         results_client_name_set == expeced_client_name_set
         assert mock_fc_search.call_count == 1
+
+
+@patch.object(ForestClientIntegrationService, "search")
+@pytest.mark.parametrize(
+    "search_error",
+    [
+        requests.exceptions.ReadTimeout("timeout"),
+        requests.exceptions.ConnectionError("connection-error"),
+    ],
+)
+def test_should_skip_client_name_update_when_fc_search_timeout(
+    mock_fc_search,
+    search_error,
+    db_pg_session,
+    mocker,
+):
+    """
+    Test that decorator gracefully handles timeout/connection errors from Forest Client API search.
+    When Forest Client API search fails with timeout or connection error, the decorator should:
+    1. Not crash the function
+    2. Return results without updating client names
+    3. Log a warning about the failed search
+    """
+    mock_fc_search.side_effect = search_error
+    mock_fn_return = APP_USER_ROLE_GET_RESULTS_NO_PAGE_META[
+        TestFcDecoratorFnResultConditions.WITH_FC_IN_RESULTS
+    ]
+    for item in mock_fn_return:
+        if item.role.forest_client is not None:
+            item.role.forest_client.client_name = None
+
+    mocker.patch("api.app.decorators.forest_client_dec.crud_application.get_application",
+                 return_value=FamApplication(app_environment=AppEnv.APP_ENV_TYPE_DEV))
+
+    fn_dec_return = dummy_decorated_get_app_role_assignments_fn(
+        db=db_pg_session,
+        some_results=mock_fn_return
+    )
+
+    # Verify results are returned without client name updates
+    result_fcs = [
+        item.role.forest_client for item in fn_dec_return.results
+        if item.role.forest_client is not None
+    ]
+    assert all(fc.client_name is None for fc in result_fcs)
+
+    # Verify the search was called with retry flag enabled
+    assert mock_fc_search.call_count == 1
+    assert mock_fc_search.call_args.kwargs.get("retry_on_timeout") is True

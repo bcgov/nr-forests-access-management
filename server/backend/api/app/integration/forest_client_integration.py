@@ -1,4 +1,5 @@
 import logging
+import time
 from http import HTTPStatus
 from typing import List
 
@@ -9,7 +10,6 @@ from api.app.schemas.forest_client_integration import \
 from api.config import config
 
 LOGGER = logging.getLogger(__name__)
-
 
 class ForestClientIntegrationService():
     """
@@ -26,13 +26,13 @@ class ForestClientIntegrationService():
           For FAM environment management relating to the use of external API,
           see ref @FAM Wiki: https://github.com/bcgov/nr-forests-access-management/wiki/Environment-Management
     """
-
     # https://requests.readthedocs.io/en/latest/user/quickstart/#timeouts
     # https://docs.python-requests.org/en/latest/user/advanced/#timeouts
     TIMEOUT = (5, 10)  # Timeout (connect, read) in seconds.
+    RETRY_DELAY_SECONDS = 2
 
     def __init__(self, api_instance_env=ApiInstanceEnv.TEST):
-        LOGGER.debug(f"ForestClientService() use API instance - {api_instance_env}")
+        LOGGER.debug(f"ForestClientIntegrationService() use API instance - {api_instance_env}")
         self.api_base_url = config.get_forest_client_api_baseurl(api_instance_env)
         self.api_clients_url = f"{self.api_base_url}/api/clients"
         self.API_TOKEN = config.get_forest_client_api_token(api_instance_env)
@@ -43,12 +43,20 @@ class ForestClientIntegrationService():
         self.session = requests.Session()
         self.session.headers.update(self.headers)
 
-    def search(self, search_params: ForestClientIntegrationSearchParmsSchema):
+    def search(
+        self,
+        search_params: ForestClientIntegrationSearchParmsSchema,
+        retry_on_timeout: bool = False
+    ):
         """
         Find Forest Client(s) with FC API "search"
 
         :param search_params (ForestClientIntegrationSearchParmsSchema): search params
             for making FC API search request.
+
+        :param retry_on_timeout (bool): if true, retries once when
+            requests.exceptions.Timeout or
+            requests.exceptions.ConnectionError happens.
 
         :return (json): Search result as List for a Forest Client information object.
             FC API will return:
@@ -60,42 +68,78 @@ class ForestClientIntegrationService():
             * With mix of ids found and ids not found (e.g., &id=00001011&id=99999999):
                 [{"clientNumber": "00001011"}]
         """
-        request_params = (f"page={search_params.page}&size={search_params.size}{
-            self.__construct_fc_number_search_params(search_params.forest_client_numbers)
-        }")
+        request_params = (
+            f"page={search_params.page}&size={search_params.size}"
+            f"{self.__construct_fc_number_search_params(search_params.forest_client_numbers)}"
+        )
         url = f"{self.api_clients_url}/search?{request_params}"
         LOGGER.debug(f"ForestClientService search() - url: {url}")
 
-        return self.__do_request(url=url)
+        return self.__do_request(url=url, retry_on_timeout=retry_on_timeout)
 
-    def __do_request(self, url, params=None):
-        try:
-            r = self.session.get(url, timeout=self.TIMEOUT, params=params)
-            r.raise_for_status()
-            # !! Don't map and return FamForestClientSchema or object from "scheam.py" as that
-            # will create circular dependency issue. let crud to map the result.
-            api_result = r.json()
-            LOGGER.debug(f"FC API result: {api_result}. Took: {r.elapsed.total_seconds()} seconds")
-            return api_result
+    def __do_request(self, url, params=None, retry_on_timeout: bool = False):
+        max_attempts = 2 if retry_on_timeout else 1
 
-        # Below except catches only HTTPError not general errors like network connection/timeout.
-        except requests.exceptions.HTTPError as he:
-            status_code = r.status_code
-            LOGGER.debug(f"API status code: {status_code}")
-            LOGGER.debug(f"API result: {r.content or r.reason}")
+        for attempt in range(1, max_attempts + 1):
+            try:
+                # raise  requests.exceptions.Timeout("Simulated timeout for testing retry logic")
+                response = self.session.get(url, timeout=self.TIMEOUT, params=params)
+                response.raise_for_status()
+                # !! Don't map and return FamForestClientSchema or object from "scheam.py" as that
+                # will create circular dependency issue. let crud to map the result.
+                api_result = response.json()
+                LOGGER.debug(
+                    f"FC API result: {api_result}. Took: {response.elapsed.total_seconds()} seconds"
+                )
+                return api_result
 
-            # For some reason Forest Client API uses (a bit confusing):
-            #    - '404' as general "client 'Not Found'", not as conventional http Not Found.
-            #
-            # Forest Client API returns '400' as "Invalid Client Number"; e.g. /findByClientNumber/abcde0001
-            # Howerver FAM 'search' (as string type param) is intended for either 'number' or 'name' search),
-            # so if 400, will return empty.
-            if ((status_code == HTTPStatus.NOT_FOUND) or (status_code == HTTPStatus.BAD_REQUEST)):
-                return [] # return empty for FAM forest client search
+            except (requests.exceptions.ConnectionError, requests.exceptions.Timeout) as rte:
+                if attempt < max_attempts:
+                    LOGGER.warning(
+                        "Forest Client API request failed (%s). Retrying in %s seconds "
+                        "(attempt %s/%s). url=%s",
+                        type(rte).__name__,
+                        self.RETRY_DELAY_SECONDS,
+                        attempt,
+                        max_attempts,
+                        url
+                    )
+                    time.sleep(self.RETRY_DELAY_SECONDS)
+                    continue
 
-            # Else raise error, including 500
-            # There is a general error handler, see: requests_http_error_handler
-            raise he
+                LOGGER.error(
+                    "Forest Client API request failed (%s) after %s attempt(s). url=%s",
+                    type(rte).__name__,
+                    attempt,
+                    url,
+                    exc_info=True
+                )
+                raise rte
+
+            # Below except catches only HTTPError not general errors like network connection/timeout.
+            except requests.exceptions.HTTPError as he:
+                response = he.response
+                status_code = response.status_code if response is not None else None
+                LOGGER.debug(f"API status code: {status_code}")
+                LOGGER.debug(
+                    "API result: %s",
+                    (response.content or response.reason)
+                    if response is not None
+                    else str(he)
+                )
+
+                # For some reason Forest Client API uses (a bit confusing):
+                #    - '404' as general "client 'Not Found'", not as conventional http Not Found.
+                #
+                # Forest Client API returns '400' as "Invalid Client Number"; e.g. /findByClientNumber/abcde0001
+                # Howerver FAM 'search' (as string type param) is intended for either 'number' or 'name' search),
+                # so if 400, will return empty.
+                if ((status_code == HTTPStatus.NOT_FOUND) or (status_code == HTTPStatus.BAD_REQUEST)):
+                    return []  # return empty for FAM forest client search
+
+                # Else raise error, including 500
+                # There is a general error handler, see: requests_http_error_handler
+                raise he
 
     def __construct_fc_number_search_params(self, forest_client_numbers: List[str]):
         # return format as e.g.: &id=00001011&id=00001012
