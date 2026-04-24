@@ -82,7 +82,6 @@ class ForestClientIntegrationService():
 
         for attempt in range(1, max_attempts + 1):
             try:
-                # raise  requests.exceptions.Timeout("Simulated timeout for testing retry logic")
                 response = self.session.get(url, timeout=self.TIMEOUT, params=params)
                 response.raise_for_status()
                 # !! Don't map and return FamForestClientSchema or object from "scheam.py" as that
