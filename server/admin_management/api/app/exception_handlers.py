@@ -3,12 +3,63 @@ import logging
 import sys
 from http import HTTPStatus
 
+from api.app.constants import (ERROR_CODE_UPSTREAM_CONNECTION_ERROR,
+                               ERROR_CODE_UPSTREAM_TIMEOUT)
 from fastapi import Request
 from fastapi.responses import JSONResponse, PlainTextResponse
 from pydantic import ValidationError
 from requests import HTTPError
+from requests.exceptions import ConnectionError, RequestException, Timeout
 
 LOGGER = logging.getLogger(__name__)
+
+
+async def requests_gateway_timeout_error_handler(
+    request: Request, exc: RequestException
+):
+    """
+    Handle outbound requests timeout/connectivity errors and return
+    gateway timeout.
+
+    This handler is intended for requests.exceptions.Timeout and
+    requests.exceptions.ConnectionError raised from integration calls to
+    upstream services.
+    """
+    host = getattr(getattr(request, "client", None), "host", None)
+    port = getattr(getattr(request, "client", None), "port", None)
+    url = (
+        f"{request.url.path}?{request.query_params}"
+        if request.query_params
+        else request.url.path
+    )
+    upstream_url = getattr(getattr(exc, "request", None), "url", None)
+
+    if isinstance(exc, Timeout):
+        error_content = {
+            "failureCode": ERROR_CODE_UPSTREAM_TIMEOUT,
+            "message": "Upstream service timed out.",
+        }
+    elif isinstance(exc, ConnectionError):
+        error_content = {
+            "failureCode": ERROR_CODE_UPSTREAM_CONNECTION_ERROR,
+            "message": "Could not connect to upstream service.",
+        }
+    else:
+        error_content = {
+            "failureCode": ERROR_CODE_UPSTREAM_TIMEOUT,
+            "message": "Upstream service timed out.",
+        }
+
+    LOGGER.error(
+        f'{host}:{port} - "{request.method} {url}" '
+        f"{HTTPStatus.GATEWAY_TIMEOUT} Gateway Timeout "
+        f"upstream={upstream_url} <{exc}>"
+    )
+
+    return JSONResponse(
+        status_code=HTTPStatus.GATEWAY_TIMEOUT,
+        content=error_content,
+    )
 
 
 async def requests_http_error_handler(request: Request, exc: HTTPError):
