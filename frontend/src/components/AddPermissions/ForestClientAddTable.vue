@@ -2,6 +2,7 @@
 import Button from "@/components/UI/Button.vue";
 import { FOREST_CLIENT_INPUT_MAX_LENGTH } from "@/constants/constants";
 import { AppActlApiService } from "@/services/ApiServiceFactory";
+import { getAxiosErrorStatus } from "@/utils/ApiUtils";
 import type { AppPermissionFormType } from "@/views/AddAppPermission/utils";
 import AddIcon from "@carbon/icons-vue/es/add/16";
 import TrashIcon from "@carbon/icons-vue/es/trash-can/16";
@@ -15,6 +16,7 @@ import Chip from "../UI/Chip.vue";
 import HelperText from "../UI/HelperText.vue";
 import Label from "../UI/Label.vue";
 import SubsectionTitle from "../UI/SubsectionTitle.vue";
+import { HttpStatusCode } from "axios";
 
 const props = defineProps<{
     appId: number;
@@ -85,10 +87,19 @@ const clientSearchMutation = useMutation({
             });
         }
     },
-    onError: () => {
-        setVerificationError(
-            "The organization could not be added. Please try again"
-        );
+    onError: (error) => {
+        const status = getAxiosErrorStatus(error);
+        console.log("Forest client search error", error);
+        if (status === HttpStatusCode.GatewayTimeout) {
+            setVerificationError(
+                "Cannot grant permission. Forest Client Service is unavailable."
+            );
+        } else {
+            setVerificationError(
+                "The organization could not be added. Please try again"
+            );
+        }
+
     },
     onSettled: () => {
         updateForestClientInput({
