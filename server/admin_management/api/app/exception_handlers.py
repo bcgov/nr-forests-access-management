@@ -9,13 +9,13 @@ from fastapi import Request
 from fastapi.responses import JSONResponse, PlainTextResponse
 from pydantic import ValidationError
 from requests import HTTPError
-from requests.exceptions import ConnectionError, RequestException, Timeout
+from requests.exceptions import ConnectionError, Timeout
 
 LOGGER = logging.getLogger(__name__)
 
 
-async def requests_gateway_timeout_error_handler(
-    request: Request, exc: RequestException
+def requests_gateway_timeout_error_handler(
+    request: Request, exc: Timeout | ConnectionError
 ):
     """
     Handle outbound requests timeout/connectivity errors and return
@@ -39,15 +39,10 @@ async def requests_gateway_timeout_error_handler(
             "failureCode": ERROR_CODE_UPSTREAM_TIMEOUT,
             "message": "Upstream service timed out.",
         }
-    elif isinstance(exc, ConnectionError):
+    else:
         error_content = {
             "failureCode": ERROR_CODE_UPSTREAM_CONNECTION_ERROR,
             "message": "Could not connect to upstream service.",
-        }
-    else:
-        error_content = {
-            "failureCode": ERROR_CODE_UPSTREAM_TIMEOUT,
-            "message": "Upstream service timed out.",
         }
 
     LOGGER.error(
