@@ -82,63 +82,82 @@ class ForestClientIntegrationService():
 
         for attempt in range(1, max_attempts + 1):
             try:
-                response = self.session.get(url, timeout=self.TIMEOUT, params=params)
-                response.raise_for_status()
-                # !! Don't map and return FamForestClientSchema or object from "scheam.py" as that
-                # will create circular dependency issue. let crud to map the result.
-                api_result = response.json()
-                LOGGER.debug(
-                    f"FC API result: {api_result}. Took: {response.elapsed.total_seconds()} seconds"
-                )
-                return api_result
+                return self.__fetch_json_response(url=url, params=params)
 
             except (requests.exceptions.ConnectionError, requests.exceptions.Timeout) as rte:
-                if attempt < max_attempts:
-                    LOGGER.warning(
-                        "Forest Client API request failed (%s). Retrying in %s seconds "
-                        "(attempt %s/%s). url=%s",
-                        type(rte).__name__,
-                        self.RETRY_DELAY_SECONDS,
-                        attempt,
-                        max_attempts,
-                        url
-                    )
-                    time.sleep(self.RETRY_DELAY_SECONDS)
+                if self.__retry_request_on_connection_or_timeout(
+                    rte=rte,
+                    attempt=attempt,
+                    max_attempts=max_attempts,
+                    url=url
+                ):
                     continue
-
-                LOGGER.error(
-                    "Forest Client API request failed (%s) after %s attempt(s). url=%s",
-                    type(rte).__name__,
-                    attempt,
-                    url,
-                    exc_info=True
-                )
-                raise rte
 
             # Below except catches only HTTPError not general errors like network connection/timeout.
             except requests.exceptions.HTTPError as he:
-                response = he.response
-                status_code = response.status_code if response is not None else None
-                LOGGER.debug(f"API status code: {status_code}")
-                LOGGER.debug(
-                    "API result: %s",
-                    (response.content or response.reason)
-                    if response is not None
-                    else str(he)
-                )
+                return self.__handle_http_error(he)
 
-                # For some reason Forest Client API uses (a bit confusing):
-                #    - '404' as general "client 'Not Found'", not as conventional http Not Found.
-                #
-                # Forest Client API returns '400' as "Invalid Client Number"; e.g. /findByClientNumber/abcde0001
-                # Howerver FAM 'search' (as string type param) is intended for either 'number' or 'name' search),
-                # so if 400, will return empty.
-                if ((status_code == HTTPStatus.NOT_FOUND) or (status_code == HTTPStatus.BAD_REQUEST)):
-                    return []  # return empty for FAM forest client search
+    def __fetch_json_response(self, url, params=None):
+        """Execute request and return JSON response body."""
+        response = self.session.get(url, timeout=self.TIMEOUT, params=params)
+        response.raise_for_status()
 
-                # Else raise error, including 500
-                # There is a general error handler, see: requests_http_error_handler
-                raise he
+        # !! Don't map and return FamForestClientSchema or object from "scheam.py" as that
+        # will create circular dependency issue. let crud to map the result.
+        api_result = response.json()
+        LOGGER.debug(
+            f"FC API result: {api_result}. Took: {response.elapsed.total_seconds()} seconds"
+        )
+        return api_result
+
+    def __retry_request_on_connection_or_timeout(self, rte, attempt, max_attempts, url):
+        """Retry once on timeout/connection errors when enabled; otherwise re-raise."""
+        if attempt < max_attempts:
+            LOGGER.warning(
+                "Forest Client API request failed (%s). Retrying in %s seconds "
+                "(attempt %s/%s). url=%s",
+                type(rte).__name__,
+                self.RETRY_DELAY_SECONDS,
+                attempt,
+                max_attempts,
+                url
+            )
+            time.sleep(self.RETRY_DELAY_SECONDS)
+            return True
+
+        LOGGER.error(
+            "Forest Client API request failed (%s) after %s attempt(s). url=%s",
+            type(rte).__name__,
+            attempt,
+            url,
+            exc_info=True
+        )
+        raise rte
+
+    def __handle_http_error(self, he):
+        """Return empty result for FC-specific 400/404 search responses; re-raise otherwise."""
+        response = he.response
+        status_code = response.status_code if response is not None else None
+        LOGGER.debug(f"API status code: {status_code}")
+        LOGGER.debug(
+            "API result: %s",
+            (response.content or response.reason)
+            if response is not None
+            else str(he)
+        )
+
+        # For some reason Forest Client API uses (a bit confusing):
+        #    - '404' as general "client 'Not Found'", not as conventional http Not Found.
+        #
+        # Forest Client API returns '400' as "Invalid Client Number"; e.g. /findByClientNumber/abcde0001
+        # Howerver FAM 'search' (as string type param) is intended for either 'number' or 'name' search),
+        # so if 400, will return empty.
+        if ((status_code == HTTPStatus.NOT_FOUND) or (status_code == HTTPStatus.BAD_REQUEST)):
+            return []  # return empty for FAM forest client search
+
+        # Else raise error, including 500
+        # There is a general error handler, see: requests_http_error_handler
+        raise he
 
     def __construct_fc_number_search_params(self, forest_client_numbers: List[str]):
         # return format as e.g.: &id=00001011&id=00001012
