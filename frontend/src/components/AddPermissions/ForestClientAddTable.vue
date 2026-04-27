@@ -11,12 +11,13 @@ import Column from "primevue/column";
 import DataTable from "primevue/datatable";
 import InputText from "primevue/inputtext";
 import { Field, useField } from "vee-validate";
-import { onUnmounted } from "vue";
+import { ref, onUnmounted } from "vue";
 import Chip from "../UI/Chip.vue";
 import HelperText from "../UI/HelperText.vue";
 import Label from "../UI/Label.vue";
 import SubsectionTitle from "../UI/SubsectionTitle.vue";
 import { HttpStatusCode } from "axios";
+import FCServiceUnavailableNotification from "../NotificationContent/ServiceUnavailableNtfnTemplate.vue";
 
 const props = defineProps<{
     appId: number;
@@ -26,6 +27,9 @@ const props = defineProps<{
 }>();
 
 const { setErrors: setForestClientsError } = useField(props.fieldId);
+
+// State for Forest Client Service down warning
+const isForestClientServiceDown = ref(false);
 
 const updateForestClientInput = (
     updates: Partial<AppPermissionFormType["forestClientInput"]>
@@ -49,6 +53,7 @@ const clearVerificationError = () => {
         isValid: true,
         errorMsg: "",
     });
+    isForestClientServiceDown.value = false;
 };
 
 const clientSearchMutation = useMutation({
@@ -89,17 +94,13 @@ const clientSearchMutation = useMutation({
     },
     onError: (error) => {
         const status = getAxiosErrorStatus(error);
-        console.log("Forest client search error", error);
         if (status === HttpStatusCode.GatewayTimeout) {
-            setVerificationError(
-                "Cannot grant permission. Forest Client Service is unavailable."
-            );
+            isForestClientServiceDown.value = true;
         } else {
             setVerificationError(
                 "The organization could not be added. Please try again"
             );
         }
-
     },
     onSettled: () => {
         updateForestClientInput({
@@ -173,6 +174,12 @@ onUnmounted(() => {
             title="Restrict access by organizations"
             subtitle="Add one or more organizations for this user to have access to"
         />
+
+        <FCServiceUnavailableNotification
+            v-if="isForestClientServiceDown"
+            message="Forest Client Service is unavailable. Role with forest client cannot be added."
+        />
+
         <Label
             for="forestClientInput"
             label-text="Organization's client number"
