@@ -19,7 +19,9 @@ LOGGER = logging.getLogger(__name__)
 def post_sync_forest_clients_dec(original_func):
     """
     A decorator to perform post action on syncing forest client details from external Forest Client API search.
-    Only intended for use at functions with return type of 'PagedResultsSchema[FamApplicationUserRoleAssignmentGetSchema]'
+    Only intended for use at functions with return type of 'PagedResultsSchema[FamApplicationUserRoleAssignmentGetSchema]'.
+    Due to Forest Client API's TEST environment instability, if it happens and search returns Timeout or ConnectionError,
+    it will be handled softly by logging a warning and skipping the client name update (client name will be None).
 
     Important! using the Python `@functools.wraps(original_func)` feature. This makes decorated_func get almost all the
           original function's metadata and makes it possible and easier for testing original function in isolation.
