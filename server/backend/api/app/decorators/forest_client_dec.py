@@ -89,7 +89,10 @@ def __search_forest_clients_with_retry(
     forest_client_integration_service: ForestClientIntegrationService,
     fc_search_params: ForestClientIntegrationSearchParmsSchema,
 ):
-    """Search Forest Client API with retry and soft-fail handling."""
+    """
+        Search Forest Client API with retry_on_timeout set to True for search call
+        and soft-fail handling.
+    """
     try:
         return forest_client_integration_service.search(
             fc_search_params,

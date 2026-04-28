@@ -29,6 +29,11 @@ class ForestClientIntegrationService():
     # https://requests.readthedocs.io/en/latest/user/quickstart/#timeouts
     # https://docs.python-requests.org/en/latest/user/advanced/#timeouts
     TIMEOUT = (5, 10)  # Timeout (connect, read) in seconds.
+    # Note: AWS API Gateway has a hard timeout beyong 29 seconds, so the total time -
+    # including lambda starts and execution, network latency and plus timeout and retry, should be less than 29 seconds.
+    # Two attempts with 5 seconds connect timeout and 10 seconds read timeout, plus 2 seconds retry delay, should be safe
+    # on hitting API Gateway timeout.
+    RETRY_MAX_ATTEMPTS = 2
     RETRY_DELAY_SECONDS = 2
 
     def __init__(self, api_instance_env=ApiInstanceEnv.TEST):
@@ -78,7 +83,7 @@ class ForestClientIntegrationService():
         return self.__do_request(url=url, retry_on_timeout=retry_on_timeout)
 
     def __do_request(self, url, params=None, retry_on_timeout: bool = False):
-        max_attempts = 2 if retry_on_timeout else 1
+        max_attempts = self.RETRY_MAX_ATTEMPTS if retry_on_timeout else 1
 
         for attempt in range(1, max_attempts + 1):
             try:
