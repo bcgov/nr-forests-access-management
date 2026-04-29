@@ -2,6 +2,7 @@ import functools
 import logging
 from typing import List
 
+import requests
 from api.app.crud import crud_application, crud_utils
 from api.app.integration.forest_client_integration import \
     ForestClientIntegrationService
@@ -18,7 +19,9 @@ LOGGER = logging.getLogger(__name__)
 def post_sync_forest_clients_dec(original_func):
     """
     A decorator to perform post action on syncing forest client details from external Forest Client API search.
-    Only intended for use at functions with return type of 'PagedResultsSchema[FamApplicationUserRoleAssignmentGetSchema]'
+    Only intended for use at functions with return type of 'PagedResultsSchema[FamApplicationUserRoleAssignmentGetSchema]'.
+    Due to Forest Client API's TEST environment instability, if it happens and search returns Timeout or ConnectionError,
+    it will be handled softly by logging a warning and skipping the client name update (client name will be None).
 
     Important! using the Python `@functools.wraps(original_func)` feature. This makes decorated_func get almost all the
           original function's metadata and makes it possible and easier for testing original function in isolation.
@@ -63,7 +66,10 @@ def __post_sync_forest_clients(db: Session, result_list: List[FamApplicationUser
     # Note, FC API result items are not 1 to 1 (duplicates and non-exist will be filtered out from external
     #  FC API search). Example return:
     # [{'clientNumber': '00001011', 'clientName': 'AKIECA EXPLORERS LTD.', 'clientStatusCode': 'ACT', 'clientTypeCode': 'C'}]
-    fc_search_results: List[ForestClientIntegrationFindResponseSchema] = forest_client_integration_service.search(fc_search_params)
+    fc_search_results: List[ForestClientIntegrationFindResponseSchema] = __search_forest_clients_with_retry(
+        forest_client_integration_service,
+        fc_search_params
+    )
 
     # Only update client_name when there is a FC search result
     if fc_search_results:
@@ -77,3 +83,25 @@ def __post_sync_forest_clients(db: Session, result_list: List[FamApplicationUser
                 item.role.forest_client.client_name = fc_search_client_name_dict.get(fcn)
 
     return result_list
+
+
+def __search_forest_clients_with_retry(
+    forest_client_integration_service: ForestClientIntegrationService,
+    fc_search_params: ForestClientIntegrationSearchParmsSchema,
+):
+    """
+        Search Forest Client API with retry_on_timeout set to True for search call
+        and soft-fail handling.
+    """
+    try:
+        return forest_client_integration_service.search(
+            fc_search_params,
+            retry_on_timeout=True
+        )
+    except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
+        LOGGER.warning(
+            "Forest Client API search failed with timeout/connection error after retry. "
+            "Skip forest client name update.",
+            exc_info=True
+        )
+        return []

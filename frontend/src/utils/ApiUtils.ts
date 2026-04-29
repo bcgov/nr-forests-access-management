@@ -1,4 +1,4 @@
-import type { AxiosError } from "axios";
+import { isAxiosError, type AxiosError } from "axios";
 import {
     AdminRoleAuthGroup,
     type AdminUserAccessResponse,
@@ -27,6 +27,20 @@ export const formatAxiosError = (err: AxiosError): string => {
         }
     }
     return errMsg;
+};
+
+/**
+ * Gets the HTTP status code from an unknown error when it is an Axios error.
+ *
+ * @param {unknown} error - The error from a mutation/query handler.
+ * @returns {number | null} The HTTP status code, or null when unavailable.
+ */
+export const getAxiosErrorStatus = (error: unknown): number | null => {
+    if (!isAxiosError(error)) {
+        return null;
+    }
+
+    return error.response?.status ?? null;
 };
 
 /**
