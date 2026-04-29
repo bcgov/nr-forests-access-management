@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.13.0](https://github.com/bcgov/nr-forests-access-management/compare/v2.12.0...v2.13.0) (2026-04-29)
+
+
+### Features
+
+* change FSPTS roles to concrete ([#2162](https://github.com/bcgov/nr-forests-access-management/issues/2162)) ([1b0af82](https://github.com/bcgov/nr-forests-access-management/commit/1b0af82686f002eaad2a6eafc303ad1270e4f830))
+
+
+### Bug Fixes
+
+* [#2063](https://github.com/bcgov/nr-forests-access-management/issues/2063) Handle Forest Client API Service Unavailable ([#2161](https://github.com/bcgov/nr-forests-access-management/issues/2161)) ([1028f91](https://github.com/bcgov/nr-forests-access-management/commit/1028f91e970a3926f85379ea75616d1449f6be0b))
+
 ## [2.12.0](https://github.com/bcgov/nr-forests-access-management/compare/v2.11.0...v2.12.0) (2026-04-23)
 
 
