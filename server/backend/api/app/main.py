@@ -2,6 +2,7 @@ import logging.config
 import os.path
 
 from api.app.exception_handlers import (requests_http_error_handler,
+                                        requests_gateway_timeout_error_handler,
                                         unhandled_exception_handler,
                                         validation_exception_handler)
 from api.config.config import (get_allow_origins, get_root_path,
@@ -11,6 +12,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from mangum import Mangum
 from pydantic import ValidationError
 from requests import HTTPError
+from requests.exceptions import ConnectionError, Timeout
 from starlette.responses import RedirectResponse
 
 from .jwt_validation import init_jwks
@@ -84,6 +86,8 @@ app.add_middleware(
     allow_headers=["*"],
     allow_credentials=True,
 )
+app.add_exception_handler(Timeout, requests_gateway_timeout_error_handler)
+app.add_exception_handler(ConnectionError, requests_gateway_timeout_error_handler)
 app.add_exception_handler(HTTPError, requests_http_error_handler)
 app.add_exception_handler(Exception, unhandled_exception_handler)
 app.add_exception_handler(ValidationError, validation_exception_handler)

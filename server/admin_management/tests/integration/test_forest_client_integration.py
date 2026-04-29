@@ -1,5 +1,8 @@
 import logging
+from unittest.mock import Mock
 
+import pytest
+import requests
 from api.app.integration.forest_client_integration import \
     ForestClientIntegrationService
 from api.app.schemas.forest_client_integration import \
@@ -108,3 +111,62 @@ class TestForestClientIntegrationServiceClass(object):
         assert all(key in self.example_expected_valid_result.keys() for key in search_results[0].keys())
         result_set = {x["clientNumber"] for x in search_results}  # fc api structure confirmation.
         assert result_set == set(expect_exist_fc_number)  # set of unique fc numbers are the same.
+
+
+def _make_search_params() -> ForestClientIntegrationSearchParmsSchema:
+    """Build a minimal valid search payload used by retry/error tests."""
+    return ForestClientIntegrationSearchParmsSchema(
+        forest_client_numbers=["00001011"],
+        size=1
+    )
+
+
+def _make_success_response(payload):
+    """Build a mocked successful requests response object."""
+    response = Mock()
+    response.raise_for_status.return_value = None
+    response.json.return_value = payload
+    response.elapsed.total_seconds.return_value = 0.01
+    return response
+
+
+class TestForestClientIntegrationServiceRetryAndErrorHandling(object):
+    def test_search_retries_on_connection_error_then_returns_result(self, monkeypatch):
+        service = ForestClientIntegrationService()
+        expected_payload = [{"clientNumber": "00001011", "clientName": "TEST CLIENT"}]
+        successful_response = _make_success_response(expected_payload)
+        get_mock = Mock(
+            side_effect=[
+                requests.exceptions.ConnectionError("connection-error"),
+                successful_response,
+            ]
+        )
+        sleep_mock = Mock()
+        monkeypatch.setattr(service.session, "get", get_mock)
+        monkeypatch.setattr("api.app.integration.forest_client_integration.time.sleep", sleep_mock)
+
+        result = service.search(_make_search_params(), retry_on_timeout=True)
+
+        assert result == expected_payload
+        assert get_mock.call_count == 2
+        sleep_mock.assert_called_once_with(service.RETRY_DELAY_SECONDS)
+
+    def test_search_retries_on_timeout_and_raises_after_max_attempts(self, monkeypatch, caplog):
+        service = ForestClientIntegrationService()
+        error = requests.exceptions.Timeout("timeout")
+        get_mock = Mock(side_effect=[error, error])
+        sleep_mock = Mock()
+        monkeypatch.setattr(service.session, "get", get_mock)
+        monkeypatch.setattr("api.app.integration.forest_client_integration.time.sleep", sleep_mock)
+
+        with caplog.at_level(
+            logging.ERROR,
+            logger="api.app.integration.forest_client_integration"
+        ):
+            with pytest.raises(requests.exceptions.Timeout):
+                service.search(_make_search_params(), retry_on_timeout=True)
+
+        assert get_mock.call_count == 2
+        sleep_mock.assert_called_once_with(service.RETRY_DELAY_SECONDS)
+        assert "request failed" in caplog.text.lower()
+        assert "after 2 attempt(s)" in caplog.text
