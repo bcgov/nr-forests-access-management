@@ -1,5 +1,5 @@
 // Searched user type for Granting user
-export interface SelectUser {
+export interface SelectedUser {
     userId: string;
     guid?: string | null;
     firstName?: string | null;

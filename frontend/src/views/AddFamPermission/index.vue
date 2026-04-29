@@ -5,7 +5,7 @@ import Button from "@/components/UI/Button.vue";
 import Dropdown from "@/components/UI/Dropdown.vue";
 import PageTitle from "@/components/UI/PageTitle.vue";
 import StepContainer from "@/components/UI/StepContainer.vue";
-import { SELECT_APP_ADMIN_USER_KEY, useSelectUserManagement } from "@/composables/useSelectUserManagement";
+import { SELECT_APP_ADMIN_USER_KEY, useSelectedUsers } from "@/composables/useSelectedUsers";
 import { ManagePermissionsRoute } from "@/router/routes";
 import { AdminMgmtApiService } from "@/services/ApiServiceFactory";
 import type { BreadCrumbType } from "@/types/BreadCrumbTypes";
@@ -43,8 +43,8 @@ const crumbs: BreadCrumbType[] = [
 ];
 
 // Use composable for single-user user selection
-const selectAppAdminUserManagement = useSelectUserManagement(false); // false = single-user mode
-provide(SELECT_APP_ADMIN_USER_KEY, selectAppAdminUserManagement);
+const appAdminUserSelectionStore = useSelectedUsers(false); // false = single-user mode
+provide(SELECT_APP_ADMIN_USER_KEY, appAdminUserSelectionStore);
 
 /**
  * Form setup using vee-validate's v4 useForm composable.
@@ -63,7 +63,7 @@ const { handleSubmit, errors, values, setFieldValue, meta } = useForm<AppAdminFo
 
 // Watch selectUserManagement.currentUser and sync with form field
 watch(
-    () => selectAppAdminUserManagement.currentUser.value,
+    () => appAdminUserSelectionStore.currentUser.value,
     (newUser) => {
         if (newUser || meta.value.dirty) {
             setFieldValue('user', newUser);

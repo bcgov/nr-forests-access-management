@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Button from "@/components/UI/Button.vue";
 import useAuth from "@/composables/useAuth";
-import { ADD_PERMISSION_SELECT_USER_KEY, toSelectUserManagementUser, useSelectUserManagement } from "@/composables/useSelectUserManagement";
+import { ADD_PERMISSION_SELECT_USER_KEY, toSelectedUser, useSelectedUsers } from "@/composables/useSelectedUsers";
 import { IdpProvider } from "@/enum/IdpEnum";
 import { AppActlApiService } from "@/services/ApiServiceFactory";
 import { formatUserNameAndId } from "@/utils/UserUtils";
@@ -29,7 +29,7 @@ interface Props {
     helperText: string;
     formValidateErrorMsg?: string;
     setIsVerifying?: (verifying: boolean) => void;
-    injectionKey?: InjectionKey<ReturnType<typeof useSelectUserManagement>>;
+    injectionKey?: InjectionKey<ReturnType<typeof useSelectedUsers>>;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -40,7 +40,7 @@ const usernameInput = ref<string>(""); // input for username at this component.
 const usernameVerificationErrorMsg = ref(""); // error message for username verification errors
 
 // Inject select users composable from parent
-const selectUserManagement = inject(props.injectionKey);
+const userSelectionStore = inject(props.injectionKey);
 
 const PERMISSION_REQUIRED_FOR_OPERATION = "permission_required_for_operation";
 
@@ -72,20 +72,20 @@ const setUserNotFoundError = () => {
 };
 
 const addUserToList = (user: IdimProxyBceidInfoSchema | IdimProxyIdirInfoSchema) => {
-    if (!selectUserManagement) return;
-    const selectUser = toSelectUserManagementUser(user);
+    if (!userSelectionStore) return;
+    const selectedUser = toSelectedUser(user);
     // Check if user already exists in the list
-    if (selectUserManagement.hasUser(selectUser.userId, selectUser.guid ?? undefined)) {
+    if (userSelectionStore.hasUser(selectedUser.userId, selectedUser.guid ?? undefined)) {
         usernameVerificationErrorMsg.value = "User has been added to the list";
         return;
     }
-    selectUserManagement.addUser(selectUser);
+    userSelectionStore.addUser(selectedUser);
     usernameInput.value = ""; // Clear input after successful verification
 };
 
 const handleDeleteUser = (userId: string) => {
-    if (selectUserManagement) {
-        selectUserManagement.deleteUser(userId);
+    if (userSelectionStore) {
+        userSelectionStore.deleteUser(userId);
     }
 };
 
@@ -169,8 +169,8 @@ watch(
         usernameInput.value = "";
         resetsearchResult();
         // Clear composable state on domain change
-        if (selectUserManagement) {
-            selectUserManagement.clearUsers();
+        if (userSelectionStore) {
+            userSelectionStore.clearUsers();
         }
     }
 );
@@ -233,12 +233,12 @@ watch(
         </div>
 
         <!-- User Identity Table -->
-        <div class="user-id-card-table" v-if="selectUserManagement && selectUserManagement.userList.value.length > 0">
+        <div class="user-id-card-table" v-if="userSelectionStore && userSelectionStore.userList.value.length > 0">
             <div class="verified-message-bar">
                 <CheckmarkOutline class="verified-icon" />
                 <span class="verified-message-text">Verified user information</span>
             </div>
-            <DataTable :value="Array.from(selectUserManagement.userList.value)" stripedRows class="user-table">
+            <DataTable :value="Array.from(userSelectionStore.userList.value)" stripedRows class="user-table">
                 <Column field="userId" header="Username" />
                 <Column header="Full Name">
                     <template #body="{ data }">
@@ -257,10 +257,10 @@ watch(
         </div>
 
         <!-- Bulk message bar -->
-        <div v-if="selectUserManagement && selectUserManagement.multiUserMode && selectUserManagement.userList.value.length > 0"
+        <div v-if="userSelectionStore && userSelectionStore.multiUserMode && userSelectionStore.userList.value.length > 0"
              class="user-bulk-message-bar">
             <span>
-                <b>{{ selectUserManagement.userList.value.length }} user{{ selectUserManagement.userList.value.length > 1 ? 's' : '' }}</b>
+                <b>{{ userSelectionStore.userList.value.length }} user{{ userSelectionStore.userList.value.length > 1 ? 's' : '' }}</b>
                 &nbsp;will receive the same permissions configured below
             </span>
         </div>

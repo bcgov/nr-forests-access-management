@@ -11,8 +11,8 @@ import StepContainer from "@/components/UI/StepContainer.vue";
 import useAuth from "@/composables/useAuth";
 import {
     ADD_PERMISSION_SELECT_USER_KEY,
-    useSelectUserManagement,
-} from "@/composables/useSelectUserManagement";
+    useSelectedUsers,
+} from "@/composables/useSelectedUsers";
 import { ManagePermissionsRoute } from "@/router/routes";
 import {
     AdminMgmtApiService,
@@ -121,10 +121,9 @@ const {
     ),
 });
 
-// Select user  management
 // single-user select for delegated admin or multi-users select for regular users
-const selectUserManagement = useSelectUserManagement(true); // Initially multi-user mode
-provide(ADD_PERMISSION_SELECT_USER_KEY, selectUserManagement);
+const userSelectionStore = useSelectedUsers(true); // Initially multi-user mode
+provide(ADD_PERMISSION_SELECT_USER_KEY, userSelectionStore);
 
 watch(
     () => adminUserAccessQuery.isSuccess && rolesUnderSelectedApp.value,
@@ -149,7 +148,7 @@ const performDomainChange = (userType: UserType) => {
     setFieldValue("domain", userType);
     setFieldValue("users", []);
     // Clear composable user lists on domain change
-    selectUserManagement.clearUsers();
+    userSelectionStore.clearUsers();
 };
 
 /**
@@ -157,7 +156,7 @@ const performDomainChange = (userType: UserType) => {
  * Shows confirmation dialog if selected user list is not empty.
  */
 const handleDomainChange = (userType: UserType) => {
-    if (selectUserManagement.userList.value.length > 0) {
+    if (userSelectionStore.userList.value.length > 0) {
         confirm.require({
             group: "changeDomain",
             header: "Changing User Domain",
@@ -172,7 +171,7 @@ const handleDomainChange = (userType: UserType) => {
 };
 
 watch(
-    () => selectUserManagement.userList.value,
+    () => userSelectionStore.userList.value,
     (newUsers) => {
         if (newUsers.length || meta.value.dirty) {
             setFieldValue("users", Array.from(newUsers));
@@ -313,7 +312,7 @@ const onInvalid = () => {
             <template #message>
                 <p>
                     Changing the domain will remove the user{{
-                        selectUserManagement.userList.value.length > 1 ? "s" : ""
+                        userSelectionStore.userList.value.length > 1 ? "s" : ""
                     }} you've added. Are you sure you want to continue?
                 </p>
             </template>
