@@ -217,7 +217,6 @@ const handlePaste = (event: ClipboardEvent) => {
 const openResultsDialog = (rows: UserSearchResultRow[]) => {
     dialog.open(UserSearchResultsDialog, {
         props: {
-            header: "User Search Results",
             modal: true,
             closable: true,
             style: { width: "85vw", "min-width": "52rem" },
@@ -348,37 +347,48 @@ const handleSearch = () => {
     flex-direction: column;
 }
 
+
 .search-fields-row {
     display: flex;
     flex-wrap: wrap;
-    align-items: flex-start;
+    align-items: center;
     gap: 0.5rem;
 }
+
 
 .field-domain,
 .field-type {
     flex: 0 1 10rem;
     min-width: 10.5rem;
-    height: 1rem;
+    min-height: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
 }
 
 :deep(.fam-dropdown) {
     height: 2.5rem;
 }
 
+
 .field-search-input {
     flex: 1 1 16rem;
     min-width: 12rem;
+    min-height: 2.5rem;
     display: flex;
     flex-direction: column;
-    padding-top: 1.5rem;
-    height: 1rem;
+    justify-content: flex-end;
+    margin-top: 1.5rem;
 }
+
 
 .field-search-button {
     flex: 0 0 auto;
-    align-self: flex-start;
-    padding-top: 1.5rem;
+    align-self: center;
+    min-height: 2.5rem;
+    display: flex;
+    align-items: flex-end;
+    margin-top: 1.5rem;
 }
 
 .search-error-row {

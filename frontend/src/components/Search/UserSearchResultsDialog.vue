@@ -30,18 +30,21 @@ const handleConfirm = () => {
 };
 
 onMounted(async () => {
-    // Wait for the table to render then set auto-focus on the first checkbox for better UX when dialog opens.
+    // Wait for the table to render then set auto-focus on the first checkbox input for better UX when dialog opens.
     await nextTick();
     const el = tableRef.value?.$el as HTMLElement | undefined;
-    const firstCheckbox = el?.querySelector(".p-checkbox-box") as HTMLElement | null;
-    firstCheckbox?.focus();
+    const firstCheckboxInput = el?.querySelector('input[type="checkbox"]') as HTMLInputElement | null;
+    firstCheckboxInput?.focus();
 });
 </script>
 
+
 <template>
     <div class="search-results-dialog-content">
+        <h2 class="search-results-title">User Search Results</h2>
         <div class="dialog-action-row">
             <Button
+                type="submit"
                 label="Confirm"
                 name="confirm-search-results"
                 class="confirm-btn"
@@ -70,10 +73,18 @@ onMounted(async () => {
 </template>
 
 <style lang="scss" scoped>
+
 .search-results-dialog-content {
     display: flex;
     flex-direction: column;
     gap: 1rem;
+}
+
+.search-results-title {
+    font-size: 1.35rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    text-align: left;
 }
 
 .dialog-action-row {
@@ -85,9 +96,10 @@ onMounted(async () => {
     width: 100%;
 }
 
-// Override the default fam-button fixed width so the Confirm button is compact
 :deep(.confirm-btn.fam-button) {
-    // width: fit-content;
     max-width: 6rem;
+}
+:deep(.fam-button .button-content) {
+    margin-left: 7px;
 }
 </style>
