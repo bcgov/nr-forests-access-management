@@ -13,7 +13,7 @@ import type { Ref } from "vue";
  */
 
 interface DialogRefData {
-    data: { rows: UserSearchResultRow[] };
+    data: { rows: UserSearchResultRow[]; multiUserMode: boolean };
     close: (result?: UserSearchResultRow[]) => void;
 }
 
@@ -21,20 +21,27 @@ interface DialogRefData {
 const dialogRef = inject<Ref<DialogRefData>>("dialogRef");
 
 const dataRows = computed(() => dialogRef?.value?.data?.rows ?? []);
+const isMultiUserMode = computed(() => dialogRef?.value?.data?.multiUserMode ?? true);
 
 const selectedDataRows = ref<UserSearchResultRow[]>([]);
+const selectedDataRow = ref<UserSearchResultRow | null>(null);
 const tableRef = ref();
 
 const handleConfirm = () => {
-    dialogRef?.value?.close(selectedDataRows.value);
+    if (isMultiUserMode.value) {
+        dialogRef?.value?.close(selectedDataRows.value);
+        return;
+    }
+
+    dialogRef?.value?.close(selectedDataRow.value ? [selectedDataRow.value] : []);
 };
 
 onMounted(async () => {
-    // Wait for the table to render then set auto-focus on the first checkbox input for better UX when dialog opens.
+    // Wait for the table to render then set auto-focus on the first checkbox/radio input for better UX when dialog opens.
     await nextTick();
     const el = tableRef.value?.$el as HTMLElement | undefined;
-    const firstCheckboxInput = el?.querySelector('input[type="checkbox"]') as HTMLInputElement | null;
-    firstCheckboxInput?.focus();
+    const firstSelectionInput = el?.querySelector('input[type="checkbox"], input[type="radio"]') as HTMLInputElement | null;
+    firstSelectionInput?.focus();
 });
 </script>
 
@@ -48,12 +55,13 @@ onMounted(async () => {
                 label="Confirm"
                 name="confirm-search-results"
                 class="confirm-btn"
-                :disabled="selectedDataRows.length === 0"
+                :disabled="isMultiUserMode ? selectedDataRows.length === 0 : !selectedDataRow"
                 @click="handleConfirm"
             />
         </div>
 
         <DataTable
+            v-if="isMultiUserMode"
             ref="tableRef"
             v-model:selection="selectedDataRows"
             :value="dataRows"
@@ -64,6 +72,25 @@ onMounted(async () => {
             class="search-results-table"
         >
             <Column selection-mode="multiple" header-style="width: 3rem" />
+            <Column field="userId" header="Username" />
+            <Column field="firstName" header="First name" />
+            <Column field="lastName" header="Last name" />
+            <Column field="email" header="Email" />
+        </DataTable>
+
+        <DataTable
+            v-else
+            ref="tableRef"
+            v-model:selection="selectedDataRow"
+            selection-mode="single"
+            :value="dataRows"
+            striped-rows
+            paginator
+            :rows="10"
+            :rows-per-page-options="[10, 20, 50, 100]"
+            class="search-results-table"
+        >
+            <Column selection-mode="single" header-style="width: 3rem" />
             <Column field="userId" header="Username" />
             <Column field="firstName" header="First name" />
             <Column field="lastName" header="Last name" />

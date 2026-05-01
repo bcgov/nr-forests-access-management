@@ -1,10 +1,12 @@
 <script setup lang="ts">
+import UserSearchResultsDialog from "@/components/Search/UserSearchResultsDialog.vue";
+import UserSearchSelectedTable from "@/components/Search/UserSearchSelectedTable.vue";
 import Button from "@/components/UI/Button.vue";
 import Dropdown from "@/components/UI/Dropdown.vue";
 import HelperText from "@/components/UI/HelperText.vue";
-import UserSearchResultsDialog from "@/components/Search/UserSearchResultsDialog.vue";
 import { useUserSearchApiService } from "@/composables/useUserSearchApiService";
-import type { UserSearchResultRow, UserSearchType } from "@/types/UserSearchTypes";
+import type { SelectedUser } from "@/types/SelectUserType";
+import type { UserSearchType } from "@/types/UserSearchTypes";
 import SearchIcon from "@carbon/icons-vue/es/search/16";
 import { UserType } from "fam-app-acsctl-api/model";
 import type { DropdownChangeEvent } from "primevue/dropdown";
@@ -12,11 +14,11 @@ import InputText from "primevue/inputtext";
 import { useDialog } from "primevue/usedialog";
 import { computed, ref, watch } from "vue";
 
-const searchText = ref("");
-const searchTextError = ref("");
-const searchResultMessage = ref("");
-const latestConfirmedSelections = ref<UserSearchResultRow[]>([]);
-const MAX_SEARCH_TEXT_LENGTH = 35;
+const searchText = ref(""); // user input value.
+const searchTextError = ref(""); // error message for invalid search text
+const searchResultMessage = ref(""); // message to display search result error or no results happens.
+const latestConfirmedSelections = ref<SelectedUser[]>([]); // keep track of latest confirmed user selections.
+const MAX_SEARCH_TEXT_LENGTH = 35; // limited to 35 although API allows up to 50.
 const INVALID_SEARCH_TEXT_PATTERN_WITH_DIGITS = /[\s]/g; // no space (username allows digits)
 const INVALID_SEARCH_TEXT_PATTERN = /[\s\d]/g; // no space, no numeric
 
@@ -27,26 +29,37 @@ interface SelectOption<T> {
 
 interface Props {
     appId: number;
+    multiUserMode: boolean; // multi user selection mode
     availableDomains?: UserType[];
     disabled?: boolean;
     searchButtonLabel?: string;
+    helperText?: string; // helper text to show below search input, can be used to provide guidance.
 }
 
 const props = withDefaults(defineProps<Props>(), {
     availableDomains: () => [UserType.I, UserType.B],
     disabled: false,
     searchButtonLabel: "Search",
+    helperText: "",
 });
 
 // Emits for parent component to react for changes in search.
 const emit = defineEmits<{
     // Emitted when user changes selected domain, with new domain value
     "user-domain-change": [domain: UserType];
+    "user-selection-update": [users: SelectedUser[]];
 }>();
 
 const dialog = useDialog();
+// API service composable for user search to backend.
 const { searchUsers, isPending, searchResults, isSuccess, searchError, reset } =
     useUserSearchApiService();
+
+const selectedUsers = computed<readonly SelectedUser[]>(() =>
+    latestConfirmedSelections.value
+);
+
+const isMultiUserMode = computed(() => props.multiUserMode);
 
 const domainOptions = computed<SelectOption<UserType>[]>(() =>
     (props.availableDomains ?? []).map((domain) => ({
@@ -55,15 +68,8 @@ const domainOptions = computed<SelectOption<UserType>[]>(() =>
     }))
 );
 
-// Always default to the first domain option, and update if domainOptions change
+// Always default to the first domain option
 const selectedDomainOption = ref<SelectOption<UserType>>(domainOptions.value[0]);
-watch(domainOptions, (newOptions) => {
-    if (!newOptions.length) return;
-    // If current selection is not in new options, reset to first
-    if (!newOptions.some(opt => opt.value === selectedDomainOption.value?.value)) {
-        selectedDomainOption.value = newOptions[0];
-    }
-});
 
 // Search by: "Username" for BCeID, and "First Name", "Last Name", or "Username" for IDIR
 const getSearchTypeOptions = (
@@ -214,19 +220,37 @@ const handlePaste = (event: ClipboardEvent) => {
     }
 };
 
-const openResultsDialog = (rows: UserSearchResultRow[]) => {
+const syncSelectedUsers = (selectedDataRows: SelectedUser[]) => {
+    latestConfirmedSelections.value = props.multiUserMode
+        ? selectedDataRows
+        : selectedDataRows.slice(0, 1);
+
+    emit("user-selection-update", latestConfirmedSelections.value);
+};
+
+const handleDeleteSelectedUser = (userId: string) => {
+    latestConfirmedSelections.value = latestConfirmedSelections.value.filter(
+        (user) => user.userId.toLowerCase() !== userId.toLowerCase()
+    );
+
+    emit("user-selection-update", latestConfirmedSelections.value)
+};
+
+const openResultsDialog = (dataRows: SelectedUser[]) => {
     dialog.open(UserSearchResultsDialog, {
         props: {
             modal: true,
             closable: true,
             style: { width: "85vw", "min-width": "52rem" },
         },
-        data: { rows },
+        data: {
+            rows: dataRows,
+            multiUserMode: props.multiUserMode,
+        },
         onClose: (options) => {
-            const selectedRows = options?.data as UserSearchResultRow[] | undefined;
-            if (selectedRows && selectedRows.length > 0) {
-                latestConfirmedSelections.value = selectedRows;
-                // TODO: wire confirmed selections into add-permission form submission
+            const selectedDataRows = options?.data as SelectedUser[] | undefined;
+            if (selectedDataRows && selectedDataRows.length > 0) {
+                syncSelectedUsers(selectedDataRows);
             }
         },
     });
@@ -332,12 +356,23 @@ const handleSearch = () => {
 
         <div class="search-error-row">
             <HelperText
+                v-if="helperText !== ''"
+                :text="helperText"
+            />
+            <HelperText
                 v-if="searchResultMessage"
                 :text="searchResultMessage"
                 :is-error="true"
             />
             <slot name="searchError" />
         </div>
+
+        <UserSearchSelectedTable
+            v-if="selectedUsers.length > 0"
+            :users="selectedUsers"
+            :multi-user-mode="isMultiUserMode"
+            :on-delete-user="handleDeleteSelectedUser"
+        />
     </div>
 </template>
 

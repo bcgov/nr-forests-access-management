@@ -8,15 +8,6 @@ export interface UserSearchPayload {
     searchText: string;
 }
 
-export interface UserSearchResultRow {
-    userId: string;
-    guid: string | null;
-    firstName: string | null;
-    lastName: string | null;
-    email: string | null;
-    fullName: string;
-    sourceDomain: UserType;
-}
 
 export interface UserSearchParams {
     domain: UserType;
