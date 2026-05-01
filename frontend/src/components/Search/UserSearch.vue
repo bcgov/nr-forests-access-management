@@ -80,9 +80,9 @@ const getSearchTypeOptions = (
     }
 
     return [
-        { label: "First Name", value: "firstName" },
-        { label: "Last Name", value: "lastName" },
         { label: "Username", value: "username" },
+        { label: "First Name", value: "firstName" },
+        { label: "Last Name", value: "lastName" }
     ];
 };
 
@@ -335,6 +335,7 @@ const handleSearch = () => {
                     :disabled="disabled || isPending"
                 />
                 <HelperText
+                     v-if="searchTextError"
                     :text="searchTextError"
                     :is-error="!!searchTextError"
                 />
@@ -389,7 +390,7 @@ const handleSearch = () => {
 .search-fields-row {
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
+    align-items: flex-start;
     gap: 0.5rem;
 }
 
@@ -422,7 +423,6 @@ const handleSearch = () => {
 
 .field-search-button {
     flex: 0 0 auto;
-    align-self: center;
     min-height: 2.5rem;
     display: flex;
     align-items: flex-end;

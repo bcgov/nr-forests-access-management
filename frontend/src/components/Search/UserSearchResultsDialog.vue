@@ -42,6 +42,15 @@ onMounted(async () => {
     const el = tableRef.value?.$el as HTMLElement | undefined;
     const firstSelectionInput = el?.querySelector('input[type="checkbox"], input[type="radio"]') as HTMLInputElement | null;
     firstSelectionInput?.focus();
+
+    // Auto-select if only one row
+    if (dataRows.value.length === 1) {
+        if (isMultiUserMode.value) {
+            selectedDataRows.value = [dataRows.value[0]];
+        } else {
+            selectedDataRow.value = dataRows.value[0];
+        }
+    }
 });
 </script>
 
