@@ -1,14 +1,13 @@
 <script setup lang="ts">
-import UserNameInput from "@/components/AddPermissions/UserNameSection.vue";
 import BreadCrumbs from "@/components/UI/BreadCrumbs.vue";
 import Button from "@/components/UI/Button.vue";
 import Dropdown from "@/components/UI/Dropdown.vue";
 import PageTitle from "@/components/UI/PageTitle.vue";
 import StepContainer from "@/components/UI/StepContainer.vue";
-import { SELECT_APP_ADMIN_USER_KEY, useSelectedUsers } from "@/composables/useSelectedUsers";
 import { ManagePermissionsRoute } from "@/router/routes";
 import { AdminMgmtApiService } from "@/services/ApiServiceFactory";
 import type { BreadCrumbType } from "@/types/BreadCrumbTypes";
+import type { SelectedUser } from "@/types/SelectUserType";
 import { formatAxiosError, getFamAdminApplications } from "@/utils/ApiUtils";
 import { formatUserNameAndId } from "@/utils/UserUtils";
 import CheckmarkIcon from "@carbon/icons-vue/es/checkmark/16";
@@ -20,7 +19,7 @@ import {
 } from "fam-admin-mgmt-api/model";
 import type { DropdownChangeEvent } from "primevue/dropdown";
 import { useForm } from "vee-validate";
-import { provide, ref, watch } from "vue";
+import { ref } from "vue";
 import { useRouter } from "vue-router";
 import {
     AddAppAdminErrorQueryKey,
@@ -42,10 +41,6 @@ const crumbs: BreadCrumbType[] = [
     },
 ];
 
-// Use composable for single-user user selection
-const appAdminUserSelectionStore = useSelectedUsers(false); // false = single-user mode
-provide(SELECT_APP_ADMIN_USER_KEY, appAdminUserSelectionStore);
-
 /**
  * Form setup using vee-validate's v4 useForm composable.
  * - validationSchema: Schema for form validation.
@@ -61,15 +56,14 @@ const { handleSubmit, errors, values, setFieldValue, meta } = useForm<AppAdminFo
     initialValues: getDefaultFormData(),
 });
 
-// Watch selectUserManagement.currentUser and sync with form field
-watch(
-    () => appAdminUserSelectionStore.currentUser.value,
-    (newUser) => {
-        if (newUser || meta.value.dirty) {
-            setFieldValue('user', newUser);
-        }
+const handleSearchUsersSelected = (selectedUsers: SelectedUser[]) => {
+    const selectedUser = selectedUsers[0];
+    if (selectedUser) {
+        setFieldValue('user', selectedUser);
+    } else {
+        setFieldValue('user', null);
     }
-);
+};
 
 // Flag to track if form has been submitted - to control error display
 const hasSubmitted = ref<boolean>(false);
@@ -156,15 +150,22 @@ const onInvalid = () => {
                 @submit.prevent="handleSubmit(onSubmit, onInvalid)()"
             >
                 <StepContainer title="User information" divider>
-                    <UserNameInput
-                        class="user-name-text-input"
-                        :domain="UserType.I"
+                    <UserSearch
                         :app-id="1"
+                        :multi-user-mode="false"
+                        :available-domains="[UserType.I]"
+                        search-button-label="Search"
                         helperText="Only IDIR users are allowed to be added as application admins"
-                        :injection-key="SELECT_APP_ADMIN_USER_KEY"
-                        :form-validate-error-msg="hasSubmitted ? errors.user : ''"
-                    />
+                        @user-selection-update="handleSearchUsersSelected"
+                    >
+                        <template #formError>
+                            <span v-if="hasSubmitted && errors.user" class="invalid-feedback">
+                                {{ errors.user }}
+                            </span>
+                        </template>
+                    </UserSearch>
                 </StepContainer>
+
                 <StepContainer title="Add application">
                     <div>
                         <Dropdown
