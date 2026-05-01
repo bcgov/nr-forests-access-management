@@ -1,0 +1,93 @@
+<script setup lang="ts">
+import Button from "@/components/UI/Button.vue";
+import type { UserSearchResultRow } from "@/types/UserSearchTypes";
+import Column from "primevue/column";
+import DataTable from "primevue/datatable";
+import { computed, inject, nextTick, onMounted, ref } from "vue";
+import type { Ref } from "vue";
+
+/**
+ * This component is intended to be used as the content for user search results for the UserSearch component.
+ * It is used within a PrimeVue DynamicDialog and receives data passed when opening the dialog,
+ * as well as a close function to return results when the user confirms their selection.
+ */
+
+interface DialogRefData {
+    data: { rows: UserSearchResultRow[] };
+    close: (result?: UserSearchResultRow[]) => void;
+}
+
+// PrimeVue DynamicDialog provides dialogRef as a Ref — must access via .value
+const dialogRef = inject<Ref<DialogRefData>>("dialogRef");
+
+const dataRows = computed(() => dialogRef?.value?.data?.rows ?? []);
+
+const selectedDataRows = ref<UserSearchResultRow[]>([]);
+const tableRef = ref();
+
+const handleConfirm = () => {
+    dialogRef?.value?.close(selectedDataRows.value);
+};
+
+onMounted(async () => {
+    // Wait for the table to render then set auto-focus on the first checkbox for better UX when dialog opens.
+    await nextTick();
+    const el = tableRef.value?.$el as HTMLElement | undefined;
+    const firstCheckbox = el?.querySelector(".p-checkbox-box") as HTMLElement | null;
+    firstCheckbox?.focus();
+});
+</script>
+
+<template>
+    <div class="search-results-dialog-content">
+        <div class="dialog-action-row">
+            <Button
+                label="Confirm"
+                name="confirm-search-results"
+                class="confirm-btn"
+                :disabled="selectedDataRows.length === 0"
+                @click="handleConfirm"
+            />
+        </div>
+
+        <DataTable
+            ref="tableRef"
+            v-model:selection="selectedDataRows"
+            :value="dataRows"
+            striped-rows
+            paginator
+            :rows="10"
+            :rows-per-page-options="[10, 20, 50, 100]"
+            class="search-results-table"
+        >
+            <Column selection-mode="multiple" header-style="width: 3rem" />
+            <Column field="userId" header="Username" />
+            <Column field="firstName" header="First name" />
+            <Column field="lastName" header="Last name" />
+            <Column field="email" header="Email" />
+        </DataTable>
+    </div>
+</template>
+
+<style lang="scss" scoped>
+.search-results-dialog-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.dialog-action-row {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.search-results-table {
+    width: 100%;
+}
+
+// Override the default fam-button fixed width so the Confirm button is compact
+:deep(.confirm-btn.fam-button) {
+    // width: fit-content;
+    max-width: 6rem;
+}
+</style>

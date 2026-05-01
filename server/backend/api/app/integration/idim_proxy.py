@@ -36,7 +36,9 @@ class IdimProxyService:
         see ref @FAM Wiki: https://github.com/bcgov/nr-forests-access-management/wiki/Environment-Management
     """
 
-    TIMEOUT = (5, 10)  # Timeout (connect, read) in seconds.
+    # Search return generally slower than lookup. Increase from default 10s read timeout to 20s
+    # to accommodate the search request which can be heavy and take longer time to response.
+    TIMEOUT = (5, 20)  # Timeout (connect, read) in seconds.
 
     def __init__(
         self,

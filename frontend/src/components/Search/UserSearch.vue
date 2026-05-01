@@ -2,16 +2,22 @@
 import Button from "@/components/UI/Button.vue";
 import Dropdown from "@/components/UI/Dropdown.vue";
 import HelperText from "@/components/UI/HelperText.vue";
-import type { UserSearchPayload, UserSearchType } from "@/types/UserSearchTypes";
+import UserSearchResultsDialog from "@/components/Search/UserSearchResultsDialog.vue";
+import { useUserSearchApiService } from "@/composables/useUserSearchApiService";
+import type { UserSearchResultRow, UserSearchType } from "@/types/UserSearchTypes";
 import SearchIcon from "@carbon/icons-vue/es/search/16";
 import { UserType } from "fam-app-acsctl-api/model";
 import type { DropdownChangeEvent } from "primevue/dropdown";
 import InputText from "primevue/inputtext";
+import { useDialog } from "primevue/usedialog";
 import { computed, ref, watch } from "vue";
 
 const searchText = ref("");
 const searchTextError = ref("");
+const searchResultMessage = ref("");
+const latestConfirmedSelections = ref<UserSearchResultRow[]>([]);
 const MAX_SEARCH_TEXT_LENGTH = 35;
+const INVALID_SEARCH_TEXT_PATTERN_WITH_DIGITS = /[\s]/g; // no space (username allows digits)
 const INVALID_SEARCH_TEXT_PATTERN = /[\s\d]/g; // no space, no numeric
 
 interface SelectOption<T> {
@@ -20,6 +26,7 @@ interface SelectOption<T> {
 }
 
 interface Props {
+    appId: number;
     availableDomains?: UserType[];
     disabled?: boolean;
     searchButtonLabel?: string;
@@ -33,11 +40,13 @@ const props = withDefaults(defineProps<Props>(), {
 
 // Emits for parent component to react for changes in search.
 const emit = defineEmits<{
-    // Emitted when user clicks search button, with current search parameters
-    userSearch: [payload: UserSearchPayload];
     // Emitted when user changes selected domain, with new domain value
-    userDomainChange: [domain: UserType];
+    "user-domain-change": [domain: UserType];
 }>();
+
+const dialog = useDialog();
+const { searchUsers, isPending, searchResults, isSuccess, searchError, reset } =
+    useUserSearchApiService();
 
 const domainOptions = computed<SelectOption<UserType>[]>(() =>
     (props.availableDomains ?? []).map((domain) => ({
@@ -79,26 +88,33 @@ const selectedSearchTypeOption = ref<SelectOption<UserSearchType>>(
     searchTypeOptions.value[0]
 );
 
+const isUsernameSearch = computed(
+    () => selectedSearchTypeOption.value.value === "username"
+);
+
 /**
  * Test on search text. If contains invalid characters, return error msg.
- * - No space.
- * - No numeric.
- * @param value search text to be tested.
+ * - No space (always).
+ * - No numeric (only for firstName/lastName searches).
  */
 const getInvalidSearchTextError = (value: string): string => {
     if (/\s/.test(value)) {
         return "Search text cannot contain spaces";
     }
 
-    if (/\d/.test(value)) {
+    if (!isUsernameSearch.value && /\d/.test(value)) {
         return "Search text cannot contain numbers";
     }
 
     return "";
 };
 
-const sanitizeSearchText = (value: string): string =>
-    value.replace(INVALID_SEARCH_TEXT_PATTERN, "");
+const sanitizeSearchText = (value: string): string => {
+    if (isUsernameSearch.value) {
+        return value.replace(INVALID_SEARCH_TEXT_PATTERN_WITH_DIGITS, "");
+    }
+    return value.replace(INVALID_SEARCH_TEXT_PATTERN, "");
+};
 
 // This validates search text after 'searchText' model update.
 const validateSearchText = (): boolean => {
@@ -138,8 +154,10 @@ const handleDomainChange = (event: DropdownChangeEvent) => {
     selectedDomainOption.value = nextDomainOption;
     selectedSearchTypeOption.value = getSearchTypeOptions(nextDomainOption.value)[0];
     clearSearchInputState();
+    searchResultMessage.value = "";
+    reset();
 
-    emit("userDomainChange", nextDomainOption.value);
+    emit("user-domain-change", nextDomainOption.value);
 };
 
 const handleSearchTypeChange = (event: DropdownChangeEvent) => {
@@ -149,6 +167,9 @@ const handleSearchTypeChange = (event: DropdownChangeEvent) => {
     }
 
     selectedSearchTypeOption.value = nextTypeOption;
+    clearSearchInputState();
+    searchResultMessage.value = "";
+    reset();
 };
 
 const handleBeforeModelUpdate = (event: InputEvent) => {
@@ -193,17 +214,59 @@ const handlePaste = (event: ClipboardEvent) => {
     }
 };
 
-// Triggered when user clicks search button.
-// Emits "userSearch" event with current search parameters if valid.
+const openResultsDialog = (rows: UserSearchResultRow[]) => {
+    dialog.open(UserSearchResultsDialog, {
+        props: {
+            header: "User Search Results",
+            modal: true,
+            closable: true,
+            style: { width: "85vw", "min-width": "52rem" },
+        },
+        data: { rows },
+        onClose: (options) => {
+            const selectedRows = options?.data as UserSearchResultRow[] | undefined;
+            if (selectedRows && selectedRows.length > 0) {
+                latestConfirmedSelections.value = selectedRows;
+                // TODO: wire confirmed selections into add-permission form submission
+            }
+        },
+    });
+};
+
+// Watch search results and react after a successful search
+watch(isSuccess, (success) => {
+    if (!success) return;
+
+    const results = searchResults.value ?? [];
+    if (results.length === 0) {
+        searchResultMessage.value =
+            "No search result found. Check the spelling or try another search.";
+    } else {
+        searchResultMessage.value = "";
+        openResultsDialog(results);
+    }
+});
+
+// Watch for API errors from the composable
+watch(searchError, (err) => {
+    if (err) {
+        searchResultMessage.value = err;
+    }
+});
+
+// Triggered when user clicks search button or presses Enter.
 const handleSearch = () => {
     if (!validateSearchText()) {
         return;
     }
 
-    emit("userSearch", {
+    searchResultMessage.value = "";
+
+    searchUsers({
         domain: selectedDomainOption.value.value,
         searchType: selectedSearchTypeOption.value.value,
         searchText: searchText.value.trim(),
+        appId: props.appId,
     });
 };
 </script>
@@ -219,7 +282,7 @@ const handleSearch = () => {
                 :value="selectedDomainOption"
                 :options="domainOptions"
                 :on-change="handleDomainChange"
-                :disabled="disabled || domainOptions.length === 1"
+                :disabled="disabled || domainOptions.length === 1 || isPending"
             />
 
             <Dropdown
@@ -230,7 +293,7 @@ const handleSearch = () => {
                 :value="selectedSearchTypeOption"
                 :options="searchTypeOptions"
                 :on-change="handleSearchTypeChange"
-                :disabled="disabled"
+                :disabled="disabled || isPending"
             />
 
             <div class="field-search-input">
@@ -246,7 +309,7 @@ const handleSearch = () => {
                     :maxlength="MAX_SEARCH_TEXT_LENGTH"
                     class="w-100 custom-height"
                     :class="{ 'is-invalid': !!searchTextError }"
-                    :disabled="disabled"
+                    :disabled="disabled || isPending"
                 />
                 <HelperText
                     :text="searchTextError"
@@ -257,14 +320,23 @@ const handleSearch = () => {
             <div class="field-search-button">
                 <Button
                     :label="searchButtonLabel"
+                    aria-label="Search users"
+                    name="searchUsers"
+                    outlined
                     :icon="SearchIcon"
                     :disabled="disabled"
+                    :is-loading="isPending"
                     @click="handleSearch"
                 />
             </div>
         </div>
 
         <div class="search-error-row">
+            <HelperText
+                v-if="searchResultMessage"
+                :text="searchResultMessage"
+                :is-error="true"
+            />
             <slot name="searchError" />
         </div>
     </div>
@@ -274,7 +346,6 @@ const handleSearch = () => {
 .user-search-container {
     display: flex;
     flex-direction: column;
-    row-gap: 0.5rem;
 }
 
 .search-fields-row {
@@ -308,13 +379,10 @@ const handleSearch = () => {
     flex: 0 0 auto;
     align-self: flex-start;
     padding-top: 1.5rem;
-
-    // :deep(.fam-button) {
-    //     height: 2.8rem;
-    // }
 }
 
 .search-error-row {
     width: 100%;
 }
+
 </style>

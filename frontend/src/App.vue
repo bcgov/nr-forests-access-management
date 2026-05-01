@@ -2,6 +2,7 @@
 import ProtectedLayout from "@/layouts/ProtectedLayout.vue";
 import AuthProvider from "@/providers/AuthProvider.vue";
 import { VueQueryDevtools } from "@tanstack/vue-query-devtools";
+import DynamicDialog from "primevue/dynamicdialog";
 import { computed } from "vue";
 import { useRoute } from "vue-router";
 
@@ -21,6 +22,7 @@ const layoutComponent = computed(() => {
         <!-- No layout, just render the view -->
         <router-view v-else />
         <VueQueryDevtools />
+        <DynamicDialog />
     </AuthProvider>
 </template>
 
