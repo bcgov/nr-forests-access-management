@@ -355,16 +355,19 @@ const handleSearch = () => {
         </div>
 
         <div class="search-error-row">
+            <!-- Helper text from parent component -->
             <HelperText
                 v-if="helperText !== ''"
                 :text="helperText"
             />
+            <!-- Internal search result/error message -->
             <HelperText
                 v-if="searchResultMessage"
                 :text="searchResultMessage"
                 :is-error="true"
             />
-            <slot name="searchError" />
+            <!-- Slot for additional form errors from parent component -->
+            <slot name="formError" />
         </div>
 
         <UserSearchSelectedTable

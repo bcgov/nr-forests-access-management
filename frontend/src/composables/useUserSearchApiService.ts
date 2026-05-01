@@ -1,11 +1,12 @@
 import { AppActlApiService } from "@/services/ApiServiceFactory";
-import type { UserSearchParams, UserSearchResultRow } from "@/types/UserSearchTypes";
+import type { SelectedUser } from "@/types/SelectUserType";
+import type { UserSearchParams } from "@/types/UserSearchTypes";
+import { useMutation } from "@tanstack/vue-query";
 import type {
     IdimProxyBceidInfoSchema,
     IdimProxyIdirUserSearchItemResSchema,
 } from "fam-app-acsctl-api";
 import { UserType } from "fam-app-acsctl-api/model";
-import { useMutation } from "@tanstack/vue-query";
 import { ref } from "vue";
 
 /**
@@ -18,7 +19,7 @@ const IDIR_SEARCH_PAGE_SIZE = 250;
 
 function normalizeIdirItem(
     item: IdimProxyIdirUserSearchItemResSchema
-): UserSearchResultRow {
+): SelectedUser {
     const firstName = item.firstName ?? "";
     const lastName = item.lastName ?? "";
     return {
@@ -32,7 +33,7 @@ function normalizeIdirItem(
     };
 }
 
-function normalizeBceidItem(item: IdimProxyBceidInfoSchema): UserSearchResultRow {
+function normalizeBceidItem(item: IdimProxyBceidInfoSchema): SelectedUser {
     const firstName = item.firstName ?? "";
     const lastName = item.lastName ?? "";
     return {
@@ -51,7 +52,7 @@ export function useUserSearchApiService() {
 
     const searchMutation = useMutation({
         retry: 1,
-        mutationFn: async (params: UserSearchParams): Promise<UserSearchResultRow[]> => {
+        mutationFn: async (params: UserSearchParams): Promise<SelectedUser[]> => {
             if (params.domain === UserType.I) {
                 const firstName =
                     params.searchType === "firstName" ? params.searchText : undefined;
