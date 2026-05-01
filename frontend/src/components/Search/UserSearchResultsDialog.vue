@@ -41,8 +41,8 @@ onMounted(async () => {
 
 <template>
     <div class="search-results-dialog-content">
-        <h2 class="search-results-title">User Search Results</h2>
-        <div class="dialog-action-row">
+        <div class="dialog-header-row">
+            <h2 class="search-results-title">User Search Results</h2>
             <Button
                 type="submit"
                 label="Confirm"
@@ -87,9 +87,13 @@ onMounted(async () => {
     text-align: left;
 }
 
-.dialog-action-row {
+
+.dialog-header-row {
     display: flex;
-    justify-content: flex-end;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    margin-top: 0.5rem;
 }
 
 .search-results-table {
