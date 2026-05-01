@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import Button from "@/components/UI/Button.vue";
-import type { UserSearchResultRow } from "@/types/UserSearchTypes";
+import type { SelectedUser } from "@/types/SelectUserType";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
-import { computed, inject, nextTick, onMounted, ref } from "vue";
 import type { Ref } from "vue";
+import { computed, inject, nextTick, onMounted, ref } from "vue";
 
 /**
  * This component is intended to be used as the content for user search results for the UserSearch component.
@@ -13,8 +13,8 @@ import type { Ref } from "vue";
  */
 
 interface DialogRefData {
-    data: { rows: UserSearchResultRow[]; multiUserMode: boolean };
-    close: (result?: UserSearchResultRow[]) => void;
+    data: { rows: SelectedUser[]; multiUserMode: boolean };
+    close: (result?: SelectedUser[]) => void;
 }
 
 // PrimeVue DynamicDialog provides dialogRef as a Ref — must access via .value
@@ -23,8 +23,8 @@ const dialogRef = inject<Ref<DialogRefData>>("dialogRef");
 const dataRows = computed(() => dialogRef?.value?.data?.rows ?? []);
 const isMultiUserMode = computed(() => dialogRef?.value?.data?.multiUserMode ?? true);
 
-const selectedDataRows = ref<UserSearchResultRow[]>([]);
-const selectedDataRow = ref<UserSearchResultRow | null>(null);
+const selectedDataRows = ref<SelectedUser[]>([]);
+const selectedDataRow = ref<SelectedUser | null>(null);
 const tableRef = ref();
 
 const handleConfirm = () => {

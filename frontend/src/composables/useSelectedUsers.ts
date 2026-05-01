@@ -6,7 +6,6 @@ import type { IdimProxyBceidInfoSchema, IdimProxyIdirInfoSchema } from 'fam-app-
  * Injection key for selected users composable.
  */
 export const ADD_PERMISSION_SELECT_USER_KEY = Symbol('addPermissionSelectUser') as InjectionKey<ReturnType<typeof useSelectedUsers>>;
-export const SELECT_APP_ADMIN_USER_KEY = Symbol('selectAppAdminUser') as InjectionKey<ReturnType<typeof useSelectedUsers>>;
 
 /**
  * Composable for managing (add/delete) user selection in add regular/admin users permission forms.
