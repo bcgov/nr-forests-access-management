@@ -29,7 +29,7 @@ interface SelectOption<T> {
 
 interface Props {
     appId: number;
-    multiUserMode: boolean; // multi user selection mode
+    multiUserMode: boolean; // multi users (or single) selection mode
     availableDomains?: UserType[];
     disabled?: boolean;
     searchButtonLabel?: string;
@@ -221,9 +221,26 @@ const handlePaste = (event: ClipboardEvent) => {
 };
 
 const syncSelectedUsers = (selectedDataRows: SelectedUser[]) => {
-    latestConfirmedSelections.value = props.multiUserMode
-        ? selectedDataRows
-        : selectedDataRows.slice(0, 1);
+    if (props.multiUserMode) {
+        latestConfirmedSelections.value = [...latestConfirmedSelections.value, ...selectedDataRows].filter(
+            (user, index, self) => {
+                // Merging two arrays (latestConfirmedSelections and current selectedDataRows) and removing duplicates based on
+                // userId and sourceDomain. Only the first occurrence of each unique user will be kept, later duplicates will be removed.
+                return (
+                    index ===
+                    self.findIndex(
+                        (u) =>
+                            u.userId.toLowerCase() === user.userId.toLowerCase() &&
+                            u.sourceDomain === user.sourceDomain
+                    )
+                );
+            }
+        );
+    }
+    else {
+        // Single user mode: only keep the first
+        latestConfirmedSelections.value = selectedDataRows.slice(0, 1);
+    }
 
     emit("user-selection-update", latestConfirmedSelections.value);
 };
