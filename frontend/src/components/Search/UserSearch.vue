@@ -160,7 +160,11 @@ const validateSearchText = (): boolean => {
     return true;
 };
 
-const clearSearchInputState = () => {
+const clearSearchInputState = (isErrorStateOnly = false) => {
+    if (isErrorStateOnly) {
+        searchTextError.value = "";
+        return;
+    }
     searchText.value = "";
     searchTextError.value = "";
 };
@@ -220,7 +224,8 @@ const handleSearchTypeChange = (event: DropdownChangeEvent) => {
     }
 
     selectedSearchTypeOption.value = nextTypeOption;
-    clearSearchInputState();
+    const isErrorStateOnly = true;
+    clearSearchInputState(isErrorStateOnly);
     searchResultMessage.value = "";
     reset();
 };

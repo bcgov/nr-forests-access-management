@@ -20,6 +20,7 @@ import type { AddAppPermissionRouteProps } from "@/types/RouteTypes";
 import type { SelectedUser } from "@/types/SelectUserType";
 import { isUserDelegatedAdminOnly } from "@/utils/AuthUtils";
 import { currentDateInBCTimezone } from "@/utils/DateUtils";
+import { scrollToRef } from "@/utils/WindowUtils";
 import {
     AddAppUserPermissionErrorQuerykey,
     AddAppUserPermissionSuccessQuerykey,
@@ -50,6 +51,7 @@ import { useRouter } from "vue-router";
 const router = useRouter();
 const auth = useAuth();
 const environments = new EnvironmentSettings();
+const userSearchRef = ref<HTMLElement | null>(null);
 
 const props = defineProps<AddAppPermissionRouteProps>();
 
@@ -280,6 +282,7 @@ const onSubmit = () => {
 
 const onInvalid = () => {
     hasSubmitted.value = true;
+    scrollToRef(userSearchRef);
 };
 
 </script>
@@ -324,30 +327,32 @@ const onInvalid = () => {
                 @submit.prevent="handleSubmit(onSubmit, onInvalid)()"
             >
                     <StepContainer title="User information" divider>
-                        <UserSearch
-                            :app-id="appId"
-                            :multi-user-mode="true"
-                            :available-domains="
-                                auth.authState.famLoginUser?.idpProvider === 'idir'
-                                    ? [UserType.I, UserType.B]
-                                    : [UserType.B]
-                            "
-                            :helper-text="
-                                values.domain === UserType.I
-                                    ? 'Search IDIR users by username, first name, or last name.'
-                                    : 'Search BCeID users by username.'
-                            "
-                            search-button-label="Search"
-                            @pre-user-domain-change="handlePreUserDomainChange"
-                            @user-domain-change="handleUserDomainChange"
-                            @user-selection-update="handleSearchUsersSelected"
-                        >
-                            <template #formError>
-                                <span v-if="userErrorMessage" class="invalid-feedback">
-                                    {{ userErrorMessage }}
-                                </span>
-                            </template>
-                        </UserSearch>
+                        <div ref="userSearchRef">
+                            <UserSearch
+                                :app-id="appId"
+                                :multi-user-mode="true"
+                                :available-domains="
+                                    auth.authState.famLoginUser?.idpProvider === 'idir'
+                                        ? [UserType.I, UserType.B]
+                                        : [UserType.B]
+                                "
+                                :helper-text="
+                                    values.domain === UserType.I
+                                        ? 'Search IDIR users by username, first name, or last name.'
+                                        : 'Search BCeID users by username.'
+                                "
+                                search-button-label="Search"
+                                @pre-user-domain-change="handlePreUserDomainChange"
+                                @user-domain-change="handleUserDomainChange"
+                                @user-selection-update="handleSearchUsersSelected"
+                            >
+                                <template #formError>
+                                    <span v-if="userErrorMessage" class="invalid-feedback">
+                                        {{ userErrorMessage }}
+                                    </span>
+                                </template>
+                            </UserSearch>
+                        </div>
                     </StepContainer>
                     <StepContainer
                         title="User roles"
