@@ -467,7 +467,7 @@ const handleSearch = () => {
             v-if="selectedUsers.length > 0"
             :users="selectedUsers"
             :multi-user-mode="isMultiUserMode"
-            :on-delete-user="handleDeleteSelectedUser"
+            @selected-user-deleted="handleDeleteSelectedUser"
         />
     </div>
 </template>

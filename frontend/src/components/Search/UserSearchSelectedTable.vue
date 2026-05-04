@@ -18,19 +18,14 @@ type SelectedUserTableRow = SelectedUser;
 const props = defineProps<{
   users: readonly SelectedUserTableRow[];
   multiUserMode?: boolean;
-  onDeleteUser?: (userId: string) => void;
 }>();
 
 const emit = defineEmits<{
-  (e: "delete-selected-user", userId: string): void;
+  (e: "selected-user-deleted", userId: string): void;
 }>();
 
 const handleDeleteUser = (userId: string) => {
-  if (props.onDeleteUser) {
-    props.onDeleteUser(userId);
-  } else {
-    emit("delete-selected-user", userId);
-  }
+  emit("selected-user-deleted", userId);
 };
 
 const tableUsers = computed(() => [...props.users]);
