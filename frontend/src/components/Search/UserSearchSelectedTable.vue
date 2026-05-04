@@ -7,6 +7,12 @@ import Column from "primevue/column";
 import DataTable from "primevue/datatable";
 import { computed } from "vue";
 
+/**
+ * This component is intended to display a table of selected users for the UserSearch component.
+ * UserSearch component manages the state of selected users and passes them as to this component for display.
+ * The state of selected users is synchronized to the consumer component of the UserSearch component.
+ */
+
 type SelectedUserTableRow = SelectedUser;
 
 const props = defineProps<{

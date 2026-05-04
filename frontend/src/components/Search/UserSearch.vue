@@ -4,7 +4,8 @@ import UserSearchSelectedTable from "@/components/Search/UserSearchSelectedTable
 import Button from "@/components/UI/Button.vue";
 import Dropdown from "@/components/UI/Dropdown.vue";
 import HelperText from "@/components/UI/HelperText.vue";
-import { useUserSearchApiService } from "@/composables/useUserSearchApiService";
+import useAuth from "@/composables/useAuth";
+import { PERMISSION_REQUIRED_FOR_OPERATION, useUserSearchApiService } from "@/composables/useUserSearchApiService";
 import type { SelectedUser } from "@/types/SelectUserType";
 import type { UserSearchType } from "@/types/UserSearchTypes";
 import SearchIcon from "@carbon/icons-vue/es/search/16";
@@ -12,15 +13,17 @@ import { UserType } from "fam-app-acsctl-api/model";
 import type { DropdownChangeEvent } from "primevue/dropdown";
 import InputText from "primevue/inputtext";
 import { useDialog } from "primevue/usedialog";
-import { computed, ref, watch } from "vue";
+import { computed, getCurrentInstance, ref, watch } from "vue";
 
-const searchText = ref(""); // user input value.
+const searchText = ref(""); // user input search value.
 const searchTextError = ref(""); // error message for invalid search text
 const searchResultMessage = ref(""); // message to display search result error or no results happens.
 const latestConfirmedSelections = ref<SelectedUser[]>([]); // keep track of latest confirmed user selections.
 const MAX_SEARCH_TEXT_LENGTH = 35; // limited to 35 although API allows up to 50.
 const INVALID_SEARCH_TEXT_PATTERN_WITH_DIGITS = /[\s]/g; // no space (username allows digits)
 const INVALID_SEARCH_TEXT_PATTERN = /[\s\d]/g; // no space, no numeric
+
+const SELF_SELECTION_ERROR_MSG = "You cannot grant permissions to yourself.";
 
 interface SelectOption<T> {
     label: string;
@@ -29,7 +32,7 @@ interface SelectOption<T> {
 
 interface Props {
     appId: number;
-    multiUserMode: boolean; // multi users (or single) selection mode
+    multiUserMode: boolean; // multi users (or single) selection
     availableDomains?: UserType[];
     disabled?: boolean;
     searchButtonLabel?: string;
@@ -45,11 +48,23 @@ const props = withDefaults(defineProps<Props>(), {
 
 // Emits for parent component to react for changes in search.
 const emit = defineEmits<{
+    // Emitted before domain change takes effect. Giving parent component a chance to approve/cancel the change.
+    "pre-user-domain-change": [
+        payload: {
+            currentDomain: UserType;
+            nextDomain: UserType;
+            selectedUsersCount: number; // existing users previously already selected and displayed at UserSearchSelectedTable.
+            approveChange: () => void;
+            cancelChange: () => void;
+        },
+    ];
     // Emitted when user changes selected domain, with new domain value
     "user-domain-change": [domain: UserType];
     "user-selection-update": [users: SelectedUser[]];
 }>();
 
+const auth = useAuth();
+const instance = getCurrentInstance();
 const dialog = useDialog();
 // API service composable for user search to backend.
 const { searchUsers, isPending, searchResults, isSuccess, searchError, reset } =
@@ -68,7 +83,6 @@ const domainOptions = computed<SelectOption<UserType>[]>(() =>
     }))
 );
 
-// Always default to the first domain option
 const selectedDomainOption = ref<SelectOption<UserType>>(domainOptions.value[0]);
 
 // Search by: "Username" for BCeID, and "First Name", "Last Name", or "Username" for IDIR
@@ -151,19 +165,52 @@ const clearSearchInputState = () => {
     searchTextError.value = "";
 };
 
-const handleDomainChange = (event: DropdownChangeEvent) => {
+const clearSelectedUsers = () => {
+    if (latestConfirmedSelections.value.length === 0) {
+        return;
+    }
+
+    latestConfirmedSelections.value = [];
+    emit("user-selection-update", []);
+};
+
+const applyDomainChange = (nextDomainOption: SelectOption<UserType>) => {
+    selectedDomainOption.value = nextDomainOption;
+    selectedSearchTypeOption.value = getSearchTypeOptions(nextDomainOption.value)[0];
+    clearSearchInputState();
+    clearSelectedUsers();
+    searchResultMessage.value = "";
+    reset();
+    emit("user-domain-change", nextDomainOption.value);
+};
+
+// 'hasPreDomainChangeListener' is to determine whether parent component listens to "pre-user-domain-change" event.
+const hasPreDomainChangeListener = computed(() => {
+    const vnodeProps = instance?.vnode.props ?? {};
+    return !!vnodeProps.onPreUserDomainChange;
+});
+
+// Note! If parent component does not listen to "pre-user-domain-change", domain change will be applied immediately
+// when user selects different domain option. Otherwise, it will wait for parent component's approval
+// before applying the change.
+const handleDomainSelection = (event: DropdownChangeEvent) => {
     const nextDomainOption = event.value as SelectOption<UserType>;
     if (!nextDomainOption || nextDomainOption.value === selectedDomainOption.value.value) {
         return;
     }
 
-    selectedDomainOption.value = nextDomainOption;
-    selectedSearchTypeOption.value = getSearchTypeOptions(nextDomainOption.value)[0];
-    clearSearchInputState();
-    searchResultMessage.value = "";
-    reset();
+    if (!hasPreDomainChangeListener.value) {
+        applyDomainChange(nextDomainOption);
+        return;
+    }
 
-    emit("user-domain-change", nextDomainOption.value);
+    emit("pre-user-domain-change", {
+        currentDomain: selectedDomainOption.value.value,
+        nextDomain: nextDomainOption.value,
+        selectedUsersCount: latestConfirmedSelections.value.length,
+        approveChange: () => applyDomainChange(nextDomainOption),
+        cancelChange: () => undefined,
+    });
 };
 
 const handleSearchTypeChange = (event: DropdownChangeEvent) => {
@@ -178,6 +225,7 @@ const handleSearchTypeChange = (event: DropdownChangeEvent) => {
     reset();
 };
 
+// For search input 'beforeinput' event, to prevent invalid characters from being entered in the first place.
 const handleBeforeModelUpdate = (event: InputEvent) => {
     if (!event.data) {
         return;
@@ -221,8 +269,24 @@ const handlePaste = (event: ClipboardEvent) => {
 };
 
 const syncSelectedUsers = (selectedDataRows: SelectedUser[]) => {
+    const currentUsername = (auth.authState.famLoginUser?.username || "").toLowerCase();
+
+    // self is filtered out if among selected users.
+    const usersExcludingCurrentUser = currentUsername
+        ? selectedDataRows.filter(
+              (user) => user.userId.toLowerCase() !== currentUsername
+          )
+        : selectedDataRows;
+
+    if (currentUsername && usersExcludingCurrentUser.length !== selectedDataRows.length) {
+        searchResultMessage.value = SELF_SELECTION_ERROR_MSG;
+    }
+
     if (props.multiUserMode) {
-        latestConfirmedSelections.value = [...latestConfirmedSelections.value, ...selectedDataRows].filter(
+        latestConfirmedSelections.value = [
+            ...latestConfirmedSelections.value,
+            ...usersExcludingCurrentUser,
+        ].filter(
             (user, index, self) => {
                 // Merging two arrays (latestConfirmedSelections and current selectedDataRows) and removing duplicates based on
                 // userId and sourceDomain. Only the first occurrence of each unique user will be kept, later duplicates will be removed.
@@ -239,7 +303,7 @@ const syncSelectedUsers = (selectedDataRows: SelectedUser[]) => {
     }
     else {
         // Single user mode: only keep the first
-        latestConfirmedSelections.value = selectedDataRows.slice(0, 1);
+        latestConfirmedSelections.value = usersExcludingCurrentUser.slice(0, 1);
     }
 
     emit("user-selection-update", latestConfirmedSelections.value);
@@ -290,7 +354,13 @@ watch(isSuccess, (success) => {
 // Watch for API errors from the composable
 watch(searchError, (err) => {
     if (err) {
-        searchResultMessage.value = err;
+        if (err.code === PERMISSION_REQUIRED_FOR_OPERATION) {
+            const orgName = auth.authState.famLoginUser?.organization || "Unknown organization";
+            searchResultMessage.value = `${err.description ?? err.message}. Org name: ${orgName}`;
+            return;
+        }
+
+        searchResultMessage.value = err.message;
     }
 });
 
@@ -321,7 +391,7 @@ const handleSearch = () => {
                 option-label="label"
                 :value="selectedDomainOption"
                 :options="domainOptions"
-                :on-change="handleDomainChange"
+                :on-change="handleDomainSelection"
                 :disabled="disabled || domainOptions.length === 1 || isPending"
             />
 

@@ -2,6 +2,7 @@ import { AppActlApiService } from "@/services/ApiServiceFactory";
 import type { SelectedUser } from "@/types/SelectUserType";
 import type { UserSearchParams } from "@/types/UserSearchTypes";
 import { useMutation } from "@tanstack/vue-query";
+import { isAxiosError } from "axios";
 import type {
     IdimProxyBceidInfoSchema,
     IdimProxyIdirUserSearchItemResSchema,
@@ -16,6 +17,13 @@ import { ref } from "vue";
  */
 
 const IDIR_SEARCH_PAGE_SIZE = 250;
+export const PERMISSION_REQUIRED_FOR_OPERATION = "permission_required_for_operation";
+
+export type UserSearchError = {
+    message: string;
+    code?: string;
+    description?: string;
+};
 
 function normalizeIdirItem(
     item: IdimProxyIdirUserSearchItemResSchema
@@ -48,7 +56,7 @@ function normalizeBceidItem(item: IdimProxyBceidInfoSchema): SelectedUser {
 }
 
 export function useUserSearchApiService() {
-    const searchError = ref<string | null>(null);
+    const searchError = ref<UserSearchError | null>(null);
 
     const searchMutation = useMutation({
         retry: 1,
@@ -85,8 +93,22 @@ export function useUserSearchApiService() {
         },
         onError: (error: unknown) => {
             console.error("User search failed:", error);
-            searchError.value =
-                "Search failed. Please try again or contact support if the issue persists.";
+            if (isAxiosError(error) && error.response?.status === 403) {
+                const detail = error.response.data?.detail;
+                if (detail?.code === PERMISSION_REQUIRED_FOR_OPERATION) {
+                    searchError.value = {
+                        message: detail.description,
+                        code: detail.code,
+                        description: detail.description,
+                    };
+                    return;
+                }
+            }
+
+            searchError.value = {
+                message:
+                    "Search failed. Please try again or contact support if the issue persists.",
+            };
         },
         onSuccess: () => {
             searchError.value = null;
