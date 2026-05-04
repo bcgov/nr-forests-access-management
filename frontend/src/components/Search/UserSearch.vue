@@ -79,11 +79,7 @@ const dialog = useDialog();
 const { searchUsers, isPending, searchResults, isSuccess, searchError, reset } =
     useUserSearchApiService();
 
-const selectedUsers = computed<readonly SelectedUser[]>(() =>
-    latestConfirmedSelections.value
-);
 
-const isMultiUserMode = computed(() => props.multiUserMode);
 
 const domainOptions = computed<SelectOption<UserType>[]>(() =>
     (props.availableDomains ?? []).map((domain) => ({
@@ -473,9 +469,9 @@ const handleSearch = () => {
         </div>
 
         <UserSearchSelectedTable
-            v-if="selectedUsers.length > 0"
-            :users="selectedUsers"
-            :multi-user-mode="isMultiUserMode"
+            v-if="latestConfirmedSelections.length > 0"
+            :users="latestConfirmedSelections"
+            :multi-user-mode="props.multiUserMode"
             @selected-user-deleted="handleDeleteSelectedUser"
         />
     </div>
