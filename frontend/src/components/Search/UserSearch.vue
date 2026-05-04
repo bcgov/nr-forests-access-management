@@ -15,6 +15,15 @@ import InputText from "primevue/inputtext";
 import { useDialog } from "primevue/usedialog";
 import { computed, getCurrentInstance, ref, watch } from "vue";
 
+/**
+ * This component is intended to be a reusable user search component for searching users from IDIR/BCeID
+ * and select them for further actions (e.g. granting permissions).
+ * It provides an interface for searching users by different criteria (e.g. username, first name, last name)
+ * and supports both single and multi user selection modes.
+ * The component manages the state of search input, search results, and selected users, and communicates with
+ *  parent component through emitted events to synchronize selected users and user domain changes.
+ * It also handles input validation, error states, and provides user feedback through messages and a results dialog.
+ */
 const searchText = ref(""); // user input search value.
 const searchTextError = ref(""); // error message for invalid search text
 const searchResultMessage = ref(""); // message to display search result error or no results happens.
