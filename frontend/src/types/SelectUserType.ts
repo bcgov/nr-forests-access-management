@@ -1,5 +1,6 @@
+import { UserType } from "fam-app-acsctl-api/model";
 // Searched user type for Granting user
-export interface SelectUser {
+export interface SelectedUser {
     userId: string;
     guid?: string | null;
     firstName?: string | null;
@@ -7,4 +8,6 @@ export interface SelectUser {
     email?: string | null;
     businessLegalName?: string | null;
     businessGuid?: string | null;
+    fullName?: string | null;
+    sourceDomain?: UserType;
 }

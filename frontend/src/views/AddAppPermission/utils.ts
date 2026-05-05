@@ -1,6 +1,6 @@
 import { IdpProvider } from "@/enum/IdpEnum";
 import type { TextInputType } from "@/types/InputTypes";
-import type { SelectUser } from "@/types/SelectUserType";
+import type { SelectedUser } from "@/types/SelectUserType";
 import {
     RoleType,
     type FamAccessControlPrivilegeCreateRequest,
@@ -27,7 +27,7 @@ export const MAX_USERS_GRANTING_ALLOWED = 50;
 
 export type AppPermissionFormType = {
     domain: UserType;
-    users: SelectUser[];
+    users: SelectedUser[];
     forestClients: FamForestClientSchema[];
     role: FamRoleGrantDto | null;
     sendUserEmail: boolean;
@@ -83,7 +83,7 @@ export const getDefaultFormData = (
 export const validateAppPermissionForm = () => {
     return object({
         users: array()
-            .of(mixed<SelectUser>().required("A valid user is required"))
+            .of(mixed<SelectedUser>().required("A valid user is required"))
             .max(MAX_USERS_GRANTING_ALLOWED, `User list exceeds ${MAX_USERS_GRANTING_ALLOWED} users allowed`)
             .when("isAddingDelegatedAdmin", {
                 is: false,

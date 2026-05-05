@@ -1,4 +1,4 @@
-import type { SelectUser } from "@/types/SelectUserType";
+import type { SelectedUser } from "@/types/SelectUserType";
 import type {
     FamAppAdminCreateRequest,
     FamApplicationGrantDto,
@@ -11,7 +11,7 @@ export const AddAppAdminErrorQueryKey = "app-admin-error";
 export const NewAppAdminQueryParamKey = "newAppAdminIds";
 
 export type AppAdminFormType = {
-    user: SelectUser | null;
+    user: SelectedUser | null;
     application: FamApplicationGrantDto | null;
 };
 
@@ -28,7 +28,7 @@ export const getDefaultFormData = (): AppAdminFormType =>
  */
 export const validateAppAdminForm = () => {
     return object({
-        user: mixed<SelectUser>().required("A valid user is required"),
+        user: mixed<SelectedUser>().required("A valid user is required"),
         application: mixed<FamApplicationGrantDto>().required(
             "Please select an application"
         ),

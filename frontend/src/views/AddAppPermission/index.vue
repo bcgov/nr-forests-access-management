@@ -1,18 +1,13 @@
 <script setup lang="ts">
 import RoleSelectTable from "@/components/AddPermissions/RoleSelectTable.vue";
-import UserDomainSelect from "@/components/AddPermissions/UserDomainSelect.vue";
-import UserNameInput from "@/components/AddPermissions/UserNameSection.vue";
 import DatePicker from "@/components/DatePicker.vue";
+import UserSearch from "@/components/Search/UserSearch.vue";
 import BoolCheckbox from "@/components/UI/BoolCheckbox.vue";
 import BreadCrumbs from "@/components/UI/BreadCrumbs.vue";
 import Button from "@/components/UI/Button.vue";
 import PageTitle from "@/components/UI/PageTitle.vue";
 import StepContainer from "@/components/UI/StepContainer.vue";
 import useAuth from "@/composables/useAuth";
-import {
-    ADD_PERMISSION_SELECT_USER_KEY,
-    useSelectUserManagement,
-} from "@/composables/useSelectUserManagement";
 import { ManagePermissionsRoute } from "@/router/routes";
 import {
     AdminMgmtApiService,
@@ -22,8 +17,10 @@ import { EnvironmentSettings } from "@/services/EnvironmentSettings";
 import { activeTabIndex } from "@/store/ApplicationState";
 import type { BreadCrumbType } from "@/types/BreadCrumbTypes";
 import type { AddAppPermissionRouteProps } from "@/types/RouteTypes";
+import type { SelectedUser } from "@/types/SelectUserType";
 import { isUserDelegatedAdminOnly } from "@/utils/AuthUtils";
 import { currentDateInBCTimezone } from "@/utils/DateUtils";
+import { scrollToRef } from "@/utils/WindowUtils";
 import {
     AddAppUserPermissionErrorQuerykey,
     AddAppUserPermissionSuccessQuerykey,
@@ -32,7 +29,6 @@ import {
     generatePayload,
     getDefaultFormData,
     getRolesByAppId,
-    getUserNameInputHelperText,
     NewDelegatedAddminQueryParamKey,
     NewRegularUserQueryParamKey,
     validateAppPermissionForm,
@@ -49,12 +45,13 @@ import {
 import ConfirmDialog from "primevue/confirmdialog";
 import { useConfirm } from "primevue/useconfirm";
 import { useForm } from "vee-validate";
-import { computed, provide, ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
 const auth = useAuth();
 const environments = new EnvironmentSettings();
+const userSearchRef = ref<HTMLElement | null>(null);
 
 const props = defineProps<AddAppPermissionRouteProps>();
 
@@ -65,7 +62,13 @@ if (!props.appId) {
 
 const hasSubmitted = ref(false);
 const userErrorMessage = computed(() => (hasSubmitted.value ? errors.value.users ?? "" : ""));
-
+// Determine available user domains based on the logged-in user's type (IDIR or BCeID).
+// IDIR users can grant both IDIR and BCeID users, while BCeID users can only grant BCeID users.
+const availableDomains = computed(() => {
+    return auth.authState.famLoginUser?.idpProvider === 'idir'
+        ? [UserType.I, UserType.B]
+        : [UserType.B];
+    });
 const crumbs: BreadCrumbType[] = [
     {
         label: "Manage permissions",
@@ -121,11 +124,7 @@ const {
     ),
 });
 
-// Select user  management
 // single-user select for delegated admin or multi-users select for regular users
-const selectUserManagement = useSelectUserManagement(true); // Initially multi-user mode
-provide(ADD_PERMISSION_SELECT_USER_KEY, selectUserManagement);
-
 watch(
     () => adminUserAccessQuery.isSuccess && rolesUnderSelectedApp.value,
     (isSuccessful) => {
@@ -142,44 +141,38 @@ watch(
     { immediate: true }
 );
 
-/**
- * Performs the actual domain change and clears user list.
- */
-const performDomainChange = (userType: UserType) => {
+const handleUserDomainChange = (userType: UserType) => {
     setFieldValue("domain", userType);
-    setFieldValue("users", []);
-    // Clear composable user lists on domain change
-    selectUserManagement.clearUsers();
 };
 
-/**
- * Handles domain change from UserDomainSelect.
- * Shows confirmation dialog if selected user list is not empty.
- */
-const handleDomainChange = (userType: UserType) => {
-    if (selectUserManagement.userList.value.length > 0) {
+const handlePreUserDomainChange = (payload: {
+    currentDomain: UserType;
+    nextDomain: UserType;
+    selectedUsersCount: number;
+    approveChange: () => void;
+    cancelChange: () => void;
+}) => {
+    if (payload.selectedUsersCount > 0) {
         confirm.require({
             group: "changeDomain",
             header: "Changing User Domain",
             rejectLabel: "Cancel",
             acceptLabel: "Continue",
             acceptClass: "dialog-accept-button",
-            accept: () => performDomainChange(userType),
+            accept: () => payload.approveChange(),
+            reject: () => payload.cancelChange(),
         });
     } else {
-        performDomainChange(userType);
+        // If no users have been selected yet, allow domain change without confirmation
+        payload.approveChange();
     }
 };
 
-watch(
-    () => selectUserManagement.userList.value,
-    (newUsers) => {
-        if (newUsers.length || meta.value.dirty) {
-            setFieldValue("users", Array.from(newUsers));
-        }
-    },
-    { deep: true }
-);
+const handleSearchUsersSelected = (selectedUsers: SelectedUser[]) => {
+    if (selectedUsers.length || meta.value.dirty) {
+        setFieldValue("users", selectedUsers);
+    }
+};
 
 const queryClient = useQueryClient();
 
@@ -264,11 +257,6 @@ const delegatedAdminMutation = useMutation({
 });
 
 const isSubmitting = ref<boolean>(false);
-const isVerifyingUser = ref<boolean>(false);
-const setIsVerifyingUser = (verifying: boolean) => {
-    isVerifyingUser.value = verifying;
-};
-
 const confirm = useConfirm();
 
 const onSubmit = () => {
@@ -300,6 +288,7 @@ const onSubmit = () => {
 
 const onInvalid = () => {
     hasSubmitted.value = true;
+    scrollToRef(userSearchRef);
 };
 
 </script>
@@ -313,7 +302,7 @@ const onInvalid = () => {
             <template #message>
                 <p>
                     Changing the domain will remove the user{{
-                        selectUserManagement.userList.value.length > 1 ? "s" : ""
+                        values.users.length > 1 ? "s" : ""
                     }} you've added. Are you sure you want to continue?
                 </p>
             </template>
@@ -344,22 +333,28 @@ const onInvalid = () => {
                 @submit.prevent="handleSubmit(onSubmit, onInvalid)()"
             >
                     <StepContainer title="User information" divider>
-                        <UserDomainSelect
-                            class="domain-select"
-                            v-if="auth.authState.famLoginUser?.idpProvider === 'idir'"
-                            :domain="values.domain"
-                            :is-verifying-user="isVerifyingUser"
-                            @domain-change-request="handleDomainChange"
-                        />
-                        <UserNameInput
-                            class="user-name-text-input"
-                            :domain="values.domain"
-                            :app-id="appId"
-                            :helper-text="getUserNameInputHelperText(values.domain)"
-                            :set-is-verifying="setIsVerifyingUser"
-                            :injection-key="ADD_PERMISSION_SELECT_USER_KEY"
-                            :form-validate-error-msg="userErrorMessage"
-                        />
+                        <div ref="userSearchRef">
+                            <UserSearch
+                                :app-id="appId"
+                                :multi-user-mode="true"
+                                :available-domains="availableDomains"
+                                :helper-text="
+                                    values.domain === UserType.I
+                                        ? 'Search IDIR users by username, first name, or last name.'
+                                        : 'Search BCeID users by username.'
+                                "
+                                search-button-label="Search"
+                                @pre-user-domain-change="handlePreUserDomainChange"
+                                @user-domain-change="handleUserDomainChange"
+                                @user-selection-update="handleSearchUsersSelected"
+                            >
+                                <template #formError>
+                                    <span v-if="userErrorMessage" class="invalid-feedback">
+                                        {{ userErrorMessage }}
+                                    </span>
+                                </template>
+                            </UserSearch>
+                        </div>
                     </StepContainer>
                     <StepContainer
                         title="User roles"
@@ -440,18 +435,14 @@ const onInvalid = () => {
 .add-app-permission-container {
     padding-bottom: 2.5rem;
 
-    .user-name-text-input {
-        margin-top: 2rem;
-    }
-
     .app-permission-form-container {
         margin-top: 3rem;
 
         padding: 0;
     }
 
-    .domain-select {
-        margin-top: 2.5rem;
+    .invalid-feedback {
+        display: block;
     }
 
     .email-checkbox {
