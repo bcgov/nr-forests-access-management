@@ -79,8 +79,6 @@ const dialog = useDialog();
 const { searchUsers, isPending, searchResults, isSuccess, searchError, reset } =
     useUserSearchApiService();
 
-
-
 const domainOptions = computed<SelectOption<UserType>[]>(() =>
     (props.availableDomains ?? []).map((domain) => ({
         label: domain === UserType.I ? "IDIR" : "BCeID",
@@ -189,13 +187,14 @@ const applyDomainChange = (nextDomainOption: SelectOption<UserType>) => {
     clearSearchInputState();
     clearSelectedUsers();
     searchResultMessage.value = "";
-    reset();
+    reset(); // reset API service state (e.g. clear previous search results and errors)
     emit("user-domain-change", nextDomainOption.value);
 };
 
 // 'hasPreDomainChangeListener' is to determine whether parent component listens to "pre-user-domain-change" event.
 const hasPreDomainChangeListener = computed(() => {
     const vnodeProps = instance?.vnode.props ?? {};
+    // Example parent listens to event: <UserSearch ... @pre-user-domain-change="handlePreDomainChange" />.
     return !!vnodeProps.onPreUserDomainChange;
 });
 
@@ -232,7 +231,6 @@ const handleSearchTypeChange = (event: DropdownChangeEvent) => {
     const isErrorStateOnly = true;
     clearSearchInputState(isErrorStateOnly);
     searchResultMessage.value = "";
-    reset();
 };
 
 // For search input 'beforeinput' event, to prevent invalid characters from being entered in the first place.
@@ -278,6 +276,8 @@ const handlePaste = (event: ClipboardEvent) => {
     }
 };
 
+// This is to sync selected users from search result dialog to the main state (latestConfirmedSelections).
+// Then will notify parent component the updated selected users through "user-selection-update" event.
 const syncSelectedUsers = (selectedDataRows: SelectedUser[]) => {
     const currentUsername = (auth.authState.famLoginUser?.username || "").toLowerCase();
 
@@ -324,7 +324,7 @@ const handleDeleteSelectedUser = (userId: string) => {
         (user) => user.userId.toLowerCase() !== userId.toLowerCase()
     );
 
-    emit("user-selection-update", latestConfirmedSelections.value)
+    emit("user-selection-update", latestConfirmedSelections.value);
 };
 
 const openResultsDialog = (dataRows: SelectedUser[]) => {
