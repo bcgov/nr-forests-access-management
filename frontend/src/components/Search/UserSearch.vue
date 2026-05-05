@@ -380,6 +380,15 @@ const handleSearch = () => {
         return;
     }
 
+    // Prevent searching for self when search type is 'username' - cannot grant permission to self.
+    if (
+        isUsernameSearch.value &&
+        searchText.value.trim().toLowerCase() === (auth.authState.famLoginUser?.username || '').toLowerCase()
+    ) {
+        searchTextError.value = SELF_SELECTION_ERROR_MSG;
+        return;
+    }
+
     searchResultMessage.value = "";
 
     searchUsers({
