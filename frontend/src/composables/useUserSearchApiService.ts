@@ -16,7 +16,7 @@ import { ref } from "vue";
  * with tanstack/vue-query useMutation.
  */
 
-const IDIR_SEARCH_PAGE_SIZE = 250;
+const IDIR_SEARCH_PAGE_SIZE = 500;
 export const PERMISSION_REQUIRED_FOR_OPERATION = "permission_required_for_operation";
 
 export type UserSearchError = {
