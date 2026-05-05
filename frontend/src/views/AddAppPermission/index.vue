@@ -62,7 +62,13 @@ if (!props.appId) {
 
 const hasSubmitted = ref(false);
 const userErrorMessage = computed(() => (hasSubmitted.value ? errors.value.users ?? "" : ""));
-
+// Determine available user domains based on the logged-in user's type (IDIR or BCeID).
+// IDIR users can grant both IDIR and BCeID users, while BCeID users can only grant BCeID users.
+const availableDomains = computed(() => {
+    return auth.authState.famLoginUser?.idpProvider === 'idir'
+        ? [UserType.I, UserType.B]
+        : [UserType.B];
+    });
 const crumbs: BreadCrumbType[] = [
     {
         label: "Manage permissions",
@@ -331,11 +337,7 @@ const onInvalid = () => {
                             <UserSearch
                                 :app-id="appId"
                                 :multi-user-mode="true"
-                                :available-domains="
-                                    auth.authState.famLoginUser?.idpProvider === 'idir'
-                                        ? [UserType.I, UserType.B]
-                                        : [UserType.B]
-                                "
+                                :available-domains="availableDomains"
                                 :helper-text="
                                     values.domain === UserType.I
                                         ? 'Search IDIR users by username, first name, or last name.'
