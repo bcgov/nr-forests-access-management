@@ -16,7 +16,6 @@ generate "tools_tfvars" {
   fam_user_pool_name = "lza-tools-fam-user-pool-bcsc"
   fam_user_pool_domain_name = "lza-tools-fam-user-pool-domain"
   oidc_idir_idp_client_id = "fsa-cognito-idir-dev-4088"
-  oidc_idir_idp_issuer = "https://dev.loginproxy.gov.bc.ca/auth/realms/standard"
   oidc_bceid_business_idp_client_id = "fsa-cognito-b-ce-id-business-dev-4090"
   subnet_data_a = "Tools-Data-A"
   subnet_data_b = "Tools-Data-B"
