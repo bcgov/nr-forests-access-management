@@ -40,7 +40,7 @@ jobs:
               uses: actions/checkout@v5
 
             - name: HashiCorp - Setup Terraform
-              uses: hashicorp/setup-terraform@v3.1.2
+              uses: hashicorp/setup-terraform@v4
               with:
                 terraform_version: ${{ env.TF_VERSION }}
 
@@ -53,7 +53,7 @@ jobs:
                   rsync -r dist/* ../lza-infrastructure/terraform/frontend/dist
 
             - name: Configure AWS Credentials
-              uses: aws-actions/configure-aws-credentials@v4
+              uses: aws-actions/configure-aws-credentials@v6
               with:
                   role-to-assume: ${{ env.AWS_OIDC_GHA_ROLE }}
                   role-session-name: frontend-${{ inputs.environment_name }}-deployment
