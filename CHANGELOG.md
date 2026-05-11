@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.14.0](https://github.com/bcgov/nr-forests-access-management/compare/v2.13.0...v2.14.0) (2026-05-05)
+
+
+### Features
+
+* [#2155](https://github.com/bcgov/nr-forests-access-management/issues/2155) User names search frontend enhancement ([#2168](https://github.com/bcgov/nr-forests-access-management/issues/2168)) ([6d860c3](https://github.com/bcgov/nr-forests-access-management/commit/6d860c3a656794ec6d823a9dbb725d0c0e6fc6c6))
+
 ## [2.13.0](https://github.com/bcgov/nr-forests-access-management/compare/v2.12.0...v2.13.0) (2026-04-29)
 
 
