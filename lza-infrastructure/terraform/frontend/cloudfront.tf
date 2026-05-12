@@ -249,7 +249,7 @@ locals {
   ])
 }
 
-resource "aws_s3_bucket_object" "site_files" {
+resource "aws_s3_object" "site_files" {
   # for_each = fileset(local.src_dir, "**")
   for_each = local.files
 

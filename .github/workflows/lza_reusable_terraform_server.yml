@@ -68,10 +68,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Python 3.12
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 
@@ -86,7 +86,7 @@ jobs:
           rm -rf auth_function_packaging
 
       - name: Auth function upload zip file artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: fam-auth-function
           path: ./lza-infrastructure/terraform/server/fam_auth_function.zip
@@ -109,7 +109,7 @@ jobs:
           cd ..
 
       - name: Upload zip file artifact - FAM API
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: fam-ui-api
           path: ./lza-infrastructure/terraform/server/fam-ui-api.zip
@@ -132,7 +132,7 @@ jobs:
           cd ..
 
       - name: Upload zip file artifact - FAM Admin Management API
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: fam-admin-management-api
           path: ./lza-infrastructure/terraform/server/fam-admin-management-api.zip
@@ -144,7 +144,7 @@ jobs:
           rsync -r server/flyway/sql/* lza-infrastructure/terraform/server/sql
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: ${{ env.AWS_OIDC_GHA_ROLE }}
           role-session-name: server-${{ inputs.environment_name }}-deployment
@@ -189,7 +189,7 @@ jobs:
           EOF
 
       - name: HashiCorp - Setup Terraform
-        uses: hashicorp/setup-terraform@v3.1.2
+        uses: hashicorp/setup-terraform@v4
         with:
           terraform_version: ${{ env.TF_VERSION }}
 
