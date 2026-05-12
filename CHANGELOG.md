@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.14.1](https://github.com/bcgov/nr-forests-access-management/compare/v2.14.0...v2.14.1) (2026-05-12)
+
+
+### Bug Fixes
+
+* [#1949](https://github.com/bcgov/nr-forests-access-management/issues/1949) Resolve Terraform Warnings ([#2171](https://github.com/bcgov/nr-forests-access-management/issues/2171)) ([df63b44](https://github.com/bcgov/nr-forests-access-management/commit/df63b44a3138448cdf42be1c5872a5ee09e4ade2))
+
 ## [2.14.0](https://github.com/bcgov/nr-forests-access-management/compare/v2.13.0...v2.14.0) (2026-05-05)
 
 
