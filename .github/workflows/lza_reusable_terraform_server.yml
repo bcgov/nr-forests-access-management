@@ -52,8 +52,9 @@ on:
         required: true
 
 env:
-  TF_VERSION: 1.12.2
-  TG_VERSION: 0.37.1
+  TF_VERSION: 1.15.2
+  TG_VERSION: 0.78.0
+  # TG_VERSION: 0.37.1
   TG_SRC_PATH: lza-infrastructure/landing-zone/server
   AWS_REGION: ca-central-1
 
