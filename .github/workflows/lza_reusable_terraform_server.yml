@@ -202,7 +202,7 @@ jobs:
           target_env: ${{ inputs.environment_name }}
         run: |
           # Run terraform
-          terragrunt run --all --non-interactive -- ${{ inputs.tf_subcommand }} -auto-approve
+          terragrunt run --all --non-interactive -- ${{ inputs.tf_subcommand }}
 
       - id: smoke_test
         name: Smoke Test
