@@ -70,6 +70,8 @@ jobs:
                   aws-region: ${{ env.AWS_REGION }}
                   aws-role-to-assume: ${{ env.AWS_OIDC_GHA_ROLE }}
                   skip-caches: "false"
+              commands: |
+                terragrunt run --all -- init
 
             - id: terragrunt-server-output
               name: Terragrunt Server Output
