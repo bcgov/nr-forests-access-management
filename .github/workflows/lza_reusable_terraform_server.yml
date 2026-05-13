@@ -91,6 +91,7 @@ jobs:
           name: fam-auth-function
           path: ./lza-infrastructure/terraform/server/fam_auth_function.zip
           if-no-files-found: error
+          overwrite: true
 
       - name: Install and Package Dependencies - FAM API
         run: |
