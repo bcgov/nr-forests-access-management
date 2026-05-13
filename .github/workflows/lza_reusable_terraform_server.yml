@@ -54,7 +54,6 @@ on:
 env:
   TF_VERSION: 1.15.2
   TG_VERSION: 1.0.4
-  # TG_VERSION: 0.37.1 to 0.78.0
   TG_SRC_PATH: lza-infrastructure/landing-zone/server
   AWS_REGION: ca-central-1
 
@@ -202,7 +201,6 @@ jobs:
         run: |
           # Run terraform
           terragrunt run --all --non-interactive -- ${{ inputs.tf_subcommand }} -auto-approve
-          # terragrunt run-all ${{ inputs.tf_subcommand }} --terragrunt-non-interactive
 
       - id: smoke_test
         name: Smoke Test
@@ -215,7 +213,6 @@ jobs:
             echo "Waiting for 25 seconds before running the smoke test..."
             sleep 25
 
-          # This is replaced: fam_api_base_url=`terragrunt run-all output fam_api_base_url --terragrunt-non-interactive | sed 's/^"//' | sed 's/"$//'`
           # Run smoke test
             if [[ "apply" == "${{ inputs.tf_subcommand }}" ]]
             then
