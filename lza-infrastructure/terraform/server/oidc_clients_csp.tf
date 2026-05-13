@@ -12,7 +12,6 @@ resource "aws_cognito_user_pool_client" "dev_csp_oidc_client" {
   logout_urls                                   = [
     var.oidc_sso_playground_url,
     "${var.cognito_app_client_logout_chain_url.dev}http://localhost:3000/logout",
-    "${var.cognito_app_client_logout_chain_url.dev}https://dlvrapps.nrs.gov.bc.ca/int/csp/logout",
     "${var.cognito_app_client_logout_chain_url.dev}https://dlvrapps.nrs.gov.bc.ca/pub/csp/logout"
   ]
   enable_propagate_additional_user_context_data = "false"
@@ -28,9 +27,9 @@ resource "aws_cognito_user_pool_client" "dev_csp_oidc_client" {
   ]
 
   token_validity_units {
-    access_token  = "minutes"
-    id_token      = "minutes"
-    refresh_token = "hours"
+    access_token: 5 minutes
+    id_token: 5 minutes
+    refresh_token: 60 minutes
   }
 
   user_pool_id     = aws_cognito_user_pool.fam_user_pool.id
@@ -49,7 +48,6 @@ resource "aws_cognito_user_pool_client" "test_csp_oidc_client" {
   ]
   logout_urls                                   = [
     var.oidc_sso_playground_url,
-    "${var.cognito_app_client_logout_chain_url.test}https://testapps.nrs.gov.bc.ca/int/csp/logout",
     "${var.cognito_app_client_logout_chain_url.test}https://testapps.nrs.gov.bc.ca/pub/csp/logout"
   ]
   enable_propagate_additional_user_context_data = "false"
@@ -86,7 +84,6 @@ resource "aws_cognito_user_pool_client" "prod_csp_oidc_client" {
   ]
   logout_urls                                   = [
     var.oidc_sso_playground_url,
-    "${var.cognito_app_client_logout_chain_url.prod}https://apps.nrs.gov.bc.ca/int/csp/logout",
     "${var.cognito_app_client_logout_chain_url.prod}https://apps.nrs.gov.bc.ca/pub/csp/logout"
   ]
   enable_propagate_additional_user_context_data = "false"
