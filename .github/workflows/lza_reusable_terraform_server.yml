@@ -201,7 +201,7 @@ jobs:
           target_env: ${{ inputs.environment_name }}
         run: |
           # Run terraform
-          terragrunt run --all -- ${{ inputs.tf_subcommand }} --non-interactive
+          terragrunt run --all --non-interactive -- ${{ inputs.tf_subcommand }} -auto-approve
           # terragrunt run-all ${{ inputs.tf_subcommand }} --terragrunt-non-interactive
 
       - id: smoke_test
@@ -219,7 +219,7 @@ jobs:
           # Run smoke test
             if [[ "apply" == "${{ inputs.tf_subcommand }}" ]]
             then
-              fam_api_base_url=`terragrunt run --all --log-level error -- output -raw fam_api_base_url --non-interactive`
+              fam_api_base_url=`terragrunt run --all --non-interactive --log-level error -- output -raw fam_api_base_url -auto-approve`
               smoke_test_url="$fam_api_base_url/smoke_test"
               echo "Smoke test URL: [$smoke_test_url]"
 

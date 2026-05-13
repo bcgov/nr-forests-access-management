@@ -97,5 +97,5 @@ jobs:
                   licenceplate: ${{ secrets.licenceplate }}
                   target_env: ${{ inputs.environment_name }}
               run: |
-                  terragrunt run --all -- ${{ inputs.tf_subcommand }} --non-interactive
+                  terragrunt run --all --non-interactive -- ${{ inputs.tf_subcommand }} -auto-approve
                 #   terragrunt run-all ${{ inputs.tf_subcommand }} --terragrunt-non-interactive
