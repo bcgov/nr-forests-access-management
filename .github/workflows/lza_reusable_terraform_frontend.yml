@@ -60,9 +60,16 @@ jobs:
                   aws-region: ${{ env.AWS_REGION }}
 
             - name: Setup Terragrunt
-              uses: autero1/action-terragrunt@v3.0.2
+              uses: datadrivers/terragrunt-action@v4.3.1
+              env:
+                  TENV_GITHUB_TOKEN: ${{ github.token }}
               with:
+                  terraform-version: ${{ env.TF_VERSION }}
                   terragrunt-version: ${{ env.TG_VERSION }}
+                  use-aws-auth: "true"
+                  aws-region: ${{ env.AWS_REGION }}
+                  aws-role-to-assume: ${{ env.AWS_OIDC_GHA_ROLE }}
+                  skip-caches: "false"
 
             - id: terragrunt-server-output
               name: Terragrunt Server Output
