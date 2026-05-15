@@ -44,7 +44,7 @@ jobs:
           - 5432:5432
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v5
       - name: Flyway
         uses: docker://flyway/flyway:10
         env:

@@ -1,5 +1,5 @@
 include {
-  path = find_in_parent_folders("root.hcl")
+  path = find_in_parent_folders()
 }
 
 generate "test_tfvars" {
