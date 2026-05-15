@@ -37,7 +37,7 @@ jobs:
 
         steps:
             - name: Checkout
-              uses: actions/checkout@v5
+              uses: actions/checkout@v6
 
             - name: HashiCorp - Setup Terraform
               uses: hashicorp/setup-terraform@v4
@@ -73,8 +73,6 @@ jobs:
               run: |
                   # Run terraform
                   cat > github.auto.tfvars <<EOF
-                  oidc_idir_idp_client_secret = "NA"
-                  oidc_bceid_business_idp_client_secret = "NA"
                   db_cluster_snapshot_identifier = "NA"
                   execute_flyway = false
                   EOF
