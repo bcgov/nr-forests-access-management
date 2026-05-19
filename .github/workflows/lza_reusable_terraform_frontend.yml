@@ -20,8 +20,8 @@ on:
                 required: true
 
 env:
-    TF_VERSION: 1.12.2
-    TG_VERSION: 0.37.1
+    TF_VERSION: 1.15.2
+    TG_VERSION: 1.0.4
     TG_SRC_PATH: lza-infrastructure/landing-zone/frontend
     TG_SERVER_SRC_PATH: lza-infrastructure/landing-zone/server
     AWS_REGION: ca-central-1
@@ -39,11 +39,6 @@ jobs:
             - name: Checkout
               uses: actions/checkout@v6
 
-            - name: HashiCorp - Setup Terraform
-              uses: hashicorp/setup-terraform@v4
-              with:
-                terraform_version: ${{ env.TF_VERSION }}
-
             - name: Build Frontend
               working-directory: frontend
               run: |
@@ -60,9 +55,16 @@ jobs:
                   aws-region: ${{ env.AWS_REGION }}
 
             - name: Setup Terragrunt
-              uses: autero1/action-terragrunt@v3.0.2
+              uses: datadrivers/terragrunt-action@v4.3.1
+              env:
+                  TENV_GITHUB_TOKEN: ${{ github.token }}
               with:
+                  terraform-version: ${{ env.TF_VERSION }}
                   terragrunt-version: ${{ env.TG_VERSION }}
+                  use-aws-auth: "true"
+                  aws-region: ${{ env.AWS_REGION }}
+                  aws-role-to-assume: ${{ env.AWS_OIDC_GHA_ROLE }}
+                  skip-caches: "false"
 
             - id: terragrunt-server-output
               name: Terragrunt Server Output
@@ -76,7 +78,8 @@ jobs:
                   db_cluster_snapshot_identifier = "NA"
                   execute_flyway = false
                   EOF
-                  terragrunt run-all output -json > ../../../../lza-infrastructure/terraform/frontend/dist/env.json
+                  terragrunt run --all -- init
+                  terragrunt run --all -- output -json > ../../../../lza-infrastructure/terraform/frontend/dist/env.json
 
             - id: terragrunt-server-output-test
               working-directory: lza-infrastructure/terraform/frontend/dist
@@ -93,4 +96,4 @@ jobs:
                   licenceplate: ${{ secrets.licenceplate }}
                   target_env: ${{ inputs.environment_name }}
               run: |
-                  terragrunt run-all ${{ inputs.tf_subcommand }} --terragrunt-non-interactive
+                  terragrunt run --all --non-interactive -- ${{ inputs.tf_subcommand }}
