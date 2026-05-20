@@ -3,9 +3,9 @@ from typing import List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 from ...constants import (
+    EXT_ROLE_DISPLAY_NAME_MAX_LEN,
     USER_NAME_MAX_LEN,
     ROLE_NAME_MAX_LEN,
-    ROLE_DISPLAY_NAME_MAX_LEN,
     CLIENT_NUMBER_MAX_LEN,
 )
 
@@ -22,7 +22,7 @@ class ExtUserRoleMetadataRoleSchema(BaseModel):
     display_name: Optional[str] = Field(
         default=None,
         description="Human-readable display name for the role",
-        max_length=ROLE_DISPLAY_NAME_MAX_LEN,
+        max_length=EXT_ROLE_DISPLAY_NAME_MAX_LEN,
     )
     expiry_date: Optional[datetime] = Field(
         default=None,
