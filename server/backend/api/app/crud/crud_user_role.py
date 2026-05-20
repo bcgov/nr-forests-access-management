@@ -26,7 +26,8 @@ from api.app.schemas.forest_client_integration import \
     ForestClientIntegrationSearchParmsSchema
 from api.app.schemas.requester import RequesterSchema
 from api.app.crud.validator.user_role_assignment_validator import validate_request_type
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, aliased
+from sqlalchemy import or_
 from api.app.utils.utils import raise_http_exception
 
 LOGGER = logging.getLogger(__name__)
@@ -433,3 +434,43 @@ def _group_assignments_by_user(user_role_assignments, fam_user, new_user_role_as
             "assignments": []
         }
     user_role_assignments[fam_user.user_id]["assignments"].append(new_user_role_assignment_res)
+
+
+def get_user_roles_by_cognito_id_and_app_id(
+    db: Session, cognito_user_id: str, application_id: int
+) -> List[models.FamUserRoleXref]:
+    """
+    Retrieve all role assignments for a user scoped to an application.
+
+    This function returns all roles assigned to a user (identified by cognito_user_id)
+    within the context of a specific application.
+
+    :param db: SQLAlchemy session
+    :param cognito_user_id: The Cognito user ID (maps to username field in JWT Access Token)
+    :param application_id: The application ID to scope the role assignments
+    :return: List of FamUserRoleXref objects with eager-loaded role and forest_client_relation.
+             Returns empty list if user not found or has no role assignments.
+    """
+    LOGGER.debug(
+        f"Querying user roles for cognito_user_id: {cognito_user_id}, "
+        f"application_id: {application_id}"
+    )
+
+    # Query user role assignments with joins for user and role
+    query = (
+        db.query(models.FamUserRoleXref)
+        .join(models.FamUser, models.FamUserRoleXref.user_id == models.FamUser.user_id)
+        .join(models.FamRole, models.FamUserRoleXref.role_id == models.FamRole.role_id)
+        .filter(models.FamUser.cognito_user_id == cognito_user_id)
+        .filter(models.FamRole.application_id == application_id)
+    )
+
+    user_role_xrefs = query.all()
+
+    LOGGER.debug(
+        f"Found {len(user_role_xrefs)} role assignments for user {cognito_user_id} "
+        f"in application {application_id}"
+    )
+
+    return user_role_xrefs
+
