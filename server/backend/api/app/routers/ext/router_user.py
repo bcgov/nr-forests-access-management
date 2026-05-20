@@ -30,6 +30,8 @@ from api.app.utils import utils
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
+from api.app.routers.router_utils import map_user_type_to_idp_type
+
 LOGGER = logging.getLogger(__name__)
 router = APIRouter()
 
@@ -164,5 +166,6 @@ def get_current_user_role_metadata(
 
     return ExtUserRoleMetadataResponseSchema(
         user_name=requester.user_name,
+        domain=map_user_type_to_idp_type(requester.user_type_code),
         roles=roles,
     )

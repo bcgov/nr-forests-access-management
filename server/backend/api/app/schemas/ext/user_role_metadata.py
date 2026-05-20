@@ -3,6 +3,7 @@ from typing import List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 from ...constants import (
+    IDPType,
     EXT_ROLE_DISPLAY_NAME_MAX_LEN,
     USER_NAME_MAX_LEN,
     ROLE_NAME_MAX_LEN,
@@ -45,6 +46,9 @@ class ExtUserRoleMetadataResponseSchema(BaseModel):
     user_name: str = Field(
         description="The authenticated user's username (e.g., 'JSMITH')",
         max_length=USER_NAME_MAX_LEN,
+    )
+    domain: IDPType = Field(
+        description="Identity provider domain for the authenticated user.",
     )
     roles: List[ExtUserRoleMetadataRoleSchema] = Field(
         default_factory=list,
