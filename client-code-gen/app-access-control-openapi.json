@@ -1294,6 +1294,33 @@
           }
         }
       }
+    },
+    "/external/v1/users/me/role-metadata": {
+      "get": {
+        "tags": [
+          "FAM External API"
+        ],
+        "summary": "Get current user role metadata",
+        "description": "Get role metadata for the authenticated user within the application context.",
+        "operationId": "get_current_user_role_metadata",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExtUserRoleMetadataResponseSchema"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "7qtdtska897dt6kandveusvd88": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -1475,6 +1502,90 @@
         "type": "object",
         "title": "ExtRoleWithScopeSchema",
         "description": "External API response schema.\nFor returning user search results: role detail info."
+      },
+      "ExtUserRoleMetadataResponseSchema": {
+        "properties": {
+          "user_name": {
+            "type": "string",
+            "maxLength": 20,
+            "title": "User Name",
+            "description": "The authenticated user's username (e.g., 'JSMITH')"
+          },
+          "domain": {
+            "$ref": "#/components/schemas/IDPType",
+            "description": "Identity provider domain for the authenticated user."
+          },
+          "roles": {
+            "items": {
+              "$ref": "#/components/schemas/ExtUserRoleMetadataRoleSchema"
+            },
+            "type": "array",
+            "title": "Roles",
+            "description": "List of roles assigned to the user in the application context. Empty list if no roles."
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_name",
+          "domain"
+        ],
+        "title": "ExtUserRoleMetadataResponseSchema",
+        "description": "Response schema for /me/role-metadata endpoint.\nReturns the current JWT user's roles and their expiry metadata scoped to the requesting application."
+      },
+      "ExtUserRoleMetadataRoleSchema": {
+        "properties": {
+          "role_name": {
+            "type": "string",
+            "maxLength": 100,
+            "title": "Role Name",
+            "description": "The role name code (e.g., 'FOM_REVIEWER', 'SILVA_ADMIN')"
+          },
+          "display_name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Display Name",
+            "description": "Human-readable display name for the role"
+          },
+          "expiry_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expiry Date",
+            "description": "UTC-aware ISO 8601 timestamp when the role assignment expires. NULL means no expiry."
+          },
+          "forest_client_number": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 8
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Forest Client Number",
+            "description": "Forest client number (e.g., '00001011') when the role is scoped to a forest client. NULL otherwise."
+          }
+        },
+        "type": "object",
+        "required": [
+          "role_name"
+        ],
+        "title": "ExtUserRoleMetadataRoleSchema",
+        "description": "Schema for a single role in the user role metadata response.\nRepresents a role assigned to a user with its expiry date and optional forest client association."
       },
       "ExtUserSearchPagedResultsSchema_ExtApplicationUserSearchGetSchema_": {
         "properties": {
