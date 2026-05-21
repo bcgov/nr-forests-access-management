@@ -154,7 +154,7 @@ def get_current_user_role_metadata(
         ExtUserRoleMetadataRoleSchema(
             role_name=assignment.role.role_name,
             display_name=assignment.role.display_name,
-            expiry_date=assignment.expiry_date,
+            expiry_date=assignment.expiry_date.replace(microsecond=0) if assignment.expiry_date else None,
             forest_client_number=(
                 assignment.role.forest_client_relation.forest_client_number
                 if assignment.role.forest_client_relation
