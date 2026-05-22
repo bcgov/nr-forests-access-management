@@ -1505,10 +1505,10 @@
       },
       "ExtUserRoleMetadataResponseSchema": {
         "properties": {
-          "user_name": {
+          "userName": {
             "type": "string",
             "maxLength": 20,
-            "title": "User Name",
+            "title": "Username",
             "description": "The authenticated user's username (e.g., 'JSMITH')"
           },
           "domain": {
@@ -1526,7 +1526,7 @@
         },
         "type": "object",
         "required": [
-          "user_name",
+          "userName",
           "domain"
         ],
         "title": "ExtUserRoleMetadataResponseSchema",
@@ -1534,13 +1534,13 @@
       },
       "ExtUserRoleMetadataRoleSchema": {
         "properties": {
-          "role_name": {
+          "roleName": {
             "type": "string",
             "maxLength": 100,
-            "title": "Role Name",
+            "title": "Rolename",
             "description": "The role name code (e.g., 'FOM_REVIEWER', 'SILVA_ADMIN')"
           },
-          "display_name": {
+          "displayName": {
             "anyOf": [
               {
                 "type": "string",
@@ -1550,10 +1550,10 @@
                 "type": "null"
               }
             ],
-            "title": "Display Name",
+            "title": "Displayname",
             "description": "Human-readable display name for the role"
           },
-          "expiry_date": {
+          "expiryDate": {
             "anyOf": [
               {
                 "type": "string",
@@ -1563,10 +1563,10 @@
                 "type": "null"
               }
             ],
-            "title": "Expiry Date",
+            "title": "Expirydate",
             "description": "UTC-aware ISO 8601 timestamp when the role assignment expires. NULL means no expiry."
           },
-          "forest_client_number": {
+          "forestClientNumber": {
             "anyOf": [
               {
                 "type": "string",
@@ -1576,13 +1576,13 @@
                 "type": "null"
               }
             ],
-            "title": "Forest Client Number",
+            "title": "Forestclientnumber",
             "description": "Forest client number (e.g., '00001011') when the role is scoped to a forest client. NULL otherwise."
           }
         },
         "type": "object",
         "required": [
-          "role_name"
+          "roleName"
         ],
         "title": "ExtUserRoleMetadataRoleSchema",
         "description": "Schema for a single role in the user role metadata response.\nRepresents a role assigned to a user with its expiry date and optional forest client association."

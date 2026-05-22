@@ -31,7 +31,7 @@ export interface ExtUserRoleMetadataResponseSchema {
      * @type {string}
      * @memberof ExtUserRoleMetadataResponseSchema
      */
-    'user_name': string;
+    'userName': string;
     /**
      * 
      * @type {IDPType}

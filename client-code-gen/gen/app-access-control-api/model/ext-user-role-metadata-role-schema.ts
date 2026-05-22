@@ -25,24 +25,24 @@ export interface ExtUserRoleMetadataRoleSchema {
      * @type {string}
      * @memberof ExtUserRoleMetadataRoleSchema
      */
-    'role_name': string;
+    'roleName': string;
     /**
      * 
      * @type {string}
      * @memberof ExtUserRoleMetadataRoleSchema
      */
-    'display_name'?: string | null;
+    'displayName'?: string | null;
     /**
      * 
      * @type {string}
      * @memberof ExtUserRoleMetadataRoleSchema
      */
-    'expiry_date'?: string | null;
+    'expiryDate'?: string | null;
     /**
      * 
      * @type {string}
      * @memberof ExtUserRoleMetadataRoleSchema
      */
-    'forest_client_number'?: string | null;
+    'forestClientNumber'?: string | null;
 }
 
