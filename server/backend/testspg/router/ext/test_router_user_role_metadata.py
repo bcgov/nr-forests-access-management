@@ -129,7 +129,7 @@ def test_user_role_metadata_empty_roles(
 
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == {
-        "user_name": "TEST_EMPTY",
+        "userName": "TEST_EMPTY",
         "domain": "IDIR",
         "roles": [],
     }
@@ -194,25 +194,25 @@ def test_user_role_metadata_roles_with_expiry_and_forest_client(
     assert response.status_code == status.HTTP_200_OK
     body = response.json()
 
-    assert body["user_name"] == "TEST_ROLE_USER"
+    assert body["userName"] == "TEST_ROLE_USER"
     assert body["domain"] == "BCEID"
     assert len(body["roles"]) == 3
 
     assert body["roles"][0] == {
-        "role_name": submitter_assignment.role.role_name,
-        "display_name": submitter_assignment.role.display_name,
-        "expiry_date": submitter_assignment.expiry_date.replace(microsecond=0).isoformat().replace("+00:00", "Z") if submitter_assignment.expiry_date else None,
-        "forest_client_number": submitter_assignment.role.forest_client_relation.forest_client_number if submitter_assignment.role.forest_client_relation else None,
+        "roleName": submitter_assignment.role.role_name,
+        "displayName": submitter_assignment.role.display_name,
+        "expiryDate": submitter_assignment.expiry_date.replace(microsecond=0).isoformat().replace("+00:00", "Z") if submitter_assignment.expiry_date else None,
+        "forestClientNumber": submitter_assignment.role.forest_client_relation.forest_client_number if submitter_assignment.role.forest_client_relation else None,
     }
     assert body["roles"][1] == {
-        "role_name": reviewer_assignment.role.role_name,
-        "display_name": reviewer_assignment.role.display_name,
-        "expiry_date": reviewer_assignment.expiry_date.replace(microsecond=0).isoformat().replace("+00:00", "Z") if reviewer_assignment.expiry_date else None,
-        "forest_client_number": reviewer_assignment.role.forest_client_relation.forest_client_number if reviewer_assignment.role.forest_client_relation else None,
+        "roleName": reviewer_assignment.role.role_name,
+        "displayName": reviewer_assignment.role.display_name,
+        "expiryDate": reviewer_assignment.expiry_date.replace(microsecond=0).isoformat().replace("+00:00", "Z") if reviewer_assignment.expiry_date else None,
+        "forestClientNumber": reviewer_assignment.role.forest_client_relation.forest_client_number if reviewer_assignment.role.forest_client_relation else None,
     }
     assert body["roles"][2] == {
-        "role_name": editor_assignment.role.role_name,
-        "display_name": editor_assignment.role.display_name,
-        "expiry_date": editor_assignment.expiry_date.replace(microsecond=0).isoformat().replace("+00:00", "Z") if editor_assignment.expiry_date else None,
-        "forest_client_number": editor_assignment.role.forest_client_relation.forest_client_number if editor_assignment.role.forest_client_relation else None,
+        "roleName": editor_assignment.role.role_name,
+        "displayName": editor_assignment.role.display_name,
+        "expiryDate": editor_assignment.expiry_date.replace(microsecond=0).isoformat().replace("+00:00", "Z") if editor_assignment.expiry_date else None,
+        "forestClientNumber": editor_assignment.role.forest_client_relation.forest_client_number if editor_assignment.role.forest_client_relation else None,
     }

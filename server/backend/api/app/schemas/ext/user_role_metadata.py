@@ -39,7 +39,7 @@ class ExtUserRoleMetadataRoleSchema(BaseModel):
         alias="forestClientNumber",
     )
 
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(from_attributes=True, populate_by_name=True)
 
 
 class ExtUserRoleMetadataResponseSchema(BaseModel):
@@ -62,4 +62,4 @@ class ExtUserRoleMetadataResponseSchema(BaseModel):
         alias="roles",
     )
 
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(from_attributes=True, populate_by_name=True)
