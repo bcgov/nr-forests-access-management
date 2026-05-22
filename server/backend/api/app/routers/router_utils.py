@@ -1,11 +1,12 @@
 import csv
+from http import HTTPStatus
 import logging
 from datetime import datetime
 from io import StringIO
 from typing import List
-
+from api.app.utils import utils
 from api.app import database
-from api.app.constants import ApiInstanceEnv
+from api.app.constants import ERROR_CODE_UNKNOWN_STATE, ApiInstanceEnv, IDPType, UserType
 from api.app.crud import crud_application, crud_utils
 from fastapi import Depends
 from sqlalchemy.orm import Session
@@ -55,3 +56,25 @@ async def csv_file_data_streamer(ini_title_line: str, data: List[dict[str, str]]
         output.truncate(0)
 
     output.close()
+
+def map_user_type_to_idp_type(
+    user_type_code: UserType,
+) -> IDPType:
+    """Map internal UserType values to external IDPType values."""
+    user_type_to_idp_map = {
+        UserType.IDIR: IDPType.IDIR,
+        UserType.BCEID: IDPType.BCEID,
+    }
+
+    idp_type = user_type_to_idp_map.get(user_type_code)
+    if not idp_type:
+        utils.raise_http_exception(
+            status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+            error_code=ERROR_CODE_UNKNOWN_STATE,
+            error_msg=(
+                "Unable to map requester user_type_code to IDPType: "
+                f"{user_type_code}"
+            ),
+        )
+
+    return idp_type
