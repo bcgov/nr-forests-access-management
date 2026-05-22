@@ -19,20 +19,24 @@ class ExtUserRoleMetadataRoleSchema(BaseModel):
     role_name: str = Field(
         description="The role name code (e.g., 'FOM_REVIEWER', 'SILVA_ADMIN')",
         max_length=ROLE_NAME_MAX_LEN,
+        alias="roleName",
     )
     display_name: Optional[str] = Field(
         default=None,
         description="Human-readable display name for the role",
         max_length=EXT_ROLE_DISPLAY_NAME_MAX_LEN,
+        alias="displayName",
     )
     expiry_date: Optional[datetime] = Field(
         default=None,
         description="UTC-aware ISO 8601 timestamp when the role assignment expires. NULL means no expiry.",
+        alias="expiryDate",
     )
     forest_client_number: Optional[str] = Field(
         default=None,
         description="Forest client number (e.g., '00001011') when the role is scoped to a forest client. NULL otherwise.",
         max_length=CLIENT_NUMBER_MAX_LEN,
+        alias="forestClientNumber",
     )
 
     model_config = ConfigDict(from_attributes=True)
@@ -46,13 +50,16 @@ class ExtUserRoleMetadataResponseSchema(BaseModel):
     user_name: str = Field(
         description="The authenticated user's username (e.g., 'JSMITH')",
         max_length=USER_NAME_MAX_LEN,
+        alias="userName",
     )
     domain: IDPType = Field(
         description="Identity provider domain for the authenticated user.",
+        alias="domain",
     )
     roles: List[ExtUserRoleMetadataRoleSchema] = Field(
         default_factory=list,
         description="List of roles assigned to the user in the application context. Empty list if no roles.",
+        alias="roles",
     )
 
     model_config = ConfigDict(from_attributes=True)
