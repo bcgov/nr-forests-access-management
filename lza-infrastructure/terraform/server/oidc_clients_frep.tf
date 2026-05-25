@@ -3,16 +3,20 @@ resource "aws_cognito_user_pool_client" "dev_frep_oidc_client" {
   allowed_oauth_flows                           = ["code"]
   allowed_oauth_flows_user_pool_client          = "true"
   allowed_oauth_scopes                          = ["openid", "profile", "email"]
-  callback_urls                                 = [
-    var.oidc_sso_playground_url,
-    "http://localhost:3000",
-    "https://frep-dev.apps.silver.devops.gov.bc.ca"
-  ]
-  logout_urls                                   = [
-    var.oidc_sso_playground_url,
-    "${var.cognito_app_client_logout_chain_url.dev}http://localhost:3000",
-    "${var.cognito_app_client_logout_chain_url.dev}https://frep-dev.apps.silver.devops.gov.bc.ca/logout"
-  ]
+  callback_urls                                 = concat(
+      [
+        var.oidc_sso_playground_url,
+        "http://localhost:3000/welcome",
+      ],
+      [for i in range("${var.dev_pr_url_count}") : "https://nr-frep-${i}.apps.silver.devops.gov.bc.ca/welcome"]
+  )
+  logout_urls                                   = concat(
+      [
+        var.oidc_sso_playground_url,
+        "${var.cognito_app_client_logout_chain_url.dev}http://localhost:3000",
+      ],
+      [for i in range("${var.dev_pr_url_count}") : "${var.cognito_app_client_logout_chain_url.dev}https://nr-frep-${i}.apps.silver.devops.gov.bc.ca"]
+  )
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
   explicit_auth_flows                           = ["ALLOW_REFRESH_TOKEN_AUTH"]
@@ -42,14 +46,10 @@ resource "aws_cognito_user_pool_client" "test_frep_oidc_client" {
   allowed_oauth_flows_user_pool_client          = "true"
   allowed_oauth_scopes                          = ["openid", "profile", "email"]
   callback_urls                                 = [
-    var.oidc_sso_playground_url,
-    "http://localhost:3000",
-    "https://frep-test.apps.silver.devops.gov.bc.ca"
+    "https://nr-frep-test.apps.silver.devops.gov.bc.ca/welcome"
   ]
   logout_urls                                   = [
-    var.oidc_sso_playground_url,
-    "${var.cognito_app_client_logout_chain_url.test}http://localhost:3000",
-    "${var.cognito_app_client_logout_chain_url.test}https://frep-test.apps.silver.devops.gov.bc.ca/logout"
+    "${var.cognito_app_client_logout_chain_url.test}https://nr-frep-test.apps.silver.devops.gov.bc.ca"
   ]
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
@@ -80,12 +80,10 @@ resource "aws_cognito_user_pool_client" "prod_frep_oidc_client" {
   allowed_oauth_flows_user_pool_client          = "true"
   allowed_oauth_scopes                          = ["openid", "profile", "email"]
   callback_urls                                 = [
-    var.oidc_sso_playground_url,
-    "https://apps.nrs.gov.bc.ca/frep"
+    "https://nr-frep-prod.apps.silver.devops.gov.bc.ca/welcome"
   ]
   logout_urls                                   = [
-    var.oidc_sso_playground_url,
-    "${var.cognito_app_client_logout_chain_url.prod}https://apps.nrs.gov.bc.ca/frep/logout"
+    "${var.cognito_app_client_logout_chain_url.prod}https://nr-frep-prod.apps.silver.devops.gov.bc.ca"
   ]
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
