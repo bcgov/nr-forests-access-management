@@ -25,8 +25,7 @@ INSERT INTO app_fam.fam_role (
 )
 VALUES ('FREP_ADMIN', 'Administrator', 'Add, edit, delete, and view FREP.', (select application_id from app_fam.fam_application where application_name = 'FREP_DEV'), 'C', CURRENT_USER, CURRENT_DATE),
        ('FREP_EDITOR', 'Decision Maker', 'Edit FREP.', (select application_id from app_fam.fam_application where application_name = 'FREP_DEV'), 'C', CURRENT_USER, CURRENT_DATE),
-       ('FREP_VIEW_ONLY', 'View Only', 'View only access to FREP application.', (select application_id from app_fam.fam_application where application_name = 'FREP_DEV'), 'C', CURRENT_USER, CURRENT_DATE),
-       ;
+       ('FREP_VIEW_ONLY', 'View Only', 'View only access to FREP application.', (select application_id from app_fam.fam_application where application_name = 'FREP_DEV'), 'C', CURRENT_USER, CURRENT_DATE);
 
 -- Add roles for FREP_TEST
 INSERT INTO app_fam.fam_role (
@@ -40,8 +39,7 @@ INSERT INTO app_fam.fam_role (
 )
 VALUES ('FREP_ADMIN', 'Administrator', 'Add, edit, delete, and view FREP.', (select application_id from app_fam.fam_application where application_name = 'FREP_TEST'), 'C', CURRENT_USER, CURRENT_DATE),
        ('FREP_EDITOR', 'Decision Maker', 'Edit FREP.', (select application_id from app_fam.fam_application where application_name = 'FREP_TEST'), 'C', CURRENT_USER, CURRENT_DATE),
-       ('FREP_VIEW_ONLY', 'View Only', 'View only access to FREP application.', (select application_id from app_fam.fam_application where application_name = 'FREP_TEST'), 'C', CURRENT_USER, CURRENT_DATE),
-;
+       ('FREP_VIEW_ONLY', 'View Only', 'View only access to FREP application.', (select application_id from app_fam.fam_application where application_name = 'FREP_TEST'), 'C', CURRENT_USER, CURRENT_DATE);
 
 -- Add roles for FREP_PROD
 INSERT INTO app_fam.fam_role (
@@ -55,8 +53,7 @@ INSERT INTO app_fam.fam_role (
 )
 VALUES ('FREP_ADMIN', 'Administrator', 'Add, edit, delete, and view FREP.', (select application_id from app_fam.fam_application where application_name = 'FREP_PROD'), 'C', CURRENT_USER, CURRENT_DATE),
        ('FREP_EDITOR', 'Decision Maker', 'Edit FREP.', (select application_id from app_fam.fam_application where application_name = 'FREP_PROD'), 'C', CURRENT_USER, CURRENT_DATE),
-       ('FREP_VIEW_ONLY', 'View Only', 'View only access to FREP application.', (select application_id from app_fam.fam_application where application_name = 'FREP_PROD'), 'C', CURRENT_USER, CURRENT_DATE),
-;
+       ('FREP_VIEW_ONLY', 'View Only', 'View only access to FREP application.', (select application_id from app_fam.fam_application where application_name = 'FREP_PROD'), 'C', CURRENT_USER, CURRENT_DATE);
 
 -- Create dev, test and prod Cognito app clients for FREP
 INSERT INTO app_fam.fam_application_client (
