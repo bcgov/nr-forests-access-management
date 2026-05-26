@@ -1,5 +1,25 @@
 # Changelog
 
+## [2.15.0](https://github.com/bcgov/nr-forests-access-management/compare/v2.14.1...v2.15.0) (2026-05-26)
+
+
+### Features
+
+* [#2167](https://github.com/bcgov/nr-forests-access-management/issues/2167) New External Consumer Endpoint  for User Role Metadata ([#2191](https://github.com/bcgov/nr-forests-access-management/issues/2191)) ([991a6b5](https://github.com/bcgov/nr-forests-access-management/commit/991a6b5c88ec6d0037d3d23d7e846ad333dce690))
+* Added LEXIS application ([#2195](https://github.com/bcgov/nr-forests-access-management/issues/2195)) ([33c6c54](https://github.com/bcgov/nr-forests-access-management/commit/33c6c54e0381131307de7d5394576ba6299203ca))
+* Onboard FREP to FAM ([#2194](https://github.com/bcgov/nr-forests-access-management/issues/2194)) ([a085bd3](https://github.com/bcgov/nr-forests-access-management/commit/a085bd30aeb67f14209a7f38925d552d59c2eea9))
+* updates for callback and logout redirect for REPT ([#2185](https://github.com/bcgov/nr-forests-access-management/issues/2185)) ([7665ff4](https://github.com/bcgov/nr-forests-access-management/commit/7665ff46c58e8c28345f7f658b3a672da9b54b48))
+* updates for callback and logout redirect for REPT ([#2189](https://github.com/bcgov/nr-forests-access-management/issues/2189)) ([a5498af](https://github.com/bcgov/nr-forests-access-management/commit/a5498af5cba6506973c90e4c5a22908073a35f31))
+
+
+### Bug Fixes
+
+* [#2173](https://github.com/bcgov/nr-forests-access-management/issues/2173) Actions Version Update ([#2186](https://github.com/bcgov/nr-forests-access-management/issues/2186)) ([8631546](https://github.com/bcgov/nr-forests-access-management/commit/863154697499d8365fc54fd1b6f10f42093fe452))
+* [#2173](https://github.com/bcgov/nr-forests-access-management/issues/2173) Upgrade Terragrunt Version and Actions ([#2180](https://github.com/bcgov/nr-forests-access-management/issues/2180)) ([b275e53](https://github.com/bcgov/nr-forests-access-management/commit/b275e531601ffff166b8c4ceb5a4c879ad17d9ae))
+* [#2174](https://github.com/bcgov/nr-forests-access-management/issues/2174) Replce Terragrunt Action ([#2188](https://github.com/bcgov/nr-forests-access-management/issues/2188)) ([a1b6576](https://github.com/bcgov/nr-forests-access-management/commit/a1b65769d40a04774cc09b2a3ae58e31875c42ac))
+* [#2174](https://github.com/bcgov/nr-forests-access-management/issues/2174) terragrunt root rename ([#2187](https://github.com/bcgov/nr-forests-access-management/issues/2187)) ([4a65f8c](https://github.com/bcgov/nr-forests-access-management/commit/4a65f8c0525c7fcd76b7bc9befb49557bd754b1f))
+* Revert "fix: [#2173](https://github.com/bcgov/nr-forests-access-management/issues/2173) Upgrade Terragrunt Version and Actions" ([#2184](https://github.com/bcgov/nr-forests-access-management/issues/2184)) ([bd31816](https://github.com/bcgov/nr-forests-access-management/commit/bd31816500b79b913cabcf0e5b9e9a67fbafeeab))
+
 ## [2.14.1](https://github.com/bcgov/nr-forests-access-management/compare/v2.14.0...v2.14.1) (2026-05-12)
 
 
