@@ -27,8 +27,8 @@ VALUES ('ADMIN', 'Administrator', 'Full administrative access to LEXIS.', (selec
        ('READ_ONLY', 'Read Only', 'View-only access to LEXIS.', (select application_id from app_fam.fam_application where application_name = 'LEXIS_DEV'), 'C', CURRENT_USER, CURRENT_DATE),
        ('APPLICATION_APPROVER', 'Application Approver', 'Approves LEXIS applications when approval is required.', (select application_id from app_fam.fam_application where application_name = 'LEXIS_DEV'), 'C', CURRENT_USER, CURRENT_DATE),
        ('EXEMPTION_APPROVER', 'Exemption Approver', 'Approves and reviews LEXIS exemptions.', (select application_id from app_fam.fam_application where application_name = 'LEXIS_DEV'), 'C', CURRENT_USER, CURRENT_DATE),
-       ('LEXIS_INDUSTRY', 'Industry', 'Industry role for LEXIS users requiring summary and offer workflows.', (select application_id from app_fam.fam_application where application_name = 'LEXIS_DEV'), 'C', CURRENT_USER, CURRENT_DATE),
-       ('LOG_EXPORT_INDUSTRY', 'Log Export Industry', 'Industry role for LEXIS users requiring export-focused workflows.', (select application_id from app_fam.fam_application where application_name = 'LEXIS_DEV'), 'C', CURRENT_USER, CURRENT_DATE)
+       ('LEXIS_INDUSTRY', 'Industry', 'Industry role for LEXIS users requiring summary and offer workflows.', (select application_id from app_fam.fam_application where application_name = 'LEXIS_DEV'), 'A', CURRENT_USER, CURRENT_DATE),
+       ('LOG_EXPORT_INDUSTRY', 'Log Export Industry', 'Industry role for LEXIS users requiring export-focused workflows.', (select application_id from app_fam.fam_application where application_name = 'LEXIS_DEV'), 'A', CURRENT_USER, CURRENT_DATE)
 ;
 
 -- Add roles for LEXIS_TEST
@@ -45,8 +45,8 @@ VALUES ('ADMIN', 'Administrator', 'Full administrative access to LEXIS.', (selec
        ('READ_ONLY', 'Read Only', 'View-only access to LEXIS.', (select application_id from app_fam.fam_application where application_name = 'LEXIS_TEST'), 'C', CURRENT_USER, CURRENT_DATE),
        ('APPLICATION_APPROVER', 'Application Approver', 'Approves LEXIS applications when approval is required.', (select application_id from app_fam.fam_application where application_name = 'LEXIS_TEST'), 'C', CURRENT_USER, CURRENT_DATE),
        ('EXEMPTION_APPROVER', 'Exemption Approver', 'Approves and reviews LEXIS exemptions.', (select application_id from app_fam.fam_application where application_name = 'LEXIS_TEST'), 'C', CURRENT_USER, CURRENT_DATE),
-       ('LEXIS_INDUSTRY', 'Industry', 'Industry role for LEXIS users requiring summary and offer workflows.', (select application_id from app_fam.fam_application where application_name = 'LEXIS_TEST'), 'C', CURRENT_USER, CURRENT_DATE),
-       ('LOG_EXPORT_INDUSTRY', 'Log Export Industry', 'Industry role for LEXIS users requiring export-focused workflows.', (select application_id from app_fam.fam_application where application_name = 'LEXIS_TEST'), 'C', CURRENT_USER, CURRENT_DATE)
+       ('LEXIS_INDUSTRY', 'Industry', 'Industry role for LEXIS users requiring summary and offer workflows.', (select application_id from app_fam.fam_application where application_name = 'LEXIS_TEST'), 'A', CURRENT_USER, CURRENT_DATE),
+       ('LOG_EXPORT_INDUSTRY', 'Log Export Industry', 'Industry role for LEXIS users requiring export-focused workflows.', (select application_id from app_fam.fam_application where application_name = 'LEXIS_TEST'), 'A', CURRENT_USER, CURRENT_DATE)
 ;
 
 -- Add roles for LEXIS_PROD
@@ -63,8 +63,8 @@ VALUES ('ADMIN', 'Administrator', 'Full administrative access to LEXIS.', (selec
        ('READ_ONLY', 'Read Only', 'View-only access to LEXIS.', (select application_id from app_fam.fam_application where application_name = 'LEXIS_PROD'), 'C', CURRENT_USER, CURRENT_DATE),
        ('APPLICATION_APPROVER', 'Application Approver', 'Approves LEXIS applications when approval is required.', (select application_id from app_fam.fam_application where application_name = 'LEXIS_PROD'), 'C', CURRENT_USER, CURRENT_DATE),
        ('EXEMPTION_APPROVER', 'Exemption Approver', 'Approves and reviews LEXIS exemptions.', (select application_id from app_fam.fam_application where application_name = 'LEXIS_PROD'), 'C', CURRENT_USER, CURRENT_DATE),
-       ('LEXIS_INDUSTRY', 'Industry', 'Industry role for LEXIS users requiring summary and offer workflows.', (select application_id from app_fam.fam_application where application_name = 'LEXIS_PROD'), 'C', CURRENT_USER, CURRENT_DATE),
-       ('LOG_EXPORT_INDUSTRY', 'Log Export Industry', 'Industry role for LEXIS users requiring export-focused workflows.', (select application_id from app_fam.fam_application where application_name = 'LEXIS_PROD'), 'C', CURRENT_USER, CURRENT_DATE)
+       ('LEXIS_INDUSTRY', 'Industry', 'Industry role for LEXIS users requiring summary and offer workflows.', (select application_id from app_fam.fam_application where application_name = 'LEXIS_PROD'), 'A', CURRENT_USER, CURRENT_DATE),
+       ('LOG_EXPORT_INDUSTRY', 'Log Export Industry', 'Industry role for LEXIS users requiring export-focused workflows.', (select application_id from app_fam.fam_application where application_name = 'LEXIS_PROD'), 'A', CURRENT_USER, CURRENT_DATE)
 ;
 
 -- Create dev, test and prod Cognito app clients for LEXIS
