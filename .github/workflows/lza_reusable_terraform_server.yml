@@ -52,8 +52,8 @@ on:
         required: true
 
 env:
-  TF_VERSION: 1.12.2
-  TG_VERSION: 0.37.1
+  TF_VERSION: 1.15.2
+  TG_VERSION: 1.0.4
   TG_SRC_PATH: lza-infrastructure/landing-zone/server
   AWS_REGION: ca-central-1
 
@@ -68,10 +68,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up Python 3.12
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 
@@ -86,11 +86,12 @@ jobs:
           rm -rf auth_function_packaging
 
       - name: Auth function upload zip file artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: fam-auth-function
           path: ./lza-infrastructure/terraform/server/fam_auth_function.zip
           if-no-files-found: error
+          overwrite: true
 
       - name: Install and Package Dependencies - FAM API
         run: |
@@ -109,7 +110,7 @@ jobs:
           cd ..
 
       - name: Upload zip file artifact - FAM API
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: fam-ui-api
           path: ./lza-infrastructure/terraform/server/fam-ui-api.zip
@@ -132,7 +133,7 @@ jobs:
           cd ..
 
       - name: Upload zip file artifact - FAM Admin Management API
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: fam-admin-management-api
           path: ./lza-infrastructure/terraform/server/fam-admin-management-api.zip
@@ -144,16 +145,23 @@ jobs:
           rsync -r server/flyway/sql/* lza-infrastructure/terraform/server/sql
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: ${{ env.AWS_OIDC_GHA_ROLE }}
           role-session-name: server-${{ inputs.environment_name }}-deployment
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Setup Terragrunt
-        uses: autero1/action-terragrunt@v3.0.2
+        uses: datadrivers/terragrunt-action@v4.3.1
+        env:
+          TENV_GITHUB_TOKEN: ${{ github.token }}
         with:
+          terraform-version: ${{ env.TF_VERSION }}
           terragrunt-version: ${{ env.TG_VERSION }}
+          use-aws-auth: "true"
+          aws-region: ${{ env.AWS_REGION }}
+          aws-role-to-assume: ${{ env.AWS_OIDC_GHA_ROLE }}
+          skip-caches: "false"
 
       - name: Create Terraform vars
         working-directory: ${{ env.TG_SRC_PATH }}/${{ inputs.environment_name }}
@@ -188,11 +196,6 @@ jobs:
           fam_update_user_info_api_key = "${{ secrets.fam_update_user_info_api_key }}"
           EOF
 
-      - name: HashiCorp - Setup Terraform
-        uses: hashicorp/setup-terraform@v3.1.2
-        with:
-          terraform_version: ${{ env.TF_VERSION }}
-
       - name: Terragrunt ${{ inputs.tf_subcommand }}
         working-directory: ${{ env.TG_SRC_PATH }}/${{ inputs.environment_name }}
         env:
@@ -200,7 +203,8 @@ jobs:
           target_env: ${{ inputs.environment_name }}
         run: |
           # Run terraform
-          terragrunt run-all ${{ inputs.tf_subcommand }} --terragrunt-non-interactive
+          terragrunt run --all -- init
+          terragrunt run --all --non-interactive -- ${{ inputs.tf_subcommand }}
 
       - id: smoke_test
         name: Smoke Test
@@ -216,7 +220,7 @@ jobs:
           # Run smoke test
             if [[ "apply" == "${{ inputs.tf_subcommand }}" ]]
             then
-              fam_api_base_url=`terragrunt run-all output fam_api_base_url --terragrunt-non-interactive | sed 's/^"//' | sed 's/"$//'`
+              fam_api_base_url=`terragrunt run --all --non-interactive --log-level error -- output -raw fam_api_base_url`
               smoke_test_url="$fam_api_base_url/smoke_test"
               echo "Smoke test URL: [$smoke_test_url]"
 

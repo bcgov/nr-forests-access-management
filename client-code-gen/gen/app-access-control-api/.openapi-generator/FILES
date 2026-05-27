@@ -21,6 +21,8 @@ model/email-sending-status.ts
 model/ext-application-user-search-get-schema.ts
 model/ext-page-result-meta-schema.ts
 model/ext-role-with-scope-schema.ts
+model/ext-user-role-metadata-response-schema.ts
+model/ext-user-role-metadata-role-schema.ts
 model/ext-user-search-paged-results-schema-ext-application-user-search-get-schema.ts
 model/fam-application-schema.ts
 model/fam-application-user-role-assignment-get-schema.ts

@@ -12,6 +12,8 @@ from jwt import PyJWKClient
 
 JWT_GROUPS_KEY = "cognito:groups"
 JWT_CLIENT_ID_KEY = "client_id"
+JWT_TOKEN_USE_KEY = "token_use"
+ACCESS_TOKEN_USE_VALUE = "access"
 
 LOGGER = logging.getLogger(__name__)
 
@@ -23,6 +25,7 @@ ERROR_NO_RSA_KEY = "invalid_token_no_rsa_key_match"
 ERROR_EXPIRED_TOKEN = "invalid_token_expired"
 ERROR_CLAIMS = "invalid_token_claims"
 ERROR_VALIDATION = "validation_failed"
+ERROR_INVALID_TOKEN_USE = "invalid_token_use"
 ERROR_GROUPS_REQUIRED = "authorization_groups_required"
 ERROR_PERMISSION_REQUIRED = "permission_required_for_operation"
 
@@ -148,6 +151,16 @@ def validate_token(
         raise HTTPException(
             status_code=401,
             detail={"code": ERROR_VALIDATION, "description": "Unable to validate JWT"},
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    if claims.get(JWT_TOKEN_USE_KEY) != ACCESS_TOKEN_USE_VALUE:
+        raise HTTPException(
+            status_code=401,
+            detail={
+                "code": ERROR_INVALID_TOKEN_USE,
+                "description": "Token must be an access token.",
+            },
             headers={"WWW-Authenticate": "Bearer"},
         )
 

@@ -44,7 +44,7 @@ jobs:
           - 5432:5432
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Flyway
         uses: docker://flyway/flyway:10
         env:
@@ -102,6 +102,12 @@ jobs:
           FLYWAY_PLACEHOLDERS_client_id_dev_fspts_oidc_client: flywayplaceholder
           FLYWAY_PLACEHOLDERS_client_id_test_fspts_oidc_client: flywayplaceholder
           FLYWAY_PLACEHOLDERS_client_id_prod_fspts_oidc_client: flywayplaceholder
+          FLYWAY_PLACEHOLDERS_client_id_dev_frep_oidc_client: flywayplaceholder
+          FLYWAY_PLACEHOLDERS_client_id_test_frep_oidc_client: flywayplaceholder
+          FLYWAY_PLACEHOLDERS_client_id_prod_frep_oidc_client: flywayplaceholder
+          FLYWAY_PLACEHOLDERS_client_id_dev_lexis_oidc_client: flywayplaceholder
+          FLYWAY_PLACEHOLDERS_client_id_test_lexis_oidc_client: flywayplaceholder
+          FLYWAY_PLACEHOLDERS_client_id_prod_lexis_oidc_client: flywayplaceholder
         with:
           args: info migrate info
 

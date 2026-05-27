@@ -1,15 +1,22 @@
 import logging
+from http import HTTPStatus
 from typing import Annotated
 
 from api.app import database
-from api.app.crud import crud_utils
+from api.app import constants as fam_constants
+from api.app.crud import crud_application, crud_user_role, crud_utils
 from api.app.crud.services import ext_app_user_search_service
 from api.app.decorators.endpoint_timing_dec import endpoint_timing_dec
 from api.app.integration.idim_proxy import IdimProxyService
+from api.app.jwt_validation import get_request_app_client_id
 from api.app.routers.router_guards import (authorize_ext_api_by_app_role,
                        get_current_requester)
 from api.app.schemas.ext.pagination import (ExtUserSearchPagedResultsSchema,
                                             ExtUserSearchParamSchema)
+from api.app.schemas.ext.user_role_metadata import (
+    ExtUserRoleMetadataResponseSchema,
+    ExtUserRoleMetadataRoleSchema,
+)
 from api.app.schemas.ext.user_search import (ExtApplicationUserSearchGetSchema,
                          ExtApplicationUserSearchSchema,
                          ExtIdirUserSearchParamSchema)
@@ -19,8 +26,11 @@ from api.app.schemas.idim_proxy_idir_users_search import (
     IdimProxyIdirUsersSearchResSchema,
 )
 from api.app.schemas.requester import RequesterSchema
+from api.app.utils import utils
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
+
+from api.app.routers.router_utils import map_user_type_to_idp_type
 
 LOGGER = logging.getLogger(__name__)
 router = APIRouter()
@@ -108,3 +118,54 @@ def search_idim_idir_users(
         api_instance_env=api_instance_env,
     )
     return idim_proxy_api.search_idir_users(idim_search_params)
+
+
+@router.get(
+    "/me/role-metadata",
+    response_model=ExtUserRoleMetadataResponseSchema,
+    status_code=200,
+    summary="Get current user role metadata",
+    description="Get role metadata for the authenticated user within the application context.",
+)
+def get_current_user_role_metadata(
+    db: Annotated[Session, Depends(database.get_db)],
+    requester: Annotated[RequesterSchema, Depends(get_current_requester)],
+    app_client_id: Annotated[str, Depends(get_request_app_client_id)],  # Cognito app client for the application.
+):
+    """Return current requester role metadata scoped to application from JWT."""
+    application = crud_application.get_application_by_app_client_id(db, app_client_id)
+    if not application:
+        utils.raise_http_exception(
+            status_code=HTTPStatus.FORBIDDEN,
+            error_code=fam_constants.ERROR_CODE_INVALID_OPERATION,
+            error_msg=(
+                "Token contains invalid application client id "
+                f"{utils.mask_string(app_client_id, 5)}"
+            ),
+        )
+
+    role_assignments = crud_user_role.get_user_roles_by_cognito_id_and_app_id(
+        db=db,
+        cognito_user_id=requester.cognito_user_id,
+        application_id=application.application_id,
+    )
+
+    roles = [
+        ExtUserRoleMetadataRoleSchema(
+            role_name=assignment.role.role_name,
+            display_name=assignment.role.display_name,
+            expiry_date=assignment.expiry_date.replace(microsecond=0) if assignment.expiry_date else None,
+            forest_client_number=(
+                assignment.role.forest_client_relation.forest_client_number
+                if assignment.role.forest_client_relation
+                else None
+            ),
+        )
+        for assignment in role_assignments
+    ]
+
+    return ExtUserRoleMetadataResponseSchema(
+        user_name=requester.user_name,
+        domain=map_user_type_to_idp_type(requester.user_type_code),
+        roles=roles,
+    )

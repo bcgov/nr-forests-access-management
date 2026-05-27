@@ -2,6 +2,8 @@ export * from './email-sending-status';
 export * from './ext-application-user-search-get-schema';
 export * from './ext-page-result-meta-schema';
 export * from './ext-role-with-scope-schema';
+export * from './ext-user-role-metadata-response-schema';
+export * from './ext-user-role-metadata-role-schema';
 export * from './ext-user-search-paged-results-schema-ext-application-user-search-get-schema';
 export * from './fam-application-schema';
 export * from './fam-application-user-role-assignment-get-schema';

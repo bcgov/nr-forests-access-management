@@ -67,7 +67,7 @@ resource "aws_api_gateway_deployment" "admin_management_api_gateway_deployment" 
 resource "aws_api_gateway_stage" "admin_management_api_gateway_stage" {
   deployment_id = aws_api_gateway_deployment.admin_management_api_gateway_deployment.id
   rest_api_id   = aws_api_gateway_rest_api.admin_management_api_gateway_rest_api.id
-  stage_name    = "v1"
+  stage_name    = var.api_gateway_stage_name
 
   tags = {
     managed-by = "terraform"

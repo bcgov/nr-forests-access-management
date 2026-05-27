@@ -1,11 +1,11 @@
 # BCSC IDP that connects directly to IDIM Consulting OIDC server
 locals {
-  dev_local_bcsc_userinfo_proxy_endpoint  = "${aws_api_gateway_deployment.fam_api_gateway_deployment.invoke_url}/bcsc/userinfo/dev"
-  test_local_bcsc_userinfo_proxy_endpoint = "${aws_api_gateway_deployment.fam_api_gateway_deployment.invoke_url}/bcsc/userinfo/test"
-  prod_local_bcsc_userinfo_proxy_endpoint = "${aws_api_gateway_deployment.fam_api_gateway_deployment.invoke_url}/bcsc/userinfo/prod"
-  dev_local_bcsc_token_proxy_endpoint     = "${aws_api_gateway_deployment.fam_api_gateway_deployment.invoke_url}/bcsc/token/dev"
-  test_local_bcsc_token_proxy_endpoint    = "${aws_api_gateway_deployment.fam_api_gateway_deployment.invoke_url}/bcsc/token/test"
-  prod_local_bcsc_token_proxy_endpoint    = "${aws_api_gateway_deployment.fam_api_gateway_deployment.invoke_url}/bcsc/token/prod"
+  dev_local_bcsc_userinfo_proxy_endpoint  = "${aws_api_gateway_stage.fam_api_gateway_stage.invoke_url}/bcsc/userinfo/dev"
+  test_local_bcsc_userinfo_proxy_endpoint = "${aws_api_gateway_stage.fam_api_gateway_stage.invoke_url}/bcsc/userinfo/test"
+  prod_local_bcsc_userinfo_proxy_endpoint = "${aws_api_gateway_stage.fam_api_gateway_stage.invoke_url}/bcsc/userinfo/prod"
+  dev_local_bcsc_token_proxy_endpoint     = "${aws_api_gateway_stage.fam_api_gateway_stage.invoke_url}/bcsc/token/dev"
+  test_local_bcsc_token_proxy_endpoint    = "${aws_api_gateway_stage.fam_api_gateway_stage.invoke_url}/bcsc/token/test"
+  prod_local_bcsc_token_proxy_endpoint    = "${aws_api_gateway_stage.fam_api_gateway_stage.invoke_url}/bcsc/token/prod"
 }
 
 resource "aws_cognito_identity_provider" "dev_bcsc_oidc_provider" {
