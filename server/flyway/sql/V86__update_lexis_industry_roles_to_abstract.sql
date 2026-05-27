@@ -69,3 +69,10 @@ AND role_name IN (
     'FEDERAL_SUBMITTER'
 )
 ;
+
+-- Enable API access for all active LEXIS roles used by the current security model.
+UPDATE app_fam.fam_role
+SET call_api_flag = true
+WHERE application_id in (select application_id from app_fam.fam_application where application_name IN ('LEXIS_DEV', 'LEXIS_TEST', 'LEXIS_PROD'))
+  AND role_name IN ('ADMIN', 'READ_ONLY', 'APPLICATION_APPROVER', 'EXEMPTION_APPROVER', 'PROVINCIAL_SUBMITTER', 'FEDERAL_SUBMITTER')
+;
