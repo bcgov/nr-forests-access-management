@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.16.0](https://github.com/bcgov/nr-forests-access-management/compare/v2.15.0...v2.16.0) (2026-05-28)
+
+
+### Features
+
+* Add call api flag for FSPTS ([#2199](https://github.com/bcgov/nr-forests-access-management/issues/2199)) ([5829f72](https://github.com/bcgov/nr-forests-access-management/commit/5829f7262acc84d4f90fe2e06c0cc04179ada9be))
+* FSPTS redirectURI updates ([#2201](https://github.com/bcgov/nr-forests-access-management/issues/2201)) ([c4536e3](https://github.com/bcgov/nr-forests-access-management/commit/c4536e34b08a0064a373aeab9022b815ba17db90))
+* onboard lexis to fam ([#2197](https://github.com/bcgov/nr-forests-access-management/issues/2197)) ([c1360f3](https://github.com/bcgov/nr-forests-access-management/commit/c1360f317b4a87a30636bf42f9a4f7263a5ccb5c))
+
 ## [2.15.0](https://github.com/bcgov/nr-forests-access-management/compare/v2.14.1...v2.15.0) (2026-05-26)
 
 
