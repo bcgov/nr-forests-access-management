@@ -16,11 +16,11 @@ resource "aws_cognito_user_pool_client" "dev_csp_oidc_client" {
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
   explicit_auth_flows                           = ["ALLOW_REFRESH_TOKEN_AUTH"]
-  id_token_validity                             = "60"
+  id_token_validity                             = "5"
   name                                          = "csp_dev"
   prevent_user_existence_errors                 = "ENABLED"
   read_attributes                               = var.minimum_oidc_attribute_list
-  refresh_token_validity                        = "24"
+  refresh_token_validity                        = "60"
   supported_identity_providers                  = [
     "${aws_cognito_identity_provider.dev_idir_oidc_provider.provider_name}"
   ]
@@ -28,7 +28,7 @@ resource "aws_cognito_user_pool_client" "dev_csp_oidc_client" {
   token_validity_units {
     access_token  = "minutes"
     id_token      = "minutes"
-    refresh_token = "hours"
+    refresh_token = "minutes"
   }
 
   user_pool_id     = aws_cognito_user_pool.fam_user_pool.id
@@ -51,11 +51,11 @@ resource "aws_cognito_user_pool_client" "test_csp_oidc_client" {
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
   explicit_auth_flows                           = ["ALLOW_REFRESH_TOKEN_AUTH"]
-  id_token_validity                             = "60"
+  id_token_validity                             = "5"
   name                                          = "csp_test"
   prevent_user_existence_errors                 = "ENABLED"
   read_attributes                               = var.minimum_oidc_attribute_list
-  refresh_token_validity                        = "24"
+  refresh_token_validity                        = "60"
   supported_identity_providers                  = [
     "${aws_cognito_identity_provider.test_idir_oidc_provider.provider_name}"
   ]
@@ -63,7 +63,7 @@ resource "aws_cognito_user_pool_client" "test_csp_oidc_client" {
   token_validity_units {
     access_token  = "minutes"
     id_token      = "minutes"
-    refresh_token = "hours"
+    refresh_token = "minutes"
   }
 
   user_pool_id     = aws_cognito_user_pool.fam_user_pool.id
@@ -86,11 +86,11 @@ resource "aws_cognito_user_pool_client" "prod_csp_oidc_client" {
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
   explicit_auth_flows                           = ["ALLOW_REFRESH_TOKEN_AUTH"]
-  id_token_validity                             = "60"
+  id_token_validity                             = "5"
   name                                          = "csp_prod"
   prevent_user_existence_errors                 = "ENABLED"
   read_attributes                               = var.minimum_oidc_attribute_list
-  refresh_token_validity                        = "24"
+  refresh_token_validity                        = "60"
   supported_identity_providers                  = [
     "${aws_cognito_identity_provider.prod_idir_oidc_provider.provider_name}"
   ]
@@ -98,7 +98,7 @@ resource "aws_cognito_user_pool_client" "prod_csp_oidc_client" {
   token_validity_units {
     access_token  = "minutes"
     id_token      = "minutes"
-    refresh_token = "hours"
+    refresh_token = "minutes"
   }
 
   user_pool_id     = aws_cognito_user_pool.fam_user_pool.id
