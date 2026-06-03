@@ -22,7 +22,8 @@ resource "aws_cognito_user_pool_client" "dev_csp_oidc_client" {
   read_attributes                               = var.minimum_oidc_attribute_list
   refresh_token_validity                        = "60"
   supported_identity_providers                  = [
-    "${aws_cognito_identity_provider.dev_idir_oidc_provider.provider_name}"
+    "${aws_cognito_identity_provider.dev_idir_oidc_provider.provider_name}",
+    "${aws_cognito_identity_provider.dev_bceid_business_oidc_provider.provider_name}"
   ]
 
   token_validity_units {
@@ -57,7 +58,8 @@ resource "aws_cognito_user_pool_client" "test_csp_oidc_client" {
   read_attributes                               = var.minimum_oidc_attribute_list
   refresh_token_validity                        = "60"
   supported_identity_providers                  = [
-    "${aws_cognito_identity_provider.test_idir_oidc_provider.provider_name}"
+    "${aws_cognito_identity_provider.test_idir_oidc_provider.provider_name}",
+    "${aws_cognito_identity_provider.test_bceid_business_oidc_provider.provider_name}"
   ]
 
   token_validity_units {
@@ -92,7 +94,8 @@ resource "aws_cognito_user_pool_client" "prod_csp_oidc_client" {
   read_attributes                               = var.minimum_oidc_attribute_list
   refresh_token_validity                        = "60"
   supported_identity_providers                  = [
-    "${aws_cognito_identity_provider.prod_idir_oidc_provider.provider_name}"
+    "${aws_cognito_identity_provider.prod_idir_oidc_provider.provider_name}",
+    "${aws_cognito_identity_provider.prod_bceid_business_oidc_provider.provider_name}"
   ]
 
   token_validity_units {
