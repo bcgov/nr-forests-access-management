@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.17.0](https://github.com/bcgov/nr-forests-access-management/compare/v2.16.0...v2.17.0) (2026-06-03)
+
+
+### Features
+
+* Onboarding CSP - OIDC Client ([#2175](https://github.com/bcgov/nr-forests-access-management/issues/2175)) ([06614b6](https://github.com/bcgov/nr-forests-access-management/commit/06614b6fb159744300d31146a07583b08b491296))
+
+
+### Bug Fixes
+
+* Update release-please deprecated action. ([#2203](https://github.com/bcgov/nr-forests-access-management/issues/2203)) ([a071368](https://github.com/bcgov/nr-forests-access-management/commit/a071368124f83a6f32cf587703e4a4903b11f646))
+
 ## [2.16.0](https://github.com/bcgov/nr-forests-access-management/compare/v2.15.0...v2.16.0) (2026-05-28)
 
 
