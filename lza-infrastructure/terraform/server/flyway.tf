@@ -293,7 +293,10 @@ data "aws_lambda_invocation" "invoke_flyway_migration" {
           "client_id_prod_frep_oidc_client" : "${aws_cognito_user_pool_client.prod_frep_oidc_client.id}",
           "client_id_dev_lexis_oidc_client" : "${aws_cognito_user_pool_client.dev_lexis_oidc_client.id}",
           "client_id_test_lexis_oidc_client" : "${aws_cognito_user_pool_client.test_lexis_oidc_client.id}",
-          "client_id_prod_lexis_oidc_client" : "${aws_cognito_user_pool_client.prod_lexis_oidc_client.id}"
+          "client_id_prod_lexis_oidc_client" : "${aws_cognito_user_pool_client.prod_lexis_oidc_client.id}",
+          "client_id_dev_csp_oidc_client" : "${aws_cognito_user_pool_client.dev_csp_oidc_client.id}",
+          "client_id_test_csp_oidc_client" : "${aws_cognito_user_pool_client.test_csp_oidc_client.id}",
+          "client_id_prod_csp_oidc_client" : "${aws_cognito_user_pool_client.prod_csp_oidc_client.id}"
         },
         "target": "latest"
     },
