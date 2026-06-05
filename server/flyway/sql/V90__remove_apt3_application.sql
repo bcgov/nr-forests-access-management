@@ -1,5 +1,5 @@
 
---- Delete Migration: APT3 Application Cleanup/Remove
+--- Warning, delete Migration: APT3 Application Cleanup/Remove
 
 -- =====================================================
 -- 1. STRICT SAFETY CHECKS
@@ -12,7 +12,15 @@ DECLARE
     v_app_count INT;
     v_role_count INT;
     v_client_count INT;
-    v_other_count INT;
+
+    -- other tables (upper limit controlled by variable)
+    v_user_role_xref_count INT;
+    v_access_priv_count INT;
+    v_admin_count INT;
+    v_audit_count INT;
+
+    v_max_other INT := 30;
+
 BEGIN
     -- Check fam_application (expected EXACT 3, one each env: DEV/TEST/PROD)
     SELECT COUNT(*) INTO v_app_count
@@ -52,8 +60,12 @@ BEGIN
         'ABORT: Expected exactly 3 application_client rows, found %', v_client_count;
     END IF;
 
-    -- Generic safeguard: other tables must not exceed 30
-    SELECT COUNT(*) INTO v_other_count
+    -- ==========================
+    -- UPPER LIMIT CHECKS (≤ v_max_other) - rate limit checks to prevent mass delete.
+    -- ==========================
+
+    -- user_role_xref
+    SELECT COUNT(*) INTO v_user_role_xref_count
     FROM app_fam.fam_user_role_xref
     WHERE role_id IN (
         SELECT role_id FROM app_fam.fam_role
@@ -64,13 +76,70 @@ BEGIN
         )
     );
 
-    IF v_other_count > 30 THEN
+    IF v_user_role_xref_count > v_max_other THEN
         RAISE EXCEPTION
-        'ABORT: fam_user_role_xref exceeds limit (30). Found %', v_other_count;
+        'ABORT: fam_user_role_xref exceeds limit (%). Found %',
+        v_max_other, v_user_role_xref_count;
     END IF;
 
-    RAISE NOTICE 'Safety checks passed: app=% role=% client=% other=%',
-        v_app_count, v_role_count, v_client_count, v_other_count;
+    -- access_control_privilege
+    SELECT COUNT(*) INTO v_access_priv_count
+    FROM app_fam.fam_access_control_privilege
+    WHERE role_id IN (
+        SELECT role_id FROM app_fam.fam_role
+        WHERE application_id IN (
+            SELECT application_id
+            FROM app_fam.fam_application
+            WHERE application_name LIKE 'APT3_%'
+        )
+    );
+
+    IF v_access_priv_count > v_max_other THEN
+        RAISE EXCEPTION
+        'ABORT: fam_access_control_privilege exceeds limit (%). Found %',
+        v_max_other, v_access_priv_count;
+    END IF;
+
+    -- application_admin
+    SELECT COUNT(*) INTO v_admin_count
+    FROM app_fam.fam_application_admin
+    WHERE application_id IN (
+        SELECT application_id
+        FROM app_fam.fam_application
+        WHERE application_name LIKE 'APT3_%'
+    );
+
+    IF v_admin_count > v_max_other THEN
+        RAISE EXCEPTION
+        'ABORT: fam_application_admin exceeds limit (%). Found %',
+        v_max_other, v_admin_count;
+    END IF;
+
+    -- privilege_change_audit
+    SELECT COUNT(*) INTO v_audit_count
+    FROM app_fam.fam_privilege_change_audit
+    WHERE application_id IN (
+        SELECT application_id
+        FROM app_fam.fam_application
+        WHERE application_name LIKE 'APT3_%'
+    );
+
+    IF v_audit_count > v_max_other THEN
+        RAISE EXCEPTION
+        'ABORT: fam_privilege_change_audit exceeds limit (%). Found %',
+        v_max_other, v_audit_count;
+    END IF;
+
+    -- ==========================
+    -- LOG SUMMARY
+    -- ==========================
+
+    RAISE NOTICE 'Safety checks passed: app=% role=% app_client=%',
+        v_app_count, v_role_count, v_client_count;
+
+    RAISE NOTICE 'Other counts: user_role=% access_priv=% app_admin=% audit=% (limit=%)',
+        v_user_role_xref_count, v_access_priv_count, v_admin_count, v_audit_count, v_max_other;
+
 END $$;
 
 -- =====================================================
