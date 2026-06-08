@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.17.2](https://github.com/bcgov/nr-forests-access-management/compare/v2.17.1...v2.17.2) (2026-06-08)
+
+
+### Bug Fixes
+
+* [#2052](https://github.com/bcgov/nr-forests-access-management/issues/2052) Flyway Remove APT3 App ([#2210](https://github.com/bcgov/nr-forests-access-management/issues/2210)) ([7f77439](https://github.com/bcgov/nr-forests-access-management/commit/7f7743934277828447328572306ea8b34e9cea95))
+
+## [2.17.1](https://github.com/bcgov/nr-forests-access-management/compare/v2.17.0...v2.17.1) (2026-06-05)
+
+
+### Bug Fixes
+
+* [#2206](https://github.com/bcgov/nr-forests-access-management/issues/2206) Update CSP roles ([#2207](https://github.com/bcgov/nr-forests-access-management/issues/2207)) ([b169944](https://github.com/bcgov/nr-forests-access-management/commit/b1699446f6daed1328265cd242a9a04f9f9583e1))
+
 ## [2.17.0](https://github.com/bcgov/nr-forests-access-management/compare/v2.16.0...v2.17.0) (2026-06-03)
 
 
