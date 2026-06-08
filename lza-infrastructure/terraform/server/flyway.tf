@@ -235,6 +235,7 @@ locals {
 data "aws_lambda_invocation" "invoke_flyway_migration" {
   function_name = aws_lambda_function.flyway-migrations.function_name
 
+  # APT3 removed: Flyway (immutable) still references its oidc_client; Keep these placeholders (e.g. 'flywayplaceholder-removed-app') and do not delete them.
   input = <<JSON
   {
     "flywayRequest": {
