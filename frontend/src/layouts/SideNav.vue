@@ -7,7 +7,6 @@ import AlignBoxIcon from "@carbon/icons-vue/es/align-box--top-center/16";
 import EmailIcon from "@carbon/icons-vue/es/email/16";
 import { useQuery } from "@tanstack/vue-query";
 import { AdminRoleAuthGroup } from "fam-admin-mgmt-api/model";
-import Drawer from "primevue/drawer";
 import { computed } from "vue";
 import { useRouter, type RouteRecordName } from "vue-router";
 
@@ -82,18 +81,15 @@ const navigateOnClick = (routeName: RouteRecordName) => {
 };
 </script>
 <template>
-    <Drawer
+    <div
         class="fam-sidenav"
-        v-model:visible="sideNavState.isVisible"
-        :showCloseIcon="false"
-        :pt="{
-            header: { style: { display: 'none' } }
-        }"
+        :class="{ 'is-visible': sideNavState.isVisible }"
+        @click.self="sideNavState.toggleVisible()"
     >
         <nav class="sidenav">
             <div class="content">
                 <ul>
-                    <template v-for="item in sideNavItems">
+                    <template v-for="item in sideNavItems" :key="item.routeName">
                         <li
                             :class="{
                                 'sidenav-selected': isMenuItemHighlighted(
@@ -111,6 +107,7 @@ const navigateOnClick = (routeName: RouteRecordName) => {
                         </li>
                         <li
                             v-for="subMenuItem in item.subMenuItems"
+                            :key="subMenuItem.routeName"
                             :class="[
                                 'sub-menu-item',
                                 {
@@ -151,19 +148,45 @@ const navigateOnClick = (routeName: RouteRecordName) => {
                 </ul>
             </div>
         </nav>
-    </Drawer>
+    </div>
 </template>
 <style lang="scss" scoped>
 .fam-sidenav {
+    --header-height: 3rem;
+    --sidenav-width: 16rem;
+
+    // On mobile, the outer wrapper becomes the backdrop overlay
+    @media (max-width: 1023px) {
+        position: fixed;
+        top: var(--header-height);
+        left: 0;
+        width: 100vw;
+        height: calc(100vh - var(--header-height));
+        background: transparent;
+        pointer-events: none;
+        transition: background 0.2s ease;
+        z-index: 8;
+
+        &.is-visible {
+            background: rgb(0 0 0 / 35%);
+            pointer-events: auto;
+        }
+    }
 
     .sidenav {
+        pointer-events: auto;
         position: fixed;
         padding: 1rem 0;
-        width: 100%;
-        height: calc(100vh - 3.125rem - env(safe-area-inset-bottom));
+        width: var(--sidenav-width);
+        height: calc(100vh - var(--header-height) - env(safe-area-inset-bottom));
         padding-bottom: calc(1rem + env(safe-area-inset-bottom));
         left: 0;
+        top: var(--header-height);
         overflow: hidden auto;
+        background: var(--layer-01);
+        transform: translateX(-100%);
+        transition: transform 0.25s ease;
+        z-index: 9;
 
         .content {
             position: relative;
@@ -251,9 +274,13 @@ const navigateOnClick = (routeName: RouteRecordName) => {
         }
     }
 
-    @media (min-width: 768px) {
+    &.is-visible .sidenav {
+        transform: translateX(0);
+    }
+
+    @media (min-width: 1024px) {
         .sidenav {
-            width: 100%;
+            transform: translateX(0);
         }
     }
 }
@@ -263,7 +290,7 @@ const navigateOnClick = (routeName: RouteRecordName) => {
     @supports (-webkit-touch-callout: none) {
         .fam-sidenav .sidenav {
             height: calc(
-                100vh - 3.125rem - (env(safe-area-inset-bottom, 0) + 4rem)
+                100vh - 3rem - (env(safe-area-inset-bottom, 0) + 4rem)
             );
         }
     }
