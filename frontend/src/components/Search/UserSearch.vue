@@ -10,7 +10,7 @@ import type { SelectedUser } from "@/types/SelectUserType";
 import type { UserSearchType } from "@/types/UserSearchTypes";
 import SearchIcon from "@carbon/icons-vue/es/search/16";
 import { UserType } from "fam-app-acsctl-api/model";
-import type { DropdownChangeEvent } from "primevue/dropdown";
+import type { SelectChangeEvent } from "primevue/select";
 import InputText from "primevue/inputtext";
 import { useDialog } from "primevue/usedialog";
 import { computed, getCurrentInstance, ref, watch } from "vue";
@@ -201,7 +201,7 @@ const hasPreDomainChangeListener = computed(() => {
 // Note! If parent component does not listen to "pre-user-domain-change", domain change will be applied immediately
 // when user selects different domain option. Otherwise, it will wait for parent component's approval
 // before applying the change.
-const handleDomainSelection = (event: DropdownChangeEvent) => {
+const handleDomainSelection = (event: SelectChangeEvent) => {
     const nextDomainOption = event.value as SelectOption<UserType>;
     if (!nextDomainOption || nextDomainOption.value === selectedDomainOption.value.value) {
         return;
@@ -221,7 +221,7 @@ const handleDomainSelection = (event: DropdownChangeEvent) => {
     });
 };
 
-const handleSearchTypeChange = (event: DropdownChangeEvent) => {
+const handleSearchTypeChange = (event: SelectChangeEvent) => {
     const nextTypeOption = event.value as SelectOption<UserSearchType>;
     if (!nextTypeOption) {
         return;

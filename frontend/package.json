@@ -17,6 +17,7 @@
         "test-coverage": "vitest run --coverage"
     },
     "dependencies": {
+        "@primeuix/themes": "^1.2.3",
         "@bcgov-nr/nr-theme": "~1.8.9",
         "@carbon/icons-vue": "^10.99.1",
         "@carbon/themes": "^11.43.0",
@@ -28,7 +29,7 @@
         "fam-admin-mgmt-api": "file:../client-code-gen/gen/admin-management-api",
         "fam-app-acsctl-api": "file:../client-code-gen/gen/app-access-control-api",
         "luxon": "^3.5.0",
-        "primevue": "3.46",
+        "primevue": "^4.4.1",
         "vee-validate": "^4.12.6",
         "vue": "^3.4.23",
         "vue-router": "^4.3.2",

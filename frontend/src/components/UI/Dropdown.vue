@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import Dropdown, { type DropdownChangeEvent } from "primevue/dropdown";
+import Select, { type SelectChangeEvent } from "primevue/select";
 import InputSkeleton from "@/components/Skeletons/InputSkeleton.vue";
 import ErrorText from "@/components/UI/ErrorText.vue";
 import Label from "./Label.vue";
@@ -11,7 +11,7 @@ const props = defineProps<{
     id?: string;
     optionLabel?: string;
     labelText?: string;
-    onChange?: ((event: DropdownChangeEvent) => void) | undefined;
+    onChange?: ((event: SelectChangeEvent) => void) | undefined;
     options?: any[];
     placeholder?: string;
     isFetching?: boolean;
@@ -36,7 +36,7 @@ const props = defineProps<{
         />
         <InputSkeleton v-if="props.isFetching" />
 
-        <Dropdown
+        <Select
             v-if="!props.isFetching && !props.isError"
             :id="props.id ?? `${props.name}-id`"
             :name="props.name"

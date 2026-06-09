@@ -5,6 +5,7 @@ import App from "@/App.vue";
 import { router } from "@/router";
 
 import PrimeVue from "primevue/config";
+import Lara from "@primeuix/themes/lara";
 import ConfirmationService from "primevue/confirmationservice";
 import DialogService from "primevue/dialogservice";
 import Tooltip from "primevue/tooltip";
@@ -49,7 +50,11 @@ const queryClient = new QueryClient({
 const app = createApp(App);
 
 app.use(router);
-app.use(PrimeVue);
+app.use(PrimeVue, {
+    theme: {
+        preset: Lara
+    },
+});
 app.use(ConfirmationService);
 app.use(DialogService);
 app.use(VueQueryPlugin, { queryClient });

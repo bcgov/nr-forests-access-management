@@ -2,12 +2,13 @@
  * DatePicker Component
  *
  * Purpose:
- * Provides an interface for selecting dates using the PrimeVue Calendar component.
+ * Provides an interface for selecting dates using the PrimeVue DatePicker component.
  *
  * Props:
  * - `title` (String, optional): Title displayed above the date picker to provide context.
  * - `description` (String, optional): Description displayed below the title to explain the purpose of the date picker.
- * - `initialDate` (Date, optional): Sets the initial selected date. Defaults to `null`.
+ * - `modelValue` (String, optional): Selected date in `YYYY-MM-DD` format.
+ * - `initialDate` (Date, optional): Legacy fallback initial selected date.
  * - `minDate` (Date, optional): The earliest selectable date. Defaults to `null` (no restriction).
  * - `maxDate` (Date, optional): The latest selectable date. Defaults to `null` (no restriction).
  *
@@ -22,7 +23,8 @@
 <script setup lang="ts">
 import { PRIMEVUE_DATE_FORMAT_MM_DD_YY } from "@/constants/DateFormats";
 import { formatDateToYYYYMMDD } from "@/utils/DateUtils";
-import Calendar from "primevue/calendar";
+import PrimeDatePicker from "primevue/datepicker";
+import { DateTime } from "luxon";
 import { ref, watch } from "vue";
 
 const selectedDate = ref<Date | null>(null);
@@ -37,6 +39,11 @@ const props = defineProps({
     type: String,
     required: false,
     default: "By default, this role does not expire. Set an expiry date if you want the permission to end automatically.",
+  },
+  modelValue: {
+    type: String,
+    required: false,
+    default: null,
   },
   initialDate: {
     type: Date,
@@ -57,6 +64,16 @@ const props = defineProps({
 
 const emit = defineEmits(["update:datePickerValue"]);
 
+const syncFromProps = () => {
+  if (props.modelValue) {
+    const parsedDate = DateTime.fromFormat(props.modelValue, "yyyy-MM-dd");
+    selectedDate.value = parsedDate.isValid ? parsedDate.toJSDate() : null;
+    return;
+  }
+
+  selectedDate.value = props.initialDate;
+};
+
 watch(
   selectedDate,
   (newValue) => {
@@ -67,7 +84,13 @@ watch(
   }
 );
 
-selectedDate.value = props.initialDate;
+watch(
+  () => [props.modelValue, props.initialDate],
+  () => {
+    syncFromProps();
+  },
+  { immediate: true }
+);
 </script>
 
 
@@ -80,7 +103,7 @@ selectedDate.value = props.initialDate;
 
     <div class="date-picker-area">
       <div class="picker-title" v-if="props.title">Expiry date:</div>
-      <Calendar
+      <PrimeDatePicker
         v-model="selectedDate"
         :placeholder="'mm/dd/yyyy'"
         :minDate="props.minDate || undefined"

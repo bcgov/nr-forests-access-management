@@ -29,6 +29,4 @@ const layoutComponent = computed(() => {
 <style lang="scss">
 @use "@/assets/styles/styles";
 @use "@/assets/styles/themes";
-@import "primevue/resources/primevue.min.css";
-@import "primevue/resources/themes/bootstrap4-light-blue/theme.css";
 </style>

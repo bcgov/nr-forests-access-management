@@ -17,7 +17,7 @@ import {
     UserType,
     type FamAppAdminCreateRequest,
 } from "fam-admin-mgmt-api/model";
-import type { DropdownChangeEvent } from "primevue/dropdown";
+import type { SelectChangeEvent } from "primevue/select";
 import { useForm } from "vee-validate";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
@@ -78,7 +78,7 @@ const applicationListQuery = useQuery({
     select: (data) => getFamAdminApplications(data),
 });
 
-const handleApplicationChange = (e: DropdownChangeEvent) => {
+const handleApplicationChange = (e: SelectChangeEvent) => {
     setFieldValue("application", e.value);
 };
 

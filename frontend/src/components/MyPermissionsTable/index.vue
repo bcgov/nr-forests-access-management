@@ -4,7 +4,7 @@ import { ref } from "vue";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
 import TableToolbar from "@/components/Table/TableToolbar.vue";
-import { FilterMatchMode } from "primevue/api";
+import { FilterMatchMode } from "@primevue/core/api";
 import { useQuery } from "@tanstack/vue-query";
 import { AdminMgmtApiService } from "@/services/ApiServiceFactory";
 

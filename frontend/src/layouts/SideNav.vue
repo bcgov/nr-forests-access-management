@@ -7,7 +7,7 @@ import AlignBoxIcon from "@carbon/icons-vue/es/align-box--top-center/16";
 import EmailIcon from "@carbon/icons-vue/es/email/16";
 import { useQuery } from "@tanstack/vue-query";
 import { AdminRoleAuthGroup } from "fam-admin-mgmt-api/model";
-import Sidebar from "primevue/sidebar";
+import Drawer from "primevue/drawer";
 import { computed } from "vue";
 import { useRouter, type RouteRecordName } from "vue-router";
 
@@ -82,7 +82,14 @@ const navigateOnClick = (routeName: RouteRecordName) => {
 };
 </script>
 <template>
-    <Sidebar class="fam-sidenav" v-model:visible="sideNavState.isVisible">
+    <Drawer
+        class="fam-sidenav"
+        v-model:visible="sideNavState.isVisible"
+        :showCloseIcon="false"
+        :pt="{
+            header: { style: { display: 'none' } }
+        }"
+    >
         <nav class="sidenav">
             <div class="content">
                 <ul>
@@ -144,10 +151,11 @@ const navigateOnClick = (routeName: RouteRecordName) => {
                 </ul>
             </div>
         </nav>
-    </Sidebar>
+    </Drawer>
 </template>
 <style lang="scss" scoped>
 .fam-sidenav {
+
     .sidenav {
         position: fixed;
         padding: 1rem 0;

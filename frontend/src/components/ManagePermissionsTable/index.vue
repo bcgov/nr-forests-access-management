@@ -11,7 +11,7 @@ import {
     SortOrderEnum,
     type FamApplicationUserRoleAssignmentGetSchema,
 } from "fam-app-acsctl-api/model";
-import { FilterMatchMode } from "primevue/api";
+import { FilterMatchMode } from "@primevue/core/api";
 import Column from "primevue/column";
 import ConfirmDialog from "primevue/confirmdialog";
 import DataTable, {

@@ -391,7 +391,7 @@ const onInvalid = () => {
                         v-if="!values?.isAddingDelegatedAdmin"
                     >
                         <DatePicker
-                            :modelValue="values.expiryDate"
+                            :model-value="values.expiryDate ?? undefined"
                             @update:datePickerValue="setFieldValue('expiryDate', $event)"
                             title="Expiry date (optional)"
                             description="By default, this role does not expire. Set an expiry date if you want the permission to end automatically."
