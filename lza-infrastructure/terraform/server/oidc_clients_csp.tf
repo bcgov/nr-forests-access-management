@@ -3,16 +3,26 @@ resource "aws_cognito_user_pool_client" "dev_csp_oidc_client" {
   allowed_oauth_flows                           = ["code"]
   allowed_oauth_flows_user_pool_client          = "true"
   allowed_oauth_scopes                          = ["openid", "profile", "email"]
-  callback_urls                                 = [
-    var.oidc_sso_playground_url,
-    "http://localhost:3000/",
-    "https://dlvrapps.nrs.gov.bc.ca/pub/csp"
-  ]
-  logout_urls                                   = [
-    var.oidc_sso_playground_url,
-    "${var.cognito_app_client_logout_chain_url.dev}http://localhost:3000/logout",
-    "${var.cognito_app_client_logout_chain_url.dev}https://dlvrapps.nrs.gov.bc.ca/pub/csp/logout"
-  ]
+  callback_urls                                 = concat(
+    [
+      var.oidc_sso_playground_url,
+      "http://localhost:3000/"
+    ],
+    flatten([for i in range("${var.dev_pr_url_count}") : [
+      "https://nr-csp-${i}.apps.silver.devops.gov.bc.ca",
+      "https://nr-csp-${i}.apps.gold.devops.gov.bc.ca"
+    ]])
+  )
+  logout_urls                                   = concat(
+    [
+      var.oidc_sso_playground_url,
+      "${var.cognito_app_client_logout_chain_url.dev}http://localhost:3000/logout",
+    ],
+    flatten([for i in range("${var.dev_pr_url_count}") : [
+      "${var.cognito_app_client_logout_chain_url.dev}https://nr-csp-${i}.apps.silver.devops.gov.bc.ca/logout",
+      "${var.cognito_app_client_logout_chain_url.dev}https://nr-csp-${i}.apps.gold.devops.gov.bc.ca/logout"
+    ]])
+  )
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
   explicit_auth_flows                           = ["ALLOW_REFRESH_TOKEN_AUTH"]
@@ -43,11 +53,13 @@ resource "aws_cognito_user_pool_client" "test_csp_oidc_client" {
   allowed_oauth_scopes                          = ["openid", "profile", "email"]
   callback_urls                                 = [
     var.oidc_sso_playground_url,
-    "https://testapps.nrs.gov.bc.ca/pub/csp"
+    "https://nr-csp-test.apps.silver.devops.gov.bc.ca",
+    "https://nr-csp-test.apps.gold.devops.gov.bc.ca"
   ]
   logout_urls                                   = [
     var.oidc_sso_playground_url,
-    "${var.cognito_app_client_logout_chain_url.test}https://testapps.nrs.gov.bc.ca/pub/csp/logout"
+    "${var.cognito_app_client_logout_chain_url.test}https://nr-csp-test.apps.silver.devops.gov.bc.ca/logout",
+    "${var.cognito_app_client_logout_chain_url.test}https://nr-csp-test.apps.gold.devops.gov.bc.ca/logout"
   ]
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
@@ -79,11 +91,13 @@ resource "aws_cognito_user_pool_client" "prod_csp_oidc_client" {
   allowed_oauth_scopes                          = ["openid", "profile", "email"]
   callback_urls                                 = [
     var.oidc_sso_playground_url,
-    "https://apps.nrs.gov.bc.ca/pub/csp"
+    "https://nr-csp-prod.apps.silver.devops.gov.bc.ca",
+    "https://nr-csp-prod.apps.gold.devops.gov.bc.ca"
   ]
   logout_urls                                   = [
     var.oidc_sso_playground_url,
-    "${var.cognito_app_client_logout_chain_url.prod}https://apps.nrs.gov.bc.ca/pub/csp/logout"
+    "${var.cognito_app_client_logout_chain_url.prod}https://nr-csp-prod.apps.silver.devops.gov.bc.ca/logout",
+    "${var.cognito_app_client_logout_chain_url.prod}https://nr-csp-prod.apps.gold.devops.gov.bc.ca/logout"
   ]
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
