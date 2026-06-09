@@ -26,6 +26,7 @@ services:
         build:
             context: server/flyway
             dockerfile: Dockerfile
+        # APT3 removed: Flyway (immutable) still references its oidc_client; Keep these placeholders (e.g. 'flywayplaceholder-removed-app') and do not delete them.
         environment:
             - FLYWAY_USER=postgres
             - FLYWAY_PASSWORD=postgres
@@ -63,9 +64,9 @@ services:
             - FLYWAY_PLACEHOLDERS_client_id_dev_waste_plus_oidc_client="flywayplaceholder"
             - FLYWAY_PLACEHOLDERS_client_id_test_waste_plus_oidc_client="flywayplaceholder"
             - FLYWAY_PLACEHOLDERS_client_id_prod_waste_plus_oidc_client="flywayplaceholder"
-            - FLYWAY_PLACEHOLDERS_client_id_dev_apt3_oidc_client="flywayplaceholder"
-            - FLYWAY_PLACEHOLDERS_client_id_test_apt3_oidc_client="flywayplaceholder"
-            - FLYWAY_PLACEHOLDERS_client_id_prod_apt3_oidc_client="flywayplaceholder"
+            - FLYWAY_PLACEHOLDERS_client_id_dev_apt3_oidc_client="flywayplaceholder-removed-app"
+            - FLYWAY_PLACEHOLDERS_client_id_test_apt3_oidc_client="flywayplaceholder-removed-app"
+            - FLYWAY_PLACEHOLDERS_client_id_prod_apt3_oidc_client="flywayplaceholder-removed-app"
             - FLYWAY_PLACEHOLDERS_client_id_dev_rept_oidc_client="flywayplaceholder"
             - FLYWAY_PLACEHOLDERS_client_id_test_rept_oidc_client="flywayplaceholder"
             - FLYWAY_PLACEHOLDERS_client_id_prod_rept_oidc_client="flywayplaceholder"
