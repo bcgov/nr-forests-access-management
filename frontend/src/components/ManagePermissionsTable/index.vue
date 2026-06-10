@@ -31,6 +31,7 @@ import {
 import TableSkeleton from "@/components/Skeletons/TableSkeleton.vue";
 import TableHeaderTitle from "@/components/Table/TableHeaderTitle.vue";
 import TableToolbar from "@/components/Table/TableToolbar.vue";
+import { TABLE_PAGINATOR_PT } from "@/components/Table/paginatorPassThrough";
 import Chip from "@/components/UI/Chip.vue";
 import ErrorText from "@/components/UI/ErrorText.vue";
 import Spinner from "@/components/UI/Spinner.vue";
@@ -719,6 +720,7 @@ const downloadManagePermissionsCSVData = () => {
                 :paginatorTemplate="TABLE_PAGINATOR_TEMPLATE"
                 :currentPageReportTemplate="TABLE_CURRENT_PAGE_REPORT_TEMPLATE"
                 :rowStyle="highlightNewUserAccessRow"
+                :pt="TABLE_PAGINATOR_PT"
                 @page="handlePageChange"
                 @sort="handleSort"
                 :loading="isFetching"
@@ -871,6 +873,8 @@ const downloadManagePermissionsCSVData = () => {
     </div>
 </template>
 <style lang="scss">
+@use "@/components/Table/paginatorPassThrough.scss";
+
 .fam-table {
     border: 0 0.25rem 0.25rem 0.25rem;
 
@@ -929,9 +933,5 @@ const downloadManagePermissionsCSVData = () => {
     max-width: 320px; /* Set the desired width */
     white-space: normal;
     word-wrap: break-word;
-}
-
-.p-paginator .p-dropdown {
-  min-width: 6rem !important;
 }
 </style>

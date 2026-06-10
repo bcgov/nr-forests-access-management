@@ -4,6 +4,7 @@ import { ref } from "vue";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
 import TableToolbar from "@/components/Table/TableToolbar.vue";
+import { TABLE_PAGINATOR_PT } from "@/components/Table/paginatorPassThrough";
 import { FilterMatchMode } from "@primevue/core/api";
 import { useQuery } from "@tanstack/vue-query";
 import { AdminMgmtApiService } from "@/services/ApiServiceFactory";
@@ -95,6 +96,7 @@ const headers: string[] = [
             :globalFilterFields="['application', 'env', 'role', 'forestClient']"
             :paginatorTemplate="TABLE_PAGINATOR_TEMPLATE"
             :currentPageReportTemplate="TABLE_CURRENT_PAGE_REPORT_TEMPLATE"
+            :pt="TABLE_PAGINATOR_PT"
             stripedRows
             removableSort
         >
@@ -121,6 +123,8 @@ const headers: string[] = [
 </template>
 
 <style lang="scss">
+@use "@/components/Table/paginatorPassThrough.scss";
+
 .my-permissions-table-container {
     .p-datatable {
         .p-column-title {

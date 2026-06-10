@@ -1,0 +1,18 @@
+.table-paginator-root {
+    justify-content: flex-start;
+}
+
+.table-paginator-content {
+    width: 100%;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+}
+
+.table-paginator-current {
+    margin-right: auto;
+    text-align: left;
+}
+
+.table-paginator-root .p-select {
+    min-width: 6rem;
+}
