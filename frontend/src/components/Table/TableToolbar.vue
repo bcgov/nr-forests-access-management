@@ -78,11 +78,19 @@ const handleBlur = () => {
     }
 
     .p-input-icon-left {
+        position: relative;
+        display: flex;
+        align-items: center;
         z-index: 1;
         flex-grow: 1;
 
         svg {
-            top: 52%;
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            z-index: 2;
         }
 
         &:deep(.p-inputtext) {
