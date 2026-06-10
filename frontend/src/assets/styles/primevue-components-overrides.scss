@@ -541,16 +541,17 @@ label {
     flex-wrap: nowrap;
 }
 
+// PrimeVue v4: RowsPerPageDropdown uses .p-select (was .p-dropdown in v3)
 .#{variables.$primevue-prefix}-datatable
     .#{variables.$primevue-prefix}-paginator-bottom
-    .#{variables.$primevue-prefix}-dropdown
-    .#{variables.$primevue-prefix}-dropdown-label.#{variables.$primevue-prefix}-inputtext {
+    .#{variables.$primevue-prefix}-select
+    .#{variables.$primevue-prefix}-select-label {
     padding: 0 0.2rem 0 1.4rem;
     align-self: center;
 }
 
 .#{variables.$primevue-prefix}-paginator
-    .#{variables.$primevue-prefix}-inputwrapper,
+    .#{variables.$primevue-prefix}-select,
 .#{variables.$primevue-prefix}-paginator-current,
 .#{variables.$primevue-prefix}-paginator-prev,
 .#{variables.$primevue-prefix}-paginator-next {
@@ -575,8 +576,9 @@ label {
     box-shadow: unset;
 }
 
+// PrimeVue v4: .p-dropdown → .p-select
 .#{variables.$primevue-prefix}-paginator
-    .#{variables.$primevue-prefix}-dropdown {
+    .#{variables.$primevue-prefix}-select {
     width: 5rem !important;
     background-color: transparent !important;
     margin-left: 0;
@@ -584,17 +586,19 @@ label {
     border-radius: 0;
 }
 
+// PrimeVue v4: .p-dropdown-trigger → .p-select-dropdown
 .#{variables.$primevue-prefix}-datatable
     .#{variables.$primevue-prefix}-paginator-bottom
-    .#{variables.$primevue-prefix}-dropdown-trigger {
+    .#{variables.$primevue-prefix}-select-dropdown {
     padding-right: 1.1rem;
 }
 
 .#{variables.$primevue-prefix}-paginator
     .#{variables.$primevue-prefix}-paginator-current {
     padding-right: 1rem;
-    margin-right: auto;
     cursor: auto;
+    display: flex;
+    align-items: center;
 }
 
 /* ------------------------------------ dialog -------------------------- */
