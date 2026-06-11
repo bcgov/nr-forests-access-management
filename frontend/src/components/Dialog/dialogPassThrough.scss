@@ -1,0 +1,25 @@
+.fam-dialog-header-actions {
+    margin-left: auto;
+}
+
+.fam-dialog-close-button {
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    padding: 0;
+    width: 2rem;
+    min-width: 2rem;
+    height: 2rem;
+}
+
+.p-dialog .p-dialog-header .fam-dialog-close-button:enabled:hover,
+.p-dialog .p-dialog-header .fam-dialog-close-button:enabled:active,
+.p-dialog .p-dialog-header .fam-dialog-close-button:focus {
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+}
+
+.fam-dynamic-dialog-close-button {
+    border-radius: 0;
+}

@@ -117,7 +117,9 @@ label {
     );
 }
 
-.#{variables.$primevue-prefix}-button:focus {
+.#{variables.$primevue-prefix}-button:focus:not(
+        .#{variables.$primevue-prefix}-dialog-close-button
+    ) {
     border-color: map.get(
         lightButton.$light-button-token-overrides,
         "button-primary"
@@ -174,7 +176,9 @@ label {
     );
 }
 
-.#{variables.$primevue-prefix}-button.#{variables.$primevue-prefix}-button-secondary:focus {
+.#{variables.$primevue-prefix}-button.#{variables.$primevue-prefix}-button-secondary:focus:not(
+        .#{variables.$primevue-prefix}-dialog-close-button
+    ) {
     border-color: map.get(
         lightButton.$light-button-token-overrides,
         "button-secondary"
@@ -219,7 +223,9 @@ label {
     );
     color: map.get(lightTheme.$light-theme, "text-on-color");
 }
-.#{variables.$primevue-prefix}-button.#{variables.$primevue-prefix}-button-outlined:focus {
+.#{variables.$primevue-prefix}-button.#{variables.$primevue-prefix}-button-outlined:focus:not(
+        .#{variables.$primevue-prefix}-dialog-close-button
+    ) {
     background: map.get(
         lightButton.$light-button-token-overrides,
         "button-tertiary-active"
@@ -646,7 +652,9 @@ label {
     border-bottom-left-radius: 0.5rem;
 }
 
-.#{variables.$primevue-prefix}-dialog .#{variables.$primevue-prefix}-button {
+.#{variables.$primevue-prefix}-dialog
+    .#{variables.$primevue-prefix}-dialog-footer
+    .#{variables.$primevue-prefix}-button {
     flex-basis: 100%;
     padding: 0.75rem;
 }
@@ -658,8 +666,6 @@ label {
     border-bottom: none;
     padding-bottom: 0;
 
-    display: inline;
-
     border-top-right-radius: 0.5rem;
     border-top-left-radius: 0.5rem;
 
@@ -667,24 +673,6 @@ label {
         @extend %heading-03;
     }
 }
-
-.#{variables.$primevue-prefix}-dialog
-    .#{variables.$primevue-prefix}-dialog-header-icons {
-    float: right;
-}
-
-.#{variables.$primevue-prefix}-dialog
-    .#{variables.$primevue-prefix}dialog-header
-    .#{variables.$primevue-prefix}-dialog-header-icon:focus {
-    box-shadow: none;
-}
-
-.#{variables.$primevue-prefix}-dialog-header-icon
-    .#{variables.$primevue-prefix}-icon {
-    height: 0.6rem;
-    width: 0.6rem;
-}
-
 /* ------------------------------------ dialog confirm button reject --------------------------         */
 .#{variables.$primevue-prefix}-dialog
     .#{variables.$primevue-prefix}-confirm-dialog-reject {

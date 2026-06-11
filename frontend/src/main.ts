@@ -12,6 +12,11 @@ import Tooltip from "primevue/tooltip";
 import { VueQueryPlugin, QueryClient } from "@tanstack/vue-query";
 import { isAxiosError } from "axios";
 import { THREE_HOURS } from "@/constants/TimeUnits";
+import {
+    CONFIRM_DIALOG_PASS_THROUGH,
+    DIALOG_PASS_THROUGH,
+    DYNAMIC_DIALOG_PASS_THROUGH,
+} from "@/components/Dialog/dialogPassThrough";
 
 // Configure Amplify
 Amplify.configure(amplifyconfig);
@@ -52,7 +57,12 @@ const app = createApp(App);
 app.use(router);
 app.use(PrimeVue, {
     theme: {
-        preset: Lara
+        preset: Lara,
+    },
+    pt: {
+        dialog: DIALOG_PASS_THROUGH,
+        dynamicdialog: DYNAMIC_DIALOG_PASS_THROUGH,
+        confirmdialog: CONFIRM_DIALOG_PASS_THROUGH,
     },
 });
 app.use(ConfirmationService);
