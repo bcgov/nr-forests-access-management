@@ -47,6 +47,7 @@ jobs:
       - uses: actions/checkout@v6
       - name: Flyway
         uses: docker://flyway/flyway:10
+        # APT3 removed: Flyway (immutable) still references its oidc_client; Keep these placeholders (e.g. 'flywayplaceholder-removed-app') and do not delete them.
         env:
           FLYWAY_URL: jdbc:postgresql://postgres:5432/fam
           FLYWAY_USER: ${{ needs.vars.outputs.user }}
