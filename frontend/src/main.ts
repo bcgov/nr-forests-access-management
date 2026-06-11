@@ -5,7 +5,7 @@ import App from "@/App.vue";
 import { router } from "@/router";
 
 import PrimeVue from "primevue/config";
-import Lara from "@primeuix/themes/lara";
+import { FamPrimeVuePreset } from "@/theme/primevue-preset";
 import ConfirmationService from "primevue/confirmationservice";
 import DialogService from "primevue/dialogservice";
 import Tooltip from "primevue/tooltip";
@@ -57,7 +57,7 @@ const app = createApp(App);
 app.use(router);
 app.use(PrimeVue, {
     theme: {
-        preset: Lara,
+        preset: FamPrimeVuePreset,
     },
     pt: {
         dialog: DIALOG_PASS_THROUGH,

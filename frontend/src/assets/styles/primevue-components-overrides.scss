@@ -71,165 +71,44 @@ label {
 }
 
 /* ------------------------------------ primevue button --------------------------------- */
+/* NOTE: Button colors are now managed by PrimeVue v4 preset in frontend/src/theme/primevue-preset.ts */
+/* Keeping only layout/structure rules; color rules removed to allow preset CSS variables to apply */
 .#{variables.$primevue-prefix}-button {
     @extend %body-compact-01;
     border-radius: 0.25rem;
     text-align: left;
-    border-color: map.get(
-        lightButton.$light-button-token-overrides,
-        "button-primary"
-    );
-    background-color: map.get(
-        lightButton.$light-button-token-overrides,
-        "button-primary"
-    );
-}
-.#{variables.$primevue-prefix}-button:enabled:hover {
-    border-color: map.get(
-        lightButton.$light-button-token-overrides,
-        "button-primary-hover"
-    );
-    background: map.get(
-        lightButton.$light-button-token-overrides,
-        "button-primary-hover"
-    );
-}
-.#{variables.$primevue-prefix}-button:enabled:active {
-    border-color: map.get(
-        lightButton.$light-button-token-overrides,
-        "button-primary-active"
-    );
-    background: map.get(
-        lightButton.$light-button-token-overrides,
-        "button-primary-active"
-    );
-}
-.#{variables.$primevue-prefix}-button:disabled {
-    background: map.get(
-        lightButton.$light-button-token-overrides,
-        "button-primary-disabled"
-    );
-    opacity: 1;
-    color: map.get(lightTheme.$light-theme, "text-disabled");
-    border-color: map.get(
-        lightButton.$light-button-token-overrides,
-        "button-primary-disabled"
-    );
 }
 
 .#{variables.$primevue-prefix}-button:focus:not(
         .#{variables.$primevue-prefix}-dialog-close-button
     ) {
-    border-color: map.get(
-        lightButton.$light-button-token-overrides,
-        "button-primary"
-    );
-    background-color: map.get(
-        lightButton.$light-button-token-overrides,
-        "button-primary"
-    );
     outline: 0.075rem solid #ffffff !important;
     outline-offset: -0.2rem;
     box-shadow: unset !important;
 }
 /* ------------------------------------ primevue button secondary --------------------------------- */
 .#{variables.$primevue-prefix}-button.#{variables.$primevue-prefix}-button-secondary {
-    border-color: map.get(
-        lightButton.$light-button-token-overrides,
-        "button-secondary"
-    );
-    background-color: map.get(
-        lightButton.$light-button-token-overrides,
-        "button-secondary"
-    );
-}
-.#{variables.$primevue-prefix}-button.#{variables.$primevue-prefix}-button-secondary:enabled:hover {
-    border-color: map.get(
-        lightButton.$light-button-token-overrides,
-        "button-secondary-hover"
-    );
-    background: map.get(
-        lightButton.$light-button-token-overrides,
-        "button-secondary-hover"
-    );
-}
-.#{variables.$primevue-prefix}-button.#{variables.$primevue-prefix}-button-secondary:enabled:active {
-    border-color: map.get(
-        lightButton.$light-button-token-overrides,
-        "button-secondary-active"
-    );
-    background: map.get(
-        lightButton.$light-button-token-overrides,
-        "button-secondary-active"
-    );
-}
-.#{variables.$primevue-prefix}-button.#{variables.$primevue-prefix}-button-secondary:disabled {
-    background: map.get(
-        lightButton.$light-button-token-overrides,
-        "button-disabled"
-    );
-    opacity: 1;
-    color: map.get(lightTheme.$light-theme, "text-disabled");
-    border-color: map.get(
-        lightButton.$light-button-token-overrides,
-        "button-disabled"
-    );
+    /* Colors managed by PrimeVue v4 preset */
 }
 
 .#{variables.$primevue-prefix}-button.#{variables.$primevue-prefix}-button-secondary:focus:not(
         .#{variables.$primevue-prefix}-dialog-close-button
     ) {
-    border-color: map.get(
-        lightButton.$light-button-token-overrides,
-        "button-secondary"
-    );
-    background-color: map.get(
-        lightButton.$light-button-token-overrides,
-        "button-secondary"
-    );
     box-shadow: 0 0 0 0.125rem map.get(lightTheme.$light-theme, "focus") inset !important;
 }
 /* ------------------------------------ primevue button outlined--------------------------------- */
 .#{variables.$primevue-prefix}-button.#{variables.$primevue-prefix}-button-outlined {
-    color: map.get(
-        lightButton.$light-button-token-overrides,
-        "button-tertiary"
-    );
-    border-color: map.get(
-        lightButton.$light-button-token-overrides,
-        "button-tertiary"
-    );
     background-color: transparent;
 }
 .#{variables.$primevue-prefix}-button.#{variables.$primevue-prefix}-button-outlined:enabled:hover {
-    background: map.get(
-        lightButton.$light-button-token-overrides,
-        "button-tertiary-hover"
-    );
-    border-color: map.get(
-        lightButton.$light-button-token-overrides,
-        "button-tertiary-hover"
-    );
     color: map.get(lightTheme.$light-theme, "text-on-color");
 }
 .#{variables.$primevue-prefix}-button.#{variables.$primevue-prefix}-button-outlined:enabled:active {
-    background: map.get(
-        lightButton.$light-button-token-overrides,
-        "button-tertiary-active"
-    );
-    border-color: map.get(
-        lightButton.$light-button-token-overrides,
-        "button-tertiary-active"
-    );
     color: map.get(lightTheme.$light-theme, "text-on-color");
 }
 .#{variables.$primevue-prefix}-button.#{variables.$primevue-prefix}-button-outlined:focus:not(
         .#{variables.$primevue-prefix}-dialog-close-button
     ) {
-    background: map.get(
-        lightButton.$light-button-token-overrides,
-        "button-tertiary-active"
-    ) !important;
     color: map.get(lightTheme.$light-theme, "text-on-color");
     outline: 0.075rem solid #ffffff;
     outline-offset: -0.2rem;
