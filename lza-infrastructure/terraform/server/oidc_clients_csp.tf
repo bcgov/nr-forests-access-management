@@ -1,19 +1,13 @@
 locals {
-  csp_dev_silver_pr_url_count = floor((var.dev_pr_url_count + 1) / 2)
-  csp_dev_gold_pr_url_count   = floor(var.dev_pr_url_count / 2)
-
-  csp_dev_host_urls = concat(
-    [for i in range(local.csp_dev_silver_pr_url_count) : "https://nr-csp-${i}.apps.silver.devops.gov.bc.ca"],
-    [for i in range(local.csp_dev_gold_pr_url_count) : "https://nr-csp-${i}.apps.gold.devops.gov.bc.ca"]
-  )
+  csp_dev_host_urls = [
+    for i in range(var.dev_pr_url_count) : "https://nr-csp-${i}.apps.gold.devops.gov.bc.ca"
+  ]
 
   csp_test_host_urls = [
-    "https://nr-csp-test.apps.silver.devops.gov.bc.ca",
     "https://nr-csp-test.apps.gold.devops.gov.bc.ca"
   ]
 
   csp_prod_host_urls = [
-    "https://nr-csp-prod.apps.silver.devops.gov.bc.ca",
     "https://nr-csp-prod.apps.gold.devops.gov.bc.ca"
   ]
 }
