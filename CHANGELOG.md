@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.17.3](https://github.com/bcgov/nr-forests-access-management/compare/v2.17.2...v2.17.3) (2026-06-12)
+
+
+### Bug Fixes
+
+* [#2052](https://github.com/bcgov/nr-forests-access-management/issues/2052) remove apt3 OIDC client ([#2212](https://github.com/bcgov/nr-forests-access-management/issues/2212)) ([a0abe49](https://github.com/bcgov/nr-forests-access-management/commit/a0abe4927a1c43909cdb842d02a2118f93bbb413))
+* update to confiugre csp urls and allow for 50 urls in dev ([#2215](https://github.com/bcgov/nr-forests-access-management/issues/2215)) ([845d62e](https://github.com/bcgov/nr-forests-access-management/commit/845d62ea32c9a5f757672f103aa6ee2eb6f986fd))
+
 ## [2.17.2](https://github.com/bcgov/nr-forests-access-management/compare/v2.17.1...v2.17.2) (2026-06-08)
 
 
