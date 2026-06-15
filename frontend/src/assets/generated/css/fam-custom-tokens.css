@@ -19,6 +19,8 @@
   --primitive-color-gray-75: #535355;
   --primitive-color-gray-80: #464648;
   --primitive-color-gray-100: #131315;
+  --primitive-color-gray-50-opacity-12: rgba(147,147,149,0.12);
+  --primitive-color-gray-50-opacity-50: rgba(147,147,149,0.5);
   --primitive-color-red-10: #FFEAE5;
   --primitive-color-red-20: #FFC0B3;
   --primitive-color-red-40: #FF6D4E;
@@ -34,8 +36,8 @@
   --semantic-color-primary-700: #005CB8;
   --semantic-color-primary-800: #00478F;
   --semantic-color-background-default: #FFFFFF;
-  --semantic-color-background-hover: rgba(#939395, 0.12);
-  --semantic-color-background-active: rgba(#939395, 0.5);
+  --semantic-color-background-hover: rgba(147,147,149,0.12);
+  --semantic-color-background-active: rgba(147,147,149,0.5);
   --semantic-color-background-brand: #0073E6;
   --semantic-color-surface-layer-1: #F3F3F5;
   --semantic-color-surface-layer-2: #FFFFFF;

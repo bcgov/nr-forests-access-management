@@ -9,7 +9,7 @@
         "dev": "vite",
         "dev-host": "vite --host",
         "build": "run-p type-check build-only",
-        "build:tokens": "style-dictionary build --config style-dictionary.config.json",
+        "build:tokens": "style-dictionary build --config style-dictionary.config.json --verbose",
         "preview": "vite preview --port 5173",
         "build-only": "vite build",
         "type-check": "vue-tsc --noEmit",

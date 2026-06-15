@@ -17,6 +17,10 @@
         "20": { "value": "#DFDFE1" },
         "30": { "value": "#C6C6C8" },
         "50": { "value": "#939395" },
+        "50-opacity": {
+          "12": { "value": "rgba(147,147,149,0.12)" },
+          "50": { "value": "rgba(147,147,149,0.5)" }
+        },
         "60": { "value": "#79797B" },
         "70": { "value": "#606062" },
         "75": { "value": "#535355" },
@@ -56,8 +60,8 @@
 
       "background": {
         "default": { "value": "{primitive.color.white}" },
-        "hover": { "value": "rgba({primitive.color.gray.50}, 0.12)" },
-        "active": { "value": "rgba({primitive.color.gray.50}, 0.5)" },
+        "hover": { "value": "{primitive.color.gray.50-opacity.12}" },
+        "active": { "value": "{primitive.color.gray.50-opacity.50}" },
         "brand": { "value": "{primitive.color.blue.60}" }
       },
 
