@@ -245,22 +245,45 @@ export const FamPrimeVuePreset = definePreset(Lara, {
       root: {
         borderColor: SemanticColorBorderSubtle,
       },
-      headerCell: {
-        background: SemanticColorSurfaceLayer1,
-        hoverBackground: SemanticColorSurfaceLayerHover,
-        selectedBackground: SemanticColorSurfaceLayerSelected,
-        borderColor: SemanticColorBorderSubtle,
-        color: SemanticColorTextPrimary,
-      },
-      row: {
-        background: PrimitiveColorWhite,
-        hoverBackground: SemanticColorSurfaceLayerHover,
-        selectedBackground: SemanticColorSurfaceLayerSelected,
-        color: SemanticColorTextPrimary,
-      },
-      bodyCell: {
-        borderColor: SemanticColorBorderSubtle,
-        selectedBorderColor: SemanticColorBorderInteractive,
+      colorScheme: {
+        light: {
+          headerCell: {
+            background: SemanticColorSurfaceLayerSelected,
+            hoverBackground: SemanticColorSurfaceLayerSelected,
+            selectedBackground: SemanticColorSurfaceLayerSelected,
+            borderColor: SemanticColorBorderSubtle,
+            color: SemanticColorTextPrimary,
+          },
+          row: {
+            background: PrimitiveColorWhite,
+            hoverBackground: SemanticColorSurfaceLayerHover,
+            selectedBackground: SemanticColorSurfaceLayerSelected,
+            color: SemanticColorTextPrimary,
+          },
+          bodyCell: {
+            borderColor: SemanticColorBorderSubtle,
+            selectedBorderColor: SemanticColorBorderInteractive,
+          },
+        },
+        dark: {
+          headerCell: {
+            background: SemanticColorSurfaceLayerSelected,
+            hoverBackground: SemanticColorSurfaceLayerSelected,
+            selectedBackground: SemanticColorSurfaceLayerSelected,
+            borderColor: SemanticColorBorderSubtle,
+            color: SemanticColorTextPrimary,
+          },
+          row: {
+            background: PrimitiveColorWhite,
+            hoverBackground: SemanticColorSurfaceLayerHover,
+            selectedBackground: SemanticColorSurfaceLayerSelected,
+            color: SemanticColorTextPrimary,
+          },
+          bodyCell: {
+            borderColor: SemanticColorBorderSubtle,
+            selectedBorderColor: SemanticColorBorderInteractive,
+          },
+        },
       },
     },
     dialog: {

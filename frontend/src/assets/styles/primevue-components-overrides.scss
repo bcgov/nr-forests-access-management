@@ -4,12 +4,12 @@
 @use "@bcgov-nr/nr-theme/design-tokens/colors.scss" as colors;
 @use "@bcgov-nr/nr-theme/design-tokens/light-theme.scss" as lightTheme;
 @use "@bcgov-nr/nr-theme/design-tokens/light-tags.scss" as lightTags;
-@use "@bcgov-nr/nr-theme//design-tokens/dark-theme.scss" as darkTheme;
 @use "@bcgov-nr/nr-theme/design-tokens/light-buttons.scss" as lightButton;
-@use "@bcgov-nr/nr-theme/design-tokens/dark-buttons.scss" as darkButton;
 @use "@bcgov-nr/nr-theme/design-tokens/body-types.scss" as bodyTypes;
 @use "@bcgov-nr/nr-theme/design-tokens/light-notifications.scss" as
     lightNotifications;
+
+// Note: Removed dark-theme and dark-buttons imports as FAM uses light theme only
 
 %body-compact-01 {
     font-size: map.get(bodyTypes.$body-compact-01, "font-size");
@@ -51,13 +51,13 @@ label {
     line-height: 1rem;
     font-weight: 400;
     letter-spacing: 0.02rem;
-    color: map.get(lightTheme.$light-theme, "text-primary");
+    color: var(--semantic-color-text-primary);
     padding: 0 !important;
 }
 
 .is-invalid {
-    border: 0.125rem solid map.get(lightTheme.$light-theme, "support-error") !important;
-    border-color: map.get(lightTheme.$light-theme, "support-error") !important;
+    border: 0.125rem solid var(--semantic-color-support-error) !important;
+    border-color: var(--semantic-color-support-error) !important;
     padding-right: 1rem !important;
     background-image: url("../assets/svg/warning--filled.svg") !important;
     background-repeat: no-repeat !important;
@@ -67,7 +67,7 @@ label {
 
 .invalid-feedback {
     @extend %label-01;
-    color: map.get(lightTheme.$light-theme, "text-error");
+    color: var(--semantic-color-text-error);
 }
 
 /* ------------------------------------ primevue button --------------------------------- */
@@ -87,38 +87,25 @@ label {
     box-shadow: unset !important;
 }
 /* ------------------------------------ primevue button secondary --------------------------------- */
-.#{variables.$primevue-prefix}-button.#{variables.$primevue-prefix}-button-secondary {
-    /* Colors managed by PrimeVue v4 preset */
-}
-
 .#{variables.$primevue-prefix}-button.#{variables.$primevue-prefix}-button-secondary:focus:not(
         .#{variables.$primevue-prefix}-dialog-close-button
     ) {
-    box-shadow: 0 0 0 0.125rem map.get(lightTheme.$light-theme, "focus") inset !important;
+    box-shadow: 0 0 0 0.125rem var(--semantic-color-focus-default) inset !important;
 }
-/* ------------------------------------ primevue button outlined--------------------------------- */
+/* ------------------------------------ primevue button outlined --------------------------------- */
 .#{variables.$primevue-prefix}-button.#{variables.$primevue-prefix}-button-outlined {
     background-color: transparent;
 }
-.#{variables.$primevue-prefix}-button.#{variables.$primevue-prefix}-button-outlined:enabled:hover {
-    color: map.get(lightTheme.$light-theme, "text-on-color");
-}
+.#{variables.$primevue-prefix}-button.#{variables.$primevue-prefix}-button-outlined:enabled:hover,
 .#{variables.$primevue-prefix}-button.#{variables.$primevue-prefix}-button-outlined:enabled:active {
-    color: map.get(lightTheme.$light-theme, "text-on-color");
+    color: var(--semantic-color-text-on-color);
 }
 .#{variables.$primevue-prefix}-button.#{variables.$primevue-prefix}-button-outlined:focus:not(
         .#{variables.$primevue-prefix}-dialog-close-button
     ) {
-    color: map.get(lightTheme.$light-theme, "text-on-color");
     outline: 0.075rem solid #ffffff;
     outline-offset: -0.2rem;
     box-shadow: unset;
-}
-.#{variables.$primevue-prefix}-button.#{variables.$primevue-prefix}-button-outlined:disabled {
-    color: map.get(lightTheme.$light-theme, "text-disabled");
-    opacity: 1;
-    background-color: transparent;
-    border: 0.0625rem solid map.get(lightTheme.$light-theme, "text-disabled");
 }
 
 /* ------------------------------------ primevue inputtext ----------------------------------- */
@@ -127,20 +114,18 @@ label {
     padding: map.get(bodyTypes.$body-compact-01, "padding");
     border: 0.125rem solid transparent;
     @extend %body-compact-01;
-    border-bottom: 0.0625rem solid
-        map.get(lightTheme.$light-theme, "border-strong-01");
+    border-bottom: 0.0625rem solid var(--semantic-color-border-strong);
     border-radius: 0.25rem 0.25rem 0 0;
-    background: map.get(lightTheme.$light-theme, "field-01");
+    background: var(--semantic-color-surface-layer-1);
 }
 
 .#{variables.$primevue-prefix}-inputtext:enabled:hover {
     border: 0.125rem solid transparent;
-    border-bottom: 0.0625rem solid
-        map.get(lightTheme.$light-theme, "border-strong-01");
+    border-bottom: 0.0625rem solid var(--semantic-color-border-strong);
 }
 
 .#{variables.$primevue-prefix}-inputtext:enabled:focus {
-    border: 0.125rem solid map.get(lightTheme.$light-theme, "focus") !important;
+    border: 0.125rem solid var(--semantic-color-focus-default) !important;
     box-shadow: 0 0 0 0;
 }
 
@@ -151,134 +136,24 @@ label {
     padding-left: 2.5rem;
 }
 
-/* -------------------------------------- primevue dropdown ------------------------------------ */
+/* NOTE: PrimeVue v4 Select (was Dropdown in v3) - colors managed by preset */
+/* These overrides now handled by select preset tokens and fam-custom-tokens.css */
+/* Keeping only reference comment; color rules removed. Use Select (not Dropdown) in v4 */
 
-.#{variables.$primevue-prefix}-dropdown {
-    border: none;
-    border-bottom: 0.0625rem solid
-        map.get(lightTheme.$light-theme, "border-strong-01");
-    border-radius: 0.25rem 0.25rem 0 0;
-    background: map.get(lightTheme.$light-theme, "field-01");
-}
-.#{variables.$primevue-prefix}-dropdown
-    .#{variables.$primevue-prefix}-dropdown-label {
-    @extend %body-compact-01;
-    border: 0 none;
-    background: transparent;
-}
-
-.#{variables.$primevue-prefix}-dropdown .#{variables.$primevue-prefix}-icon {
-    width: 0.6875rem;
-    height: 0.6875rem;
-
-    .#{variables.$primevue-prefix}-icon .collapse {
-        transform: rotate(180deg);
-    }
-}
-
-.#{variables.$primevue-prefix}-dropdown:not(
-        .#{variables.$primevue-prefix}-disabled
-    ):hover {
-    border: none;
-    border-bottom: 0.0625rem solid
-        map.get(lightTheme.$light-theme, "border-strong-01");
-}
-.#{variables.$primevue-prefix}-dropdown:not(
-        .#{variables.$primevue-prefix}-disabled
-    ).#{variables.$primevue-prefix}-focus {
-    border-bottom: 0.0625rem solid
-        map.get(lightTheme.$light-theme, "background");
-    box-shadow: 0 0 0 0.1rem map.get(lightTheme.$light-theme, "focus");
-}
-
-.#{variables.$primevue-prefix}-dropdown-panel {
-    background: map.get(lightTheme.$light-theme, "layer-01");
-    box-shadow: 0 0.125rem 0.375rem
-        map.get(lightTheme.$light-theme, "shadows-menu");
-    border-radius: 0 0 0.25rem 0.25rem;
-}
-.#{variables.$primevue-prefix}-dropdown-panel
-    .#{variables.$primevue-prefix}-dropdown-items {
-    padding: 0;
-    margin: 0;
-}
-.#{variables.$primevue-prefix}-dropdown-panel
-    .#{variables.$primevue-prefix}-dropdown-items
-    .#{variables.$primevue-prefix}-dropdown-item {
-    border-bottom: 0.0625rem solid
-        map.get(lightTheme.$light-theme, "layer-selected-01");
-}
-.#{variables.$primevue-prefix}-dropdown-panel
-    .#{variables.$primevue-prefix}-dropdown-items
-    .#{variables.$primevue-prefix}-dropdown-item:last-child {
-    border: none;
-}
-.#{variables.$primevue-prefix}-dropdown-panel
-    .#{variables.$primevue-prefix}-dropdown-items
-    .#{variables.$primevue-prefix}-dropdown-item:not(
-        .#{variables.$primevue-prefix}-highlight
-    ):not(.#{variables.$primevue-prefix}-disabled):hover {
-    background: map.get(lightTheme.$light-theme, "layer-hover-01");
-}
-.#{variables.$primevue-prefix}-dropdown-panel
-    .#{variables.$primevue-prefix}-dropdown-items
-    .#{variables.$primevue-prefix}-dropdown-item.#{variables.$primevue-prefix}-highlight {
-    color: #212529; // default prime vue dropdown item color
-    background-color: map.get(lightTheme.$light-theme, "layer-selected-01");
-}
-.#{variables.$primevue-prefix}-dropdown-panel
-    .#{variables.$primevue-prefix}-dropdown-items
-    .#{variables.$primevue-prefix}-dropdown-item.#{variables.$primevue-prefix}-highlight.#{variables.$primevue-prefix}-focus {
-    background-color: map.get(lightTheme.$light-theme, "layer-selected-01");
-}
-.#{variables.$primevue-prefix}-dropdown-panel
-    .#{variables.$primevue-prefix}-dropdown-items
-    .#{variables.$primevue-prefix}-dropdown-item:not(
-        .#{variables.$primevue-prefix}-highlight
-    ):not(
-        .#{variables.$primevue-prefix}-disabled
-    ).#{variables.$primevue-prefix}-focus {
-    background: map.get(lightTheme.$light-theme, "layer-01");
-}
-.#{variables.$primevue-prefix}-dropdown-panel
-    .#{variables.$primevue-prefix}-dropdown-items
-    .#{variables.$primevue-prefix}-dropdown-item:not(
-        .#{variables.$primevue-prefix}-highlight
-    ):not(
-        .#{variables.$primevue-prefix}-disabled
-    ).#{variables.$primevue-prefix}-focus:hover {
-    background: map.get(lightTheme.$light-theme, "layer-hover-01");
-}
 
 /* ---------------------------------- checkbox -------------------------------- */
+/* Colors managed by PrimeVue v4 preset via fam-custom-tokens.css */
 .#{variables.$primevue-prefix}-checkbox
     .#{variables.$primevue-prefix}-checkbox-box {
-    border: 0.0625rem solid map.get(lightTheme.$light-theme, "icon-primary");
     border-radius: 0.125rem;
 }
 .#{variables.$primevue-prefix}-checkbox:not(
         .#{variables.$primevue-prefix}-checkbox-disabled
     )
-    .#{variables.$primevue-prefix}-checkbox-box:hover {
-    border-color: map.get(lightTheme.$light-theme, "icon-primary");
-}
-.#{variables.$primevue-prefix}-checkbox:not(
-        .#{variables.$primevue-prefix}-checkbox-disabled
-    )
     .#{variables.$primevue-prefix}-checkbox-box.#{variables.$primevue-prefix}-focus {
-    box-shadow: 0 0 0 0.125rem map.get(lightTheme.$light-theme, "background"),
-        0 0 0 0.25rem map.get(lightTheme.$light-theme, "focus"),
+    box-shadow: 0 0 0 0.125rem var(--semantic-color-background-default),
+        0 0 0 0.25rem var(--semantic-color-focus-default),
         0 0.0625rem 0.125rem 0 black;
-    border-color: map.get(lightTheme.$light-theme, "icon-primary");
-}
-.#{variables.$primevue-prefix}-checkbox
-    .#{variables.$primevue-prefix}-checkbox-box.#{variables.$primevue-prefix}-highlight,
-.#{variables.$primevue-prefix}-checkbox:not(
-        .#{variables.$primevue-prefix}-checkbox-disabled
-    )
-    .#{variables.$primevue-prefix}-checkbox-box.#{variables.$primevue-prefix}-highlight:hover {
-    border-color: map.get(lightTheme.$light-theme, "icon-primary");
-    background: map.get(lightTheme.$light-theme, "icon-primary");
 }
 .#{variables.$primevue-prefix}-checkbox
     .#{variables.$primevue-prefix}-checkbox-box.#{variables.$primevue-prefix}-highlight
@@ -286,7 +161,8 @@ label {
     font-size: 0.75rem;
 }
 
-/* ------------------------------------ primevue radio--------------------------------- */
+/* ------------------------------------ primevue radio --------------------------------- */
+/* Colors managed by PrimeVue v4 preset via fam-custom-tokens.css */
 .#{variables.$primevue-prefix}-radiobutton {
     width: 1.125rem;
     height: 1.125rem;
@@ -297,51 +173,23 @@ label {
 }
 .#{variables.$primevue-prefix}-radiobutton
     .#{variables.$primevue-prefix}-radiobutton-box {
-    border: 0.0625rem solid map.get(lightTheme.$light-theme, "icon-primary");
     width: 1.125rem;
     height: 1.125rem;
 }
 .#{variables.$primevue-prefix}-radiobutton
     .#{variables.$primevue-prefix}-radiobutton-box:not(
         .#{variables.$primevue-prefix}-disabled
-    ):not(.#{variables.$primevue-prefix}-highlight):hover {
-    border-color: map.get(lightTheme.$light-theme, "icon-primary");
-}
-.#{variables.$primevue-prefix}-radiobutton
-    .#{variables.$primevue-prefix}-radiobutton-box:not(
-        .#{variables.$primevue-prefix}-disabled
     ).#{variables.$primevue-prefix}-focus {
-    box-shadow: 0 0 0 0.125rem map.get(lightTheme.$light-theme, "background"),
-        0 0 0 0.25rem map.get(lightTheme.$light-theme, "focus"),
+    box-shadow: 0 0 0 0.125rem var(--semantic-color-background-default),
+        0 0 0 0.25rem var(--semantic-color-focus-default),
         0 0.0625rem 0.125rem 0 black;
-    border-color: map.get(lightTheme.$light-theme, "icon-primary");
-}
-.#{variables.$primevue-prefix}-radiobutton
-    .#{variables.$primevue-prefix}-radiobutton-box
-    .#{variables.$primevue-prefix}-radiobutton-icon {
-    background-color: map.get(lightTheme.$light-theme, "icon-primary");
-}
-.#{variables.$primevue-prefix}-radiobutton
-    .#{variables.$primevue-prefix}-radiobutton-box.#{variables.$primevue-prefix}-highlight {
-    border-color: map.get(lightTheme.$light-theme, "icon-primary");
-    background: map.get(lightTheme.$light-theme, "background");
-}
-.#{variables.$primevue-prefix}-radiobutton
-    .#{variables.$primevue-prefix}-radiobutton-box.#{variables.$primevue-prefix}-highlight:not(
-        .#{variables.$primevue-prefix}-disabled
-    ):hover {
-    border-color: map.get(lightTheme.$light-theme, "icon-primary");
-    background: map.get(lightTheme.$light-theme, "background");
 }
 
-/* ------------------------------------ primevue card--------------------------------- */
+/* ------------------------------------ primevue card --------------------------------- */
+/* Colors managed by PrimeVue v4 preset via fam-custom-tokens.css */
 .#{variables.$primevue-prefix}-card {
     box-shadow: none;
-    border: 0.0625rem solid map.get(lightTheme.$light-theme, "border-subtle-00");
-}
-
-.#{variables.$primevue-prefix}-card .#{variables.$primevue-prefix}-card-header {
-    background-color: map.get(lightTheme.$light-theme, "layer-01");
+    border: 0.0625rem solid var(--semantic-color-border-subtle);
 }
 
 .#{variables.$primevue-prefix}-card .#{variables.$primevue-prefix}-card-title {
@@ -356,7 +204,6 @@ label {
     @extend %body-compact-01;
     padding-left: 0;
     padding-right: 0;
-    color: map.get(lightTheme.$light-theme, "text-secondary");
 }
 
 .#{variables.$primevue-prefix}-card .#{variables.$primevue-prefix}-card-footer {
@@ -375,7 +222,6 @@ label {
     > tr
     > th {
     @extend %body-compact-01;
-    background: map.get(lightTheme.$light-theme, "layer-accent-hover-01");
 
     font-weight: 700;
 
@@ -404,15 +250,8 @@ label {
 .#{variables.$primevue-prefix}-datatable
     .#{variables.$primevue-prefix}-datatable-tbody {
     > tr {
-        box-shadow: inset 0 0 0 0.031rem
-            map-get(lightTheme.$light-theme, "border-subtle-01");
+        box-shadow: inset 0 0 0 0.031rem var(--semantic-color-border-subtle);
     }
-}
-
-.#{variables.$primevue-prefix}-datatable
-    .#{variables.$primevue-prefix}-datatable-tbody
-    > tr:hover {
-    background-color: map.get(lightTheme.$light-theme, "layer-hover-01");
 }
 
 .#{variables.$primevue-prefix}-sortable-column-icon {
@@ -449,15 +288,14 @@ label {
     .#{variables.$primevue-prefix}-paginator-current,
 .#{variables.$primevue-prefix}-paginator-prev,
 .#{variables.$primevue-prefix}-paginator-next {
-    color: map.get(lightTheme.$light-theme, "text-secondary") !important;
-    border-left: solid 0.063rem
-        map.get(lightTheme.$light-theme, "border-subtle-02") !important;
+    color: var(--semantic-color-text-secondary) !important;
+    border-left: solid 0.063rem var(--semantic-color-border-subtle) !important;
 }
 
 .#{variables.$primevue-prefix}-paginator-prev:focus,
 .#{variables.$primevue-prefix}-paginator-next:focus {
-    border-color: map.get(lightTheme.$light-theme, "focus") !important;
-    border: 0.125rem solid map.get(lightTheme.$light-theme, "focus") !important;
+    border-color: var(--semantic-color-focus-default) !important;
+    border: 0.125rem solid var(--semantic-color-focus-default) !important;
     box-shadow: unset;
 }
 
@@ -487,6 +325,7 @@ label {
 }
 
 /* ------------------------------------ dialog -------------------------- */
+/* Colors managed by PrimeVue v4 preset via fam-custom-tokens.css */
 .#{variables.$primevue-prefix}-dialog {
     border-radius: 0.5rem;
     box-shadow: 0 0.125rem 0.375rem 0 rgba(0, 0, 0, 0.3);
@@ -552,55 +391,12 @@ label {
         @extend %heading-03;
     }
 }
-/* ------------------------------------ dialog confirm button reject --------------------------         */
+/* NOTE: Dialog buttons (confirm/reject) colors now managed by PrimeVue v4 preset */
+/* Removed explicit button color overrides; preset handles tertiary/danger variants */
+/* Keep only spacing rules below */
 .#{variables.$primevue-prefix}-dialog
     .#{variables.$primevue-prefix}-confirm-dialog-reject {
-    border: 0.0625rem solid
-        map.get(lightButton.$light-button-token-overrides, "button-tertiary");
-    background: transparent;
     margin-right: 0.5rem;
-}
-
-.#{variables.$primevue-prefix}-dialog
-    .#{variables.$primevue-prefix}-confirm-dialog-reject:enabled:hover,
-.#{variables.$primevue-prefix}-confirm-dialog-reject:enabled:focus {
-    background: map.get(
-        lightButton.$light-button-token-overrides,
-        "button-tertiary-hover"
-    );
-    border-color: map.get(
-        lightButton.$light-button-token-overrides,
-        "button-tertiary-hover"
-    );
-    color: map.get(lightTheme.$light-theme, "text-on-color");
-}
-
-/* ------------------------------------ dialog confirm button accept -------------------------- */
-.#{variables.$primevue-prefix}-dialog
-    .#{variables.$primevue-prefix}-confirm-dialog-accept {
-    color: colors.$white;
-    border: 0.0625rem solid
-        map.get(
-            lightButton.$light-button-token-overrides,
-            "button-danger-primary"
-        );
-    background-color: map.get(
-        lightButton.$light-button-token-overrides,
-        "button-danger-primary"
-    );
-}
-
-.#{variables.$primevue-prefix}-dialog
-    .#{variables.$primevue-prefix}-confirm-dialog-accept:hover {
-    border: 0.0625rem solid
-        map.get(
-            lightButton.$light-button-token-overrides,
-            "button-danger-hover"
-        );
-    background-color: map.get(
-        lightButton.$light-button-token-overrides,
-        "button-danger-hover"
-    );
 }
 
 /* ------------------------------------ primevue toast --------------------------------- */
@@ -612,11 +408,6 @@ label {
 .#{variables.$primevue-prefix}-toast
     .#{variables.$primevue-prefix}-toast-detail,
 .#{variables.$primevue-prefix}-toast-summary {
-    color: map.get(
-        lightNotifications.$light-notification-token-overrides,
-        "notification-action-tertiary-inverse-text"
-    ) !important;
-
     display: inline !important;
 }
 
@@ -626,37 +417,24 @@ label {
 }
 
 .#{variables.$primevue-prefix}-toast
-    .#{variables.$primevue-prefix}-toast-icon-close
-    svg {
-    color: map.get(
-        lightNotifications.$light-notification-token-overrides,
-        "notification-action-tertiary-inverse-text"
-    ) !important;
+    .#{variables.$primevue-prefix}-toast-icon-close {
     margin-top: 0 !important;
 }
 
 .#{variables.$primevue-prefix}-toast
     .#{variables.$primevue-prefix}-toast-icon-close:focus {
-    box-shadow: 0 0 0 0.1rem map.get(lightTheme.$light-theme, "support-error") !important;
+    box-shadow: 0 0 0 0.1rem var(--semantic-color-support-error) !important;
 }
 
 .#{variables.$primevue-prefix}-toast-message-content svg {
-    color: map.get(lightTheme.$light-theme, "support-error");
     flex-shrink: 0 !important;
     margin-top: 0.25rem !important;
 }
 
 .#{variables.$primevue-prefix}-toast
     .#{variables.$primevue-prefix}-toast-message-error {
-    background: map.get(
-        lightNotifications.$light-notification-token-overrides,
-        "notification-background-error"
-    ) !important;
-
-    border: solid 0.0625rem map-get(lightTheme.$light-theme, "support-error") !important;
-
-    border-left: solid 0.3125rem
-        map-get(lightTheme.$light-theme, "support-error") !important;
+    border: solid 0.0625rem var(--semantic-color-support-error) !important;
+    border-left: solid 0.3125rem var(--semantic-color-support-error) !important;
 }
 
 .#{variables.$primevue-prefix}-toast
@@ -717,7 +495,7 @@ label {
 .#{variables.$primevue-prefix}-message-wrapper
     .#{variables.$primevue-prefix}-message-close
     svg {
-    color: colors.$gray-100 !important;
+    color: var(--primitive-color-gray-100) !important;
     margin: 0.55rem 0 0;
     align-self: baseline !important;
 }
@@ -735,34 +513,22 @@ label {
 
 .#{variables.$primevue-prefix}-message-wrapper
     .#{variables.$primevue-prefix}-message-close:focus {
-    box-shadow: 0 0 0 0.1rem map.get(lightTheme.$light-theme, "support-success") !important;
+    box-shadow: 0 0 0 0.1rem var(--semantic-color-support-success) !important;
 }
 
 .#{variables.$primevue-prefix}-message-success {
-    border: solid 0.0625rem map.get(lightTheme.$light-theme, "support-success") !important;
-    border-left: solid 0.3125rem
-        map.get(lightTheme.$light-theme, "support-success") !important;
-    svg {
-        color: map.get(lightTheme.$light-theme, "support-success") !important;
-    }
+    border: solid 0.0625rem var(--semantic-color-support-success) !important;
+    border-left: solid 0.3125rem var(--semantic-color-support-success) !important;
 }
 
 .#{variables.$primevue-prefix}-message-error {
-    border: solid 0.0625rem map.get(lightTheme.$light-theme, "support-error") !important;
-    border-left: solid 0.3125rem
-        map.get(lightTheme.$light-theme, "support-error") !important;
-    svg {
-        color: map.get(lightTheme.$light-theme, "support-error") !important;
-    }
+    border: solid 0.0625rem var(--semantic-color-support-error) !important;
+    border-left: solid 0.3125rem var(--semantic-color-support-error) !important;
 }
 
 .#{variables.$primevue-prefix}-message-warn {
-    border: solid 0.0625rem map.get(lightTheme.$light-theme, "support-warning") !important;
-    border-left: solid 0.3125rem
-        map.get(lightTheme.$light-theme, "support-warning") !important;
-    svg {
-        color: map.get(lightTheme.$light-theme, "support-warning") !important;
-    }
+    border: solid 0.0625rem var(--semantic-color-support-warning) !important;
+    border-left: solid 0.3125rem var(--semantic-color-support-warning) !important;
 }
 
 /* ------------------------------------ Sidebar --------------------------------- */
@@ -783,8 +549,7 @@ label {
 
 .#{variables.$primevue-prefix}-sidebar-visible > div {
     border: none;
-    border-right: 0.063rem solid
-        map.get(lightTheme.$light-theme, "layer-selected-01");
+    border-right: 0.063rem solid var(--semantic-color-surface-layer-selected);
 }
 
 @media (min-width: 768px) {

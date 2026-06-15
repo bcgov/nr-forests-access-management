@@ -13,6 +13,9 @@
 
 @forward "@carbon/themes/scss/theme";
 
+// Import generated design tokens as CSS custom properties
+@import "@/assets/generated/css/fam-custom-tokens.css";
+
 :root {
     @each $key, $value in light.$light-theme {
         --#{$key}: #{$value};
