@@ -9,6 +9,7 @@
         "dev": "vite",
         "dev-host": "vite --host",
         "build": "run-p type-check build-only",
+        "build:tokens": "style-dictionary build --config style-dictionary.config.json",
         "preview": "vite preview --port 5173",
         "build-only": "vite build",
         "type-check": "vue-tsc --noEmit",
@@ -17,11 +18,11 @@
         "test-coverage": "vitest run --coverage"
     },
     "dependencies": {
-        "@primeuix/themes": "^1.2.3",
         "@bcgov-nr/nr-theme": "~1.8.9",
         "@carbon/icons-vue": "^10.99.1",
         "@carbon/themes": "^11.43.0",
         "@carbon/type": "^11.31.0",
+        "@primeuix/themes": "^1.2.3",
         "@tanstack/vue-query": "^5.56.2",
         "aws-amplify": "^6.16.3",
         "axios": "^1.15.1",
@@ -48,6 +49,7 @@
         "jsdom": "^29.0.1",
         "npm-run-all2": "^6.0.0",
         "sass": "^1.77.1",
+        "style-dictionary": "^5.4.4",
         "typescript": "^5.6.2",
         "unplugin-vue-components": "^0.27.0",
         "vite": "^7.3.0",
