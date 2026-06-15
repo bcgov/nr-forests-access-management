@@ -154,6 +154,7 @@ const navigateOnClick = (routeName: RouteRecordName) => {
 .fam-sidenav {
     --header-height: 3rem;
     --sidenav-width: 16rem;
+    $sidenav-border: 1px solid var(--primitive-color-gray-20);
 
     // On mobile, the outer wrapper becomes the backdrop overlay
     @media (max-width: 1023px) {
@@ -183,10 +184,11 @@ const navigateOnClick = (routeName: RouteRecordName) => {
         left: 0;
         top: var(--header-height);
         overflow: hidden auto;
-        background: var(--layer-01);
+        background: var(--semantic-color-surface-layer-2);
         transform: translateX(-100%);
         transition: transform 0.25s ease;
         z-index: 9;
+        border-right: $sidenav-border;
 
         .content {
             position: relative;

@@ -109,23 +109,24 @@ label {
 }
 
 /* ------------------------------------ primevue inputtext ----------------------------------- */
-
+/* NOTE: InputText styling is now managed by PrimeVue v4 preset (input component config) */
 .#{variables.$primevue-prefix}-inputtext {
     padding: map.get(bodyTypes.$body-compact-01, "padding");
-    border: 0.125rem solid transparent;
     @extend %body-compact-01;
-    border-bottom: 0.0625rem solid var(--semantic-color-border-strong);
-    border-radius: 0.25rem 0.25rem 0 0;
+    border-bottom-width: 0.0625rem;
+    border-bottom-style: solid;
+    border-bottom-color: var(--semantic-color-border-strong);
     background: var(--semantic-color-surface-layer-1);
 }
 
 .#{variables.$primevue-prefix}-inputtext:enabled:hover {
-    border: 0.125rem solid transparent;
-    border-bottom: 0.0625rem solid var(--semantic-color-border-strong);
+    border-bottom-width: 0.0625rem;
+    border-bottom-style: solid;
+    border-bottom-color: var(--semantic-color-border-strong);
 }
 
 .#{variables.$primevue-prefix}-inputtext:enabled:focus {
-    border: 0.125rem solid var(--semantic-color-focus-default) !important;
+    border-bottom: 0.0625rem solid var(--semantic-color-border-interactive) !important;
     box-shadow: 0 0 0 0;
 }
 
@@ -136,9 +137,6 @@ label {
     padding-left: 2.5rem;
 }
 
-/* NOTE: PrimeVue v4 Select (was Dropdown in v3) - colors managed by preset */
-/* These overrides now handled by select preset tokens and fam-custom-tokens.css */
-/* Keeping only reference comment; color rules removed. Use Select (not Dropdown) in v4 */
 
 
 /* ---------------------------------- checkbox -------------------------------- */

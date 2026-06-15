@@ -191,9 +191,12 @@ export const FamPrimeVuePreset = definePreset(Lara, {
     select: {
       root: {
         background: SemanticColorSurfaceLayer1,
-        borderColor: SemanticColorBorderStrong,
-        hoverBorderColor: SemanticColorBorderStrong,
-        focusBorderColor: SemanticColorBorderInteractive,
+        filledBackground: SemanticColorSurfaceLayer1,
+        filledHoverBackground: SemanticColorSurfaceLayer1,
+        filledFocusBackground: SemanticColorSurfaceLayer1,
+        borderColor: 'transparent',
+        hoverBorderColor: 'transparent',
+        focusBorderColor: 'transparent',
         color: SemanticColorTextPrimary,
         placeholderColor: SemanticColorTextSecondary,
       },
@@ -212,6 +215,21 @@ export const FamPrimeVuePreset = definePreset(Lara, {
         color: SemanticColorTextPrimary,
         selectedColor: SemanticColorTextPrimary,
         selectedFocusColor: SemanticColorTextPrimary,
+        borderRadius: '0',
+      },
+    },
+    input: {
+      root: {
+        background: SemanticColorSurfaceLayer1,
+        filledBackground: SemanticColorSurfaceLayer1,
+        filledHoverBackground: SemanticColorSurfaceLayer1,
+        filledFocusBackground: SemanticColorSurfaceLayer1,
+        borderColor: 'transparent',
+        hoverBorderColor: 'transparent',
+        focusBorderColor: 'transparent',
+        color: SemanticColorTextPrimary,
+        placeholderColor: SemanticColorTextSecondary,
+        borderRadius: '0',
       },
     },
     checkbox: {
@@ -258,6 +276,7 @@ export const FamPrimeVuePreset = definePreset(Lara, {
             background: PrimitiveColorWhite,
             hoverBackground: SemanticColorSurfaceLayerHover,
             selectedBackground: SemanticColorSurfaceLayerSelected,
+            stripedBackground: SemanticColorSurfaceLayer1,
             color: SemanticColorTextPrimary,
           },
           bodyCell: {
@@ -277,6 +296,7 @@ export const FamPrimeVuePreset = definePreset(Lara, {
             background: PrimitiveColorWhite,
             hoverBackground: SemanticColorSurfaceLayerHover,
             selectedBackground: SemanticColorSurfaceLayerSelected,
+            stripedBackground: SemanticColorSurfaceLayerSelected,
             color: SemanticColorTextPrimary,
           },
           bodyCell: {
