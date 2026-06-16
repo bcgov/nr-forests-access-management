@@ -125,16 +125,11 @@ li {
 .btn-toggle-profile {
     border-radius: 0;
     border: none;
-    padding-bottom: 0.93rem;
+    padding-bottom: 0.92rem;
 
     svg {
         margin-top: 0.125rem;
     }
-}
-
-.btn-toggle-profile-active {
-    color: #000;
-    background-color: #fff;
 }
 
 .btn-toggle-profile:hover,
