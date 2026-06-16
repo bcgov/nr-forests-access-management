@@ -436,7 +436,7 @@ const handleSearch = () => {
                     @paste="handlePaste"
                     placeholder="Please input search text"
                     :maxlength="MAX_SEARCH_TEXT_LENGTH"
-                    class="w-100 custom-height"
+                    class="w-100"
                     :class="{ 'is-invalid': !!searchTextError }"
                     :disabled="disabled || isPending"
                 />
@@ -509,10 +509,6 @@ const handleSearch = () => {
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-}
-
-:deep(.fam-dropdown) {
-    height: 2.5rem;
 }
 
 

@@ -108,36 +108,6 @@ label {
     box-shadow: unset;
 }
 
-/* ------------------------------------ primevue inputtext ----------------------------------- */
-/* NOTE: InputText styling is now managed by PrimeVue v4 preset (input component config) */
-.#{variables.$primevue-prefix}-inputtext {
-    padding: map.get(bodyTypes.$body-compact-01, "padding");
-    @extend %body-compact-01;
-    border-bottom-width: 0.0625rem;
-    border-bottom-style: solid;
-    border-bottom-color: var(--semantic-color-border-strong);
-    background: var(--semantic-color-surface-layer-1);
-}
-
-.#{variables.$primevue-prefix}-inputtext:enabled:hover {
-    border-bottom-width: 0.0625rem;
-    border-bottom-style: solid;
-    border-bottom-color: var(--semantic-color-border-strong);
-}
-
-.#{variables.$primevue-prefix}-inputtext:enabled:focus {
-    border-bottom: 0.0625rem solid var(--semantic-color-border-interactive) !important;
-    box-shadow: 0 0 0 0;
-}
-
-.#{variables.$primevue-prefix}-input-icon-left
-    .#{variables.$primevue-prefix}-inputtext {
-    width: 100%;
-    height: 100%;
-    padding-left: 2.5rem;
-}
-
-
 
 /* ---------------------------------- checkbox -------------------------------- */
 /* Colors managed by PrimeVue v4 preset via fam-custom-tokens.css */
