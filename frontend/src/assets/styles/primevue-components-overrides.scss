@@ -243,8 +243,19 @@ label {
     margin-bottom: 0.5rem;
 }
 
-/*----------------------------- data table pagnition -------------------*/
+/* ================================ MIGRATION NOTE ================================ */
+/*
+ * Paginator component styling has been migrated to:
+ * - frontend/src/passthrough/paginator/paginatorPassThrough.ts (passthrough config)
+ * - frontend/src/passthrough/paginator/paginatorPassThrough.scss (component styles)
+ *
+ * Paginator styling is managed by PrimeVue v4 passthrough configuration.
+ * All layout/structure rules and focus states are now in the passthrough SCSS.
+ */
+/* ================================ END MIGRATION NOTE ================================ */
 
+/*----------------------------- data table pagnition -------------------*/
+/*
 .#{variables.$primevue-prefix}-paginator {
     padding: 0 !important;
     flex-wrap: nowrap;
@@ -305,6 +316,8 @@ label {
     display: flex;
     align-items: center;
 }
+*/
+
 
 /* ------------------------------------ dialog -------------------------- */
 /* Colors managed by PrimeVue v4 preset via fam-custom-tokens.css */
