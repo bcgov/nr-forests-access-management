@@ -3,6 +3,7 @@ import Select, { type SelectChangeEvent } from "primevue/select";
 import InputSkeleton from "@/components/Skeletons/InputSkeleton.vue";
 import ErrorText from "@/components/UI/ErrorText.vue";
 import Label from "./Label.vue";
+import { CUSTOM_SELECT_PASS_THROUGH } from "@/custom/select/selectPassThrough";
 
 const props = defineProps<{
     class: string;
@@ -44,16 +45,17 @@ const props = defineProps<{
             :options="props.options"
             :optionLabel="props.optionLabel"
             :placeholder="props.placeholder"
-            class="fam-dropdown"
             :model-value="props.value"
             :disabled="props.disabled"
             :value="props.value"
+            :pt="CUSTOM_SELECT_PASS_THROUGH"
         />
         <ErrorText v-if="props.isError" :error-msg="errorMsg" show-icon />
     </div>
 </template>
 
 <style lang="scss">
+@use "@/custom/select/selectPassThrough.scss";
 .fam-dropdown-container {
     display: flex;
     flex-direction: column;

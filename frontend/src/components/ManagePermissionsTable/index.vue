@@ -31,7 +31,7 @@ import {
 import TableSkeleton from "@/components/Skeletons/TableSkeleton.vue";
 import TableHeaderTitle from "@/components/Table/TableHeaderTitle.vue";
 import TableToolbar from "@/components/Table/TableToolbar.vue";
-import { TABLE_PAGINATOR_PT } from "@/components/Table/paginatorPassThrough";
+import { TABLE_PAGINATOR_PT } from "@/custom/paginator/paginatorPassThrough.js";
 import Chip from "@/components/UI/Chip.vue";
 import ErrorText from "@/components/UI/ErrorText.vue";
 import Spinner from "@/components/UI/Spinner.vue";
@@ -873,7 +873,7 @@ const downloadManagePermissionsCSVData = () => {
     </div>
 </template>
 <style lang="scss">
-@use "@/components/Table/paginatorPassThrough.scss";
+@use "@/custom/paginator/paginatorPassThrough.scss";
 
 .fam-table {
     border: 0 0.25rem 0.25rem 0.25rem;
