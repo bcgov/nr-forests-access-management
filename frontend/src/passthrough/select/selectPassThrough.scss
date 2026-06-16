@@ -1,8 +1,119 @@
-.p-select.fam-custom-select {
-  border-bottom: 2px solid #334155;
+/**
+ * PrimeVue v4 Dropdown/Select Component Styling
+ * Migrated from primevue-components-overrides.scss
+ *
+ * Uses CSS custom properties from fam-custom-tokens.css for design consistency.
+ * All colors mapped to FAM semantic design tokens.
+ */
 
-  // remove only the sides you don’t want
+/* ================================ Dropdown Root ================================ */
+
+.p-select.fam-select,
+.p-dropdown.fam-dropdown-root {
+  border: none;
+  border-bottom: 0.0625rem solid var(--semantic-color-border-strong);
+  border-radius: 0.25rem 0.25rem 0 0;
+  background: var(--semantic-color-surface-layer-1);
+
+  // remove only the sides you don't want
   border-top: 0;
   border-left: 0;
   border-right: 0;
+}
+
+// Dropdown label styling
+.p-dropdown.fam-dropdown-root .fam-dropdown-label,
+.p-select.fam-select .p-select-label {
+  font-size: 14px; // body-compact-01
+  font-weight: 400;
+  letter-spacing: 0.16px;
+  border: 0 none;
+  background: transparent;
+}
+
+// Dropdown icon styling
+.p-select.fam-select svg.p-icon,
+.p-dropdown.fam-dropdown-root svg.p-icon {
+  width: 0.6875rem;
+  height: 0.6875rem;
+
+  svg.p-icon.collapse {
+    transform: rotate(180deg);
+  }
+}
+
+// Hover state (non-disabled)
+.p-dropdown.fam-dropdown-root:not(.p-disabled):hover,
+.p-select.fam-select:not(.p-disabled):hover {
+  border: none;
+  border-bottom: 0.0625rem solid var(--semantic-color-border-strong);
+}
+
+// Focus state (non-disabled)
+.p-dropdown.fam-dropdown-root:not(.p-disabled).p-focus,
+.p-select.fam-select:not(.p-disabled).p-focus {
+  border-bottom: 0.0625rem solid var(--semantic-color-background-default);
+  box-shadow: 0 0 0 0.1rem var(--semantic-color-focus-default);
+}
+
+/* ================================ Dropdown Panel ================================ */
+
+.p-dropdown-panel.fam-dropdown-panel,
+.p-select-panel {
+  background: var(--semantic-color-surface-layer-1);
+  box-shadow: 0 0.125rem 0.375rem rgba(147, 147, 149, 0.2); // shadows-menu approximation
+  border-radius: 0 0 0.25rem 0.25rem;
+}
+
+// Items list container
+.p-dropdown-panel.fam-dropdown-panel .fam-dropdown-items,
+.p-select-panel .p-select-items {
+  padding: 0;
+  margin: 0;
+}
+
+/* ================================ Dropdown Items ================================ */
+
+// Individual item styling
+.p-dropdown-panel.fam-dropdown-panel .fam-dropdown-item,
+.p-select-panel .p-select-item {
+  border-bottom: 0.0625rem solid var(--semantic-color-surface-layer-selected);
+  font-size: 14px; // body-compact-01
+}
+
+// Last item should have no border
+.p-dropdown-panel.fam-dropdown-panel .fam-dropdown-item:last-child,
+.p-select-panel .p-select-item:last-child {
+  border: none;
+}
+
+// Hover state (non-highlighted, non-disabled)
+.p-dropdown-panel.fam-dropdown-panel .fam-dropdown-item:not(.p-highlight):not(.p-disabled):hover,
+.p-select-panel .p-select-item:not(.p-highlight):not(.p-disabled):hover {
+  background: var(--semantic-color-surface-layer-hover);
+}
+
+// Highlighted/selected item
+.p-dropdown-panel.fam-dropdown-panel .fam-dropdown-item.p-highlight,
+.p-select-panel .p-select-item.p-highlight {
+  color: var(--semantic-color-text-primary);
+  background-color: var(--semantic-color-surface-layer-selected);
+}
+
+// Highlighted item with focus
+.p-dropdown-panel.fam-dropdown-panel .fam-dropdown-item.p-highlight.p-focus,
+.p-select-panel .p-select-item.p-highlight.p-focus {
+  background-color: var(--semantic-color-surface-layer-selected);
+}
+
+// Non-highlighted, non-disabled item with focus
+.p-dropdown-panel.fam-dropdown-panel .fam-dropdown-item:not(.p-highlight):not(.p-disabled).p-focus,
+.p-select-panel .p-select-item:not(.p-highlight):not(.p-disabled).p-focus {
+  background: var(--semantic-color-surface-layer-1);
+}
+
+// Non-highlighted, non-disabled item with focus and hover
+.p-dropdown-panel.fam-dropdown-panel .fam-dropdown-item:not(.p-highlight):not(.p-disabled).p-focus:hover,
+.p-select-panel .p-select-item:not(.p-highlight):not(.p-disabled).p-focus:hover {
+  background: var(--semantic-color-surface-layer-hover);
 }
