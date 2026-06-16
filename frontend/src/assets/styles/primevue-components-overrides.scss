@@ -71,7 +71,7 @@ label {
 }
 
 /* ------------------------------------ primevue button --------------------------------- */
-/* NOTE: Button colors are now managed by PrimeVue v4 preset in frontend/src/custom/primevue-preset.ts */
+/* NOTE: Button colors are now managed by PrimeVue v4 preset in frontend/src/passthrough/primevue-preset.ts */
 /* Keeping only layout/structure rules; color rules removed to allow preset CSS variables to apply */
 .#{variables.$primevue-prefix}-button {
     @extend %body-compact-01;
@@ -263,7 +263,6 @@ label {
     flex-wrap: nowrap;
 }
 
-// PrimeVue v4: RowsPerPageDropdown uses .p-select (was .p-dropdown in v3)
 .#{variables.$primevue-prefix}-datatable
     .#{variables.$primevue-prefix}-paginator-bottom
     .#{variables.$primevue-prefix}-select
@@ -297,7 +296,6 @@ label {
     box-shadow: unset;
 }
 
-// PrimeVue v4: .p-dropdown → .p-select
 .#{variables.$primevue-prefix}-paginator
     .#{variables.$primevue-prefix}-select {
     width: 5rem !important;
@@ -307,7 +305,6 @@ label {
     border-radius: 0;
 }
 
-// PrimeVue v4: .p-dropdown-trigger → .p-select-dropdown
 .#{variables.$primevue-prefix}-datatable
     .#{variables.$primevue-prefix}-paginator-bottom
     .#{variables.$primevue-prefix}-select-dropdown {

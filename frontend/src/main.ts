@@ -5,7 +5,7 @@ import App from "@/App.vue";
 import { router } from "@/router";
 
 import PrimeVue from "primevue/config";
-import { FamPrimeVuePreset } from "@/custom/primevue-preset";
+import { FamPrimeVuePreset } from "@/passthrough/primevue-preset";
 import ConfirmationService from "primevue/confirmationservice";
 import DialogService from "primevue/dialogservice";
 import Tooltip from "primevue/tooltip";
@@ -16,7 +16,7 @@ import {
     CONFIRM_DIALOG_PASS_THROUGH,
     DIALOG_PASS_THROUGH,
     DYNAMIC_DIALOG_PASS_THROUGH,
-} from "@/custom/dialog/dialogPassThrough";
+} from "@/passthrough/dialog/dialogPassThrough";
 
 // Configure Amplify
 Amplify.configure(amplifyconfig);

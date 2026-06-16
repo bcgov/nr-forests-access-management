@@ -4,7 +4,7 @@ import { ref } from "vue";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
 import TableToolbar from "@/components/Table/TableToolbar.vue";
-import { TABLE_PAGINATOR_PT } from "@/custom/paginator/paginatorPassThrough.js";
+import { TABLE_PAGINATOR_PT } from "@/passthrough/paginator/paginatorPassThrough.js";
 import { FilterMatchMode } from "@primevue/core/api";
 import { useQuery } from "@tanstack/vue-query";
 import { AdminMgmtApiService } from "@/services/ApiServiceFactory";
@@ -123,7 +123,7 @@ const headers: string[] = [
 </template>
 
 <style lang="scss">
-@use "@/custom/paginator/paginatorPassThrough.scss";
+@use "@/passthrough/paginator/paginatorPassThrough.scss";
 
 .my-permissions-table-container {
     .p-datatable {
