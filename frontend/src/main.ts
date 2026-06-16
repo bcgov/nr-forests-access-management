@@ -18,6 +18,7 @@ import {
     DYNAMIC_DIALOG_PASS_THROUGH,
 } from "@/passthrough/dialog/dialogPassThrough";
 import { INPUT_PASS_THROUGH } from "@/passthrough/input/inputPassThrough";
+import { BUTTON_PASS_THROUGH } from "@/passthrough/button/buttonPassThrough";
 
 // Configure Amplify
 Amplify.configure(amplifyconfig);
@@ -65,6 +66,7 @@ app.use(PrimeVue, {
         dynamicdialog: DYNAMIC_DIALOG_PASS_THROUGH,
         confirmdialog: CONFIRM_DIALOG_PASS_THROUGH,
         inputtext: INPUT_PASS_THROUGH,
+        button: BUTTON_PASS_THROUGH,
     },
 });
 app.use(ConfirmationService);

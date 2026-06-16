@@ -126,6 +126,7 @@ li {
     border-radius: 0;
     border: none;
     padding-bottom: 0.92rem;
+    width: auto;
 
     svg {
         margin-top: 0.125rem;

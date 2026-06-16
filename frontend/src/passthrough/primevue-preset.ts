@@ -23,7 +23,6 @@ import {
   ComponentButtonTertiaryHover,
   PrimitiveColorWhite,
   SemanticColorBorderInteractive,
-  SemanticColorBorderStrong,
   SemanticColorBorderSubtle,
   SemanticColorFocusDefault,
   SemanticColorIconPrimary,

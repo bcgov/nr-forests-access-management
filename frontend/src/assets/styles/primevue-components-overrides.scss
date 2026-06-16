@@ -70,9 +70,23 @@ label {
     color: var(--semantic-color-text-error);
 }
 
+/* ================================ MIGRATION NOTE ================================ */
+/*
+ * Button component styling has been migrated to:
+ * - frontend/src/passthrough/button/buttonPassThrough.ts (passthrough config)
+ * - frontend/src/passthrough/button/buttonPassThrough.scss (component styles)
+ *
+ * Button colors are managed by PrimeVue v4 preset in frontend/src/passthrough/primevue-preset.ts
+ * All layout/structure rules and focus states are now in the passthrough SCSS.
+ */
+/* ================================ END MIGRATION NOTE ================================ */
+
+/* ------ DEPRECATED: See buttonPassThrough.scss for active button styles ------ */
+/*
 /* ------------------------------------ primevue button --------------------------------- */
 /* NOTE: Button colors are now managed by PrimeVue v4 preset in frontend/src/passthrough/primevue-preset.ts */
 /* Keeping only layout/structure rules; color rules removed to allow preset CSS variables to apply */
+/*
 .#{variables.$primevue-prefix}-button {
     @extend %body-compact-01;
     border-radius: 0.25rem;
@@ -87,12 +101,14 @@ label {
     box-shadow: unset !important;
 }
 /* ------------------------------------ primevue button secondary --------------------------------- */
+/*
 .#{variables.$primevue-prefix}-button.#{variables.$primevue-prefix}-button-secondary:focus:not(
         .#{variables.$primevue-prefix}-dialog-close-button
     ) {
     box-shadow: 0 0 0 0.125rem var(--semantic-color-focus-default) inset !important;
 }
 /* ------------------------------------ primevue button outlined --------------------------------- */
+/*
 .#{variables.$primevue-prefix}-button.#{variables.$primevue-prefix}-button-outlined {
     background-color: transparent;
 }
@@ -107,6 +123,7 @@ label {
     outline-offset: -0.2rem;
     box-shadow: unset;
 }
+*/
 
 
 /* ---------------------------------- checkbox -------------------------------- */
