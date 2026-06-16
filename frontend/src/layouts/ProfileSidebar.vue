@@ -235,6 +235,9 @@ const adminUserAccessQuery = useQuery({
     display: flex;
     border: none;
     padding: 0;
+
+    justify-content: flex-start;
+    text-align: left;
 }
 
 .profile-sidebar-btn:enabled:hover,
