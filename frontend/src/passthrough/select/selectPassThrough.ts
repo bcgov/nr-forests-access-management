@@ -2,56 +2,47 @@
  * PrimeVue v4 PassThrough Configuration for Dropdown/Select Component
  * Migrated from primevue-components-overrides.scss
  *
- * Uses FAM custom tokens (semantic design variables) for consistent theming:
- * - Border colors from semantic-color-border-*
- * - Layer/surface colors from semantic-color-surface-layer-*
- * - Text colors from semantic-color-text-*
- * - Focus/interactive colors from semantic-color-*-interactive
+ * Uses FAM custom tokens (semantic design variables) for consistent theming
  */
 
 export const SELECT_PASS_THROUGH = {
-  // Root dropdown container
+  // Root select container
   root: {
-    class: 'fam-select fam-dropdown-root',
+    class: 'fam-select',
   },
 
-  // Dropdown trigger button/label
-  trigger: {
-    class: 'fam-dropdown-trigger',
-  },
-
-  // Label inside the dropdown trigger
+  // Label/value element inside select
   label: {
-    class: 'fam-dropdown-label',
+    class: 'fam-select-label',
   },
 
-  // Icon inside the dropdown trigger
-  icon: {
-    class: 'fam-dropdown-icon',
+  // Dropdown button wrapper
+  dropdown: {
+    class: 'fam-select-dropdown',
   },
 
-  // Panel (dropdown menu container)
-  panel: {
-    class: 'fam-dropdown-panel',
+  // Chevron icon element inside dropdown button
+  dropdownIcon: {
+    class: 'fam-select-dropdown-icon',
   },
 
-  // Items wrapper (list container)
-  items: {
-    class: 'fam-dropdown-items',
+  // Overlay/panel container (portaled)
+  overlay: {
+    class: 'fam-select-overlay',
   },
 
-  // Individual item in the dropdown list
-  item: {
-    class: 'fam-dropdown-item',
+  // List wrapper in overlay
+  list: {
+    class: 'fam-select-list',
   },
 
-  // Highlighted/selected item
-  itemGroup: {
-    class: 'fam-dropdown-item-group',
+  // Individual option item
+  option: {
+    class: 'fam-select-option',
   },
 
-  // Empty message when no items
+  // Empty message item
   emptyMessage: {
-    class: 'fam-dropdown-empty-message',
+    class: 'fam-select-empty-message',
   },
 };
