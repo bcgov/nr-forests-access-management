@@ -6,16 +6,16 @@ resource "aws_cognito_user_pool_client" "dev_frep_oidc_client" {
   callback_urls                                 = concat(
       [
         var.oidc_sso_playground_url,
-        "http://localhost:3000/welcome",
+        "http://localhost:3000/auth/callback",
       ],
-      [for i in range("${var.dev_pr_url_count}") : "https://nr-frep-${i}.apps.silver.devops.gov.bc.ca/welcome"]
+      [for i in range("${var.dev_pr_url_count}") : "https://nr-frep-${i}.apps.gold.devops.gov.bc.ca/auth/callback"]
   )
   logout_urls                                   = concat(
       [
         var.oidc_sso_playground_url,
         "${var.cognito_app_client_logout_chain_url.dev}http://localhost:3000",
       ],
-      [for i in range("${var.dev_pr_url_count}") : "${var.cognito_app_client_logout_chain_url.dev}https://nr-frep-${i}.apps.silver.devops.gov.bc.ca"]
+      [for i in range("${var.dev_pr_url_count}") : "${var.cognito_app_client_logout_chain_url.dev}https://nr-frep-${i}.apps.gold.devops.gov.bc.ca"]
   )
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
@@ -46,10 +46,12 @@ resource "aws_cognito_user_pool_client" "test_frep_oidc_client" {
   allowed_oauth_flows_user_pool_client          = "true"
   allowed_oauth_scopes                          = ["openid", "profile", "email"]
   callback_urls                                 = [
-    "https://nr-frep-test.apps.silver.devops.gov.bc.ca/welcome"
+    "http://localhost:3000/auth/callback",
+    "https://nr-frep-test.apps.gold.devops.gov.bc.ca/auth/callback"
   ]
   logout_urls                                   = [
-    "${var.cognito_app_client_logout_chain_url.test}https://nr-frep-test.apps.silver.devops.gov.bc.ca"
+    "${var.cognito_app_client_logout_chain_url.test}http://localhost:3000",
+    "${var.cognito_app_client_logout_chain_url.test}https://nr-frep-test.apps.gold.devops.gov.bc.ca/logout"
   ]
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
@@ -80,10 +82,10 @@ resource "aws_cognito_user_pool_client" "prod_frep_oidc_client" {
   allowed_oauth_flows_user_pool_client          = "true"
   allowed_oauth_scopes                          = ["openid", "profile", "email"]
   callback_urls                                 = [
-    "https://nr-frep-prod.apps.silver.devops.gov.bc.ca/welcome"
+    "https://nr-frep-prod.apps.gold.devops.gov.bc.ca/auth/callback"
   ]
   logout_urls                                   = [
-    "${var.cognito_app_client_logout_chain_url.prod}https://nr-frep-prod.apps.silver.devops.gov.bc.ca"
+    "${var.cognito_app_client_logout_chain_url.prod}https://nr-frep-prod.apps.gold.devops.gov.bc.ca/logout"
   ]
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
