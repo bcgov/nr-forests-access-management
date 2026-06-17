@@ -50,12 +50,6 @@ resource "aws_secretsmanager_secret_version" "service_secret_values" {
     client_id     = aws_cognito_user_pool_client.fam_service_clients[each.key].id
     client_secret = aws_cognito_user_pool_client.fam_service_clients[each.key].client_secret
   })
-
-  tags = {
-    App = each.value.app_name
-    Environment = each.value.env
-    ManagedBy = "terraform"
-  }
 }
 
 locals {
