@@ -86,17 +86,4 @@ locals {
       ]
     ]) : pair.key => pair
   }
-
-  # available scopes validation.
-  validation {
-    condition = alltrue([
-      for app in local.service_apps :
-      alltrue([
-        for scope in app.scopes :
-        contains(keys(var.service_account_scopes), scope)
-      ])
-    ])
-    error_message = "All app scopes must exist in service_account_scopes."
-  }
-
 }

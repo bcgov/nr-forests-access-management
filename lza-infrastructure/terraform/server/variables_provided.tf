@@ -332,6 +332,19 @@ variable "service_apps" {
     scopes           = list(string)
     rotation_version = string
   }))
+
+  # available scopes validation.
+  validation {
+    condition = alltrue([
+      for app in values(var.service_apps) :
+      alltrue([
+        for scope in app.scopes :
+        contains(keys(var.service_account_scopes), scope)
+      ])
+    ])
+    error_message = "All app scopes must exist in service_account_scopes."
+  }
+
 }
 
 # ------------------------ Networking Variables ------------------------ #
