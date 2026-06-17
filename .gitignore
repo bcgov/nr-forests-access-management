@@ -107,3 +107,8 @@ terraform/tools/output.txt
 **/*[-.]instructions.md
 **/*.prompt.md
 plan/**
+**/agents/**
+**/plans/**
+**/references/**
+**/requirements/**
+**/skills/**

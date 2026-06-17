@@ -326,6 +326,14 @@ variable "fam_console_idp_name_bceid" {
   type = string
 }
 
+# variable for service account usage
+variable "service_apps" {
+  type = map(object({
+    scopes           = list(string)
+    rotation_version = string
+  }))
+}
+
 # ------------------------ Networking Variables ------------------------ #
 variable "subnet_data_a" {
   description = "Value of the name tag for a subnet in the DATA security group"

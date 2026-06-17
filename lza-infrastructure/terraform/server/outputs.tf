@@ -54,3 +54,11 @@ output "fam_console_idp_name_bceid" {
   description = "Identifies which version of BUSINESS BCEID to use (DEV, TEST, or PROD)"
   value = var.fam_console_idp_name_bceid
 }
+
+output "service_client_id" {
+  description = "Cognito service client IDs by app and environment"
+  value = {
+    for k, v in aws_cognito_user_pool_client.fam_service_clients :
+    k => v.id
+  }
+}
