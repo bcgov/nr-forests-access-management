@@ -62,7 +62,9 @@ class IdimProxyService:
         Note, current idim-proxy only does exact match.
         """
         query_params = vars(search_params)
-        query_params.update({"requesterUserGuid": self.requester.user_guid})
+        query_params.update(
+            {"requesterUserGuid": config.get_idim_proxy_requester_user_guid()}
+        )
         url = f"{self.api_idim_proxy_url}/idir-account-detail"
         LOGGER.info(
             f"IdimProxyService lookup_idir() - url: {url} and param: {query_params}"
@@ -85,11 +87,16 @@ class IdimProxyService:
         """
         # query_params to request to idim-proxy, vars(search_params) returns a dict of the search_params
         query_params = vars(search_params)
-        query_params.update({"requesterUserGuid": self.requester.user_guid})
+        query_params.update(
+            {"requesterUserGuid": config.get_idim_proxy_requester_user_guid()}
+        )
+        # The outbound requesterUserGuid is a dedicated IDIR service identity
+        # (see config.get_idim_proxy_requester_user_guid), so the account type
+        # sent on the wire is always IDIR, regardless of the real caller's type.
         query_params.update(
             {
                 "requesterAccountTypeCode": IDIM_PROXY_ACCOUNT_TYPE_MAP[
-                    self.requester.user_type_code
+                    UserType.IDIR
                 ]
             }
         )
@@ -127,7 +134,7 @@ class IdimProxyService:
         Search IDIR users with optional partial-match query fields.
         """
         query_params = search_params.to_query_params()
-        body = {"requesterUserGuid": self.requester.user_guid}
+        body = {"requesterUserGuid": config.get_idim_proxy_requester_user_guid()}
         url = f"{self.api_idim_proxy_url}/idir-users/search"
 
         LOGGER.info(
