@@ -30,13 +30,19 @@ resource "aws_cognito_user_pool_client" "fam_service_clients" {
 
     # CRITICAL: force replace when version changes to trigger secret rotation in AWS Secrets Manager
     replace_triggered_by = [
-      each.value.rotation_version
+      terraform_data.rotation_trigger[each.key]
     ]
   }
 
   depends_on = [
     aws_cognito_resource_server.fam_api_resource_server
   ]
+}
+
+# dummy resource to trigger client secret rotation when rotation_version changes.
+resource "terraform_data" "rotation_trigger" {
+  for_each = local.service_app_envs
+  input    = each.value.rotation_version
 }
 
 # Store Credentials in Secrets Manager
