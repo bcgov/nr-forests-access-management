@@ -33,30 +33,30 @@ resource "aws_cognito_user_pool_client" "fam_service_clients" {
   ]
 }
 
-# Store Credentials in Secrets Manager
-resource "aws_secretsmanager_secret" "service_acct_secrets" {
-  for_each = local.service_app_envs
+# # Store Credentials in Secrets Manager
+# resource "aws_secretsmanager_secret" "service_acct_secrets" {
+#   for_each = local.service_app_envs
 
-  name = "cognito/svc-${each.value.app_name}-${each.value.env}-${each.value.rotation_version}"
-  # example: cognito/svc-fspts-dev-v1
+#   name = "cognito/svc-${each.value.app_name}-${each.value.env}-${each.value.rotation_version}"
+#   # example: cognito/svc-fspts-dev-v1
 
-  tags = {
-    App         = each.value.app_name
-    Environment = each.value.env
-    ManagedBy   = "terraform"
-  }
-}
+#   tags = {
+#     App         = each.value.app_name
+#     Environment = each.value.env
+#     ManagedBy   = "terraform"
+#   }
+# }
 
-resource "aws_secretsmanager_secret_version" "service_secret_values" {
-  for_each = local.service_app_envs
+# resource "aws_secretsmanager_secret_version" "service_secret_values" {
+#   for_each = local.service_app_envs
 
-  secret_id = aws_secretsmanager_secret.service_acct_secrets[each.key].id
+#   secret_id = aws_secretsmanager_secret.service_acct_secrets[each.key].id
 
-  secret_string = jsonencode({
-    client_id     = aws_cognito_user_pool_client.fam_service_clients[each.key].id
-    client_secret = aws_cognito_user_pool_client.fam_service_clients[each.key].client_secret
-  })
-}
+#   secret_string = jsonencode({
+#     client_id     = aws_cognito_user_pool_client.fam_service_clients[each.key].id
+#     client_secret = aws_cognito_user_pool_client.fam_service_clients[each.key].client_secret
+#   })
+# }
 
 locals {
   environments = ["dev", "test", "prod"]
@@ -70,11 +70,11 @@ locals {
     #   rotation_version = "v1"
     # }
 
-    # temp_app1 = {
-    #   # scope should be defined and available in service_account_scopes variable.
-    #   scopes           = ["idim.search.read"]
-    #   rotation_version = "v2"
-    # }
+    temp_app1 = {
+      # scope should be defined and available in service_account_scopes variable.
+      scopes           = ["idim.search.read"]
+      rotation_version = "v1"
+    }
 
     # Add more service app below.
 
