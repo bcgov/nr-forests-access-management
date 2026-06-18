@@ -91,7 +91,7 @@ locals {
     temp_app1 = {
       # scope should be defined and available in service_account_scopes variable.
       scopes           = ["idim.search.read"]
-      rotation_version = "v1"
+      rotation_version = "v2"
     }
 
     # Add more service app below.
