@@ -20,7 +20,9 @@ resource "aws_cognito_user_pool_client" "fam_service_clients" {
   ]
 
   access_token_validity = 60 # in minutes
-  access_token_validity_units = "minutes"
+  token_validity_units {
+    access_token  = "minutes"
+  }
 
   lifecycle {
     create_before_destroy = true
