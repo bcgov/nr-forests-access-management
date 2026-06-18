@@ -8,7 +8,7 @@ resource "aws_cognito_user_pool_client" "fam_service_clients" {
   user_pool_id = aws_cognito_user_pool.fam_user_pool.id
 
   # Generate a client secret from AWS for secure storage in Secrets Manager.
-  # Account needs to be rotated (version change) for the secret to be regenerated.
+  # Account needs to be rotated (version change) for the secret to be regenerated. Can't hand change the secret from AWS console.
   generate_secret = true
 
   allowed_oauth_flows_user_pool_client = true
@@ -33,6 +33,7 @@ resource "aws_secretsmanager_secret" "service_acct_secrets" {
   for_each = local.service_app_envs
 
   name = "cognito/svc-${each.value.app_name}-${each.value.env}-${each.value.rotation_version}"
+  # example: cognito/svc-fspts-dev-v1
 
   tags = {
     App         = each.value.app_name
@@ -58,12 +59,12 @@ locals {
   # the apps collection; but do not use this directly for creating clients.
   # see below service_app_envs
   service_apps = {
-    # For now it is empty, fspts will be the first entry to add later.
-    # fspts = {
-    #   # scope should be defined and available in service_account_scopes variable.
-    #   scopes           = ["idim.search.read"]
-    #   rotation_version = "v1"
-    # }
+    fspts = {
+      # scope should be defined and available in service_account_scopes variable.
+      scopes           = ["idim.search.read"]
+      rotation_version = "v1"
+    }
+
   }
 
   # use this for creating clients for each service app in each environment, e.g. fspts-dev, fspts-test, fspts-prod
