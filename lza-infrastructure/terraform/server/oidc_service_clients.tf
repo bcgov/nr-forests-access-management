@@ -70,11 +70,11 @@ locals {
     #   rotation_version = "v1"
     # }
 
-    temp_app1 = {
-      # scope should be defined and available in service_account_scopes variable.
-      scopes           = ["idim.search.read"]
-      rotation_version = "v1"
-    }
+    # temp_app1 = {
+    #   # scope should be defined and available in service_account_scopes variable.
+    #   scopes           = ["idim.search.read"]
+    #   rotation_version = "v1"
+    # }
 
     # Add more service app below.
 
