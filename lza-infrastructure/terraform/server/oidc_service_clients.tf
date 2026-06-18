@@ -65,6 +65,14 @@ locals {
       rotation_version = "v1"
     }
 
+    temp_app1 = {
+      # scope should be defined and available in service_account_scopes variable.
+      scopes           = ["idim.search.read"]
+      rotation_version = "v1"
+    }
+
+    # Add more service app below.
+
   }
 
   # use this for creating clients for each service app in each environment, e.g. fspts-dev, fspts-test, fspts-prod
