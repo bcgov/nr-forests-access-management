@@ -38,12 +38,7 @@ locals {
   # the apps collection; but do not use this directly for creating clients.
   # see below service_app_envs
   service_apps = {
-    # fspts = {
-    #   # scope should be defined and available in service_account_scopes variable.
-    #   scopes           = ["idim.search.read"]
-    # }
-
-    temp_app1 = {
+    fspts = {
       # scope should be defined and available in service_account_scopes variable.
       scopes           = ["idim.search.read"]
     }
