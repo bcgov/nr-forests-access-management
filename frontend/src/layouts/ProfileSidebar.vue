@@ -235,7 +235,6 @@ const adminUserAccessQuery = useQuery({
     display: flex;
     border: none;
     padding: 0;
-
     justify-content: flex-start;
     text-align: left;
 }
@@ -243,10 +242,14 @@ const adminUserAccessQuery = useQuery({
 .profile-sidebar-btn:enabled:hover,
 .profile-sidebar-btn:enabled:active,
 .profile-sidebar-btn:enabled:focus {
-    background-color: var(--border-subtle-00);
+    background-color: var(--semantic-color-surface-layer-selected);
     box-shadow: none;
     outline: none;
+    border: none;
+    border-radius: 0;
+    color: var(--semantic-color-text);
 }
+
 
 .profile-userid,
 .profile-organization,

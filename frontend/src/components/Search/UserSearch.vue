@@ -529,6 +529,9 @@ const handleSearch = () => {
     display: flex;
     align-items: flex-end;
     margin-top: 1.5rem;
+    .fam-button {
+        width: 7.875rem;
+    }
 }
 
 .search-error-row {
