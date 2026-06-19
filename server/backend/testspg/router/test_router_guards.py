@@ -10,11 +10,14 @@ from testspg.constants import TEST_CREATOR, USER_NAME_BCEID_LOAD_2_TEST
 from testspg.jwt_utils import COGNITO_USERNAME_BCEID_DELEGATED_ADMIN
 
 
-def mock_requester(user_name="test_user", user_id=1):
+def mock_requester(user_name="test_user", user_id=1, is_service_account=False,
+                   service_account_client_id=None):
     class DummyRequester:
         def __init__(self):
             self.user_name = user_name
             self.user_id = user_id
+            self.is_service_account = is_service_account
+            self.service_account_client_id = service_account_client_id
     return DummyRequester()
 
 def mock_application(application_id=123, application_name="TestApp"):
@@ -104,6 +107,24 @@ def test_authorize_ext_api_by_app_role_no_permission(mock_allow_permission, mock
     with pytest.raises(Exception) as excinfo:
         router_guards.authorize_ext_api_by_app_role(requester=requester, app_client_id=app_client_id, db=db)
     assert "No permission to call the external API" in str(excinfo.value)
+
+@patch("api.app.crud.crud_application.get_application_by_app_client_id")
+@patch("api.app.crud.crud_utils.allow_ext_call_api_permission")
+def test_authorize_ext_api_by_app_role_service_account(mock_allow_permission, mock_get_app):
+    # A service account is authorized purely by its client_id mapping to a registered
+    # application; the per-user permission check is skipped entirely.
+    test_app_id = 999
+    mock_get_app.return_value = mock_application(application_id=test_app_id)
+    requester = mock_requester(
+        is_service_account=True, service_account_client_id="svc-client-123"
+    )
+    db = MagicMock()
+
+    result = router_guards.authorize_ext_api_by_app_role(
+        requester=requester, app_client_id="svc-client-123", db=db
+    )
+    assert result.application_id == test_app_id
+    mock_allow_permission.assert_not_called()
 
 # ---
 # Tests for enforce_bceid_by_same_org_guard

@@ -27,6 +27,7 @@ def make_fam_mock_user(idx):
     return user
 class DummyRequester:
     user_name = "test_user"
+    is_service_account = False
 
 @pytest.fixture()
 def allow_api_request(mocker):
@@ -60,16 +61,24 @@ def setup_users_and_roles_for_ext_user_search_tests(db_pg_session):
 def test_is_request_allowed_true(mocker, db_pg_session):
     # Mock allow_ext_call_api_permission to return True
     mocker.patch("api.app.crud.crud_utils.allow_ext_call_api_permission", return_value=True)
-    requester = MagicMock()
+    # A (non service-account) user requester; is_service_account must be False so the
+    # per-user permission path is exercised (a bare MagicMock fabricates a truthy attr).
+    requester = MagicMock(is_service_account=False)
     service = ExtAppUserSearchService(db_pg_session, requester=requester, application_id=123)
     assert service.is_request_allowed() is True
 
 def test_is_request_allowed_false(mocker, db_pg_session):
     # Mock allow_ext_call_api_permission to return False
     mocker.patch("api.app.crud.crud_utils.allow_ext_call_api_permission", return_value=False)
-    requester = MagicMock()
+    requester = MagicMock(is_service_account=False)
     service = ExtAppUserSearchService(db_pg_session, requester=requester, application_id=123)
     assert service.is_request_allowed() is False
+
+def test_is_request_allowed_true_for_service_account(db_pg_session):
+    # Service-account requester bypasses the per-user permission check.
+    requester = MagicMock(is_service_account=True)
+    service = ExtAppUserSearchService(db_pg_session, requester=requester, application_id=123)
+    assert service.is_request_allowed() is True
 
 # -- Tests search_users function.
 
