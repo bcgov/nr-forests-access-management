@@ -198,12 +198,23 @@ def get_access_roles(
     return groups
 
 
+def is_service_account_token(claims: dict) -> bool:
+    """
+    A service-account (client-credentials / machine-to-machine) access token has no
+    user identity. Cognito populates the "username" claim only for user tokens, so the
+    absence of that claim identifies a service-account token.
+    """
+    return COGNITO_USERNAME_KEY not in claims
+
+
 def get_request_cognito_user_id(claims: dict = Depends(validate_token)):
     # This is NOT user's name, display name or user ID.
     # It is mapped to "cognito:username" (ID Token) and "username" (Access Token).
     # It is the "cognito_user_id" column for fam_user table.
     # Example value: idir_b5ecdb094dfb4149a6a8445a0mangled0@idir
-    cognito_username = claims[COGNITO_USERNAME_KEY]
+    # Note: use .get() so a service-account token (no "username" claim) returns None
+    # instead of raising; callers that require a user resolve this to a clean 403.
+    cognito_username = claims.get(COGNITO_USERNAME_KEY)
     LOGGER.debug(f"Current requester's cognito_username for API: {cognito_username}")
     return cognito_username
 

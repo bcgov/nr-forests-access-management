@@ -27,7 +27,7 @@ from api.app.main import app, internal_api_prefix
 from api.app.models.model import FamUser
 from api.app.routers.router_guards import (
     enforce_bceid_terms_conditions_guard, get_current_requester,
-    get_verified_target_users)
+    get_ext_requester, get_verified_target_users)
 from api.app.schemas import RequesterSchema, TargetUserSchema
 from api.app.schemas.fam_user import FamUserSchema
 from api.app.schemas.pagination import UserRolePageParamsSchema
@@ -198,9 +198,12 @@ def override_depends__get_current_requester(test_client_fixture):
     # Return mocked Requester for function's needs.
     def _override_get_current_requester(mocked_data=TEST_BCEID_REQUESTER_DICT):
         app = test_client_fixture.app
-        app.dependency_overrides[get_current_requester] = lambda: RequesterSchema(
-            **mocked_data
-        )
+        mocked_requester = lambda: RequesterSchema(**mocked_data)
+        app.dependency_overrides[get_current_requester] = mocked_requester
+        # External (/external/v1) endpoints resolve the requester via get_ext_requester,
+        # which also accepts service-account tokens. Override it too so existing tests
+        # that inject a (user) requester keep working against the external endpoints.
+        app.dependency_overrides[get_ext_requester] = mocked_requester
 
     return _override_get_current_requester
 
