@@ -43,10 +43,10 @@ locals {
     #   scopes           = ["idim.search.read"]
     # }
 
-    # temp_app1 = {
-    #   # scope should be defined and available in service_account_scopes variable.
-    #   scopes           = ["idim.search.read"]
-    # }
+    temp_app1 = {
+      # scope should be defined and available in service_account_scopes variable.
+      scopes           = ["idim.search.read"]
+    }
 
     # Add more service app below.
 
