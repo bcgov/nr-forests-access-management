@@ -2,14 +2,12 @@
 resource "aws_cognito_user_pool_client" "fam_service_clients" {
   for_each = local.service_app_envs
 
-  name = "svc-${each.value.app_name}-${each.value.env}-${each.value.rotation_version}"
-  # example: svc-fspts-dev-v1
+  name = "svc-${each.value.app_name}-${each.value.env}"
+  # example: svc-fspts-dev
 
   user_pool_id = aws_cognito_user_pool.fam_user_pool.id
 
-  # Generate a client secret from AWS for secure storage in Secrets Manager.
-  # Account needs to be rotated (version change) for the secret to be regenerated.
-  # Secret can't be manually changed from AWS console.
+  # Generate a client secret.
   generate_secret = true
 
   allowed_oauth_flows_user_pool_client = true
@@ -27,53 +25,11 @@ resource "aws_cognito_user_pool_client" "fam_service_clients" {
 
   lifecycle {
     create_before_destroy = true
-
-    # CRITICAL: force replace when version changes to trigger secret rotation in AWS Secrets Manager
-    replace_triggered_by = [
-      terraform_data.rotation_trigger[each.key]
-    ]
   }
 
   depends_on = [
     aws_cognito_resource_server.fam_api_resource_server
   ]
-}
-
-# dummy resource to trigger client secret rotation when rotation_version changes.
-resource "terraform_data" "rotation_trigger" {
-  for_each = local.service_app_envs
-  input    = each.value.rotation_version
-}
-
-# Store Credentials in Secrets Manager
-resource "aws_secretsmanager_secret" "service_acct_secrets" {
-  for_each = local.service_app_envs
-
-  name = "cognito/svc-${each.value.app_name}-${each.value.env}"
-  # example: cognito/svc-fspts-dev
-
-  tags = {
-    App         = each.value.app_name
-    Environment = each.value.env
-    ManagedBy   = "terraform"
-  }
-}
-
-resource "aws_secretsmanager_secret_version" "service_secret_values" {
-  for_each = local.service_app_envs
-
-  secret_id = aws_secretsmanager_secret.service_acct_secrets[each.key].id
-
-  secret_string = jsonencode({
-    client_id     = aws_cognito_user_pool_client.fam_service_clients[each.key].id
-    client_secret = aws_cognito_user_pool_client.fam_service_clients[each.key].client_secret
-  })
-
-  lifecycle {
-    replace_triggered_by = [
-      aws_cognito_user_pool_client.fam_service_clients[each.key].id
-    ]
-  }
 }
 
 locals {
@@ -85,14 +41,12 @@ locals {
     # fspts = {
     #   # scope should be defined and available in service_account_scopes variable.
     #   scopes           = ["idim.search.read"]
-    #   rotation_version = "v1"
     # }
 
-    temp_app1 = {
-      # scope should be defined and available in service_account_scopes variable.
-      scopes           = ["idim.search.read"]
-      rotation_version = "v2"
-    }
+    # temp_app1 = {
+    #   # scope should be defined and available in service_account_scopes variable.
+    #   scopes           = ["idim.search.read"]
+    # }
 
     # Add more service app below.
 
@@ -107,7 +61,6 @@ locals {
           app_name = app_name
           env = env
           scopes = app.scopes
-          rotation_version = app.rotation_version
         }
       ]
     ]) : pair.key => pair
