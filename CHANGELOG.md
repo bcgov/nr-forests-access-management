@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.18.0](https://github.com/bcgov/nr-forests-access-management/compare/v2.17.3...v2.18.0) (2026-06-17)
+
+
+### Features
+
+* Update redirect uri ([#2222](https://github.com/bcgov/nr-forests-access-management/issues/2222)) ([3176850](https://github.com/bcgov/nr-forests-access-management/commit/3176850da839d0b6b80f13c1402b942df086967f))
+
 ## [2.17.3](https://github.com/bcgov/nr-forests-access-management/compare/v2.17.2...v2.17.3) (2026-06-12)
 
 
