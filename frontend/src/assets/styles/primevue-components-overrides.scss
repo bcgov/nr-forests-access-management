@@ -128,26 +128,36 @@ label {
 
 /* ---------------------------------- checkbox -------------------------------- */
 /* Colors managed by PrimeVue v4 preset via fam-custom-tokens.css */
-.#{variables.$primevue-prefix}-checkbox
-    .#{variables.$primevue-prefix}-checkbox-box {
-    border-radius: 0.125rem;
-}
-.#{variables.$primevue-prefix}-checkbox:not(
-        .#{variables.$primevue-prefix}-checkbox-disabled
-    )
-    .#{variables.$primevue-prefix}-checkbox-box.#{variables.$primevue-prefix}-focus {
-    box-shadow: 0 0 0 0.125rem var(--semantic-color-background-default),
-        0 0 0 0.25rem var(--semantic-color-focus-default),
-        0 0.0625rem 0.125rem 0 black;
-}
-.#{variables.$primevue-prefix}-checkbox
-    .#{variables.$primevue-prefix}-checkbox-box.#{variables.$primevue-prefix}-highlight
-    .#{variables.$primevue-prefix}-checkbox-icon.pi-check {
-    font-size: 0.75rem;
-}
+// .#{variables.$primevue-prefix}-checkbox
+//     .#{variables.$primevue-prefix}-checkbox-box {
+//     border-radius: none;
+// }
+// .#{variables.$primevue-prefix}-checkbox:not(
+//         .#{variables.$primevue-prefix}-checkbox-disabled
+//     )
+//     .#{variables.$primevue-prefix}-checkbox-box.#{variables.$primevue-prefix}-focus {
+//     box-shadow: 0 0 0 0.125rem var(--semantic-color-background-default),
+//         0 0 0 0.25rem var(--semantic-color-focus-default),
+//         0 0.0625rem 0.125rem 0 black;
+// }
+// .#{variables.$primevue-prefix}-checkbox
+//     .#{variables.$primevue-prefix}-checkbox-box.#{variables.$primevue-prefix}-highlight
+//     .#{variables.$primevue-prefix}-checkbox-icon.pi-check {
+//     font-size: 0.75rem;
+// }
 
 /* ------------------------------------ primevue radio --------------------------------- */
-/* Colors managed by PrimeVue v4 preset via fam-custom-tokens.css */
+/*
+ * MIGRATED TO PASSTHROUGH:
+ * - frontend/src/passthrough/radiobutton/radioButtonPassThrough.ts
+ * - frontend/src/passthrough/radiobutton/radioButtonPassThrough.scss
+ *
+ * Notes:
+ * - Removed !important usage
+ * - Uses higher-specificity selectors under .p-radiobutton.p-component.fam-radiobutton
+ * - Uses fam-custom-tokens design tokens
+ */
+/*
 .#{variables.$primevue-prefix}-radiobutton {
     width: 1.125rem;
     height: 1.125rem;
@@ -169,6 +179,7 @@ label {
         0 0 0 0.25rem var(--semantic-color-focus-default),
         0 0.0625rem 0.125rem 0 black;
 }
+*/
 
 /* ------------------------------------ primevue card --------------------------------- */
 /* Colors managed by PrimeVue v4 preset via fam-custom-tokens.css */

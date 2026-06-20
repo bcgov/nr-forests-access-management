@@ -29,10 +29,10 @@ const props = withDefaults(defineProps<CheckboxProps>(), {
 
 <style lang="scss" scoped>
 .fam-checkbox {
-    .p-checkbox {
-        margin-right: 0.5rem;
-        width: 1.2rem;
-        height: 1.2rem;
+    :deep(.p-checkbox-box) {
+        border-radius: 0;
+        height: 1.3rem;
+        width: 1.25rem;
     }
 
     label {
@@ -40,7 +40,10 @@ const props = withDefaults(defineProps<CheckboxProps>(), {
         font-weight: 600;
         color: var(--text-secondary);
         margin-bottom: 0;
+        margin-left: 0.25rem;
         cursor: pointer;
     }
 }
+
+
 </style>

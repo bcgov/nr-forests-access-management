@@ -32,4 +32,5 @@ const layoutComponent = computed(() => {
 @use "@/passthrough/dialog/dialogPassThrough.scss";
 @use "@/passthrough/input/inputPassThrough.scss";
 @use "@/passthrough/button/buttonPassThrough.scss";
+@use "@/passthrough/radiobutton/radioButtonPassThrough.scss";
 </style>
