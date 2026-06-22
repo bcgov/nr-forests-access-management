@@ -207,52 +207,56 @@ label {
 // }
 
 /* ------------------------------------ primevue table --------------------------------- */
+/* Migrated to:
+ * - frontend/src/passthrough/datatable/datatablePassThrough.ts  (PT class hooks)
+ * - frontend/src/passthrough/datatable/datatablePassThrough.scss (component styles)
+ */
 
-.#{variables.$primevue-prefix}-column-header-content
-    .#{variables.$primevue-prefix}-column-title {
-    padding: 1rem 0 1.4rem;
-}
+// .#{variables.$primevue-prefix}-column-header-content
+//     .#{variables.$primevue-prefix}-column-title {
+//     padding: 1rem 0 1.4rem;
+// }
 
-.#{variables.$primevue-prefix}-datatable
-    .#{variables.$primevue-prefix}-datatable-thead
-    > tr
-    > th {
-    @extend %body-compact-01;
+// .#{variables.$primevue-prefix}-datatable
+//     .#{variables.$primevue-prefix}-datatable-thead
+//     > tr
+//     > th {
+//     @extend %body-compact-01;
+//
+//     font-weight: 700;
+//
+//     text-align: left;
+//     border: none;
+//
+//     .p-column-header-content {
+//         min-height: 1.625rem;
+//     }
+//
+//     .p-column-header-content > span {
+//         padding: 0 1rem 0 0;
+//     }
+// }
 
-    font-weight: 700;
+// .#{variables.$primevue-prefix}-datatable
+//     .#{variables.$primevue-prefix}-datatable-tbody {
+//     > tr > td {
+//         @extend %body-compact-01;
+//         height: 3rem;
+//         text-align: left;
+//         border: none;
+//     }
+// }
 
-    text-align: left;
-    border: none;
+// .#{variables.$primevue-prefix}-datatable
+//     .#{variables.$primevue-prefix}-datatable-tbody {
+//     > tr {
+//         box-shadow: inset 0 0 0 0.031rem var(--semantic-color-border-subtle);
+//     }
+// }
 
-    .p-column-header-content {
-        min-height: 1.625rem;
-    }
-
-    .p-column-header-content > span {
-        padding: 0 1rem 0 0;
-    }
-}
-
-.#{variables.$primevue-prefix}-datatable
-    .#{variables.$primevue-prefix}-datatable-tbody {
-    > tr > td {
-        @extend %body-compact-01;
-        height: 3rem;
-        text-align: left;
-        border: none;
-    }
-}
-
-.#{variables.$primevue-prefix}-datatable
-    .#{variables.$primevue-prefix}-datatable-tbody {
-    > tr {
-        box-shadow: inset 0 0 0 0.031rem var(--semantic-color-border-subtle);
-    }
-}
-
-.#{variables.$primevue-prefix}-sortable-column-icon {
-    margin-bottom: 0.5rem;
-}
+// .#{variables.$primevue-prefix}-sortable-column-icon {
+//     margin-bottom: 0.5rem;
+// }
 
 /* ================================ MIGRATION NOTE ================================ */
 /*

@@ -31,7 +31,7 @@ import {
 import TableSkeleton from "@/components/Skeletons/TableSkeleton.vue";
 import TableHeaderTitle from "@/components/Table/TableHeaderTitle.vue";
 import TableToolbar from "@/components/Table/TableToolbar.vue";
-import { TABLE_PAGINATOR_PT } from "@/passthrough/paginator/paginatorPassThrough.js";
+import { TABLE_DATATABLE_PT } from "@/passthrough/datatable/datatablePassThrough.js";
 import Chip from "@/components/UI/Chip.vue";
 import ErrorText from "@/components/UI/ErrorText.vue";
 import Spinner from "@/components/UI/Spinner.vue";
@@ -720,7 +720,7 @@ const downloadManagePermissionsCSVData = () => {
                 :paginatorTemplate="TABLE_PAGINATOR_TEMPLATE"
                 :currentPageReportTemplate="TABLE_CURRENT_PAGE_REPORT_TEMPLATE"
                 :rowStyle="highlightNewUserAccessRow"
-                :pt="TABLE_PAGINATOR_PT"
+                :pt="TABLE_DATATABLE_PT"
                 @page="handlePageChange"
                 @sort="handleSort"
                 :loading="isFetching"
@@ -874,6 +874,7 @@ const downloadManagePermissionsCSVData = () => {
 </template>
 <style lang="scss">
 @use "@/passthrough/paginator/paginatorPassThrough.scss";
+@use "@/passthrough/datatable/datatablePassThrough.scss";
 
 .fam-table {
     border: 0 0.25rem 0.25rem 0.25rem;
