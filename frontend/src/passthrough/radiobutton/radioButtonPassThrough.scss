@@ -1,7 +1,7 @@
 /**
  * PrimeVue v4 RadioButton Component Styling
  * Migrated from primevue-components-overrides.scss
- */
+*/
 
 /* ================================ RadioButton Base ================================ */
 
@@ -12,15 +12,15 @@
 }
 
 .p-radiobutton.p-component.fam-radiobutton .p-radiobutton-icon.fam-radiobutton-icon {
-    width: 0.5rem;
-    height: 0.5rem;
+    width: 0.375rem;
+    height: 0.375rem;
 }
 
-/* ================================ RadioButton Focus ================================ */
+/* ================================ RadioButton Checked State ================================ */
 
-.p-radiobutton.p-component.fam-radiobutton
-    .p-radiobutton-box.fam-radiobutton-box:not(.p-disabled).p-focus {
-    box-shadow: 0 0 0 0.125rem var(--semantic-color-background-default),
-        0 0 0 0.25rem var(--semantic-color-focus-default),
-        0 0.0625rem 0.125rem 0 var(--primitive-color-gray-100);
+.p-radiobutton.p-component.fam-radiobutton.p-radiobutton-checked
+    .p-radiobutton-box.fam-radiobutton-box {
+    box-shadow: 0 0 0 0.15rem var(--semantic-color-focus-default);
+    border: 0.3em solid #FFF;
 }
+

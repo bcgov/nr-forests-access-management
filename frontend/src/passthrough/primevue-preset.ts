@@ -249,6 +249,18 @@ export const FamPrimeVuePreset = definePreset(Lara, {
         checkedColor: SemanticColorTextOnColor,
       },
     },
+    radiobutton: {
+      root: {
+        borderColor: SemanticColorIconPrimary,
+        hoverBorderColor: SemanticColorIconPrimary,
+        checkedBackground: SemanticColorIconPrimary,
+        checkedHoverBackground: SemanticColorIconPrimary,
+        checkedBorderColor: SemanticColorIconPrimary,
+      },
+      icon: {
+        checkedColor: SemanticColorIconPrimary,
+      },
+    },
     card: {
       root: {
         background: SemanticColorSurfaceLayer1,
