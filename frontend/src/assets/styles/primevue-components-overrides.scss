@@ -623,109 +623,109 @@ label {
 
 /* ------------------------------------ Breadcrumb ----------------------------- */
 
-.#{variables.$primevue-prefix}-breadcrumb {
-    background-color: transparent;
-    font-size: 0.875rem;
-    line-height: 1.125rem; /* 128.571% */
-    letter-spacing: 0.01rem;
-    margin: 0 0 0.5rem;
-    padding: 0;
-    border-radius: 0;
-    display: none;
-}
+// .#{variables.$primevue-prefix}-breadcrumb {
+//     background-color: transparent;
+//     font-size: 0.875rem;
+//     line-height: 1.125rem; /* 128.571% */
+//     letter-spacing: 0.01rem;
+//     margin: 0 0 0.5rem;
+//     padding: 0;
+//     border-radius: 0;
+//     display: none;
+// }
 
-.#{variables.$primevue-prefix}-breadcrumb
-    .#{variables.$primevue-prefix}-breadcrumb-list {
-    padding: 0;
-    margin: 0;
-}
+// .#{variables.$primevue-prefix}-breadcrumb
+//     .#{variables.$primevue-prefix}-breadcrumb-list {
+//     padding: 0;
+//     margin: 0;
+// }
 
-.#{variables.$primevue-prefix}-breadcrumb
-    .#{variables.$primevue-prefix}-breadcrumb-list
-    .#{variables.$primevue-prefix}-menuitem {
-    display: inline-flex !important;
-    align-items: center;
-}
+// .#{variables.$primevue-prefix}-breadcrumb
+//     .#{variables.$primevue-prefix}-breadcrumb-list
+//     .#{variables.$primevue-prefix}-menuitem {
+//     display: inline-flex !important;
+//     align-items: center;
+// }
 
-.#{variables.$primevue-prefix}-breadcrumb
-    .#{variables.$primevue-prefix}-breadcrumb-list
-    .#{variables.$primevue-prefix}-menuitem
-    a {
-    padding: 0.2rem;
-    border-radius: 0;
-    text-decoration: none;
-}
+// .#{variables.$primevue-prefix}-breadcrumb
+//     .#{variables.$primevue-prefix}-breadcrumb-list
+//     .#{variables.$primevue-prefix}-menuitem
+//     a {
+//     padding: 0.2rem;
+//     border-radius: 0;
+//     text-decoration: none;
+// }
 
-.#{variables.$primevue-prefix}-breadcrumb
-    .#{variables.$primevue-prefix}-breadcrumb-list
-    .#{variables.$primevue-prefix}-menuitem
-    a:focus {
-    box-shadow: inset 0 0px 0px 0.063rem
-        map.get(lightTheme.$light-theme, "focus") !important;
-}
+// .#{variables.$primevue-prefix}-breadcrumb
+//     .#{variables.$primevue-prefix}-breadcrumb-list
+//     .#{variables.$primevue-prefix}-menuitem
+//     a:focus {
+//     box-shadow: inset 0 0px 0px 0.063rem
+//         map.get(lightTheme.$light-theme, "focus") !important;
+// }
 
-.#{variables.$primevue-prefix}-breadcrumb
-    .#{variables.$primevue-prefix}-breadcrumb-list
-    .#{variables.$primevue-prefix}-menuitem:last-child
-    a {
-    box-shadow: none !important;
-    pointer-events: none;
-}
+// .#{variables.$primevue-prefix}-breadcrumb
+//     .#{variables.$primevue-prefix}-breadcrumb-list
+//     .#{variables.$primevue-prefix}-menuitem:last-child
+//     a {
+//     box-shadow: none !important;
+//     pointer-events: none;
+// }
 
-.#{variables.$primevue-prefix}-breadcrumb
-    .#{variables.$primevue-prefix}-breadcrumb-list
-    .#{variables.$primevue-prefix}-menuitem
-    a
-    span:hover {
-    color: map.get(lightTheme.$light-theme, "link-primary-hover") !important;
-}
+// .#{variables.$primevue-prefix}-breadcrumb
+//     .#{variables.$primevue-prefix}-breadcrumb-list
+//     .#{variables.$primevue-prefix}-menuitem
+//     a
+//     span:hover {
+//     color: map.get(lightTheme.$light-theme, "link-primary-hover") !important;
+// }
 
-.#{variables.$primevue-prefix}-breadcrumb
-    .#{variables.$primevue-prefix}-breadcrumb-list
-    .#{variables.$primevue-prefix}-menuitem:not(:last-child)::after {
-    color: map.get(lightTheme.$light-theme, "text-primary");
-    content: "/";
-    margin: 0 0.5rem;
-}
+// .#{variables.$primevue-prefix}-breadcrumb
+//     .#{variables.$primevue-prefix}-breadcrumb-list
+//     .#{variables.$primevue-prefix}-menuitem:not(:last-child)::after {
+//     color: map.get(lightTheme.$light-theme, "text-primary");
+//     content: "/";
+//     margin: 0 0.5rem;
+// }
 
-.#{variables.$primevue-prefix}-breadcrumb
-    .#{variables.$primevue-prefix}-breadcrumb-list
-    li
-    span {
-    color: map.get(lightTheme.$light-theme, "link-primary") !important;
-}
+// .#{variables.$primevue-prefix}-breadcrumb
+//     .#{variables.$primevue-prefix}-breadcrumb-list
+//     li
+//     span {
+//     color: map.get(lightTheme.$light-theme, "link-primary") !important;
+// }
 
-.#{variables.$primevue-prefix}-breadcrumb
-    .#{variables.$primevue-prefix}-breadcrumb-list
-    li:last-child
-    span {
-    color: map.get(lightTheme.$light-theme, "text-primary") !important;
-}
+// .#{variables.$primevue-prefix}-breadcrumb
+//     .#{variables.$primevue-prefix}-breadcrumb-list
+//     li:last-child
+//     span {
+//     color: map.get(lightTheme.$light-theme, "text-primary") !important;
+// }
 
-.#{variables.$primevue-prefix}-breadcrumb
-    .#{variables.$primevue-prefix}-breadcrumb-list
-    li.#{variables.$primevue-prefix}-menuitem-separator {
-    margin: 0;
-}
+// .#{variables.$primevue-prefix}-breadcrumb
+//     .#{variables.$primevue-prefix}-breadcrumb-list
+//     li.#{variables.$primevue-prefix}-menuitem-separator {
+//     margin: 0;
+// }
 
-.#{variables.$primevue-prefix}-breadcrumb
-    .#{variables.$primevue-prefix}-breadcrumb-list
-    li.#{variables.$primevue-prefix}-menuitem-separator
-    svg {
-    display: none;
-}
+// .#{variables.$primevue-prefix}-breadcrumb
+//     .#{variables.$primevue-prefix}-breadcrumb-list
+//     li.#{variables.$primevue-prefix}-menuitem-separator
+//     svg {
+//     display: none;
+// }
 
-@media (min-width: 768px) {
-    .#{variables.$primevue-prefix}-breadcrumb {
-        display: block;
-    }
-}
+// @media (min-width: 768px) {
+//     .#{variables.$primevue-prefix}-breadcrumb {
+//         display: block;
+//     }
+// }
 
-@media (max-width: 1024px) {
-    .#{variables.$primevue-prefix}-breadcrumb {
-        margin: 0;
-    }
-}
+// @media (max-width: 1024px) {
+//     .#{variables.$primevue-prefix}-breadcrumb {
+//         margin: 0;
+//     }
+// }
 
 /* ------------------------------------ step component ----------------------------- */
 
