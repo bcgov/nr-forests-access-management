@@ -297,7 +297,6 @@ const onInvalid = () => {
     <div class="add-app-permission-container">
         <ConfirmDialog
             group="changeDomain"
-            class="confirm-dialog-with-blue-button"
         >
             <template #message>
                 <p>
@@ -309,7 +308,6 @@ const onInvalid = () => {
         </ConfirmDialog>
         <ConfirmDialog
             group="addDelegatedAdmin"
-            class="confirm-dialog-with-blue-button"
         >
             <template #message>
                 <p>

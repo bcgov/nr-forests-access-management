@@ -335,79 +335,82 @@ label {
 
 
 /* ------------------------------------ dialog -------------------------- */
-/* Colors managed by PrimeVue v4 preset via fam-custom-tokens.css */
-.#{variables.$primevue-prefix}-dialog {
-    border-radius: 0.5rem;
-    box-shadow: 0 0.125rem 0.375rem 0 rgba(0, 0, 0, 0.3);
-    border: none;
-}
-
-.#{variables.$primevue-prefix}-dialog
-    .#{variables.$primevue-prefix}-dialog-header {
-    border-top-right-radius: 0.5rem;
-    border-top-left-radius: 0.5rem;
-
-    .#{variables.$primevue-prefix}-dialog-title {
-        @extend %label-01;
-    }
-}
-
-.#{variables.$primevue-prefix}-dialog-content {
-    @extend %body-compact-01;
-    padding: 0 1rem;
-}
-
-.#{variables.$primevue-prefix}-dialog-content p:last-child {
-    @extend %heading-03;
-    padding-bottom: 3rem;
-    margin: 0;
-    width: 85%;
-}
-
-.#{variables.$primevue-prefix}-dialog
-    .#{variables.$primevue-prefix}-dialog-content:last-of-type {
-    padding-bottom: 3rem;
-    border-bottom-right-radius: 0.5rem;
-    border-bottom-left-radius: 0.5rem;
-}
-
-.#{variables.$primevue-prefix}-dialog-footer {
-    display: flex;
-    border-top: none !important;
-    padding-bottom: 1rem;
-    padding-top: 1rem;
-    border-bottom-right-radius: 0.5rem;
-    border-bottom-left-radius: 0.5rem;
-}
-
-.#{variables.$primevue-prefix}-dialog
-    .#{variables.$primevue-prefix}-dialog-footer
-    .#{variables.$primevue-prefix}-button {
-    flex-basis: 100%;
-    padding: 0.75rem;
-}
+/* Migrated to:
+ * - frontend/src/passthrough/dialog/dialogPassThrough.ts  (PT class hooks)
+ * - frontend/src/passthrough/dialog/dialogPassThrough.scss (component styles)
+ */
+// .#{variables.$primevue-prefix}-dialog {
+//     border-radius: 0.5rem;
+//     box-shadow: 0 0.125rem 0.375rem 0 rgba(0, 0, 0, 0.3);
+//     border: none;
+// }
+//
+// .#{variables.$primevue-prefix}-dialog
+//     .#{variables.$primevue-prefix}-dialog-header {
+//     border-top-right-radius: 0.5rem;
+//     border-top-left-radius: 0.5rem;
+//
+//     .#{variables.$primevue-prefix}-dialog-title {
+//         @extend %label-01;
+//     }
+// }
+//
+// .#{variables.$primevue-prefix}-dialog-content {
+//     @extend %body-compact-01;
+//     padding: 0 1rem;
+// }
+//
+// .#{variables.$primevue-prefix}-dialog-content p:last-child {
+//     @extend %heading-03;
+//     padding-bottom: 3rem;
+//     margin: 0;
+//     width: 85%;
+// }
+//
+// .#{variables.$primevue-prefix}-dialog
+//     .#{variables.$primevue-prefix}-dialog-content:last-of-type {
+//     padding-bottom: 3rem;
+//     border-bottom-right-radius: 0.5rem;
+//     border-bottom-left-radius: 0.5rem;
+// }
+//
+// .#{variables.$primevue-prefix}-dialog-footer {
+//     display: flex;
+//     border-top: none !important;
+//     padding-bottom: 1rem;
+//     padding-top: 1rem;
+//     border-bottom-right-radius: 0.5rem;
+//     border-bottom-left-radius: 0.5rem;
+// }
+//
+// .#{variables.$primevue-prefix}-dialog
+//     .#{variables.$primevue-prefix}-dialog-footer
+//     .#{variables.$primevue-prefix}-button {
+//     flex-basis: 100%;
+//     padding: 0.75rem;
+// }
 
 /* ------------------------------------ dialog confirm header -------------------------- */
-
-.#{variables.$primevue-prefix}-dialog
-    .#{variables.$primevue-prefix}-dialog-header {
-    border-bottom: none;
-    padding-bottom: 0;
-
-    border-top-right-radius: 0.5rem;
-    border-top-left-radius: 0.5rem;
-
-    .#{variables.$primevue-prefix}-dialog-title {
-        @extend %heading-03;
-    }
-}
-/* NOTE: Dialog buttons (confirm/reject) colors now managed by PrimeVue v4 preset */
-/* Removed explicit button color overrides; preset handles tertiary/danger variants */
-/* Keep only spacing rules below */
-.#{variables.$primevue-prefix}-dialog
-    .#{variables.$primevue-prefix}-confirm-dialog-reject {
-    margin-right: 0.5rem;
-}
+/* Migrated to:
+ * - frontend/src/passthrough/dialog/dialogPassThrough.ts  (PT class hooks)
+ * - frontend/src/passthrough/dialog/dialogPassThrough.scss (component styles)
+ */
+// .#{variables.$primevue-prefix}-dialog
+//     .#{variables.$primevue-prefix}-dialog-header {
+//     border-bottom: none;
+//     padding-bottom: 0;
+//
+//     border-top-right-radius: 0.5rem;
+//     border-top-left-radius: 0.5rem;
+//
+//     .#{variables.$primevue-prefix}-dialog-title {
+//         @extend %heading-03;
+//     }
+// }
+// .#{variables.$primevue-prefix}-dialog
+//     .#{variables.$primevue-prefix}-confirm-dialog-reject {
+//     margin-right: 0.5rem;
+// }
 
 /* ------------------------------------ primevue toast --------------------------------- */
 
