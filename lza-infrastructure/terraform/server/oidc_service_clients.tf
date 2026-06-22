@@ -40,7 +40,7 @@ locals {
   service_apps = {
     fspts = {
       # scope should be defined and available in service_account_scopes variable.
-      scopes           = ["idim.search.read"]
+      scopes           = ["fam.external.user.read"]
     }
 
     # Add more service app below.

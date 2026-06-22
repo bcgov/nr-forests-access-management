@@ -6,8 +6,8 @@ variable "service_account_scopes" {
 
   # available scopes for service accounts, to be used in the aws_cognito_resource_server resource
   default = {
-    "idim.search.read" = {
-      description = "Allows read access to IDIM search"
+    "fam.external.user.read" = {
+      description = "Allows read access to FAM external user search"
     }
   }
 }
