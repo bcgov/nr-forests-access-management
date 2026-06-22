@@ -767,92 +767,92 @@ label {
     }
 }
 
-/* ------------------------------------ tabView ----------------------------- */
+// /* ------------------------------------ tabView ----------------------------- */
 
-.#{variables.$primevue-prefix}-tabview
-    .#{variables.$primevue-prefix}-tabview-panels {
-    padding: 0;
-}
+// .#{variables.$primevue-prefix}-tabview
+//     .#{variables.$primevue-prefix}-tabview-panels {
+//     padding: 0;
+// }
 
-.#{variables.$primevue-prefix}-tabview
-    .#{variables.$primevue-prefix}-tabview-nav {
-    border: none;
-    padding: 0;
-    margin: 0;
-}
+// .#{variables.$primevue-prefix}-tabview
+//     .#{variables.$primevue-prefix}-tabview-nav {
+//     border: none;
+//     padding: 0;
+//     margin: 0;
+// }
 
-.#{variables.$primevue-prefix}-tabview
-    .#{variables.$primevue-prefix}-tabview-nav
-    .#{variables.$primevue-prefix}-tabview-header
-    .#{variables.$primevue-prefix}-tabview-nav-link {
-    justify-content: space-between;
-    min-width: 11.16rem;
-    font-weight: 400;
-    background-color: map.get(lightTheme.$light-theme, "border-subtle-00");
-    border-color: map.get(lightTheme.$light-theme, "border-subtle-00");
-    border-radius: 0;
-    border: none;
-    border-top: 0.125rem solid transparent;
-    border-bottom: 0.0625rem solid transparent;
-    text-decoration: none;
-    color: map.get(lightTheme.$light-theme, "text-primary");
-}
+// .#{variables.$primevue-prefix}-tabview
+//     .#{variables.$primevue-prefix}-tabview-nav
+//     .#{variables.$primevue-prefix}-tabview-header
+//     .#{variables.$primevue-prefix}-tabview-nav-link {
+//     justify-content: space-between;
+//     min-width: 11.16rem;
+//     font-weight: 400;
+//     background-color: map.get(lightTheme.$light-theme, "border-subtle-00");
+//     border-color: map.get(lightTheme.$light-theme, "border-subtle-00");
+//     border-radius: 0;
+//     border: none;
+//     border-top: 0.125rem solid transparent;
+//     border-bottom: 0.0625rem solid transparent;
+//     text-decoration: none;
+//     color: map.get(lightTheme.$light-theme, "text-primary");
+// }
 
-.#{variables.$primevue-prefix}-tabview
-    .#{variables.$primevue-prefix}-tabview-nav-link
-    .#{variables.$primevue-prefix}-tabview-title {
-    font-size: 0.875rem;
-}
+// .#{variables.$primevue-prefix}-tabview
+//     .#{variables.$primevue-prefix}-tabview-nav-link
+//     .#{variables.$primevue-prefix}-tabview-title {
+//     font-size: 0.875rem;
+// }
 
-.#{variables.$primevue-prefix}-tabview
-    .#{variables.$primevue-prefix}-tabview-nav
-    .#{variables.$primevue-prefix}-tabview-header:nth-last-child(2)
-    .#{variables.$primevue-prefix}-tabview-nav-link {
-    border-top-right-radius: 0.25rem;
-    border-right: solid 0.0625rem
-        map.get(lightTheme.$light-theme, "border-subtle-00");
-}
+// .#{variables.$primevue-prefix}-tabview
+//     .#{variables.$primevue-prefix}-tabview-nav
+//     .#{variables.$primevue-prefix}-tabview-header:nth-last-child(2)
+//     .#{variables.$primevue-prefix}-tabview-nav-link {
+//     border-top-right-radius: 0.25rem;
+//     border-right: solid 0.0625rem
+//         map.get(lightTheme.$light-theme, "border-subtle-00");
+// }
 
-.#{variables.$primevue-prefix}-tabview
-    .#{variables.$primevue-prefix}-tabview-nav
-    .#{variables.$primevue-prefix}-tabview-header:first-child
-    .#{variables.$primevue-prefix}-tabview-nav-link {
-    border-top-left-radius: 0.25rem;
-    border-left: solid 0.0625rem
-        map.get(lightTheme.$light-theme, "border-subtle-00");
-}
+// .#{variables.$primevue-prefix}-tabview
+//     .#{variables.$primevue-prefix}-tabview-nav
+//     .#{variables.$primevue-prefix}-tabview-header:first-child
+//     .#{variables.$primevue-prefix}-tabview-nav-link {
+//     border-top-left-radius: 0.25rem;
+//     border-left: solid 0.0625rem
+//         map.get(lightTheme.$light-theme, "border-subtle-00");
+// }
 
-.#{variables.$primevue-prefix}-tabview
-    .#{variables.$primevue-prefix}-tabview-nav
-    .#{variables.$primevue-prefix}-tabview-header.#{variables.$primevue-prefix}-highlight
-    .#{variables.$primevue-prefix}-tabview-nav-link {
-    font-weight: 700;
-    border-top: solid 0.125rem
-        map.get(lightTheme.$light-theme, "border-interactive") !important;
-    background-color: #ffffff;
-}
+// .#{variables.$primevue-prefix}-tabview
+//     .#{variables.$primevue-prefix}-tabview-nav
+//     .#{variables.$primevue-prefix}-tabview-header.#{variables.$primevue-prefix}-highlight
+//     .#{variables.$primevue-prefix}-tabview-nav-link {
+//     font-weight: 700;
+//     border-top: solid 0.125rem
+//         map.get(lightTheme.$light-theme, "border-interactive") !important;
+//     background-color: #ffffff;
+// }
 
-.#{variables.$primevue-prefix}-tabview
-    .#{variables.$primevue-prefix}-tabview-nav
-    .#{variables.$primevue-prefix}-tabview-header:not(:nth-last-child(2)):not(
-        .#{variables.$primevue-prefix}-highlight
-    )
-    .#{variables.$primevue-prefix}-tabview-nav-link {
-    border-right: solid 0.0625rem
-        map.get(lightTheme.$light-theme, "border-strong-01");
-}
+// .#{variables.$primevue-prefix}-tabview
+//     .#{variables.$primevue-prefix}-tabview-nav
+//     .#{variables.$primevue-prefix}-tabview-header:not(:nth-last-child(2)):not(
+//         .#{variables.$primevue-prefix}-highlight
+//     )
+//     .#{variables.$primevue-prefix}-tabview-nav-link {
+//     border-right: solid 0.0625rem
+//         map.get(lightTheme.$light-theme, "border-strong-01");
+// }
 
-.#{variables.$primevue-prefix}-tabview
-    .#{variables.$primevue-prefix}-tabview-nav
-    .#{variables.$primevue-prefix}-tabview-header:not(
-        .#{variables.$primevue-prefix}-highlight
-    )
-    .#{variables.$primevue-prefix}-tabview-nav-link:hover {
-    background-color: map.get(
-        lightTheme.$light-theme,
-        "layer-accent-hover-01"
-    ) !important;
-}
+// .#{variables.$primevue-prefix}-tabview
+//     .#{variables.$primevue-prefix}-tabview-nav
+//     .#{variables.$primevue-prefix}-tabview-header:not(
+//         .#{variables.$primevue-prefix}-highlight
+//     )
+//     .#{variables.$primevue-prefix}-tabview-nav-link:hover {
+//     background-color: map.get(
+//         lightTheme.$light-theme,
+//         "layer-accent-hover-01"
+//     ) !important;
+// }
 
 
 /* ================================ MIGRATION NOTE ================================ */
