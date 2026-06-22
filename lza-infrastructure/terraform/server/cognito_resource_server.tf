@@ -6,8 +6,8 @@ variable "service_account_scopes" {
 
   # available scopes for service accounts, to be used in the aws_cognito_resource_server resource
   default = {
-    "external.user.read" = {
-      description = "Allows read access to FAM external user search"
+    "User.read" = {
+      description = "Allows read access for User data."
     }
   }
 }
