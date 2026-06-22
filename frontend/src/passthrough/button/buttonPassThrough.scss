@@ -51,3 +51,12 @@
   outline-offset: -0.2rem;
   box-shadow: unset;
 }
+
+/* ================================ Button Disabled State ================================ */
+
+.p-button.fam-button:disabled,
+.p-button.fam-button.p-disabled {
+  background-color: var(--primitive-color-gray-30);
+  border-color: var(--primitive-color-gray-30);
+  opacity: 1;
+}

@@ -136,12 +136,6 @@ onMounted(async () => {
     width: 100%;
 }
 
-:deep(.confirm-btn.fam-button) {
-    max-width: 6rem;
-}
-:deep(.fam-button .button-content) {
-    margin-left: 7px;
-}
 :deep(.p-datatable .p-datatable-tbody > tr.p-highlight) {
   background: inherit; // Remove blue background
   color: inherit;      // Remove blue text
