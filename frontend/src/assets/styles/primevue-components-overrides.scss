@@ -183,28 +183,28 @@ label {
 
 /* ------------------------------------ primevue card --------------------------------- */
 /* Colors managed by PrimeVue v4 preset via fam-custom-tokens.css */
-.#{variables.$primevue-prefix}-card {
-    box-shadow: none;
-    border: 0.0625rem solid var(--semantic-color-border-subtle);
-}
+// .#{variables.$primevue-prefix}-card {
+//     box-shadow: none;
+//     border: 0.0625rem solid var(--semantic-color-border-subtle);
+// }
 
-.#{variables.$primevue-prefix}-card .#{variables.$primevue-prefix}-card-title {
-    font-size: 1rem;
-    line-height: 1.5rem;
-    font-weight: 400;
-    margin-bottom: 0;
-}
+// .#{variables.$primevue-prefix}-card .#{variables.$primevue-prefix}-card-title {
+//     font-size: 1rem;
+//     line-height: 1.5rem;
+//     font-weight: 400;
+//     margin-bottom: 0;
+// }
 
-.#{variables.$primevue-prefix}-card
-    .#{variables.$primevue-prefix}-card-subtitle {
-    @extend %body-compact-01;
-    padding-left: 0;
-    padding-right: 0;
-}
+// .#{variables.$primevue-prefix}-card
+//     .#{variables.$primevue-prefix}-card-subtitle {
+//     @extend %body-compact-01;
+//     padding-left: 0;
+//     padding-right: 0;
+// }
 
-.#{variables.$primevue-prefix}-card .#{variables.$primevue-prefix}-card-footer {
-    padding: 0;
-}
+// .#{variables.$primevue-prefix}-card .#{variables.$primevue-prefix}-card-footer {
+//     padding: 0;
+// }
 
 /* ------------------------------------ primevue table --------------------------------- */
 
