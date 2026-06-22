@@ -727,45 +727,45 @@ label {
 //     }
 // }
 
-/* ------------------------------------ step component ----------------------------- */
+// /* ------------------------------------ step component ----------------------------- */
 
-.#{variables.$primevue-prefix}-steps {
-    display: none;
-    margin-top: 1.5rem;
-}
+// .#{variables.$primevue-prefix}-steps {
+//     display: none;
+//     margin-top: 1.5rem;
+// }
 
-.#{variables.$primevue-prefix}-steps-item {
-    border-top: 0.125rem solid map.get(lightTheme.$light-theme, "field-01") !important;
-    margin: auto;
-}
+// .#{variables.$primevue-prefix}-steps-item {
+//     border-top: 0.125rem solid map.get(lightTheme.$light-theme, "field-01") !important;
+//     margin: auto;
+// }
 
-.#{variables.$primevue-prefix}-steps-item
-    .#{variables.$primevue-prefix}-highlight,
-.#{variables.$primevue-prefix}-steps-current {
-    border-top: 0.125rem solid map.get(lightTheme.$light-theme, "interactive") !important;
-}
+// .#{variables.$primevue-prefix}-steps-item
+//     .#{variables.$primevue-prefix}-highlight,
+// .#{variables.$primevue-prefix}-steps-current {
+//     border-top: 0.125rem solid map.get(lightTheme.$light-theme, "interactive") !important;
+// }
 
-.#{variables.$primevue-prefix}-steps
-    .#{variables.$primevue-prefix}-steps-item:before {
-    display: none;
-}
+// .#{variables.$primevue-prefix}-steps
+//     .#{variables.$primevue-prefix}-steps-item:before {
+//     display: none;
+// }
 
-.#{variables.$primevue-prefix}-steps .#{variables.$primevue-prefix}-steps-list {
-    height: 3rem;
-}
+// .#{variables.$primevue-prefix}-steps .#{variables.$primevue-prefix}-steps-list {
+//     height: 3rem;
+// }
 
-.#{variables.$primevue-prefix}-steps-list
-    .#{variables.$primevue-prefix}-steps-item {
-    flex-direction: column;
-    justify-content: flex-start;
-}
+// .#{variables.$primevue-prefix}-steps-list
+//     .#{variables.$primevue-prefix}-steps-item {
+//     flex-direction: column;
+//     justify-content: flex-start;
+// }
 
-@media (min-width: 768px) {
-    .#{variables.$primevue-prefix}-steps {
-        display: block;
-        margin-top: 1.5rem;
-    }
-}
+// @media (min-width: 768px) {
+//     .#{variables.$primevue-prefix}-steps {
+//         display: block;
+//         margin-top: 1.5rem;
+//     }
+// }
 
 // /* ------------------------------------ tabView ----------------------------- */
 
