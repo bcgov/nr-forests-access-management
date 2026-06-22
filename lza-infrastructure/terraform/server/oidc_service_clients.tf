@@ -14,7 +14,8 @@ resource "aws_cognito_user_pool_client" "fam_service_clients" {
   allowed_oauth_flows = ["client_credentials"]
 
   allowed_oauth_scopes = [
-    for scope in each.value.scopes : "${scope}"
+    for scope in each.value.scopes :
+    "${aws_cognito_resource_server.fam_api_resource_server.identifier}/${scope}"
   ]
 
   access_token_validity = 60 # in minutes
@@ -39,6 +40,7 @@ locals {
   service_apps = {
     fspts = {
       # scope should be defined and available in service_account_scopes variable.
+      # Temporarily no scope for now.
       scopes           = ["User.read"]
     }
 

@@ -14,8 +14,8 @@ variable "service_account_scopes" {
 
 resource "aws_cognito_resource_server" "fam_api_resource_server" {
   user_pool_id = aws_cognito_user_pool.fam_user_pool.id
-  identifier   = "fam-api"
-  name         = "fam-api"
+  identifier   = "external-api"
+  name         = "external-api"
 
   # Dynamically create scopes based on the service_account_scopes variable
   dynamic "scope" {
