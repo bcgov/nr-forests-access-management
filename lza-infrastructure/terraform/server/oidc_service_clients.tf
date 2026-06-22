@@ -40,7 +40,8 @@ locals {
   service_apps = {
     fspts = {
       # scope should be defined and available in service_account_scopes variable.
-      scopes           = ["fam.external.user.read"]
+      # Temporarily no scope for now.
+      scopes           = []
     }
 
     # Add more service app below.
