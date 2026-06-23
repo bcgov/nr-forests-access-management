@@ -47,7 +47,7 @@
   font-weight: 400;
   line-height: var(--typography-body-compact-01-line-height);
   letter-spacing: var(--typography-body-compact-01-letter-spacing);
-  height: 3rem;
+  min-height: 3rem;
   text-align: left;
   border: none;
 }

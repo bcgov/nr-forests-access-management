@@ -269,8 +269,9 @@ export const FamPrimeVuePreset = definePreset(Lara, {
     },
     card: {
       root: {
-        background: SemanticColorSurfaceLayer1,
+        background: PrimitiveColorWhite,
         color: SemanticColorTextPrimary,
+        shadow: 'none',
       },
       subtitle: {
         color: SemanticColorTextSecondary,
@@ -279,6 +280,12 @@ export const FamPrimeVuePreset = definePreset(Lara, {
     datatable: {
       root: {
         borderColor: SemanticColorBorderSubtle,
+      },
+      headerCell: {
+        padding: '0.75rem',
+      },
+      bodyCell: {
+        padding: '0.75rem',
       },
       colorScheme: {
         light: {
