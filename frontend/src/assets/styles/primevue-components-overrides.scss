@@ -587,39 +587,39 @@ label {
 //     }
 // }
 
-/* ------------------------------------ Tag --------------------------------- */
+// /* ------------------------------------ Tag --------------------------------- */
 
-.#{variables.$primevue-prefix}-tag-success {
-    font-size: 0.75rem !important;
-    font-weight: 400 !important;
-    letter-spacing: 0.02rem !important;
-    color: map-get(
-        lightTags.$light-tag-token-overrides,
-        "tag-color-green"
-    ) !important;
-    background-color: map-get(
-        lightTags.$light-tag-token-overrides,
-        "tag-background-green"
-    ) !important;
-    padding-top: 0.1rem;
-    border-radius: 62.5rem;
-}
+// .#{variables.$primevue-prefix}-tag-success {
+//     font-size: 0.75rem !important;
+//     font-weight: 400 !important;
+//     letter-spacing: 0.02rem !important;
+//     color: map-get(
+//         lightTags.$light-tag-token-overrides,
+//         "tag-color-green"
+//     ) !important;
+//     background-color: map-get(
+//         lightTags.$light-tag-token-overrides,
+//         "tag-background-green"
+//     ) !important;
+//     padding-top: 0.1rem;
+//     border-radius: 62.5rem;
+// }
 
-.#{variables.$primevue-prefix}-tag-danger {
-    font-size: 0.75rem !important;
-    font-weight: 400 !important;
-    letter-spacing: 0.02rem !important;
-    color: map-get(
-        lightTags.$light-tag-token-overrides,
-        "tag-color-red"
-    ) !important;
-    background-color: map-get(
-        lightTags.$light-tag-token-overrides,
-        "tag-background-red"
-    ) !important;
-    padding-top: 0.1rem;
-    border-radius: 62.5rem;
-}
+// .#{variables.$primevue-prefix}-tag-danger {
+//     font-size: 0.75rem !important;
+//     font-weight: 400 !important;
+//     letter-spacing: 0.02rem !important;
+//     color: map-get(
+//         lightTags.$light-tag-token-overrides,
+//         "tag-color-red"
+//     ) !important;
+//     background-color: map-get(
+//         lightTags.$light-tag-token-overrides,
+//         "tag-background-red"
+//     ) !important;
+//     padding-top: 0.1rem;
+//     border-radius: 62.5rem;
+// }
 
 /* ------------------------------------ Breadcrumb ----------------------------- */
 
