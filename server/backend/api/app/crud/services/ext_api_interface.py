@@ -21,6 +21,10 @@ class ExtAPIInterface(ABC):
         Returns:
             bool: True if allowed, False otherwise.
         """
+        # Service-account callers are authorized at the router by their registered
+        # application client_id (no FamUser to check a per-user role against).
+        if self.requester.is_service_account:
+            return True
         return crud_utils.allow_ext_call_api_permission(
             db=self.db, application_id=self.application_id, user_name=self.requester.user_name
         )

@@ -29,6 +29,16 @@ LOGGER = logging.getLogger(__name__)
 
 TEST_IDIR_USER_GUID = os.environ.get("TEST_IDIR_USER_GUID")
 
+# The IDIM web service callouts now send a dedicated, config-provided IDIR
+# service GUID as "requesterUserGuid" (see
+# config.get_idim_proxy_requester_user_guid), instead of the logged-in
+# requester's own guid. Tests patch that getter so they don't depend on the
+# IDIM_PROXY_REQUESTER_USER_GUID env var being set.
+GET_REQUESTER_GUID_TARGET = (
+    "api.app.integration.idim_proxy.config.get_idim_proxy_requester_user_guid"
+)
+TEST_REQUESTER_SERVICE_GUID = "SERVICEGUID1234567890123456789AB"
+
 
 class TestIdimProxyServiceClass(object):
     """
@@ -59,6 +69,13 @@ class TestIdimProxyServiceClass(object):
 
         # This tester uses "LOAD-3-TEST"
         self.requester_business_bceid = RequesterSchema(**TEST_BCEID_REQUESTER_DICT)
+
+    @pytest.fixture(autouse=True)
+    def _patch_requester_service_guid(self):
+        # These tests make real IDIM API calls, so the outbound requesterUserGuid
+        # must be a valid IDIR guid. Use the same test IDIR guid as before.
+        with patch(GET_REQUESTER_GUID_TARGET, return_value=TEST_IDIR_USER_GUID):
+            yield
 
     def test_verify_init(self):
         idim_proxy_api = IdimProxyService(self.requester_idir)
@@ -238,6 +255,13 @@ class TestIdimProxyServiceSearchIdirUsers:
         self.requester = RequesterSchema(**TEST_IDIR_REQUESTER_DICT)
         self.requester.user_guid = "TESTGUID12345678901234567890ABCD"
 
+    @pytest.fixture(autouse=True)
+    def _patch_requester_service_guid(self):
+        with patch(
+            GET_REQUESTER_GUID_TARGET, return_value=TEST_REQUESTER_SERVICE_GUID
+        ):
+            yield
+
     def test_search_idir_users_success_returns_json(self):
         """Test successful search returns expected JSON structure."""
         idim_proxy_api = IdimProxyService(self.requester)
@@ -331,8 +355,9 @@ class TestIdimProxyServiceSearchIdirUsers:
             # Verify URL ends with /idir-users/search
             assert url.endswith("/idir-users/search")
 
-            # Verify request body includes requesterUserGuid
-            assert json_body == {"requesterUserGuid": self.requester.user_guid}
+            # Verify request body includes the config-provided service guid,
+            # not the logged-in requester's own guid.
+            assert json_body == {"requesterUserGuid": TEST_REQUESTER_SERVICE_GUID}
 
             # Verify query params include provided filters
             assert params["firstName"] == "John"

@@ -71,6 +71,9 @@ jobs:
               env:
                   FC_API_TOKEN_TEST: ${{ secrets.FOREST_CLIENT_API_API_KEY_TEST }}
                   IDIM_PROXY_API_KEY: ${{ secrets.IDIM_PROXY_API_API_KEY }}
+                  # Reuse the valid test IDIR guid as the outbound IDIM service
+                  # identity so the real-API integration tests pass.
+                  IDIM_PROXY_REQUESTER_USER_GUID: "${{ secrets.TEST_IDIR_USER_GUID }}"
                   GC_NOTIFY_EMAIL_API_KEY: "${{ secrets.GC_NOTIFY_EMAIL_API_KEY }}"
                   TEST_IDIR_USER_GUID: "${{ secrets.TEST_IDIR_USER_GUID }}"
                   POSTGRES_USER: ${{ vars.LOCAL_BACKEND_POSTGRES_USER }}
@@ -126,6 +129,9 @@ jobs:
               env:
                   FC_API_TOKEN_TEST: ${{ secrets.FOREST_CLIENT_API_API_KEY_TEST }}
                   IDIM_PROXY_API_KEY: ${{ secrets.IDIM_PROXY_API_API_KEY }}
+                  # admin_management IDIM tests mock the service methods, but the
+                  # app code now reads this getter; set it for safety/consistency.
+                  IDIM_PROXY_REQUESTER_USER_GUID: "${{ secrets.TEST_IDIR_USER_GUID }}"
                   GC_NOTIFY_EMAIL_API_KEY: "${{ secrets.GC_NOTIFY_EMAIL_API_KEY }}"
                   POSTGRES_USER: ${{ vars.LOCAL_ADMAN_POSTGRES_USER }}
                   POSTGRES_PASSWORD: ${{ vars.LOCAL_POSTGRES_PASSWORD }}

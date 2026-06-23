@@ -389,6 +389,11 @@ variable "idim_proxy_api_api_key" {
   sensitive = true
 }
 
+variable "idim_proxy_requester_user_guid" {
+  type = string
+  sensitive = true
+}
+
 variable "gc_notify_email_api_key" {
   type = string
   sensitive = true

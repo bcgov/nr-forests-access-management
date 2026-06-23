@@ -69,6 +69,7 @@ def bceid_lookup(
     "/users/idir/search",
     response_model=IdimProxyIdirUsersSearchResSchema,
     status_code=200,
+    dependencies=[Depends(internal_only_action)],
     summary="Search IDIR users",
     description="Search for IDIR users.",
 )

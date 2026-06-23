@@ -665,3 +665,27 @@ class TestIdirSearchUsers:
         assert response.status_code == status.HTTP_403_FORBIDDEN
         assert ERROR_GROUPS_REQUIRED in str(response.json()["detail"])
 
+    def test_external_user_cannot_search_idir_users(
+        self, test_client_fixture: TestClient, test_rsa_key
+    ):
+        """
+        IDIR users search is an internal-only action; a BCeID (external)
+        requester must be forbidden, same as the /idir lookup endpoint.
+        """
+        app = test_client_fixture.app
+        app.dependency_overrides[get_current_requester] = (
+            mock_get_current_requester_with_business_bceid_user
+        )
+
+        token = jwt_utils.create_jwt_token(test_rsa_key)
+        endpoint = self._search_endpoint_with_app_id()
+
+        response = test_client_fixture.get(
+            endpoint,
+            headers=jwt_utils.headers(token),
+            params=self._with_app_id({"firstName": "Chen"}),
+        )
+
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert "Action is not allowed for external user." in response.text
+

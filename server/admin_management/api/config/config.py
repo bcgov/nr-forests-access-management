@@ -166,6 +166,13 @@ def get_idim_proxy_api_key():
     return idim_proxy_api_key
 
 
+def get_idim_proxy_requester_user_guid():
+    # The GUID injected as "requesterUserGuid" on outbound IDIM web service
+    # callouts. This is a dedicated service identity provided via config,
+    # used for all IDIM lookups (IDIR and BCeID).
+    return get_env_var("IDIM_PROXY_REQUESTER_USER_GUID")
+
+
 def get_gc_notify_email_api_key():
     gc_notify_email_api_key = get_env_var("GC_NOTIFY_EMAIL_API_KEY")
     return gc_notify_email_api_key

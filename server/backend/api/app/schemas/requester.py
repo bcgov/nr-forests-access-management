@@ -17,7 +17,12 @@ class RequesterSchema(BaseModel):
 
     # cognito_user_id => Cognito OIDC access token maps this to: username (ID token => "custom:idp_name" )
     cognito_user_id: Union[str, None] = None
-    user_name: Annotated[str, StringConstraints(max_length=USER_NAME_MAX_LEN)]
+    # The user identity fields below are optional because a service-account
+    # (client-credentials / machine-to-machine) token carries no user. For a user
+    # token they are always populated from the FamUser record as before.
+    user_name: Optional[
+        Annotated[str, StringConstraints(max_length=USER_NAME_MAX_LEN)]
+    ] = None
     first_name: Optional[
         Annotated[str, StringConstraints(max_length=FIRST_NAME_MAX_LEN)]
     ] = None
@@ -27,9 +32,11 @@ class RequesterSchema(BaseModel):
     email: Optional[Annotated[str, StringConstraints(max_length=EMAIL_MAX_LEN)]] = None
     # "B"(BCeID) or "I"(IDIR). It is the IDP provider.
     user_type_code: Union[UserType, None] = None
-    user_guid: Annotated[str, StringConstraints(min_length=32, max_length=32)]
+    user_guid: Optional[
+        Annotated[str, StringConstraints(min_length=32, max_length=32)]
+    ] = None
     business_guid: Optional[Annotated[str, StringConstraints(max_length=32)]] = None
-    user_id: int
+    user_id: Optional[int] = None
 
     # belows are custom Requester information attributes.
     access_roles: Union[
@@ -38,7 +45,18 @@ class RequesterSchema(BaseModel):
     is_delegated_admin: bool = False  # is delegated admin of any application
     requires_accept_tc: bool = False  # requires to accept terms and conditions
 
+    # Service-account (machine-to-machine) attributes. When is_service_account is True
+    # there is no user identity; the caller is identified by service_account_client_id.
+    is_service_account: bool = False
+    service_account_client_id: Optional[str] = None
+
     def is_external_delegated_admin(self):
         return self.user_type_code == UserType.BCEID and self.is_delegated_admin
+
+    def log_identity(self) -> str:
+        """Human-readable caller identity for logging (user vs service account)."""
+        if self.is_service_account:
+            return f"service-account client_id={self.service_account_client_id}"
+        return f"user_name={self.user_name} (id={self.user_id})"
 
     model_config = ConfigDict(from_attributes=True)

@@ -10,7 +10,7 @@ from api.app.decorators.endpoint_timing_dec import endpoint_timing_dec
 from api.app.integration.idim_proxy import IdimProxyService
 from api.app.jwt_validation import get_request_app_client_id
 from api.app.routers.router_guards import (authorize_ext_api_by_app_role,
-                       get_current_requester)
+                       get_ext_requester)
 from api.app.schemas.ext.pagination import (ExtUserSearchPagedResultsSchema,
                                             ExtUserSearchParamSchema)
 from api.app.schemas.ext.user_role_metadata import (
@@ -45,7 +45,7 @@ router = APIRouter()
 )
 def user_search(
     db: Annotated[Session, Depends(database.get_db)],
-    requester: Annotated[RequesterSchema, Depends(get_current_requester)],
+    requester: Annotated[RequesterSchema, Depends(get_ext_requester)],
     page_params: Annotated[ExtUserSearchParamSchema, Depends()],
     filter_params: Annotated[ExtApplicationUserSearchSchema, Depends()],
     application: Annotated[
@@ -60,7 +60,7 @@ def user_search(
     LOGGER.debug(
         f"Expernal API - searching users for filter_params: {filter_params}, "
         f"and page_params: {page_params}, "
-        f"by requester: {requester.user_name} (id: {requester.user_id})"
+        f"by requester: {requester.log_identity()}"
     )
 
     service = ext_app_user_search_service.ExtAppUserSearchService(
@@ -89,7 +89,7 @@ def user_search(
 @endpoint_timing_dec("external-search_idim_idir_users")
 def search_idim_idir_users(
     search_params: Annotated[ExtIdirUserSearchParamSchema, Depends()],
-    requester: Annotated[RequesterSchema, Depends(get_current_requester)],
+    requester: Annotated[RequesterSchema, Depends(get_ext_requester)],
     application: Annotated[
         FamApplicationSchema,
         Depends(authorize_ext_api_by_app_role),
@@ -99,9 +99,8 @@ def search_idim_idir_users(
     External API for downstream applications to search IDIR users.
     """
     LOGGER.info(
-        "External API - searching IDIR users by requester=%s (id=%s), app=%s",
-        requester.user_name,
-        requester.user_id,
+        "External API - searching IDIR users by requester=%s, app=%s",
+        requester.log_identity(),
         application.application_name,
     )
 
@@ -129,10 +128,22 @@ def search_idim_idir_users(
 )
 def get_current_user_role_metadata(
     db: Annotated[Session, Depends(database.get_db)],
-    requester: Annotated[RequesterSchema, Depends(get_current_requester)],
+    requester: Annotated[RequesterSchema, Depends(get_ext_requester)],
     app_client_id: Annotated[str, Depends(get_request_app_client_id)],  # Cognito app client for the application.
 ):
     """Return current requester role metadata scoped to application from JWT."""
+    # "me" only has meaning for a user token. A service-account token has no user
+    # identity to report roles for, so reject it with a clear 400.
+    if requester.is_service_account:
+        utils.raise_http_exception(
+            status_code=HTTPStatus.BAD_REQUEST,
+            error_code=fam_constants.ERROR_CODE_INVALID_OPERATION,
+            error_msg=(
+                "The /me/role-metadata endpoint requires a user token; "
+                "service-account tokens are not supported."
+            ),
+        )
+
     application = crud_application.get_application_by_app_client_id(db, app_client_id)
     if not application:
         utils.raise_http_exception(

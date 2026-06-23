@@ -5,7 +5,8 @@ from http import HTTPStatus
 from typing import List
 
 from api.app import database
-from api.app.constants import (CURRENT_TERMS_AND_CONDITIONS_VERSION,
+from api.app.constants import (COGNITO_USERNAME_KEY,
+                               CURRENT_TERMS_AND_CONDITIONS_VERSION,
                                ERROR_CODE_DIFFERENT_ORG_GRANT_PROHIBITED,
                                ERROR_CODE_EXTERNAL_USER_ACTION_PROHIBITED,
                                ERROR_CODE_INVALID_OPERATION,
@@ -19,11 +20,11 @@ from api.app.constants import (CURRENT_TERMS_AND_CONDITIONS_VERSION,
 from api.app.crud import (crud_access_control_privilege, crud_application,
                           crud_role, crud_user, crud_user_role, crud_utils)
 from api.app.jwt_validation import (ERROR_GROUPS_REQUIRED,
-                                    ERROR_PERMISSION_REQUIRED, JWT_GROUPS_KEY,
-                                    enforce_fam_client_token, get_access_roles,
-                                    get_request_app_client_id,
+                                    ERROR_PERMISSION_REQUIRED, JWT_CLIENT_ID_KEY,
+                                    JWT_GROUPS_KEY, enforce_fam_client_token,
+                                    get_access_roles, get_request_app_client_id,
                                     get_request_cognito_user_id,
-                                    validate_token)
+                                    is_service_account_token, validate_token)
 from api.app.models.model import FamRole, FamUser
 from api.app.schemas import RequesterSchema, TargetUserSchema
 from api.app.schemas.fam_application import FamApplicationSchema
@@ -44,11 +45,15 @@ LOGGER = logging.getLogger(__name__)
 x_api_key = APIKeyHeader(name="X-API-Key")
 
 
-def get_current_requester(
-    request_cognito_user_id: str = Depends(get_request_cognito_user_id),
-    access_roles: List[str] = Depends(get_access_roles),
-    db: Session = Depends(database.get_db),
+def _build_user_requester(
+    db: Session,
+    request_cognito_user_id: str,
+    access_roles: List[str],
 ) -> RequesterSchema:
+    """
+    Build a RequesterSchema for a (human) user token from the FamUser record.
+    Raises 403 if no matching FamUser exists for the token's cognito user id.
+    """
     LOGGER.debug(
         f"Retrieving current Requester from: request_cognito_user_id: {request_cognito_user_id}"
     )
@@ -64,17 +69,64 @@ def get_current_requester(
             status_code=HTTPStatus.FORBIDDEN,
         )
 
-    else:
-        custom_fields = _parse_custom_requester_fields(fam_user)
-        requester = RequesterSchema.model_validate(
-            {
-                **fam_user.__dict__,  # base db 'user' info
-                "access_roles": access_roles,  # role from JWT
-                **custom_fields,  # build/convert to custom attributes
-            }
+    custom_fields = _parse_custom_requester_fields(fam_user)
+    requester = RequesterSchema.model_validate(
+        {
+            **fam_user.__dict__,  # base db 'user' info
+            "access_roles": access_roles,  # role from JWT
+            **custom_fields,  # build/convert to custom attributes
+        }
+    )
+    LOGGER.debug(f"Current request user (Requester): {requester}")
+    return requester
+
+
+def get_current_requester(
+    request_cognito_user_id: str = Depends(get_request_cognito_user_id),
+    access_roles: List[str] = Depends(get_access_roles),
+    db: Session = Depends(database.get_db),
+) -> RequesterSchema:
+    return _build_user_requester(db, request_cognito_user_id, access_roles)
+
+
+def get_ext_requester(
+    claims: dict = Depends(validate_token),
+    access_roles: List[str] = Depends(get_access_roles),
+    db: Session = Depends(database.get_db),
+) -> RequesterSchema:
+    """
+    Requester resolver for the external (/external/v1) API, which accepts BOTH user
+    tokens and service-account (client-credentials / machine-to-machine) tokens.
+
+    - User token: resolves to the FamUser-backed RequesterSchema, same as
+      get_current_requester (and raises 403 if the user is unknown).
+    - Service-account token: no user identity; returns a RequesterSchema marked
+      is_service_account=True and identified by the token's client_id.
+
+    Always logs the calling client_id; additionally logs user details for user tokens.
+    """
+    client_id = claims.get(JWT_CLIENT_ID_KEY)
+
+    if is_service_account_token(claims):
+        LOGGER.info(
+            "External API request by service account: client_id=%s", client_id
         )
-        LOGGER.debug(f"Current request user (Requester): {requester}")
-        return requester
+        return RequesterSchema(
+            is_service_account=True,
+            service_account_client_id=client_id,
+            access_roles=access_roles,
+        )
+
+    requester = _build_user_requester(
+        db, claims.get(COGNITO_USERNAME_KEY), access_roles
+    )
+    LOGGER.info(
+        "External API request by user: client_id=%s, user_name=%s, user_id=%s",
+        client_id,
+        requester.user_name,
+        requester.user_id,
+    )
+    return requester
 
 
 def _parse_custom_requester_fields(fam_user: FamUser):
@@ -521,13 +573,19 @@ def verify_api_key_for_update_user_info(x_api_key: str = Security(x_api_key)):
 
 
 def authorize_ext_api_by_app_role(
-    requester: RequesterSchema = Depends(get_current_requester),
+    requester: RequesterSchema = Depends(get_ext_requester),
     app_client_id: str = Depends(get_request_app_client_id),
     db: Session = Depends(database.get_db),
 ) -> FamApplicationSchema:
     """
     This method is used for the external api authorization check.
     The requester must have the permission to call the external api for the application.
+
+    Two kinds of caller are supported:
+    - User token: the user must hold an application role with call-api permission.
+    - Service-account token: the token's client_id must map to a registered
+      application client (FamApplicationClient). That registration is the grant, so
+      the per-user role check is skipped and the call is scoped to that application.
     """
     application: FamApplicationSchema = crud_application.get_application_by_app_client_id(db, app_client_id)
     if not application:
@@ -536,6 +594,14 @@ def authorize_ext_api_by_app_role(
             error_code=ERROR_CODE_INVALID_OPERATION,
             error_msg=f"Token contains invalid application client id {utils.mask_string(app_client_id, 5)}",
         )
+
+    if requester.is_service_account:
+        LOGGER.info(
+            "External API authorized for service account: client_id=%s, app=%s.",
+            requester.service_account_client_id,
+            application.application_name,
+        )
+        return application
 
     has_call_api_permission: bool = crud_utils.allow_ext_call_api_permission(
         db, application.application_id, requester.user_name
