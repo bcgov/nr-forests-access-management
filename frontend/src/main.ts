@@ -20,6 +20,7 @@ import {
 import { INPUT_PASS_THROUGH } from "@/passthrough/input/inputPassThrough";
 import { BUTTON_PASS_THROUGH } from "@/passthrough/button/buttonPassThrough";
 import { RADIO_BUTTON_PASS_THROUGH } from "@/passthrough/radiobutton/radioButtonPassThrough";
+import { MESSAGE_PASS_THROUGH } from "@/passthrough/message/messagePassThrough";
 
 // Configure Amplify
 Amplify.configure(amplifyconfig);
@@ -69,6 +70,7 @@ app.use(PrimeVue, {
         inputtext: INPUT_PASS_THROUGH,
         button: BUTTON_PASS_THROUGH,
         radiobutton: RADIO_BUTTON_PASS_THROUGH,
+        message: MESSAGE_PASS_THROUGH,
     },
 });
 app.use(ConfirmationService);

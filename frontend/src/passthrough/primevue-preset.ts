@@ -21,6 +21,9 @@ import {
   ComponentButtonTertiaryActive,
   ComponentButtonTertiaryBackground,
   ComponentButtonTertiaryHover,
+  ComponentNotificationErrorBackground,
+  ComponentNotificationSuccessBackground,
+  ComponentNotificationWarningBackground,
   PrimitiveColorWhite,
   SemanticColorBorderInteractive,
   SemanticColorBorderSubtle,
@@ -30,6 +33,9 @@ import {
   SemanticColorPrimary600,
   SemanticColorPrimary700,
   SemanticColorPrimary800,
+  SemanticColorSupportError,
+  SemanticColorSupportSuccess,
+  SemanticColorSupportWarning,
   SemanticColorSurfaceLayer1,
   SemanticColorSurfaceLayerHover,
   SemanticColorSurfaceLayerSelected,
@@ -322,6 +328,44 @@ export const FamPrimeVuePreset = definePreset(Lara, {
         background: SemanticColorSurfaceLayer1,
         borderColor: SemanticColorBorderSubtle,
         color: SemanticColorTextPrimary,
+      },
+    },
+    message: {
+      colorScheme: {
+        light: {
+          success: {
+            background: ComponentNotificationSuccessBackground,
+            borderColor: SemanticColorSupportSuccess,
+            color: SemanticColorTextPrimary,
+          },
+          error: {
+            background: ComponentNotificationErrorBackground,
+            borderColor: SemanticColorSupportError,
+            color: SemanticColorTextPrimary,
+          },
+          warn: {
+            background: ComponentNotificationWarningBackground,
+            borderColor: SemanticColorSupportWarning,
+            color: SemanticColorTextPrimary,
+          },
+        },
+        dark: {
+          success: {
+            background: ComponentNotificationSuccessBackground,
+            borderColor: SemanticColorSupportSuccess,
+            color: SemanticColorTextPrimary,
+          },
+          error: {
+            background: ComponentNotificationErrorBackground,
+            borderColor: SemanticColorSupportError,
+            color: SemanticColorTextPrimary,
+          },
+          warn: {
+            background: ComponentNotificationWarningBackground,
+            borderColor: SemanticColorSupportWarning,
+            color: SemanticColorTextPrimary,
+          },
+        },
       },
     },
   },

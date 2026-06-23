@@ -456,93 +456,98 @@ label {
 // }
 
 /* ------------------------------------ primevue message --------------------------------- */
+// MIGRATED TO PRIMEVUE V4 PASSTHROUGH
+// See:
+// - frontend/src/passthrough/message/messagePassThrough.ts (PT class hooks)
+// - frontend/src/passthrough/message/messagePassThrough.scss (component styles)
+// - frontend/src/passthrough/primevue-preset.ts (color tokens)
 
-.#{variables.$primevue-prefix}-icon {
-    height: 0.75rem;
-    width: 0.75rem;
-}
+// .#{variables.$primevue-prefix}-icon {
+//     height: 0.75rem;
+//     width: 0.75rem;
+// }
 
-.#{variables.$primevue-prefix}-message {
-    position: absolute;
-    left: 0;
-    right: 0;
-}
+// .#{variables.$primevue-prefix}-message {
+//     position: absolute;
+//     left: 0;
+//     right: 0;
+// }
 
-.#{variables.$primevue-prefix}-message
-    .#{variables.$primevue-prefix}-message-text {
-    @extend %body-compact-01;
-    padding-right: 0.3125rem;
-    position: relative;
-    display: flex;
-    left: 0;
-    right: 0;
-}
+// .#{variables.$primevue-prefix}-message
+//     .#{variables.$primevue-prefix}-message-text {
+//     @extend %body-compact-01;
+//     padding-right: 0.3125rem;
+//     position: relative;
+//     display: flex;
+//     left: 0;
+//     right: 0;
+// }
 
-.#{variables.$primevue-prefix}-message-text {
-    strong {
-        text-transform: capitalize;
-    }
-}
+// .#{variables.$primevue-prefix}-message-text {
+//     strong {
+//         text-transform: capitalize;
+//     }
+// }
 
-.#{variables.$primevue-prefix}-message svg {
-    margin-right: 0.9375rem;
-    margin-left: 0.2rem;
-    margin-bottom: 0.19rem;
-    vertical-align: middle;
-    flex-shrink: 0;
-}
+// .#{variables.$primevue-prefix}-message svg {
+//     margin-right: 0.9375rem;
+//     margin-left: 0.2rem;
+//     margin-bottom: 0.19rem;
+//     vertical-align: middle;
+//     flex-shrink: 0;
+// }
 
-.#{variables.$primevue-prefix}-message
-    .#{variables.$primevue-prefix}-message-wrapper {
-    display: flex;
-    align-items: baseline;
-    padding: 0 0.5rem 0 0;
-}
+// .#{variables.$primevue-prefix}-message
+//     .#{variables.$primevue-prefix}-message-wrapper {
+//     display: flex;
+//     align-items: baseline;
+//     padding: 0 0.5rem 0 0;
+// }
 
-.#{variables.$primevue-prefix}-message-wrapper
-    .#{variables.$primevue-prefix}-message-close {
-    align-self: flex-start;
-    margin-top: 0.5rem;
-}
+// .#{variables.$primevue-prefix}-message-wrapper
+//     .#{variables.$primevue-prefix}-message-close {
+//     align-self: flex-start;
+//     margin-top: 0.5rem;
+// }
 
-.#{variables.$primevue-prefix}-message-wrapper
-    .#{variables.$primevue-prefix}-message-close
-    svg {
-    color: var(--primitive-color-gray-100) !important;
-    margin: 0.55rem 0 0;
-    align-self: baseline !important;
-}
+// .#{variables.$primevue-prefix}-message-wrapper
+//     .#{variables.$primevue-prefix}-message-close
+//     svg {
+//     color: var(--primitive-color-gray-100) !important;
+//     margin: 0.55rem 0 0;
+//     align-self: baseline !important;
+// }
 
-.#{variables.$primevue-prefix}-message-close.#{variables.$primevue-prefix}-link {
-    margin-left: auto;
-    overflow: hidden;
-    position: relative;
-}
+// .#{variables.$primevue-prefix}-message-close.#{variables.$primevue-prefix}-link {
+//     margin-left: auto;
+//     overflow: hidden;
+//     position: relative;
+// }
 
-.#{variables.$primevue-prefix}-message
-    .#{variables.$primevue-prefix}-message-close:hover {
-    background: none;
-}
+// .#{variables.$primevue-prefix}-message
+//     .#{variables.$primevue-prefix}-message-close:hover {
+//     background: none;
+// }
 
-.#{variables.$primevue-prefix}-message-wrapper
-    .#{variables.$primevue-prefix}-message-close:focus {
-    box-shadow: 0 0 0 0.1rem var(--semantic-color-support-success) !important;
-}
+// .#{variables.$primevue-prefix}-message-wrapper
+//     .#{variables.$primevue-prefix}-message-close:focus {
+//     box-shadow: 0 0 0 0.1rem var(--semantic-color-support-success) !important;
+// }
 
-.#{variables.$primevue-prefix}-message-success {
-    border: solid 0.0625rem var(--semantic-color-support-success) !important;
-    border-left: solid 0.3125rem var(--semantic-color-support-success) !important;
-}
+// .#{variables.$primevue-prefix}-message-success {
+//     border: solid 0.0625rem var(--semantic-color-support-success) !important;
+//     border-left: solid 0.3125rem var(--semantic-color-support-success) !important;
+// }
 
-.#{variables.$primevue-prefix}-message-error {
-    border: solid 0.0625rem var(--semantic-color-support-error) !important;
-    border-left: solid 0.3125rem var(--semantic-color-support-error) !important;
-}
+// .#{variables.$primevue-prefix}-message-error {
+//     border: solid 0.0625rem var(--semantic-color-support-error) !important;
+//     border-left: solid 0.3125rem var(--semantic-color-support-error) !important;
+// }
 
-.#{variables.$primevue-prefix}-message-warn {
-    border: solid 0.0625rem var(--semantic-color-support-warning) !important;
-    border-left: solid 0.3125rem var(--semantic-color-support-warning) !important;
-}
+// .#{variables.$primevue-prefix}-message-warn {
+//     border: solid 0.0625rem var(--semantic-color-support-warning) !important;
+//     border-left: solid 0.3125rem var(--semantic-color-support-warning) !important;
+// }
 
 // /* ------------------------------------ Sidebar --------------------------------- */
 

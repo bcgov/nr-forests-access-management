@@ -88,6 +88,8 @@ const displayMessage = computed(() => {
 
 <style lang="scss" scoped>
 @use "@/assets/styles/styles";
+@use "@/passthrough/message/messagePassThrough.scss";
+
 .message-container {
     position: relative;
     align-items: center;
