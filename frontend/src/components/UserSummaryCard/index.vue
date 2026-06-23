@@ -87,6 +87,7 @@ const userQuery = useQuery({
 
     .p-card-title {
         font-size: 1.25rem;
+        font-weight: normal;
     }
 
     .p-card-content {

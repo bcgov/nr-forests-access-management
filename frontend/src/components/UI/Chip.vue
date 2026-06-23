@@ -16,13 +16,11 @@ const customColorClass =
 <style lang="scss">
 .fam-chip {
     width: fit-content;
-    height: 1.5rem;
-    min-height: fit-content;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.5rem;
 
-    .p-chip-text {
+    .p-chip-label {
         @include type.type-style("label-01");
         text-align: center;
     }

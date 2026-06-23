@@ -89,6 +89,11 @@ const props = defineProps<{
 .permission-type-container {
     display: flex;
     flex-direction: row;
+    align-items: center;
+
+    p {
+        margin: 0;
+    }
 
     .fam-chip {
         margin-left: 0.5rem;
