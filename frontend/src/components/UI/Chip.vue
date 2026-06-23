@@ -28,17 +28,18 @@ const customColorClass =
     }
 }
 
-.fam-chip-blue {
+.fam-chip-blue.p-chip {
     background: colors.$blue-10;
-    .p-chip-text {
+    .p-chip-label {
         color: colors.$blue-80;
     }
 }
 
-.fam-chip-green {
+.fam-chip-green.p-chip {
     background: colors.$green-10;
-    .p-chip-text {
+    .p-chip-label {
         color: colors.$green-80;
     }
 }
+
 </style>
