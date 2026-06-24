@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import Button from "@/components/UI/Button.vue";
+import { TABLE_DATATABLE_PT } from "@/passthrough/datatable/datatablePassThrough";
 import type { SelectedUser } from "@/types/SelectUserType";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
 import type { Ref } from "vue";
 import { computed, inject, nextTick, onMounted, ref } from "vue";
+
 
 /**
  * This component is intended to be used as the content for user search results for the UserSearch component.
@@ -74,6 +76,7 @@ onMounted(async () => {
             ref="tableRef"
             v-model:selection="selectedDataRows"
             :value="dataRows"
+            :pt="TABLE_DATATABLE_PT"
             striped-rows
             paginator
             :rows="10"
@@ -93,6 +96,7 @@ onMounted(async () => {
             v-model:selection="selectedDataRow"
             selection-mode="single"
             :value="dataRows"
+            :pt="TABLE_DATATABLE_PT"
             striped-rows
             paginator
             :rows="10"
@@ -136,8 +140,25 @@ onMounted(async () => {
     width: 100%;
 }
 
-:deep(.p-datatable .p-datatable-tbody > tr.p-highlight) {
-  background: inherit; // Remove blue background
-  color: inherit;      // Remove blue text
+// Group all nav buttons together — remove the auto-margin that splits « to the left
+.search-results-table :deep(.fam-paginator .p-paginator-prev) {
+    margin-left: 0;
+}
+
+// Center the nav button group within the paginator bar
+.search-results-table :deep(.fam-paginator .fam-paginator-content) {
+    justify-content: center;
+}
+
+// Light blue icon color for double-arrow (first/last) buttons
+.search-results-table :deep(.fam-paginator .p-paginator-first),
+.search-results-table :deep(.fam-paginator .p-paginator-last) {
+    color: var(--semantic-color-primary-500);
+}
+
+// Darker blue for the active page number button
+.search-results-table :deep(.fam-paginator .p-paginator-page.p-paginator-page-selected) {
+    background-color: var(--semantic-color-primary-700);
+    color: white;
 }
 </style>
