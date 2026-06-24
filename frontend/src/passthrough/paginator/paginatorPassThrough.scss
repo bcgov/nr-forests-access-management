@@ -83,11 +83,14 @@
 }
 
 /**
- * Navigation button styling (previous/next page)
+ * Navigation button styling (first/previous/page numbers/next/last)
  * Targets buttons that navigate between pages
  */
+.fam-paginator .p-paginator-first,
 .fam-paginator .p-paginator-prev,
-.fam-paginator .p-paginator-next {
+.fam-paginator .p-paginator-page,
+.fam-paginator .p-paginator-next,
+.fam-paginator .p-paginator-last {
   border: none;
   height: 3.2rem;
   font-size: 0.875rem;
@@ -106,8 +109,11 @@
  * Focus state for navigation buttons
  * Applies focus styling to prev/next buttons for accessibility
  */
+.fam-paginator .p-paginator-first:focus,
 .fam-paginator .p-paginator-prev:focus,
-.fam-paginator .p-paginator-next:focus {
+.fam-paginator .p-paginator-page:focus,
+.fam-paginator .p-paginator-next:focus,
+.fam-paginator .p-paginator-last:focus {
   border-color: var(--semantic-color-focus-default);
   border: 0.125rem solid var(--semantic-color-focus-default);
   box-shadow: unset;
