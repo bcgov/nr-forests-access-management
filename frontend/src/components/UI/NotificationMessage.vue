@@ -115,6 +115,6 @@ const displayMessage = computed(() => {
 }
 
 .p-message-error:has(.failed-permission-content) {
-    background-color: #FFCDD2;
+    background-color: var(--component-notification-error-background-darker);
 }
 </style>

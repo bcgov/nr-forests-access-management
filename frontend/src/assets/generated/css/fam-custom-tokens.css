@@ -22,6 +22,7 @@
   --primitive-color-gray-50-opacity-12: rgba(147,147,149,0.12);
   --primitive-color-gray-50-opacity-50: rgba(147,147,149,0.5);
   --primitive-color-red-10: #FFEAE5;
+  --primitive-color-red-15: #FFCDD2;
   --primitive-color-red-20: #FFC0B3;
   --primitive-color-red-40: #FF6D4E;
   --primitive-color-red-60: #E72000;
@@ -70,6 +71,7 @@
   --component-button-danger-hover: #B32001;
   --component-button-danger-active: #801701;
   --component-notification-error-background: #FFEAE5;
+  --component-notification-error-background-darker: #FFCDD2;
   --component-notification-success-background: #CCE5CC;
   --component-notification-warning-background: #FFF3CC;
   --component-tag-success-background: #CCE5CC;

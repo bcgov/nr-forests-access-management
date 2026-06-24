@@ -30,6 +30,7 @@
 
       "red": {
         "10": { "value": "#FFEAE5" },
+        "15": { "value": "#FFCDD2" },
         "20": { "value": "#FFC0B3" },
         "40": { "value": "#FF6D4E" },
         "60": { "value": "#E72000" },
@@ -129,7 +130,8 @@
 
     "notification": {
       "error": {
-        "background": { "value": "{primitive.color.red.10}" }
+        "background": { "value": "{primitive.color.red.10}" },
+        "background-darker": { "value": "{primitive.color.red.15}" }
       },
       "success": {
         "background": { "value": "{primitive.color.green.10}" }
