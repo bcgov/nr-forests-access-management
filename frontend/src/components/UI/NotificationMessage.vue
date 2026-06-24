@@ -113,4 +113,8 @@ const displayMessage = computed(() => {
 .btn-see-all:hover {
     color: var(--link-primary-hover);
 }
+
+.p-message-error:has(.failed-permission-content) {
+    background-color: #FFCDD2;
+}
 </style>

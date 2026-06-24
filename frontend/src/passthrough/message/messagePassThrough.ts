@@ -29,5 +29,6 @@ export const MESSAGE_PASS_THROUGH = {
   },
   closeIcon: {
     class: 'fam-message-close-icon',
+    style: { width: '0.75rem', height: '0.75rem' },
   },
 };
