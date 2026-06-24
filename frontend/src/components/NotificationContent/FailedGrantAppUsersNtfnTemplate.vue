@@ -319,6 +319,7 @@ const reqErr_remainingClients = Math.max(reqErr_forestClients.length - PREVIEW_L
  .failed-permission-content {
     display: flex;
     align-items: flex-start;
+    gap: 1rem;
     margin-bottom: 0.5rem;
 
     &:last-child {
@@ -328,11 +329,13 @@ const reqErr_remainingClients = Math.max(reqErr_forestClients.length - PREVIEW_L
     > svg {
         flex-shrink: 0;
         margin-top: 0.15em;
+        margin-right: 0;
         color: var(--semantic-color-support-error);
     }
 
     .notification-body {
         flex: 1 1 0%;
+        font-size: 0.875em;
     }
 
     .notification-header {
