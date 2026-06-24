@@ -321,9 +321,14 @@ const reqErr_remainingClients = Math.max(reqErr_forestClients.length - PREVIEW_L
     align-items: flex-start;
     margin-bottom: 0.5rem;
 
+    &:last-child {
+        margin-bottom: 0;
+    }
+
     > svg {
         flex-shrink: 0;
         margin-top: 0.15em;
+        color: var(--semantic-color-support-error);
     }
 
     .notification-body {

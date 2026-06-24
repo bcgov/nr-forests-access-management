@@ -124,14 +124,17 @@
  * Success variant — green border with emphasis on left
  */
 .p-message-success.fam-message {
+  outline: none;
   border: solid 0.0625rem var(--semantic-color-support-success);
   border-left: solid 0.3125rem var(--semantic-color-support-success);
 }
 
 /**
  * Error variant — red border with emphasis on left
+ * outline: none overrides PrimeVue v4's outline-based border so our border-left accent shows correctly
  */
 .p-message-error.fam-message {
+  outline: none;
   border: solid 0.0625rem var(--semantic-color-support-error);
   border-left: solid 0.3125rem var(--semantic-color-support-error);
 }
@@ -140,6 +143,7 @@
  * Warning variant — yellow border with emphasis on left
  */
 .p-message-warn.fam-message {
+  outline: none;
   border: solid 0.0625rem var(--semantic-color-support-warning);
   border-left: solid 0.3125rem var(--semantic-color-support-warning);
 }
