@@ -33,6 +33,7 @@ const displayMessage = computed(() => {
     <div class="message-container">
         <Message
             icon="none"
+            :pt="{ icon: { style: { width: '0' } } }"
             :class="props.severity"
             :severity="props.severity"
             :sticky="true"
