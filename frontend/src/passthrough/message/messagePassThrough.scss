@@ -130,6 +130,13 @@
 }
 
 /**
+ * Success icon — green color; close-button svg overrides this with higher specificity
+ */
+.p-message-success svg {
+  color: var(--semantic-color-support-success);
+}
+
+/**
  * Error variant — red border with emphasis on left
  * outline: none overrides PrimeVue v4's outline-based border so our border-left accent shows correctly
  */
