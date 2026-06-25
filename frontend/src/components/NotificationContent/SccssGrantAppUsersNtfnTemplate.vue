@@ -115,6 +115,8 @@ const getEmailSuffix = (
 
     .notification-body {
         flex: 1 1 0%;
+        margin-left: 1rem;
+        font-size: 0.875rem;
     }
 
     .notification-header {
