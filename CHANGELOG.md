@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.19.0](https://github.com/bcgov/nr-forests-access-management/compare/v2.18.0...v2.19.0) (2026-06-25)
+
+
+### Features
+
+* [#2218](https://github.com/bcgov/nr-forests-access-management/issues/2218) Cognito service account setup ([#2225](https://github.com/bcgov/nr-forests-access-management/issues/2225)) ([4aa33ac](https://github.com/bcgov/nr-forests-access-management/commit/4aa33ac427cee3fac2251515b29354d6e03c3334))
+
+
+### Bug Fixes
+
+* [#2228](https://github.com/bcgov/nr-forests-access-management/issues/2228) Post LZA Terraform and Workflow Cleanup ([#2229](https://github.com/bcgov/nr-forests-access-management/issues/2229)) ([f91cf0a](https://github.com/bcgov/nr-forests-access-management/commit/f91cf0a51423e6fa20b1676fe677d5fa1dd3701d))
+
 ## [2.18.0](https://github.com/bcgov/nr-forests-access-management/compare/v2.17.3...v2.18.0) (2026-06-17)
 
 
