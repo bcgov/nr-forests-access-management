@@ -15,10 +15,9 @@ const customColorClass =
 
 <style lang="scss">
 .fam-chip {
+    --p-chip-padding-y: 0.25rem;
+    --p-chip-padding-x: 0.75em;
     width: fit-content;
-    display: inline-flex;
-    align-items: center;
-    padding: 0.25rem 0.5rem;
 
     .p-chip-label {
         @include type.type-style("label-01");
