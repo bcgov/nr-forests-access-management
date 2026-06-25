@@ -70,23 +70,9 @@ server/fam-admin-management-api.zip
 
 server/junk.bash
 infrastructure/server/github.auto.tfvars
-terraform/test/server.json
-terraform/test/.terraform.lock.hcl
 **/.terragrunt-cache/**
 test_db.db-journal
 server/backend/openapi.json
-terraform/dev/github.auto.tfvars
-terraform/prod/github.auto.tfvars
-terraform/dev/.terraform.lock.hcl
-infrastructure/server/fam_auth_function.zip
-terraform/test/github.auto.tfvars
-infrastructure/fam-ui-api.zip
-infrastructure/server/fam-ui-api.zip
-infrastructure/server/fam-admin-management-api.zip
-
-terraform/tools/github.auto.tfvars
-terraform/tools/.terraform.lock.hcl
-terraform/tools/output.txt
 
 **.terraform.lock.hcl
 
