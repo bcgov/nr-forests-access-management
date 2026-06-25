@@ -39,11 +39,11 @@ export const CONFIRM_DIALOG_PASS_THROUGH = {
         },
     },
     pcRejectButton: {
-        root: { class: "fam-confirm-dialog-reject p-button-outlined" },
+        root: { class: "fam-button fam-confirm-dialog-reject p-button-outlined" },
         label: { class: "fam-confirm-dialog-button-label" },
     },
     pcAcceptButton: {
-        root: { class: "fam-confirm-dialog-accept p-button-danger" },
+        root: { class: "fam-button fam-confirm-dialog-accept p-button-danger" },
         label: { class: "fam-confirm-dialog-button-label" },
     },
 };

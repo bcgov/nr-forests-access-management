@@ -98,7 +98,6 @@ const handleRoleSelect = (role: FamRoleGrantDto) => {
             header: "Changing Role",
             rejectLabel: "Cancel",
             acceptLabel: "Continue",
-            acceptClass: "dialog-accept-button",
             accept: () => setRoleAndClearClients(role),
         });
     } else {

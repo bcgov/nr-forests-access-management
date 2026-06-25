@@ -158,7 +158,6 @@ const handlePreUserDomainChange = (payload: {
             header: "Changing User Domain",
             rejectLabel: "Cancel",
             acceptLabel: "Continue",
-            acceptClass: "dialog-accept-button",
             accept: () => payload.approveChange(),
             reject: () => payload.cancelChange(),
         });
@@ -276,7 +275,6 @@ const onSubmit = () => {
                 header: "Add a delegated admin",
                 rejectLabel: "Cancel",
                 acceptLabel: "Submit delegated admin",
-                acceptClass: "dialog-accept-button",
                 accept: () => {
                     isSubmitting.value = true;
                     delegatedAdminMutation.mutate(payload as FamAccessControlPrivilegeCreateRequest);
