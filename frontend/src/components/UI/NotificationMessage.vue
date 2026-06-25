@@ -101,6 +101,7 @@ const displayMessage = computed(() => {
 
 .custom-message-text {
     color: var(--text-primary);
+    font-size: 0.875rem;
 }
 
 .btn-see-all {
