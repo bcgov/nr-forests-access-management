@@ -217,7 +217,17 @@ const handleDomainSelection = (event: SelectChangeEvent) => {
         nextDomain: nextDomainOption.value,
         selectedUsersCount: latestConfirmedSelections.value.length,
         approveChange: () => applyDomainChange(nextDomainOption),
-        cancelChange: () => undefined,
+        cancelChange: () => {
+            // PrimeVue v4 Select immediately updates its internal d_value on user
+            // selection regardless of whether the parent model changes. Since
+            // selectedDomainOption hasn't changed, Vue won't propagate a prop diff
+            // and Select's modelValue watcher won't fire to revert the display.
+            // Spreading to a new reference forces Vue to detect a change and
+            // triggers Select's watcher, resetting d_value back to the old domain.
+            // This seems to be PrimeVue bug. See https://github.com/primefaces/primevue/issues/7871
+            // and https://github.com/primefaces/primevue/issues/6961
+            selectedDomainOption.value = { ...selectedDomainOption.value };
+        },
     });
 };
 

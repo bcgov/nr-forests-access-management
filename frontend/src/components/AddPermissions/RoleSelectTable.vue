@@ -149,6 +149,9 @@ const handleRoleSelect = (role: FamRoleGrantDto) => {
                                 change from within the event handler. This overlay intercepts
                                 mouse clicks before they reach the input, preventing d_value from
                                 being set at all when a confirmation dialog is needed.
+                                This seems to be PrimeVue bug. See similar issues:
+                                https://github.com/primefaces/primevue/issues/7871
+                                and https://github.com/primefaces/primevue/issues/6961
                             -->
                             <div
                                 v-if="
