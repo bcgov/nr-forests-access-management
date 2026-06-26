@@ -20,7 +20,7 @@
 .p-dialog.fam-dialog-root .fam-dialog-content {
     font-size: var(--typography-body-compact-01-font-size);
     letter-spacing: var(--typography-body-compact-01-letter-spacing);
-    padding: 0 1rem;
+    padding: 0 1rem 0 1.5rem;
 }
 
 .p-dialog.fam-dialog-root .fam-dialog-content p:last-child {
@@ -90,10 +90,6 @@
     font-weight: 400;
     line-height: var(--typography-label-01-line-height);
     letter-spacing: .32px;
-}
-
-.p-dialog.fam-dialog-root .fam-dialog-content {
-    padding-left: 1.5rem;
 }
 
 /* ================================ Dialog Header Actions & Close Button ================================ */
