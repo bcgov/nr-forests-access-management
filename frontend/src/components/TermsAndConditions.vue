@@ -537,6 +537,10 @@ const acceptTermsAndConditions = () => {
 
 <style lang="scss">
 .terms-and-conditions-container {
+    .p-dialog-title.fam-dialog-title {
+        padding-bottom: 1rem;
+    }
+
     a {
         color: var(--link-primary);
     }
