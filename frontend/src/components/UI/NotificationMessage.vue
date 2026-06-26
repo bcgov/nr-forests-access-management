@@ -118,4 +118,10 @@ const displayMessage = computed(() => {
 .p-message-error:has(.failed-permission-content) {
     background-color: var(--component-notification-error-background-darker);
 }
+
+:deep(.p-message-success .fam-message-close-button:hover),
+:deep(.p-message-error .fam-message-close-button:hover),
+:deep(.p-message-warn .fam-message-close-button:hover) {
+    background: transparent;
+}
 </style>

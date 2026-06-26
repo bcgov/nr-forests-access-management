@@ -94,30 +94,6 @@
   align-self: baseline;
 }
 
-/**
- * Close button positioning — margin-left auto pushes to right
- * Note: v4 uses .p-message-close-button instead of .p-link
- */
-.p-message .fam-message-close-button {
-  margin-left: auto;
-  overflow: hidden;
-  position: relative;
-}
-
-/**
- * Close button hover — no background change
- */
-.p-message .fam-message-close-button:hover {
-  background: none;
-}
-
-/**
- * Close button focus — blue focus ring
- */
-.p-message .fam-message-content-wrapper .fam-message-close-button:focus {
-  box-shadow: 0 0 0 0.1rem var(--semantic-color-support-success);
-}
-
 /* ================================ Severity variants ================================ */
 
 /**
