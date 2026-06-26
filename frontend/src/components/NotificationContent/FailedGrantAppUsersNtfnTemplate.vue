@@ -335,7 +335,7 @@ const reqErr_remainingClients = Math.max(reqErr_forestClients.length - PREVIEW_L
 
     .notification-body {
         flex: 1 1 0%;
-        font-size: 0.875em;
+        font-size: 0.875rem;
     }
 
     .notification-header {
