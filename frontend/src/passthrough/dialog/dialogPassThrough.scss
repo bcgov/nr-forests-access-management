@@ -74,11 +74,6 @@
 }
 
 /* ================================ ConfirmDialog Specific Overrides ================================ */
-.fam-dialog-close-button.p-button {
-    width: 0.65rem;
-    min-width: 0.5rem;
-    height: 0.5rem;
-}
 
 .p-dialog-header.fam-dialog-header {
     padding-top: 1rem;
@@ -98,14 +93,14 @@
     margin-left: auto;
 }
 
-.fam-dialog-close-button {
+.fam-dialog-close-button.p-button {
     background: transparent;
     border: 0;
     box-shadow: none;
     padding: 0;
-    width: 2rem;
-    min-width: 2rem;
-    height: 2rem;
+    width: 0.65rem;
+    min-width: 0.5rem;
+    height: 0.5rem;
 }
 
 .fam-dialog-close-button .p-button-icon {
