@@ -62,6 +62,10 @@ app.use(router);
 app.use(PrimeVue, {
     theme: {
         preset: FamPrimeVuePreset,
+        options: {
+            // FAM does not support dark mode.
+            darkModeSelector: false,
+        },
     },
     pt: {
         dialog: DIALOG_PASS_THROUGH,
