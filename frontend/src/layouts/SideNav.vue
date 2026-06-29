@@ -199,9 +199,7 @@ const navigateOnClick = (routeName: RouteRecordName) => {
             height: 100%;
 
             .fam-label {
-                // Should use padding here but primevue-components-overrides.scss
-                // has !important for all <label>
-                margin: 1rem;
+                padding: 1rem;
             }
 
             .sub-menu-item {
