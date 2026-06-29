@@ -78,10 +78,6 @@ li {
     padding: 0.88rem;
     border: none;
     border-radius: 0;
-
-    .label {
-        display: none !important;
-    }
 }
 
 .subtitle {
