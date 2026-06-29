@@ -123,6 +123,13 @@
 }
 
 /**
+ * Error icon — red color; close-button svg overrides this with higher specificity
+ */
+.p-message-error svg {
+  color: var(--semantic-color-support-error);
+}
+
+/**
  * Warning variant — yellow border with emphasis on left
  */
 .p-message-warn.fam-message {
