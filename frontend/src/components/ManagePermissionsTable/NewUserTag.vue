@@ -8,7 +8,7 @@ import Tag from "primevue/tag";
 
 <style lang="scss" scoped>
 .custom-tag {
-    background-color: var(--background-inverse);
+    background-color: var(--primitive-color-gray-100);
     padding: 0.18rem 0.5rem 0.2rem;
     margin-right: 0.3rem;
 }

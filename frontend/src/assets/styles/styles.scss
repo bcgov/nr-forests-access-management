@@ -8,42 +8,6 @@
 // Import all of Bootstrap's CSS
 @use "bootstrap" as *;
 
-// Typography utility placeholders
-%body-compact-01 {
-    font-size: map.get(bodyTypes.$body-compact-01, "font-size");
-    font-weight: map.get(bodyTypes.$body-compact-01, "font-weight");
-    letter-spacing: map.get(bodyTypes.$body-compact-01, "letter-spacing");
-    padding: map.get(bodyTypes.$body-compact-01, "padding");
-}
-
-%helper-text-01 {
-    font-size: map.get(bodyTypes.$helper-text-01, "font-size");
-    font-weight: map.get(bodyTypes.$helper-text-01, "font-weight");
-    letter-spacing: map.get(bodyTypes.$helper-text-01, "letter-spacing");
-}
-
-%heading-03 {
-    font-style: map.get(bodyTypes.$heading-03, "font-style");
-    font-weight: map.get(bodyTypes.$heading-03, "font-weight");
-    font-size: map.get(bodyTypes.$heading-03, "font-size");
-    line-height: map.get(bodyTypes.$heading-03, "line-height");
-}
-
-%heading-compact-01 {
-    font-style: map.get(bodyTypes.$heading-compact-01, "font-style");
-    font-size: map.get(bodyTypes.$heading-compact-01, "font-size");
-    line-height: map.get(bodyTypes.$heading-compact-01, "line-height");
-    letter-spacing: map.get(bodyTypes.$heading-compact-01, "letter-spacing");
-}
-
-%label-01 {
-    font-size: map.get(bodyTypes.$label-01, "font-size");
-    font-style: map.get(bodyTypes.$label-01, "font-style");
-    font-weight: map.get(bodyTypes.$label-01, "font-weight");
-    line-height: map.get(bodyTypes.$label-01, "line-height");
-    letter-spacing: map.get(bodyTypes.$label-01, "letter-spacing");
-}
-
 // Root styles
 :root {
     --font-family: map.get(typeFamily.$type-family, "sans");
@@ -113,7 +77,11 @@ label {
 }
 
 .invalid-feedback {
-    @extend %label-01;
+    font-size: map.get(bodyTypes.$label-01, "font-size");
+    font-style: map.get(bodyTypes.$label-01, "font-style");
+    font-weight: map.get(bodyTypes.$label-01, "font-weight");
+    line-height: map.get(bodyTypes.$label-01, "line-height");
+    letter-spacing: map.get(bodyTypes.$label-01, "letter-spacing");
     color: var(--semantic-color-text-error);
 }
 

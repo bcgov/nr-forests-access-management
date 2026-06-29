@@ -121,7 +121,6 @@ watch(
 
 
 <style lang="scss" scoped>
-@use "@/assets/styles/design-tokens" as tokens;
 @use "@/assets/styles/utility-mixins" as mixins;
 
 
