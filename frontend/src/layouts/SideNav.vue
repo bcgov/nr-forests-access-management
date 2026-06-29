@@ -207,7 +207,7 @@ const navigateOnClick = (routeName: RouteRecordName) => {
             .sub-menu-item {
                 a {
                     @include type.type-style("heading-compact-01");
-                    color: var(--text-secondary);
+                    color: var(--semantic-color-text-secondary);
                     text-decoration: none;
                 }
             }
@@ -221,7 +221,7 @@ const navigateOnClick = (routeName: RouteRecordName) => {
 
         li {
             @include type.type-style("heading-compact-01");
-            color: var(--text-secondary);
+            color: var(--semantic-color-text-secondary);
 
             padding: 0.9375rem 1rem;
             display: flex;
@@ -230,7 +230,7 @@ const navigateOnClick = (routeName: RouteRecordName) => {
 
             svg {
                 margin-right: 1.5rem;
-                fill: var(--link-primary);
+                fill: var(--semantic-color-link-primary);
             }
 
             p {
@@ -242,34 +242,34 @@ const navigateOnClick = (routeName: RouteRecordName) => {
             }
 
             &:hover {
-                background: var(--layer-hover-01);
-                color: var(--text-primary);
+                background: var(--semantic-color-surface-layer-hover);
+                color: var(--semantic-color-text-primary);
                 cursor: pointer;
             }
 
             &.sidenav-selected {
-                background: var(--layer-selected-01);
-                box-shadow: inset 0.25rem 0rem 0rem var(--border-interactive);
-                color: var(--text-primary);
+                background: var(--semantic-color-surface-layer-selected);
+                box-shadow: inset 0.25rem 0rem 0rem var(--semantic-color-border-interactive);
+                color: var(--semantic-color-text-primary);
                 font-weight: 700;
 
                 &:hover {
-                    background: var(--layer-selected-hover-01);
+                    background: var(--semantic-color-surface-layer-selected-hover);
                 }
             }
 
             &.sidenav-disabled {
-                color: var(--text-disabled);
+                color: var(--semantic-color-text-disabled);
                 cursor: not-allowed;
 
                 svg {
-                    fill: var(--text-disabled);
+                    fill: var(--semantic-color-text-disabled);
                 }
 
                 &:hover {
                     background: none;
 
-                    color: var(--text-disabled);
+                    color: var(--semantic-color-text-disabled);
                     cursor: not-allowed;
                 }
             }

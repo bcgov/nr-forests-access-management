@@ -389,13 +389,13 @@ const reqErr_remainingClients = Math.max(reqErr_forestClients.length - PREVIEW_L
 .btn-see-all {
     background-color: transparent;
     border: none;
-    color: var(--link-primary);
+    color: var(--semantic-color-link-primary);
     padding: 0;
     cursor: pointer;
 }
 
 .btn-see-all:hover {
-    color: var(--link-primary-hover);
+    color: var(--semantic-color-link-primary-hover);
 }
 
 .orgination-list {

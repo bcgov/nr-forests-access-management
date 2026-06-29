@@ -542,7 +542,7 @@ const acceptTermsAndConditions = () => {
     }
 
     a {
-        color: var(--link-primary);
+        color: var(--semantic-color-link-primary);
     }
 
     h3,

@@ -120,12 +120,12 @@ label {
 // Helper text and validation
 .helper-text {
     font-size: 0.75rem;
-    color: var(--text-secondary);
+    color: var(--semantic-color-text-secondary);
 }
 
 .invalid {
     font-size: 0.875em;
-    color: var(--text-error);
+    color: var(--semantic-color-text-error);
     display: flex;
     align-items: center;
 }
@@ -186,9 +186,9 @@ input[type="number"] {
 
 // Table styles
 .fam-table {
-    background: var(--layer-02, #fff);
+    background: var(--semantic-color-surface-layer-2);
     border-radius: 0.25rem;
-    border: 0.0625rem solid var(--border-subtle-00);
+    border: 0.0625rem solid var(--semantic-color-border-subtle);
 
     p {
         margin: 0;
@@ -196,7 +196,7 @@ input[type="number"] {
 
     .p-datatable-thead {
         .p-column-title {
-            color: var(--text-primary);
+            color: var(--semantic-color-text-primary);
         }
         svg {
             margin: 0;
@@ -205,13 +205,13 @@ input[type="number"] {
 
     .p-datatable-tbody {
         @include type.type-style("body-01");
-        color: var(--text-primary);
+        color: var(--semantic-color-text-primary);
     }
 }
 
 // Error styles
 .error-icon {
-    fill: var(--support-error);
+    fill: var(--semantic-color-support-error);
 }
 
 // Media queries

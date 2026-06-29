@@ -203,8 +203,8 @@ const adminUserAccessQuery = useQuery({
         margin-right: 2rem;
         margin-top: 0.5rem;
         flex-shrink: 0;
-        background: var(--background-brand);
-        color: var(--text-on-color);
+        background: var(--semantic-color-background-brand);
+        color: var(--semantic-color-text-on-color);
     }
 
     .profile-info {

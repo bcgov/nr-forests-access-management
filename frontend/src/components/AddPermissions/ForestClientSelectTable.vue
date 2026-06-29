@@ -154,7 +154,7 @@ const toggleForestClient = (client: FamForestClientBase) => {
 
     .fam-table {
         .p-datatable-emptymessage {
-            background-color: var(--layer-01);
+            background-color: var(--semantic-color-surface-layer-1);
         }
     }
 

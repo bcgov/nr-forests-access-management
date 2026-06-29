@@ -286,7 +286,7 @@ onUnmounted(() => {
         margin-top: 1.5rem;
 
         .p-datatable-emptymessage {
-            background-color: var(--layer-01);
+            background-color: var(--semantic-color-surface-layer-1);
         }
     }
 }

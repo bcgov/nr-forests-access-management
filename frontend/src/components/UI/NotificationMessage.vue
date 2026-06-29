@@ -100,19 +100,19 @@ const displayMessage = computed(() => {
 }
 
 .custom-message-text {
-    color: var(--text-primary);
+    color: var(--semantic-color-text-primary);
     font-size: 0.875rem;
 }
 
 .btn-see-all {
     background-color: transparent;
     border: none;
-    color: var(--link-primar);
+    color: var(--semantic-color-link-primary);
     padding: 0;
 }
 
 .btn-see-all:hover {
-    color: var(--link-primary-hover);
+    color: var(--semantic-color-link-primary-hover);
 }
 
 .p-message-error:has(.failed-permission-content) {

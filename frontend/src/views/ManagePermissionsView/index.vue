@@ -374,7 +374,7 @@ onUnmounted(() => {
         display: flex;
         flex-direction: column;
         margin: 2.5rem -2.5rem 0 -2.5rem;
-        background: var(--layer-01);
+        background: var(--semantic-color-surface-layer-1);
         min-height: calc(100vh - 19rem);
         padding: 2.5rem;
     }

@@ -18,12 +18,12 @@ defineProps<{
 .subsection-title-container {
     .subsection-title {
         @include type.type-style("heading-01");
-        color: var(--text-primary);
+        color: var(--semantic-color-text-primary);
     }
 
     .subsection-subtitle {
         @include type.type-style("body-01");
-        color: var(--text-secondary);
+        color: var(--semantic-color-text-secondary);
     }
 }
 </style>

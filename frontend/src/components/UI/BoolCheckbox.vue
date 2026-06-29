@@ -38,7 +38,7 @@ const props = withDefaults(defineProps<CheckboxProps>(), {
     label {
         font-size: 0.875rem;
         font-weight: 600;
-        color: var(--text-secondary);
+        color: var(--semantic-color-text-secondary);
         margin-bottom: 0;
         margin-left: 0.25rem;
         cursor: pointer;

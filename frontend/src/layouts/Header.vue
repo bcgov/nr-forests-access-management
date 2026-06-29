@@ -96,11 +96,11 @@ li {
 
     height: 100;
     width: 100vw;
-    background: var(--background-brand);
+    background: var(--semantic-color-background-brand);
 
     padding: 0;
     z-index: 10;
-    color: var(--text-on-color);
+    color: var(--semantic-color-text-on-color);
     .header-title {
         cursor: pointer;
         margin: 0 auto 0 0;
