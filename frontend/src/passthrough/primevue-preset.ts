@@ -77,71 +77,12 @@ export const FamPrimeVuePreset = definePreset(Lara, {
           activeColor: SemanticColorPrimary800,
         },
       },
-      dark: {
-        primary: {
-          color: SemanticColorPrimary500,
-          inverseColor: PrimitiveColorWhite,
-          hoverColor: SemanticColorPrimary600,
-          activeColor: SemanticColorPrimary800,
-        },
-      },
     },
   },
   components: {
     button: {
       colorScheme: {
         light: {
-          root: {
-            primary: {
-              background: ComponentButtonPrimaryBackground,
-              hoverBackground: ComponentButtonPrimaryHover,
-              activeBackground: ComponentButtonPrimaryActive,
-              borderColor: ComponentButtonPrimaryBackground,
-              hoverBorderColor: ComponentButtonPrimaryHover,
-              activeBorderColor: ComponentButtonPrimaryActive,
-              color: SemanticColorTextOnColor,
-              hoverColor: SemanticColorTextOnColor,
-              activeColor: SemanticColorTextOnColor,
-            },
-            secondary: {
-              background: ComponentButtonSecondaryBackground,
-              hoverBackground: ComponentButtonSecondaryHover,
-              activeBackground: ComponentButtonSecondaryActive,
-              borderColor: ComponentButtonSecondaryBackground,
-              hoverBorderColor: ComponentButtonSecondaryHover,
-              activeBorderColor: ComponentButtonSecondaryActive,
-              color: SemanticColorTextOnColor,
-              hoverColor: SemanticColorTextOnColor,
-              activeColor: SemanticColorTextOnColor,
-            },
-            danger: {
-              background: ComponentButtonDangerBackground,
-              hoverBackground: ComponentButtonDangerHover,
-              activeBackground: ComponentButtonDangerActive,
-              borderColor: ComponentButtonDangerBackground,
-              hoverBorderColor: ComponentButtonDangerHover,
-              activeBorderColor: ComponentButtonDangerActive,
-              color: SemanticColorTextOnColor,
-              hoverColor: SemanticColorTextOnColor,
-              activeColor: SemanticColorTextOnColor,
-            },
-          },
-          outlined: {
-            primary: {
-              color: ComponentButtonTertiaryBackground,
-              borderColor: ComponentButtonTertiaryBackground,
-              hoverBackground: ComponentButtonTertiaryHover,
-              activeBackground: ComponentButtonTertiaryActive,
-            },
-            danger: {
-              color: ComponentButtonDangerBackground,
-              borderColor: ComponentButtonDangerBackground,
-              hoverBackground: ComponentButtonDangerHover,
-              activeBackground: ComponentButtonDangerActive,
-            },
-          },
-        },
-        dark: {
           root: {
             primary: {
               background: ComponentButtonPrimaryBackground,
@@ -309,26 +250,6 @@ export const FamPrimeVuePreset = definePreset(Lara, {
             selectedBorderColor: SemanticColorBorderInteractive,
           },
         },
-        dark: {
-          headerCell: {
-            background: ComponentDatatableHeaderBackground,
-            hoverBackground: ComponentDatatableHeaderBackground,
-            selectedBackground: ComponentDatatableHeaderBackground,
-            borderColor: SemanticColorBorderSubtle,
-            color: SemanticColorTextPrimary,
-          },
-          row: {
-            background: PrimitiveColorWhite,
-            hoverBackground: SemanticColorSurfaceLayerHover,
-            selectedBackground: SemanticColorSurfaceLayerSelected,
-            stripedBackground: SemanticColorSurfaceLayerSelected,
-            color: SemanticColorTextPrimary,
-          },
-          bodyCell: {
-            borderColor: SemanticColorBorderSubtle,
-            selectedBorderColor: SemanticColorBorderInteractive,
-          },
-        },
       },
     },
     dialog: {
@@ -341,23 +262,6 @@ export const FamPrimeVuePreset = definePreset(Lara, {
     message: {
       colorScheme: {
         light: {
-          success: {
-            background: ComponentNotificationSuccessBackground,
-            borderColor: SemanticColorSupportSuccess,
-            color: SemanticColorTextPrimary,
-          },
-          error: {
-            background: ComponentNotificationErrorBackground,
-            borderColor: SemanticColorSupportError,
-            color: SemanticColorTextPrimary,
-          },
-          warn: {
-            background: ComponentNotificationWarningBackground,
-            borderColor: SemanticColorSupportWarning,
-            color: SemanticColorTextPrimary,
-          },
-        },
-        dark: {
           success: {
             background: ComponentNotificationSuccessBackground,
             borderColor: SemanticColorSupportSuccess,
