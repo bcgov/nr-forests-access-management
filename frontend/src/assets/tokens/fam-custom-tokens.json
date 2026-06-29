@@ -72,6 +72,7 @@
         "layer-2": { "value": "{primitive.color.white}" },
         "layer-hover": { "value": "{primitive.color.gray.15}" },
         "layer-selected": { "value": "{primitive.color.gray.20}" },
+        "layer-selected-hover": { "value": "{primitive.color.gray.25}" },
         "layer-accent": { "value": "{primitive.color.gray.25}" }
       },
 
@@ -84,7 +85,8 @@
       },
 
       "link": {
-        "primary": { "value": "{primitive.color.blue.70}" }
+        "primary": { "value": "{primitive.color.blue.70}" },
+        "primaryHover": { "value": "{primitive.color.blue.80}" }
       },
 
       "border": {
