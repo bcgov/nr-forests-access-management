@@ -48,6 +48,8 @@
   --semantic-color-text-secondary: #606062;
   --semantic-color-text-on-color: #FFFFFF;
   --semantic-color-text-error: #B32001;
+  --semantic-color-text-disabled: #939395;
+  --semantic-color-link-primary: #005CB8;
   --semantic-color-border-subtle: #DFDFE1;
   --semantic-color-border-strong: #79797B;
   --semantic-color-border-interactive: #0073E6;

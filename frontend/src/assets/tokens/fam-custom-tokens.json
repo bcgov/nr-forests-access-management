@@ -77,7 +77,12 @@
         "primary": { "value": "{primitive.color.gray.100}" },
         "secondary": { "value": "{primitive.color.gray.70}" },
         "onColor": { "value": "{primitive.color.white}" },
-        "error": { "value": "{primitive.color.red.70}" }
+        "error": { "value": "{primitive.color.red.70}" },
+        "disabled": { "value": "{primitive.color.gray.50}" }
+      },
+
+      "link": {
+        "primary": { "value": "{primitive.color.blue.70}" }
       },
 
       "border": {
