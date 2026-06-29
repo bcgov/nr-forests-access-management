@@ -12,6 +12,7 @@
   --primitive-color-gray-10: #F3F3F5;
   --primitive-color-gray-15: #ECECEE;
   --primitive-color-gray-20: #DFDFE1;
+  --primitive-color-gray-25: #D2D2D4;
   --primitive-color-gray-30: #C6C6C8;
   --primitive-color-gray-50: #939395;
   --primitive-color-gray-60: #79797B;
@@ -44,6 +45,7 @@
   --semantic-color-surface-layer-2: #FFFFFF;
   --semantic-color-surface-layer-hover: #ECECEE;
   --semantic-color-surface-layer-selected: #DFDFE1;
+  --semantic-color-surface-layer-accent: #D2D2D4;
   --semantic-color-text-primary: #131315;
   --semantic-color-text-secondary: #606062;
   --semantic-color-text-on-color: #FFFFFF;
