@@ -21,6 +21,7 @@ import {
   ComponentButtonTertiaryActive,
   ComponentButtonTertiaryBackground,
   ComponentButtonTertiaryHover,
+  ComponentDatatableHeaderBackground,
   ComponentNotificationErrorBackground,
   ComponentNotificationSuccessBackground,
   ComponentNotificationWarningBackground,
@@ -38,7 +39,6 @@ import {
   SemanticColorSupportWarning,
   SemanticColorSurfaceLayer1,
   SemanticColorSurfaceLayerHover,
-  SemanticColorSurfaceLayerAccent,
   SemanticColorSurfaceLayerSelected,
   SemanticColorTextOnColor,
   SemanticColorTextPrimary,
@@ -291,9 +291,9 @@ export const FamPrimeVuePreset = definePreset(Lara, {
       colorScheme: {
         light: {
           headerCell: {
-            background: SemanticColorSurfaceLayerAccent,
-            hoverBackground: SemanticColorSurfaceLayerAccent,
-            selectedBackground: SemanticColorSurfaceLayerAccent,
+            background: ComponentDatatableHeaderBackground,
+            hoverBackground: ComponentDatatableHeaderBackground,
+            selectedBackground: ComponentDatatableHeaderBackground,
             borderColor: SemanticColorBorderSubtle,
             color: SemanticColorTextPrimary,
           },
@@ -311,9 +311,9 @@ export const FamPrimeVuePreset = definePreset(Lara, {
         },
         dark: {
           headerCell: {
-            background: SemanticColorSurfaceLayerAccent,
-            hoverBackground: SemanticColorSurfaceLayerAccent,
-            selectedBackground: SemanticColorSurfaceLayerAccent,
+            background: ComponentDatatableHeaderBackground,
+            hoverBackground: ComponentDatatableHeaderBackground,
+            selectedBackground: ComponentDatatableHeaderBackground,
             borderColor: SemanticColorBorderSubtle,
             color: SemanticColorTextPrimary,
           },

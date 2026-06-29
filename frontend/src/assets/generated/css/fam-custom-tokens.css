@@ -46,7 +46,7 @@
   --semantic-color-surface-layer-hover: #ECECEE;
   --semantic-color-surface-layer-selected: #DFDFE1;
   --semantic-color-surface-layer-selected-hover: #D2D2D4;
-  --semantic-color-surface-layer-accent: #D2D2D4;
+  --semantic-color-surface-layer-accent: #DFDFE1;
   --semantic-color-text-primary: #131315;
   --semantic-color-text-secondary: #606062;
   --semantic-color-text-on-color: #FFFFFF;
@@ -82,6 +82,7 @@
   --component-notification-warning-background: #FFF3CC;
   --component-tag-success-background: #CCE5CC;
   --component-tag-danger-background: #FFC0B3;
+  --component-datatable-header-background: #D2D2D4;
   --typography-body-compact-01-font-size: 14px;
   --typography-body-compact-01-line-height: 1.28572;
   --typography-body-compact-01-letter-spacing: 0.16px;

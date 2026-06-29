@@ -73,7 +73,7 @@
         "layer-hover": { "value": "{primitive.color.gray.15}" },
         "layer-selected": { "value": "{primitive.color.gray.20}" },
         "layer-selected-hover": { "value": "{primitive.color.gray.25}" },
-        "layer-accent": { "value": "{primitive.color.gray.25}" }
+        "layer-accent": { "value": "{primitive.color.gray.20}" }
       },
 
       "text": {
@@ -157,6 +157,10 @@
       "danger": {
         "background": { "value": "{primitive.color.red.20}" }
       }
+    },
+
+    "datatable": {
+      "headerBackground": { "value": "{primitive.color.gray.25}" }
     }
   },
 

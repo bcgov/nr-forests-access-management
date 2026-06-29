@@ -203,10 +203,6 @@ input[type="number"] {
         }
     }
 
-    .p-datatable-thead > tr > th {
-        background: var(--layer-accent-01);
-    }
-
     .p-datatable-tbody {
         @include type.type-style("body-01");
         color: var(--text-primary);
