@@ -41,7 +41,7 @@ import SearchLocateIcon from "@carbon/icons-vue/es/search--locate/32";
 .no-app-selected-text {
     font-size: 0.875rem;
     color: var(--semantic-color-text-secondary);
-    margin-bottom: 0 !important;
+    margin-bottom: 0;
 }
 
 .placeholder-icon {
