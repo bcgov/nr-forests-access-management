@@ -43,3 +43,15 @@
     height: 100%;
     padding-left: 2.5rem;
 }
+
+/* ================================ Invalid State ================================ */
+
+.p-inputtext.p-component.fam-inputtext.p-invalid {
+    border: 0.125rem solid var(--semantic-color-support-error);
+    border-color: var(--semantic-color-support-error);
+    padding-right: 1rem;
+    background-image: url("../../assets/svg/warning--filled.svg");
+    background-repeat: no-repeat;
+    background-position: right calc(0.375em + 0.1875rem) center;
+    background-size: 1rem 1rem;
+}

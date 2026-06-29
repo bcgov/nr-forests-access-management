@@ -58,15 +58,6 @@ p {
 }
 
 
-.is-invalid {
-    border: 0.125rem solid var(--semantic-color-support-error) !important;
-    border-color: var(--semantic-color-support-error) !important;
-    padding-right: 1rem !important;
-    background-image: url("../assets/svg/warning--filled.svg") !important;
-    background-repeat: no-repeat !important;
-    background-position: right calc(0.375em + 0.1875rem) center !important;
-    background-size: 1rem 1rem !important;
-}
 
 .invalid-feedback {
     font-size: map.get(bodyTypes.$label-01, "font-size");

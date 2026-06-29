@@ -447,7 +447,7 @@ const handleSearch = () => {
                     placeholder="Please input search text"
                     :maxlength="MAX_SEARCH_TEXT_LENGTH"
                     class="w-100"
-                    :class="{ 'is-invalid': !!searchTextError }"
+                    :invalid="!!searchTextError"
                     :disabled="disabled || isPending"
                 />
                 <HelperText
