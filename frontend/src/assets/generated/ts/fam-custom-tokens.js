@@ -3,11 +3,18 @@
  */
 
 export const PrimitiveColorWhite = "#FFFFFF";
+export const PrimitiveColorBlue10 = "#C2E0FF";
+export const PrimitiveColorBlue20 = "#85C2FF";
+export const PrimitiveColorBlue30 = "#5CADFF";
+export const PrimitiveColorBlue40 = "#3399FF";
+export const PrimitiveColorBlue50 = "#0A85FF";
 export const PrimitiveColorBlue60 = "#0073E6";
 export const PrimitiveColorBlue65 = "#0066CC";
 export const PrimitiveColorBlue70 = "#005CB8";
 export const PrimitiveColorBlue75 = "#0052A3";
 export const PrimitiveColorBlue80 = "#00478F";
+export const PrimitiveColorBlue90 = "#003366";
+export const PrimitiveColorBlue95 = "#002952";
 export const PrimitiveColorGray10 = "#F3F3F5";
 export const PrimitiveColorGray15 = "#ECECEE";
 export const PrimitiveColorGray20 = "#DFDFE1";
@@ -32,10 +39,17 @@ export const PrimitiveColorGreen10 = "#CCE5CC";
 export const PrimitiveColorGreen60 = "#007B00";
 export const PrimitiveColorYellow10 = "#FFF3CC";
 export const PrimitiveColorYellow60 = "#FFC300";
+export const SemanticColorPrimary50 = "#C2E0FF";
+export const SemanticColorPrimary100 = "#85C2FF";
+export const SemanticColorPrimary200 = "#5CADFF";
+export const SemanticColorPrimary300 = "#3399FF";
+export const SemanticColorPrimary400 = "#0A85FF";
 export const SemanticColorPrimary500 = "#0073E6";
 export const SemanticColorPrimary600 = "#0066CC";
 export const SemanticColorPrimary700 = "#005CB8";
 export const SemanticColorPrimary800 = "#00478F";
+export const SemanticColorPrimary900 = "#003366";
+export const SemanticColorPrimary950 = "#002952";
 export const SemanticColorBackgroundDefault = "#FFFFFF";
 export const SemanticColorBackgroundHover = "rgba(147,147,149,0.12)";
 export const SemanticColorBackgroundActive = "rgba(147,147,149,0.5)";

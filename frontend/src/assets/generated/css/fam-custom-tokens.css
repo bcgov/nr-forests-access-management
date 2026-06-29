@@ -4,11 +4,18 @@
 
 :root {
   --primitive-color-white: #FFFFFF;
+  --primitive-color-blue-10: #C2E0FF;
+  --primitive-color-blue-20: #85C2FF;
+  --primitive-color-blue-30: #5CADFF;
+  --primitive-color-blue-40: #3399FF;
+  --primitive-color-blue-50: #0A85FF;
   --primitive-color-blue-60: #0073E6;
   --primitive-color-blue-65: #0066CC;
   --primitive-color-blue-70: #005CB8;
   --primitive-color-blue-75: #0052A3;
   --primitive-color-blue-80: #00478F;
+  --primitive-color-blue-90: #003366;
+  --primitive-color-blue-95: #002952;
   --primitive-color-gray-10: #F3F3F5;
   --primitive-color-gray-15: #ECECEE;
   --primitive-color-gray-20: #DFDFE1;
@@ -33,10 +40,17 @@
   --primitive-color-green-60: #007B00;
   --primitive-color-yellow-10: #FFF3CC;
   --primitive-color-yellow-60: #FFC300;
+  --semantic-color-primary-50: #C2E0FF;
+  --semantic-color-primary-100: #85C2FF;
+  --semantic-color-primary-200: #5CADFF;
+  --semantic-color-primary-300: #3399FF;
+  --semantic-color-primary-400: #0A85FF;
   --semantic-color-primary-500: #0073E6;
   --semantic-color-primary-600: #0066CC;
   --semantic-color-primary-700: #005CB8;
   --semantic-color-primary-800: #00478F;
+  --semantic-color-primary-900: #003366;
+  --semantic-color-primary-950: #002952;
   --semantic-color-background-default: #FFFFFF;
   --semantic-color-background-hover: rgba(147,147,149,0.12);
   --semantic-color-background-active: rgba(147,147,149,0.5);
