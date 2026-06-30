@@ -8,9 +8,10 @@ This guide covers FAM's design token system, PrimeVue v4 theming approach, and t
 
 1. [Why nr-theme Lives in fam-custom-tokens.json](#1-why-nr-theme-lives-in-fam-custom-tokenjson)
 2. [Generating fam-custom-tokens.css and fam-custom-tokens.js](#2-generating-fam-custom-tokenscss-and-fam-custom-tokensjs)
-3. [PrimeVue v4: Preset and PassThrough](#3-primevue-v4-preset-and-passthrough)
-4. [FAM Customization Scenarios](#4-fam-customization-scenarios)
-5. [Updating the Source of Truth](#5-updating-the-source-of-truth)
+3. [Typography System](#3-typography-system)
+4. [PrimeVue v4: Preset and PassThrough](#4-primevue-v4-preset-and-passthrough)
+5. [FAM Customization Scenarios](#5-fam-customization-scenarios)
+6. [Updating the Source of Truth](#6-updating-the-source-of-truth)
 
 ---
 
@@ -60,7 +61,7 @@ Style Dictionary resolves these references at build time, so changing `primitive
 
 ### Why nr-theme colours are re-declared rather than imported
 
-`nr-theme` v1.8.9 ships only as SCSS. There is no JSON or JS export from the package. The hex values in `fam-custom-tokens.json` (e.g., `#0073E6` for BCGov Blue 60) are **manually aligned** with the values in `nr-theme`'s SCSS light theme. This is a deliberate trade-off: it gives FAM full control over which tokens enter the PrimeVue layer while keeping the SCSS-side (non-PrimeVue styles, `themes.scss`) sourcing colours directly from the `nr-theme` package.
+`nr-theme` v1.8.9 ships only as SCSS. There is no JSON or JS export from the package. The hex values in `fam-custom-tokens.json` (e.g., `#0073E6` for BCGov Blue 60) are **manually aligned** with the values in `nr-theme`'s SCSS light theme. This is a deliberate trade-off: it gives FAM full control over which tokens enter the PrimeVue layer while keeping the SCSS-side (non-PrimeVue styles, `styles.scss`) sourcing colours directly from the `nr-theme` package.
 
 > **Note:** `@bcgov-nr/nr-theme` is locked to `~1.8.9` in `package.json`. Version 1.9+ introduces BC Sans 2.0, which has not yet been evaluated for FAM. When upgrading, cross-check the colour values in the new `nr-theme` release against the `primitive` section of `fam-custom-tokens.json`.
 
@@ -72,7 +73,7 @@ Style Dictionary resolves these references at build time, so changing `primitive
 
 | Output file | Location | Consumer |
 |---|---|---|
-| `fam-custom-tokens.css` | `src/assets/generated/css/` | SCSS (`themes.scss` imports it into `:root`), PassThrough SCSS files via `var(--…)` |
+| `fam-custom-tokens.css` | `src/assets/generated/css/` | SCSS (`styles.scss` imports it into `:root`), PassThrough SCSS files via `var(--…)` |
 | `fam-custom-tokens.js` | `src/assets/generated/ts/` | PrimeVue preset (`primevue-preset.ts`) — named JS imports |
 
 Both files are **committed to the repository** as build artefacts so the project builds without requiring a separate token-generation step in CI.
@@ -112,7 +113,7 @@ This single script regenerates both files. It must be re-run any time `fam-custo
 
 **CSS (`fam-custom-tokens.css`)**
 
-Imported in `src/assets/styles/themes.scss`, which adds all tokens to `:root` as CSS custom properties:
+Imported in `src/assets/styles/styles.scss`, which adds all tokens to `:root` as CSS custom properties:
 
 ```scss
 @import "@/assets/generated/css/fam-custom-tokens.css";
@@ -148,7 +149,100 @@ These literal values are passed directly into PrimeVue's `definePreset()` call, 
 
 ---
 
-## 3. PrimeVue v4: Preset and PassThrough
+## 3. Typography System
+
+FAM uses two complementary mechanisms to apply consistent typography. Understanding both prevents confusion when you encounter the same type scale names in different parts of the codebase.
+
+### 3.1 Carbon type scale (compile-time SCSS mixins)
+
+FAM uses **`@carbon/type`** as a compile-time Sass utility for applying IBM Carbon's named type styles. This is purely a typography utility — no Carbon UI components are used in FAM.
+
+In `.vue` component `<style>` blocks and in `src/assets/styles/styles.scss`, you will see:
+
+```scss
+@use "@carbon/type" as type;
+
+.my-element {
+    @include type.type-style("body-compact-01");
+}
+```
+
+Sass expands this at build time into plain CSS properties:
+
+```css
+.my-element {
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 1.28572;
+    letter-spacing: 0.16px;
+}
+```
+
+There is no runtime overhead — the mixin is fully resolved during the Vite build. The named type styles used in FAM are defined by Carbon's type scale specification and are not FAM-specific:
+
+| Style name | Rough purpose |
+|---|---|
+| `label-01` | Small labels, captions (~12px) |
+| `body-01` | Regular body text (~14px, generous line-height) |
+| `body-compact-01` | Regular body text, tighter line-height |
+| `heading-compact-01` | Small bold heading |
+| `heading-01` | Small heading |
+| `heading-03` | Medium heading |
+| `heading-05` | Large heading |
+
+### 3.2 Typography tokens in fam-custom-tokens.json (runtime CSS variables)
+
+`fam-custom-tokens.json` includes a `typography` section that mirrors a subset of the Carbon type scale values:
+
+```json
+"typography": {
+    "body-compact-01": {
+        "fontSize": { "value": "14px" },
+        "lineHeight": { "value": "1.28572" },
+        "letterSpacing": { "value": "0.16px" }
+    },
+    "label-01": {
+        "fontSize": { "value": "12px" },
+        "lineHeight": { "value": "16px" }
+    },
+    "heading-03": {
+        "fontSize": { "value": "20px" },
+        "lineHeight": { "value": "28px" }
+    }
+}
+```
+
+Style Dictionary compiles these into CSS custom properties (e.g. `--typography-body-compact-01-font-size: 14px`), which are used exclusively in the **PrimeVue PassThrough SCSS files**:
+
+```scss
+// src/passthrough/button/buttonPassThrough.scss
+.p-button.fam-button {
+    font-size: var(--typography-body-compact-01-font-size);
+    letter-spacing: var(--typography-body-compact-01-letter-spacing);
+}
+```
+
+The PassThrough files cannot use the `@carbon/type` SCSS mixin because they style PrimeVue's internal DOM structure via CSS class injection — CSS custom properties are the only viable mechanism there.
+
+### 3.3 Why both exist
+
+| Mechanism | Where used | How it works |
+|---|---|---|
+| `@include type.type-style(...)` | Vue component `<style>` blocks, `styles.scss` | Sass mixin, expanded at build time into static CSS |
+| `var(--typography-*)` | PrimeVue PassThrough SCSS files | CSS custom property, resolved at runtime from `fam-custom-tokens.css` |
+
+The two mechanisms do not conflict — they deliver the same values through different paths dictated by the context each mechanism is used in.
+
+### 3.4 Guidance for new development
+
+- For styling **custom (non-PrimeVue) components**, use `@include type.type-style(...)` with `@use "@carbon/type" as type` in the component's `<style>` block.
+- For styling **PrimeVue component internals** via PassThrough SCSS, use `var(--typography-*)` CSS custom properties.
+- If you need a type style in PassThrough SCSS that is not yet in `fam-custom-tokens.json`, add it to the `typography` section using the same Carbon name and values, then run `npm run build:tokens` to regenerate the CSS variables.
+- Never hardcode `font-size`, `line-height`, or `letter-spacing` values directly — always trace back to either a Carbon type style name or a `--typography-*` token to keep both systems aligned.
+
+---
+
+## 4. PrimeVue v4: Preset and PassThrough
 
 > Official documentation: https://primevue.org/theming/styled/ and https://primevue.org/passthrough/
 
@@ -263,7 +357,7 @@ PrimeVue documents each component's PT slots on its component page (e.g., https:
 
 ---
 
-## 4. FAM Customization Scenarios
+## 5. FAM Customization Scenarios
 
 ### Scenario A — Change a colour that PrimeVue controls (preset token)
 
@@ -328,7 +422,7 @@ Do not invent hex literals in SCSS without first adding a token — this breaks 
 
 ---
 
-## 5. Updating the Source of Truth
+## 6. Updating the Source of Truth
 
 The source of truth for FAM's design tokens is `frontend/src/assets/tokens/fam-custom-tokens.json`. The generated files (`fam-custom-tokens.css`, `fam-custom-tokens.js`) are derived artefacts — they must be regenerated and committed whenever the JSON changes.
 
