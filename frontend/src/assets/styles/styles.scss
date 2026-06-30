@@ -8,6 +8,9 @@
 // Import all of Bootstrap's CSS
 @use "bootstrap" as *;
 
+// Import FAM design tokens as CSS custom properties
+@import "@/assets/generated/css/fam-custom-tokens.css";
+
 // Root styles
 :root {
     --font-family: map.get(typeFamily.$type-family, "sans");

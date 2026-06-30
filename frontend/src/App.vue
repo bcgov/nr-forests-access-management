@@ -28,7 +28,6 @@ const layoutComponent = computed(() => {
 
 <style lang="scss">
 @use "@/assets/styles/styles";
-@use "@/assets/styles/themes";
 @use "@/passthrough/dialog/dialogPassThrough.scss";
 @use "@/passthrough/input/inputPassThrough.scss";
 @use "@/passthrough/button/buttonPassThrough.scss";
