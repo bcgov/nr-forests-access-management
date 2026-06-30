@@ -78,10 +78,6 @@ li {
     padding: 0.88rem;
     border: none;
     border-radius: 0;
-
-    .label {
-        display: none !important;
-    }
 }
 
 .subtitle {
@@ -96,11 +92,11 @@ li {
 
     height: 100;
     width: 100vw;
-    background: var(--background-brand);
+    background: var(--semantic-color-background-brand);
 
     padding: 0;
     z-index: 10;
-    color: var(--text-on-color);
+    color: var(--semantic-color-text-on-color);
     .header-title {
         cursor: pointer;
         margin: 0 auto 0 0;
@@ -125,16 +121,12 @@ li {
 .btn-toggle-profile {
     border-radius: 0;
     border: none;
-    padding-bottom: 0.93rem;
+    padding-bottom: 0.92rem;
+    width: auto;
 
     svg {
         margin-top: 0.125rem;
     }
-}
-
-.btn-toggle-profile-active {
-    color: #000;
-    background-color: #fff;
 }
 
 .btn-toggle-profile:hover,

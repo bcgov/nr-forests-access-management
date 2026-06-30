@@ -7,7 +7,6 @@ import AlignBoxIcon from "@carbon/icons-vue/es/align-box--top-center/16";
 import EmailIcon from "@carbon/icons-vue/es/email/16";
 import { useQuery } from "@tanstack/vue-query";
 import { AdminRoleAuthGroup } from "fam-admin-mgmt-api/model";
-import Sidebar from "primevue/sidebar";
 import { computed } from "vue";
 import { useRouter, type RouteRecordName } from "vue-router";
 
@@ -82,11 +81,15 @@ const navigateOnClick = (routeName: RouteRecordName) => {
 };
 </script>
 <template>
-    <Sidebar class="fam-sidenav" v-model:visible="sideNavState.isVisible">
+    <div
+        class="fam-sidenav"
+        :class="{ 'is-visible': sideNavState.isVisible }"
+        @click.self="sideNavState.toggleVisible()"
+    >
         <nav class="sidenav">
             <div class="content">
                 <ul>
-                    <template v-for="item in sideNavItems">
+                    <template v-for="item in sideNavItems" :key="item.routeName">
                         <li
                             :class="{
                                 'sidenav-selected': isMenuItemHighlighted(
@@ -104,6 +107,7 @@ const navigateOnClick = (routeName: RouteRecordName) => {
                         </li>
                         <li
                             v-for="subMenuItem in item.subMenuItems"
+                            :key="subMenuItem.routeName"
                             :class="[
                                 'sub-menu-item',
                                 {
@@ -144,18 +148,47 @@ const navigateOnClick = (routeName: RouteRecordName) => {
                 </ul>
             </div>
         </nav>
-    </Sidebar>
+    </div>
 </template>
 <style lang="scss" scoped>
 .fam-sidenav {
+    --header-height: 3rem;
+    --sidenav-width: 16rem;
+    $sidenav-border: 1px solid var(--primitive-color-gray-20);
+
+    // On mobile, the outer wrapper becomes the backdrop overlay
+    @media (max-width: 1023px) {
+        position: fixed;
+        top: var(--header-height);
+        left: 0;
+        width: 100vw;
+        height: calc(100vh - var(--header-height));
+        background: transparent;
+        pointer-events: none;
+        transition: background 0.2s ease;
+        z-index: 8;
+
+        &.is-visible {
+            background: rgb(0 0 0 / 35%);
+            pointer-events: auto;
+        }
+    }
+
     .sidenav {
+        pointer-events: auto;
         position: fixed;
         padding: 1rem 0;
-        width: 100%;
-        height: calc(100vh - 3.125rem - env(safe-area-inset-bottom));
+        width: var(--sidenav-width);
+        height: calc(100vh - var(--header-height) - env(safe-area-inset-bottom));
         padding-bottom: calc(1rem + env(safe-area-inset-bottom));
         left: 0;
+        top: var(--header-height);
         overflow: hidden auto;
+        background: var(--semantic-color-surface-layer-2);
+        transform: translateX(-100%);
+        transition: transform 0.25s ease;
+        z-index: 9;
+        border-right: $sidenav-border;
 
         .content {
             position: relative;
@@ -166,15 +199,13 @@ const navigateOnClick = (routeName: RouteRecordName) => {
             height: 100%;
 
             .fam-label {
-                // Should use padding here but primevue-components-overrides.scss
-                // has !important for all <label>
-                margin: 1rem;
+                padding: 1rem;
             }
 
             .sub-menu-item {
                 a {
                     @include type.type-style("heading-compact-01");
-                    color: var(--text-secondary);
+                    color: var(--semantic-color-text-secondary);
                     text-decoration: none;
                 }
             }
@@ -188,7 +219,7 @@ const navigateOnClick = (routeName: RouteRecordName) => {
 
         li {
             @include type.type-style("heading-compact-01");
-            color: var(--text-secondary);
+            color: var(--semantic-color-text-secondary);
 
             padding: 0.9375rem 1rem;
             display: flex;
@@ -197,7 +228,7 @@ const navigateOnClick = (routeName: RouteRecordName) => {
 
             svg {
                 margin-right: 1.5rem;
-                fill: var(--link-primary);
+                fill: var(--semantic-color-link-primary);
             }
 
             p {
@@ -209,43 +240,47 @@ const navigateOnClick = (routeName: RouteRecordName) => {
             }
 
             &:hover {
-                background: var(--layer-hover-01);
-                color: var(--text-primary);
+                background: var(--semantic-color-surface-layer-hover);
+                color: var(--semantic-color-text-primary);
                 cursor: pointer;
             }
 
             &.sidenav-selected {
-                background: var(--layer-selected-01);
-                box-shadow: inset 0.25rem 0rem 0rem var(--border-interactive);
-                color: var(--text-primary);
+                background: var(--semantic-color-surface-layer-selected);
+                box-shadow: inset 0.25rem 0rem 0rem var(--semantic-color-border-interactive);
+                color: var(--semantic-color-text-primary);
                 font-weight: 700;
 
                 &:hover {
-                    background: var(--layer-selected-hover-01);
+                    background: var(--semantic-color-surface-layer-selected-hover);
                 }
             }
 
             &.sidenav-disabled {
-                color: var(--text-disabled);
+                color: var(--semantic-color-text-disabled);
                 cursor: not-allowed;
 
                 svg {
-                    fill: var(--text-disabled);
+                    fill: var(--semantic-color-text-disabled);
                 }
 
                 &:hover {
                     background: none;
 
-                    color: var(--text-disabled);
+                    color: var(--semantic-color-text-disabled);
                     cursor: not-allowed;
                 }
             }
         }
     }
 
-    @media (min-width: 768px) {
+    &.is-visible .sidenav {
+        transform: translateX(0);
+    }
+
+    @media (min-width: 1024px) {
         .sidenav {
-            width: 100%;
+            transform: translateX(0);
         }
     }
 }
@@ -255,7 +290,7 @@ const navigateOnClick = (routeName: RouteRecordName) => {
     @supports (-webkit-touch-callout: none) {
         .fam-sidenav .sidenav {
             height: calc(
-                100vh - 3.125rem - (env(safe-area-inset-bottom, 0) + 4rem)
+                100vh - 3rem - (env(safe-area-inset-bottom, 0) + 4rem)
             );
         }
     }

@@ -31,12 +31,12 @@ defineProps<{
 
     .title {
         @include type.type-style("heading-03");
-        color: var(--text-primary);
+        color: var(--semantic-color-text-primary);
     }
 
     .subtitle {
         @include type.type-style("body-01");
-        color: var(--text-secondary);
+        color: var(--semantic-color-text-secondary);
     }
 }
 </style>

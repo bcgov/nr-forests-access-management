@@ -4,7 +4,7 @@ import {
     type AppPermissionFormType,
 } from "@/views/AddAppPermission/utils";
 import type { FamRoleGrantDto } from "fam-admin-mgmt-api/model";
-import type { DropdownChangeEvent } from "primevue/dropdown";
+import type { SelectChangeEvent } from "primevue/select";
 import Dropdown from "../UI/Dropdown.vue";
 import NotificationMessage from "../UI/NotificationMessage.vue";
 import SubsectionTitle from "../UI/SubsectionTitle.vue";
@@ -38,7 +38,7 @@ const props = defineProps<{
     disabled?: boolean;
 }>();
 
-const onDropdownChange = (event: DropdownChangeEvent) => {
+const onDropdownChange = (event: SelectChangeEvent) => {
     props.setFieldValue("role", event.value as FamRoleGrantDto);
     props.setFieldValue('forestClients', []);
 };

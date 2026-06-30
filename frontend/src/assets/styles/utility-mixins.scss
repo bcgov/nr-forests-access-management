@@ -1,4 +1,11 @@
-@use "@/assets/styles/design-tokens" as tokens;
+// ---------------------------
+// Two Column Layout Constants
+// ---------------------------
+$two-col-left-min-width: 320px;
+$two-col-right-min-width: 280px;
+$two-col-gap-min: 1rem;
+$two-col-gap-max: 4.5rem;
+$breakpoint-sm: 640px;
 
 // Utility SCSS Mixins
 
@@ -15,11 +22,11 @@
 //       Example: "container-type: inline-size"
 // ---------------------------
 @mixin two-column-container-responsive(
-  $two-col-left-min-width: tokens.$two-col-left-min-width,
-  $two-col-right-min-width: tokens.$two-col-right-min-width,
-  $container-stack-breakpoint: tokens.$breakpoint-sm,
-  $two-col-gap-min: tokens.$two-col-gap-min,
-  $two-col-gap-max: tokens.$two-col-gap-max
+  $two-col-left-min-width: $two-col-left-min-width,
+  $two-col-right-min-width: $two-col-right-min-width,
+  $container-stack-breakpoint: $breakpoint-sm,
+  $two-col-gap-min: $two-col-gap-min,
+  $two-col-gap-max: $two-col-gap-max
 ) {
   display: flex;
   flex-direction: row;           // Side-by-side by default

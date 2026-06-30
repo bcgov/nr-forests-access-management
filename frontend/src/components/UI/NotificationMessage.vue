@@ -33,6 +33,7 @@ const displayMessage = computed(() => {
     <div class="message-container">
         <Message
             icon="none"
+            :pt="{ icon: { style: { width: '0' } } }"
             :class="props.severity"
             :severity="props.severity"
             :sticky="true"
@@ -88,6 +89,8 @@ const displayMessage = computed(() => {
 
 <style lang="scss" scoped>
 @use "@/assets/styles/styles";
+@use "@/passthrough/message/messagePassThrough.scss";
+
 .message-container {
     position: relative;
     align-items: center;
@@ -97,17 +100,28 @@ const displayMessage = computed(() => {
 }
 
 .custom-message-text {
-    color: var(--text-primary);
+    color: var(--semantic-color-text-primary);
+    font-size: 0.875rem;
 }
 
 .btn-see-all {
     background-color: transparent;
     border: none;
-    color: var(--link-primar);
+    color: var(--semantic-color-link-primary);
     padding: 0;
 }
 
 .btn-see-all:hover {
-    color: var(--link-primary-hover);
+    color: var(--semantic-color-link-primary-hover);
+}
+
+.p-message-error:has(.failed-permission-content) {
+    background-color: var(--component-notification-error-background-darker);
+}
+
+:deep(.p-message-success .fam-message-close-button:hover),
+:deep(.p-message-error .fam-message-close-button:hover),
+:deep(.p-message-warn .fam-message-close-button:hover) {
+    background: transparent;
 }
 </style>

@@ -1,11 +1,15 @@
 // Import dependencies
 @use "sass:map";
 @use "@bcgov-nr/nr-theme/design-tokens/type-family.scss" as typeFamily;
+@use "@bcgov-nr/nr-theme/design-tokens/body-types.scss" as bodyTypes;
 @use "@carbon/type" as type;
 @use "@bcgov-nr/nr-theme/design-tokens/colors.scss" as colors;
 
 // Import all of Bootstrap's CSS
 @use "bootstrap" as *;
+
+// Import FAM design tokens as CSS custom properties
+@import "@/assets/generated/css/fam-custom-tokens.css";
 
 // Root styles
 :root {
@@ -52,23 +56,30 @@ p {
     font-family: inherit;
 }
 
-.p-sidebar-header {
-    display: none;
-}
-
 .p-tooltip-text {
     @include type.type-style("body-compact-01");
+}
+
+
+
+.invalid-feedback {
+    font-size: map.get(bodyTypes.$label-01, "font-size");
+    font-style: map.get(bodyTypes.$label-01, "font-style");
+    font-weight: map.get(bodyTypes.$label-01, "font-weight");
+    line-height: map.get(bodyTypes.$label-01, "line-height");
+    letter-spacing: map.get(bodyTypes.$label-01, "letter-spacing");
+    color: var(--semantic-color-text-error);
 }
 
 // Helper text and validation
 .helper-text {
     font-size: 0.75rem;
-    color: var(--text-secondary);
+    color: var(--semantic-color-text-secondary);
 }
 
 .invalid {
     font-size: 0.875em;
-    color: var(--text-error);
+    color: var(--semantic-color-text-error);
     display: flex;
     align-items: center;
 }
@@ -129,9 +140,9 @@ input[type="number"] {
 
 // Table styles
 .fam-table {
-    background: var(--layer-02, #fff);
+    background: var(--semantic-color-surface-layer-2);
     border-radius: 0.25rem;
-    border: 0.0625rem solid var(--border-subtle-00);
+    border: 0.0625rem solid var(--semantic-color-border-subtle);
 
     p {
         margin: 0;
@@ -139,44 +150,22 @@ input[type="number"] {
 
     .p-datatable-thead {
         .p-column-title {
-            padding: 1rem 0.5rem 1rem 0;
-            color: var(--text-primary);
+            color: var(--semantic-color-text-primary);
         }
         svg {
             margin: 0;
         }
     }
 
-    .p-datatable-thead > tr > th {
-        background: var(--layer-accent-01);
-    }
-
     .p-datatable-tbody {
         @include type.type-style("body-01");
-        color: var(--text-primary);
-
-        > tr > td {
-            padding: 1rem;
-        }
+        color: var(--semantic-color-text-primary);
     }
 }
 
 // Error styles
 .error-icon {
-    fill: var(--support-error);
-}
-
-// Dialog styles
-.confirm-dialog-with-blue-button {
-    .p-confirm-dialog-accept {
-        border: 0.0625rem solid colors.$blue-60;
-        background-color: colors.$blue-60;
-    }
-
-    .dialog-accept-button:hover {
-        border: 0.0625rem solid colors.$blue-65;
-        background-color: colors.$blue-65;
-    }
+    fill: var(--semantic-color-support-error);
 }
 
 // Media queries

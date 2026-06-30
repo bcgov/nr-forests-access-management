@@ -1,0 +1,139 @@
+/**
+ * PrimeVue v4 Message Component Styling
+ * Migrated from primevue-components-overrides.scss
+ *
+ * Uses CSS custom properties from fam-custom-tokens.css for theming.
+ */
+
+/* ================================ Icon sizing ================================ */
+
+/**
+ * Message icon — reduced size for compact display
+ */
+.p-message .fam-message-icon {
+  height: 0.75rem;
+  width: 0.75rem;
+}
+
+/* ================================ Message root ================================ */
+
+/**
+ * Message root — absolute positioning spans full width
+ * Note: Components may override with position: relative or inherit
+ */
+.p-message.fam-message {
+  position: absolute;
+  left: 0;
+  right: 0;
+}
+
+/* ================================ Message text ================================ */
+
+/**
+ * Message text — body-compact-01 typography with flex layout
+ */
+.p-message .fam-message-text {
+  font-size: var(--typography-body-compact-01-font-size);
+  line-height: var(--typography-body-compact-01-line-height);
+  letter-spacing: var(--typography-body-compact-01-letter-spacing);
+  padding-right: 0.3125rem;
+  position: relative;
+  display: flex;
+  left: 0;
+  right: 0;
+}
+
+/**
+ * Strong text in message — capitalize for severity labels
+ */
+.p-message .fam-message-text strong {
+  text-transform: capitalize;
+}
+
+/* ================================ Message SVG icons ================================ */
+
+/**
+ * SVG icons — margins and alignment
+ */
+.p-message svg {
+  margin-right: 0.9375rem;
+  margin-left: 0.2rem;
+  margin-bottom: 0.19rem;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+
+/* ================================ Content wrapper ================================ */
+
+/**
+ * Content wrapper — flex layout with baseline alignment
+ * Note: v4 uses 'contentWrapper' instead of v3's 'wrapper'
+ */
+.p-message .fam-message-content-wrapper {
+  display: flex;
+  align-items: baseline;
+  padding: 0 0.5rem 0 0;
+}
+
+/* ================================ Close button ================================ */
+
+/**
+ * Close button — flex-start alignment and top margin
+ */
+.p-message .fam-message-content-wrapper .fam-message-close-button {
+  align-self: flex-start;
+  margin-top: 0.5rem;
+}
+
+/**
+ * Close button SVG — color and alignment
+ */
+.p-message .fam-message-content-wrapper .fam-message-close-button svg {
+  color: var(--primitive-color-gray-100);
+  margin: 0.55rem 0 0;
+  align-self: baseline;
+}
+
+/* ================================ Severity variants ================================ */
+
+/**
+ * Success variant — green border with emphasis on left
+ */
+.p-message-success.fam-message {
+  outline: none;
+  border: solid 0.0625rem var(--semantic-color-support-success);
+  border-left: solid 0.3125rem var(--semantic-color-support-success);
+}
+
+/**
+ * Success icon — green color; close-button svg overrides this with higher specificity
+ */
+.p-message-success svg {
+  color: var(--semantic-color-support-success);
+}
+
+/**
+ * Error variant — red border with emphasis on left
+ * outline: none overrides PrimeVue v4's outline-based border so our border-left accent shows correctly
+ */
+.p-message-error.fam-message {
+  outline: none;
+  border: solid 0.0625rem var(--semantic-color-support-error);
+  border-left: solid 0.3125rem var(--semantic-color-support-error);
+}
+
+/**
+ * Error icon — red color; close-button svg overrides this with higher specificity
+ */
+.p-message-error svg {
+  color: var(--semantic-color-support-error);
+}
+
+/**
+ * Warning variant — yellow border with emphasis on left
+ */
+.p-message-warn.fam-message {
+  outline: none;
+  border: solid 0.0625rem var(--semantic-color-support-warning);
+  border-left: solid 0.3125rem var(--semantic-color-support-warning);
+}

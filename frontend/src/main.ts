@@ -5,12 +5,22 @@ import App from "@/App.vue";
 import { router } from "@/router";
 
 import PrimeVue from "primevue/config";
+import { FamPrimeVuePreset } from "@/passthrough/primevue-preset";
 import ConfirmationService from "primevue/confirmationservice";
 import DialogService from "primevue/dialogservice";
 import Tooltip from "primevue/tooltip";
 import { VueQueryPlugin, QueryClient } from "@tanstack/vue-query";
 import { isAxiosError } from "axios";
 import { THREE_HOURS } from "@/constants/TimeUnits";
+import {
+    CONFIRM_DIALOG_PASS_THROUGH,
+    DIALOG_PASS_THROUGH,
+    DYNAMIC_DIALOG_PASS_THROUGH,
+} from "@/passthrough/dialog/dialogPassThrough";
+import { INPUT_PASS_THROUGH } from "@/passthrough/input/inputPassThrough";
+import { BUTTON_PASS_THROUGH } from "@/passthrough/button/buttonPassThrough";
+import { RADIO_BUTTON_PASS_THROUGH } from "@/passthrough/radiobutton/radioButtonPassThrough";
+import { MESSAGE_PASS_THROUGH } from "@/passthrough/message/messagePassThrough";
 
 // Configure Amplify
 Amplify.configure(amplifyconfig);
@@ -49,7 +59,24 @@ const queryClient = new QueryClient({
 const app = createApp(App);
 
 app.use(router);
-app.use(PrimeVue);
+app.use(PrimeVue, {
+    theme: {
+        preset: FamPrimeVuePreset,
+        options: {
+            // FAM does not support dark mode.
+            darkModeSelector: false,
+        },
+    },
+    pt: {
+        dialog: DIALOG_PASS_THROUGH,
+        dynamicdialog: DYNAMIC_DIALOG_PASS_THROUGH,
+        confirmdialog: CONFIRM_DIALOG_PASS_THROUGH,
+        inputtext: INPUT_PASS_THROUGH,
+        button: BUTTON_PASS_THROUGH,
+        radiobutton: RADIO_BUTTON_PASS_THROUGH,
+        message: MESSAGE_PASS_THROUGH,
+    },
+});
 app.use(ConfirmationService);
 app.use(DialogService);
 app.use(VueQueryPlugin, { queryClient });

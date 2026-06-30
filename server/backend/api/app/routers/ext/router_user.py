@@ -85,6 +85,7 @@ def user_search(
     status_code=200,
     summary="Search IDIR users",
     description="Search IDIR users identity through IDIM.",
+    deprecated=True,
 )
 @endpoint_timing_dec("external-search_idim_idir_users")
 def search_idim_idir_users(

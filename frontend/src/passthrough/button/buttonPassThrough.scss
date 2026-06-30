@@ -1,0 +1,62 @@
+/**
+ * PrimeVue v4 Button Component Styling
+ * Migrated from primevue-components-overrides.scss
+ *
+ * Layout and structure rules for button components.
+ * Color/background rules are managed by PrimeVue v4 preset (frontend/src/passthrough/primevue-preset.ts)
+ *
+ * Uses CSS custom properties from fam-custom-tokens.css for design consistency.
+ */
+
+/* ================================ Button Root ================================ */
+
+.p-button.fam-button {
+  /* Layout and typography */
+  font-size: var(--typography-body-compact-01-font-size);
+  letter-spacing: var(--typography-body-compact-01-letter-spacing);
+  padding: 0.375rem 1rem;
+
+  border-radius: 0.25rem;
+  text-align: left;
+}
+
+/* ================================ Button Focus States ================================ */
+
+/* Standard button focus (not dialog close button) */
+.p-button.fam-button:focus:not(.p-dialog-close-button) {
+  outline: 0.075rem solid var(--primitive-color-white);
+  outline-offset: -0.2rem;
+  box-shadow: unset;
+}
+
+/* ================================ Button Variants ================================ */
+
+/* Secondary button focus state */
+.p-button.fam-button.p-button-secondary:focus:not(.p-dialog-close-button) {
+  box-shadow: 0 0 0 0.125rem var(--semantic-color-focus-default) inset;
+}
+
+/* Outlined button styling */
+.p-button.fam-button.p-button-outlined {
+  background-color: transparent;
+}
+
+.p-button.fam-button.p-button-outlined:enabled:hover,
+.p-button.fam-button.p-button-outlined:enabled:active {
+  color: var(--semantic-color-text-on-color);
+}
+
+.p-button.fam-button.p-button-outlined:focus:not(.p-dialog-close-button) {
+  outline: 0.075rem solid var(--primitive-color-white);
+  outline-offset: -0.2rem;
+  box-shadow: unset;
+}
+
+/* ================================ Button Disabled State ================================ */
+
+.p-button.fam-button:disabled,
+.p-button.fam-button.p-disabled {
+  background-color: var(--primitive-color-gray-30);
+  border-color: var(--primitive-color-gray-30);
+  opacity: 1;
+}

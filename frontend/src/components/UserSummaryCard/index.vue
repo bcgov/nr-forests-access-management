@@ -78,6 +78,7 @@ const userQuery = useQuery({
 
 <style lang="scss">
 .user-summary-card {
+    border: 0.0625rem solid var(--semantic-color-border-subtle);
     border-radius: 0.5rem;
 
     .p-card-body {
@@ -86,6 +87,7 @@ const userQuery = useQuery({
 
     .p-card-title {
         font-size: 1.25rem;
+        font-weight: normal;
     }
 
     .p-card-content {

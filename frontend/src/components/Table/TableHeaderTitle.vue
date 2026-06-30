@@ -21,12 +21,12 @@ defineProps<{
     padding: 1rem 1rem 1.5rem 1rem;
     h3 {
         @include type.type-style("heading-03");
-        color: var(--text-primary);
+        color: var(--semantic-color-text-primary);
         margin: 0;
     }
     p {
         @include type.type-style("body-compact-01");
-        color: var(--text-secondary);
+        color: var(--semantic-color-text-secondary);
         margin: 0;
     }
 }

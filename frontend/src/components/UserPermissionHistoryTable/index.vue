@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/vue-query";
 import { AppActlApiService } from "@/services/ApiServiceFactory";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
+import { TABLE_DATATABLE_PT } from "@/passthrough/datatable/datatablePassThrough.js";
 
 import { router } from "@/router";
 import TableSkeleton from "@/components/Skeletons/TableSkeleton.vue";
@@ -74,6 +75,7 @@ const headers = ["Date", "Activity", "Details", "Performed by"];
         class="user-permission-table"
         :value="auditHistoryQuery.data.value"
         :striped-rows="true"
+        :pt="TABLE_DATATABLE_PT"
         v-else
     >
         <template #empty> No User Permissions History found.</template>
@@ -110,6 +112,7 @@ const headers = ["Date", "Activity", "Details", "Performed by"];
 </template>
 
 <style lang="scss">
+@use "@/passthrough/datatable/datatablePassThrough.scss";
 .user-permission-table {
     table {
         /* Header Corners */

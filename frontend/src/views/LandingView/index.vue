@@ -71,15 +71,17 @@ const auth = useAuth();
 </template>
 
 <style scoped lang="scss">
-@use "../../assets/styles/landing-page-components-overrides";
-
 .landing-content-left {
     padding-left: 2.5rem;
 }
 
 .landing-img {
     width: 100%;
+    max-inline-size: 100%;
+    object-fit: cover;
+    height: 100%;
 }
+
 .landing-content {
     display: flex;
     flex-direction: column;
@@ -91,6 +93,113 @@ const auth = useAuth();
             align-items: center;
             justify-content: space-between;
         }
+    }
+}
+
+.logo {
+    margin-top: 2.5rem;
+}
+
+.full-width {
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.landing-grid {
+    padding-right: 0;
+    height: 100vh;
+}
+
+.landing-title {
+    margin-top: 4.375rem;
+    font-size: 4.75rem;
+    font-weight: 400;
+    line-height: 5.375rem;
+}
+
+.landing-subtitle {
+    margin-top: 0.5rem;
+    color: colors.$blue-60;
+    font-size: 2rem;
+    font-weight: 400;
+    line-height: 2.5rem;
+}
+
+.landing-desc {
+    margin-top: 2.5rem;
+    color: colors.$gray-70;
+    font-size: 2rem;
+    font-weight: 400;
+    line-height: 2.5rem;
+    margin-bottom: 3.75rem;
+}
+
+.landing-button {
+    width: 18rem;
+    margin-right: 0.625rem;
+}
+
+div.landing-img-column {
+    padding: 0;
+    margin: 0;
+}
+
+/* Small - Up to 320px */
+@media only screen and (min-width: 320px) {
+    .landing-title {
+        font-size: 2.625rem;
+        line-height: 3.125rem;
+    }
+    .landing-subtitle {
+        font-size: 1.5rem;
+        line-height: 1.875rem;
+    }
+    .landing-desc {
+        font-size: 1.5rem;
+        line-height: 1.875rem;
+    }
+    .landing-button {
+        margin-bottom: 0.75rem;
+    }
+}
+
+/* Large - Up to 1056px */
+@media only screen and (min-width: 1056px) {
+    .landing-title {
+        font-size: 3.375rem;
+        line-height: 4rem;
+    }
+    .landing-subtitle {
+        font-size: 1.75rem;
+        line-height: 2.25rem;
+    }
+    .landing-desc {
+        font-size: 1.75rem;
+        line-height: 2.25rem;
+    }
+}
+
+/* X-Large - Up to 1312px */
+@media only screen and (min-width: 1312px) {
+    .landing-title {
+        font-size: 3.75rem;
+        line-height: 4.375rem;
+    }
+}
+
+/* Max - Up to 1584px */
+@media only screen and (min-width: 1584px) {
+    .landing-title {
+        font-size: 4.75rem;
+        line-height: 5.375rem;
+    }
+    .landing-subtitle {
+        font-size: 2rem;
+        line-height: 2.5rem;
+    }
+    .landing-desc {
+        font-size: 2rem;
+        line-height: 2.5rem;
     }
 }
 </style>

@@ -1,8 +1,9 @@
 <script lang="ts" setup>
-import Dropdown, { type DropdownChangeEvent } from "primevue/dropdown";
+import Select, { type SelectChangeEvent } from "primevue/select";
 import InputSkeleton from "@/components/Skeletons/InputSkeleton.vue";
 import ErrorText from "@/components/UI/ErrorText.vue";
 import Label from "./Label.vue";
+import { SELECT_PASS_THROUGH } from "@/passthrough/select/selectPassThrough.ts";
 
 const props = defineProps<{
     class: string;
@@ -11,7 +12,7 @@ const props = defineProps<{
     id?: string;
     optionLabel?: string;
     labelText?: string;
-    onChange?: ((event: DropdownChangeEvent) => void) | undefined;
+    onChange?: ((event: SelectChangeEvent) => void) | undefined;
     options?: any[];
     placeholder?: string;
     isFetching?: boolean;
@@ -36,7 +37,7 @@ const props = defineProps<{
         />
         <InputSkeleton v-if="props.isFetching" />
 
-        <Dropdown
+        <Select
             v-if="!props.isFetching && !props.isError"
             :id="props.id ?? `${props.name}-id`"
             :name="props.name"
@@ -44,16 +45,17 @@ const props = defineProps<{
             :options="props.options"
             :optionLabel="props.optionLabel"
             :placeholder="props.placeholder"
-            class="fam-dropdown"
             :model-value="props.value"
             :disabled="props.disabled"
             :value="props.value"
+            :pt="SELECT_PASS_THROUGH"
         />
         <ErrorText v-if="props.isError" :error-msg="errorMsg" show-icon />
     </div>
 </template>
 
 <style lang="scss">
+@use "@/passthrough/select/selectPassThrough.scss";
 .fam-dropdown-container {
     display: flex;
     flex-direction: column;

@@ -10,7 +10,7 @@ import type { SelectedUser } from "@/types/SelectUserType";
 import type { UserSearchType } from "@/types/UserSearchTypes";
 import SearchIcon from "@carbon/icons-vue/es/search/16";
 import { UserType } from "fam-app-acsctl-api/model";
-import type { DropdownChangeEvent } from "primevue/dropdown";
+import type { SelectChangeEvent } from "primevue/select";
 import InputText from "primevue/inputtext";
 import { useDialog } from "primevue/usedialog";
 import { computed, getCurrentInstance, ref, watch } from "vue";
@@ -201,7 +201,7 @@ const hasPreDomainChangeListener = computed(() => {
 // Note! If parent component does not listen to "pre-user-domain-change", domain change will be applied immediately
 // when user selects different domain option. Otherwise, it will wait for parent component's approval
 // before applying the change.
-const handleDomainSelection = (event: DropdownChangeEvent) => {
+const handleDomainSelection = (event: SelectChangeEvent) => {
     const nextDomainOption = event.value as SelectOption<UserType>;
     if (!nextDomainOption || nextDomainOption.value === selectedDomainOption.value.value) {
         return;
@@ -217,11 +217,21 @@ const handleDomainSelection = (event: DropdownChangeEvent) => {
         nextDomain: nextDomainOption.value,
         selectedUsersCount: latestConfirmedSelections.value.length,
         approveChange: () => applyDomainChange(nextDomainOption),
-        cancelChange: () => undefined,
+        cancelChange: () => {
+            // PrimeVue v4 Select immediately updates its internal d_value on user
+            // selection regardless of whether the parent model changes. Since
+            // selectedDomainOption hasn't changed, Vue won't propagate a prop diff
+            // and Select's modelValue watcher won't fire to revert the display.
+            // Spreading to a new reference forces Vue to detect a change and
+            // triggers Select's watcher, resetting d_value back to the old domain.
+            // This seems to be PrimeVue bug. See https://github.com/primefaces/primevue/issues/7871
+            // and https://github.com/primefaces/primevue/issues/6961
+            selectedDomainOption.value = { ...selectedDomainOption.value };
+        },
     });
 };
 
-const handleSearchTypeChange = (event: DropdownChangeEvent) => {
+const handleSearchTypeChange = (event: SelectChangeEvent) => {
     const nextTypeOption = event.value as SelectOption<UserSearchType>;
     if (!nextTypeOption) {
         return;
@@ -436,8 +446,8 @@ const handleSearch = () => {
                     @paste="handlePaste"
                     placeholder="Please input search text"
                     :maxlength="MAX_SEARCH_TEXT_LENGTH"
-                    class="w-100 custom-height"
-                    :class="{ 'is-invalid': !!searchTextError }"
+                    class="w-100"
+                    :invalid="!!searchTextError"
                     :disabled="disabled || isPending"
                 />
                 <HelperText
@@ -511,10 +521,6 @@ const handleSearch = () => {
     justify-content: flex-end;
 }
 
-:deep(.fam-dropdown) {
-    height: 2.5rem;
-}
-
 
 .field-search-input {
     flex: 1 1 16rem;
@@ -533,6 +539,9 @@ const handleSearch = () => {
     display: flex;
     align-items: flex-end;
     margin-top: 1.5rem;
+    .fam-button {
+        width: 7.875rem;
+    }
 }
 
 .search-error-row {

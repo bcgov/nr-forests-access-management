@@ -25,10 +25,10 @@ const props = defineProps<{
 }
 
 .fam-helper-text {
-    color: var(--text-secondary);
+    color: var(--semantic-color-text-secondary);
 }
 
 .fam-error-helper-text {
-    color: var(--text-error);
+    color: var(--semantic-color-text-error);
 }
 </style>

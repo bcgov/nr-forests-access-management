@@ -75,7 +75,6 @@ const handleKeyDown = (event: KeyboardEvent) => {
     white-space: nowrap;
     min-width: fit-content;
     height: 2.5rem;
-    width: 7.875rem;
     display: flex;
     flex-direction: row;
     justify-content: space-between;

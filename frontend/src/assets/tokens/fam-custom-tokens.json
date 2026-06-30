@@ -1,0 +1,196 @@
+{
+  "primitive": {
+    "color": {
+      "white": { "value": "#FFFFFF" },
+
+      "blue": {
+        "10": { "value": "#C2E0FF" },
+        "20": { "value": "#85C2FF" },
+        "30": { "value": "#5CADFF" },
+        "40": { "value": "#3399FF" },
+        "50": { "value": "#0A85FF" },
+        "60": { "value": "#0073E6" },
+        "65": { "value": "#0066CC" },
+        "70": { "value": "#005CB8" },
+        "75": { "value": "#0052A3" },
+        "80": { "value": "#00478F" },
+        "90": { "value": "#003366" },
+        "95": { "value": "#002952" }
+      },
+
+      "gray": {
+        "10": { "value": "#F3F3F5" },
+        "15": { "value": "#ECECEE" },
+        "20": { "value": "#DFDFE1" },
+        "25": { "value": "#D2D2D4" },
+        "30": { "value": "#C6C6C8" },
+        "50": { "value": "#939395" },
+        "50-opacity": {
+          "12": { "value": "rgba(147,147,149,0.12)" },
+          "50": { "value": "rgba(147,147,149,0.5)" }
+        },
+        "60": { "value": "#79797B" },
+        "70": { "value": "#606062" },
+        "75": { "value": "#535355" },
+        "80": { "value": "#464648" },
+        "100": { "value": "#131315" }
+      },
+
+      "red": {
+        "10": { "value": "#FFEAE5" },
+        "15": { "value": "#FFCDD2" },
+        "20": { "value": "#FFC0B3" },
+        "40": { "value": "#FF6D4E" },
+        "60": { "value": "#E72000" },
+        "70": { "value": "#B32001" },
+        "80": { "value": "#801701" }
+      },
+
+      "green": {
+        "10": { "value": "#CCE5CC" },
+        "60": { "value": "#007B00" }
+      },
+
+      "yellow": {
+        "10": { "value": "#FFF3CC" },
+        "60": { "value": "#FFC300" }
+      }
+    }
+  },
+
+  "semantic": {
+    "color": {
+      "primary": {
+        "50":  { "value": "{primitive.color.blue.10}" },
+        "100": { "value": "{primitive.color.blue.20}" },
+        "200": { "value": "{primitive.color.blue.30}" },
+        "300": { "value": "{primitive.color.blue.40}" },
+        "400": { "value": "{primitive.color.blue.50}" },
+        "500": { "value": "{primitive.color.blue.60}" },
+        "600": { "value": "{primitive.color.blue.65}" },
+        "700": { "value": "{primitive.color.blue.70}" },
+        "800": { "value": "{primitive.color.blue.80}" },
+        "900": { "value": "{primitive.color.blue.90}" },
+        "950": { "value": "{primitive.color.blue.95}" }
+      },
+
+      "background": {
+        "default": { "value": "{primitive.color.white}" },
+        "hover": { "value": "{primitive.color.gray.50-opacity.12}" },
+        "active": { "value": "{primitive.color.gray.50-opacity.50}" },
+        "brand": { "value": "{primitive.color.blue.60}" }
+      },
+
+      "surface": {
+        "layer-1": { "value": "{primitive.color.gray.10}" },
+        "layer-2": { "value": "{primitive.color.white}" },
+        "layer-hover": { "value": "{primitive.color.gray.15}" },
+        "layer-selected": { "value": "{primitive.color.gray.20}" },
+        "layer-selected-hover": { "value": "{primitive.color.gray.25}" },
+        "layer-accent": { "value": "{primitive.color.gray.20}" }
+      },
+
+      "text": {
+        "primary": { "value": "{primitive.color.gray.100}" },
+        "secondary": { "value": "{primitive.color.gray.70}" },
+        "onColor": { "value": "{primitive.color.white}" },
+        "error": { "value": "{primitive.color.red.70}" },
+        "disabled": { "value": "{primitive.color.gray.50}" }
+      },
+
+      "link": {
+        "primary": { "value": "{primitive.color.blue.70}" },
+        "primaryHover": { "value": "{primitive.color.blue.80}" }
+      },
+
+      "border": {
+        "subtle": { "value": "{primitive.color.gray.20}" },
+        "strong": { "value": "{primitive.color.gray.60}" },
+        "interactive": { "value": "{primitive.color.blue.60}" }
+      },
+
+      "icon": {
+        "primary": { "value": "{primitive.color.gray.100}" },
+        "secondary": { "value": "{primitive.color.gray.70}" }
+      },
+
+      "support": {
+        "error": { "value": "{primitive.color.red.60}" },
+        "success": { "value": "{primitive.color.green.60}" },
+        "warning": { "value": "{primitive.color.yellow.60}" },
+        "info": { "value": "{primitive.color.blue.80}" }
+      },
+
+      "focus": {
+        "default": { "value": "{primitive.color.blue.60}" }
+      }
+    }
+  },
+
+  "component": {
+    "button": {
+      "primary": {
+        "background": { "value": "{primitive.color.blue.60}" },
+        "hover": { "value": "{primitive.color.blue.65}" },
+        "active": { "value": "{primitive.color.blue.80}" }
+      },
+      "secondary": {
+        "background": { "value": "{primitive.color.gray.80}" },
+        "hover": { "value": "{primitive.color.gray.75}" },
+        "active": { "value": "{primitive.color.gray.70}" }
+      },
+      "tertiary": {
+        "background": { "value": "{primitive.color.blue.70}" },
+        "hover": { "value": "{primitive.color.blue.75}" },
+        "active": { "value": "{primitive.color.blue.80}" }
+      },
+      "danger": {
+        "background": { "value": "{primitive.color.red.60}" },
+        "hover": { "value": "{primitive.color.red.70}" },
+        "active": { "value": "{primitive.color.red.80}" }
+      }
+    },
+
+    "notification": {
+      "error": {
+        "background": { "value": "{primitive.color.red.10}" },
+        "background-darker": { "value": "{primitive.color.red.15}" }
+      },
+      "success": {
+        "background": { "value": "{primitive.color.green.10}" }
+      },
+      "warning": {
+        "background": { "value": "{primitive.color.yellow.10}" }
+      }
+    },
+
+    "tag": {
+      "success": {
+        "background": { "value": "{primitive.color.green.10}" }
+      },
+      "danger": {
+        "background": { "value": "{primitive.color.red.20}" }
+      }
+    },
+
+    "datatable": {
+      "headerBackground": { "value": "{primitive.color.gray.25}" }
+    }
+  },
+
+  "typography": {
+    "body-compact-01": {
+      "fontSize": { "value": "14px" },
+      "lineHeight": { "value": "1.28572" },
+      "letterSpacing": { "value": "0.16px" }
+    },
+    "label-01": {
+      "fontSize": { "value": "12px" },
+      "lineHeight": { "value": "16px" }
+    },
+    "heading-03": {
+      "fontSize": { "value": "20px" },
+      "lineHeight": { "value": "28px" }
+    }
+  }
+}
