@@ -260,6 +260,17 @@ export const toDelegatedAdminGrantReqErrorNotifications = (
     );
     const roleName = role?.display_name;
 
+    // Concrete roles are not organization-scoped
+    if (!forestClients.length) {
+        return {
+            severity: Severity.Error,
+            message: `
+            Failed to add ${userFullName} with the role ${roleName}
+            `,
+            hasFullMsg: false,
+        };
+    }
+
     return {
         severity: Severity.Error,
         message: `
