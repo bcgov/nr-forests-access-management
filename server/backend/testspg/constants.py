@@ -103,6 +103,7 @@ MOCK_FIND_CLIENT_00001011_RETURN = [{
 # --------------------- Testing Admin role level at token -------------- #
 FOM_DEV_ADMIN_ROLE = "FOM_DEV_ADMIN"
 FOM_TEST_ADMIN_ROLE = "FOM_TEST_ADMIN"
+FOM_PROD_ADMIN_ROLE = "FOM_PROD_ADMIN"
 
 
 # ------------------- Test grant/remove access -------------------------- #
