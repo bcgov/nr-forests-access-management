@@ -113,7 +113,7 @@ const rolesUnderSelectedApp = computed(() => {
 
 // App admins (not delegated admins) may self-select on a non-FAM
 // application's DEV/TEST instance - mirrors the backend guard's allowlist
-// framing (§6.1 of the plan): check env === Dev || env === Test explicitly,
+// framing: check env === Dev || env === Test explicitly,
 // do not invert to env !== Prod, so a missing/unset env fails closed.
 const allowSelfSelection = computed(() => {
     const application = rolesUnderSelectedApp.value?.application;
