@@ -4,6 +4,7 @@ import Button from "@/components/UI/Button.vue";
 import Dropdown from "@/components/UI/Dropdown.vue";
 import PageTitle from "@/components/UI/PageTitle.vue";
 import StepContainer from "@/components/UI/StepContainer.vue";
+import { SELF_GRANT_PROHIBITED_ERROR_CODE } from "@/constants/ApiErrorCodes";
 import { ManagePermissionsRoute } from "@/router/routes";
 import { AdminMgmtApiService } from "@/services/ApiServiceFactory";
 import type { BreadCrumbType } from "@/types/BreadCrumbTypes";
@@ -113,6 +114,12 @@ const famPermissionMutation = useMutation({
 
         if (isAxiosError(error) && error.response?.status === 409) {
             errMsg = `${userFullName} is already a ${appName} admin`;
+        } else if (
+            isAxiosError(error) &&
+            (error.response?.data as any)?.detail?.code ===
+                SELF_GRANT_PROHIBITED_ERROR_CODE
+        ) {
+            errMsg = `Failed to add ${userFullName} as a ${appName} admin. Error: ${formatAxiosError(error)}`;
         } else {
             errMsg = `Failed to add ${userFullName} as a ${appName} admin`;
         }

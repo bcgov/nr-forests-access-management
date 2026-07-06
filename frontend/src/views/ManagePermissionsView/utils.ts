@@ -1,12 +1,14 @@
 import FailedGrantAppUsersNtfnTemplate from "@/components/NotificationContent/FailedGrantAppUsersNtfnTemplate.vue";
 import SccssGrantAppUsersNtfnTemplate from "@/components/NotificationContent/SccssGrantAppUsersNtfnTemplate.vue";
+import { SELF_GRANT_PROHIBITED_ERROR_CODE } from "@/constants/ApiErrorCodes";
 import type { PermissionNotificationType } from "@/types/NotificationTypes";
 import { Severity } from "@/types/NotificationTypes";
-import { mapAppUserGrantResponseByUserId } from "@/utils/ApiUtils";
+import { formatAxiosError, mapAppUserGrantResponseByUserId } from "@/utils/ApiUtils";
 import { formatForestClientDisplayName } from "@/utils/ForestClientUtils";
 import { formatUserNameAndId } from "@/utils/UserUtils";
 import { AddAppUserPermissionErrorQuerykey, AddAppUserPermissionSuccessQuerykey, AddDelegatedAdminErrorQuerykey, AddDelegatedAdminSuccessQuerykey, type AppPermissionQueryErrorType } from "@/views/AddAppPermission/utils";
 import type { QueryClient } from "@tanstack/vue-query";
+import { isAxiosError } from "axios";
 import type {
     FamAccessControlPrivilegeCreateResponse,
     FamAccessControlPrivilegeResponse,
@@ -259,6 +261,18 @@ export const toDelegatedAdminGrantReqErrorNotifications = (
         users[0].lastName
     );
     const roleName = role?.display_name;
+
+    const err = errData.error;
+    if (
+        isAxiosError(err) &&
+        (err.response?.data as any)?.detail?.code === SELF_GRANT_PROHIBITED_ERROR_CODE
+    ) {
+        return {
+            severity: Severity.Error,
+            message: `Failed to add ${userFullName} with delegated admin role ${roleName}. Error: ${formatAxiosError(err)}`,
+            hasFullMsg: false,
+        };
+    }
 
     // Concrete roles are not organization-scoped
     if (!forestClients.length) {
