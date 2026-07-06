@@ -9,6 +9,9 @@ variable "service_account_scopes" {
     "User.read" = {
       description = "Allows read access for User data."
     }
+    "nr-lexis.uploadFederalSubmission" = {
+      description = "Allows NEXCOL to validate and submit federal LEXIS XML."
+    }
   }
 }
 
