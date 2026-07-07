@@ -43,8 +43,8 @@ locals {
       # Temporarily no scope for now.
       scopes           = ["User.read"]
     }
-    nr-lexis-nexcol = {
-      scopes           = ["nr-lexis.uploadFederalSubmission"]
+    "lexis.nexcol" = {
+      scopes           = ["lexis.federalSubmission.submit"]
     }
 
     # Add more service app below.
