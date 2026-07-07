@@ -269,7 +269,7 @@ export const toDelegatedAdminGrantReqErrorNotifications = (
     ) {
         return {
             severity: Severity.Error,
-            message: `Failed to add ${userFullName} with delegated admin role ${roleName}. Error: ${formatAxiosError(err)}`,
+            message: `You can't assign a delegated admin role to yourself. Delegated admin roles can only be assigned to other users.`,
             hasFullMsg: false,
         };
     }
