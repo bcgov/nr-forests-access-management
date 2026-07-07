@@ -68,7 +68,7 @@ After api client code is generated:
 
    With:
    "peerDependencies": {
-     "axios": "^1.15.1"  # or some good version without security issue.
+     "axios": "^1.16.0"  # or some good version without security issue.
    }
 
 >> then run frontend install flow:
