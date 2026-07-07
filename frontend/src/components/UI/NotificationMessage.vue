@@ -98,6 +98,10 @@ const displayMessage = computed(() => {
 
 .custom-message-text {
     color: var(--text-primary);
+
+    strong {
+        margin-right: 0.2rem;
+    }
 }
 
 .btn-see-all {
