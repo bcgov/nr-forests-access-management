@@ -59,10 +59,42 @@ class AuditEventLog:
         self.role_assignment_expiry_date = role_assignment_expiry_date
         self.user_assignment_results = user_assignment_results
 
+    def is_self_action(self) -> bool:
+        """
+        Whether this audit event's target user is the same person as the
+        requesting user (i.e. a self-grant/self-revoke).
+        """
+        if not self.requesting_user:
+            return False
+        requester_guid = self.requesting_user.user_guid
+        requester_type = self.requesting_user.user_type_code
+
+        # DELETE /user-role-assignment/{id} sets target_user directly (a FamUser
+        # ORM row, which exposes user_guid).
+        if self.target_user is not None:
+            return (
+                self.target_user.user_guid == requester_guid
+                and self.target_user.user_type_code == requester_type
+            )
+
+        # POST /user-role-assignment (batch) has no single target_user; check
+        # whether the requester appears among the successfully granted users.
+        # Note: result.detail.user is a FamUserInfoSchema, which does not expose
+        # user_guid (excluded from that schema), so match on user_name +
+        # user_type_code instead for a unique identity pair.
+        requester_name = self.requesting_user.user_name
+        return any(
+            result.detail is not None
+            and result.detail.user.user_name == requester_name
+            and result.detail.user.user_type_relation.user_type_code == requester_type
+            for result in self.user_assignment_results
+        )
+
     def log_event(self):
         log_item = {
             "auditEventTypeCode": self.event_type.name if self.event_type else None,
             "auditEventResultCode": self.event_outcome.name if self.event_outcome else None,
+            "isSelfAction": self.is_self_action(),
             "applicationId": self.application.application_id if self.application else None,
             "applicationName": self.application.application_name if self.application else None,
             "applicationEnv": self.application.app_environment if self.application else None,
