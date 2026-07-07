@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.19.1](https://github.com/bcgov/nr-forests-access-management/compare/v2.19.0...v2.19.1) (2026-07-07)
+
+
+### Bug Fixes
+
+* frontend page header distortion on relase 2.19.0 ([#2243](https://github.com/bcgov/nr-forests-access-management/issues/2243)) ([652deab](https://github.com/bcgov/nr-forests-access-management/commit/652deab923f44db9e3f8d83971b9ea57e6996696))
+
 ## [2.19.0](https://github.com/bcgov/nr-forests-access-management/compare/v2.18.0...v2.19.0) (2026-07-07)
 
 
