@@ -53,6 +53,12 @@ class AppEnv(str, Enum):
     APP_ENV_TYPE_PROD = "PROD"
 
 
+# Application environments for which an app admin is allowed to self-grant/
+# self-revoke their own role access. Deliberately an allowlist (not a
+# "!= PROD" check) so an app with a missing/unset app_environment fails closed.
+SELF_GRANT_ALLOWED_ENVS = {AppEnv.APP_ENV_TYPE_DEV, AppEnv.APP_ENV_TYPE_TEST}
+
+
 class ApiInstanceEnv(str, Enum):
     # Environment constant for connecting to external API (Forest Client API and IDIM Proxy API).
     # The integration with external API only has TEST or PROD on API instance.

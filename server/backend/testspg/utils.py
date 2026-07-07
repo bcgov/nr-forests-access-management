@@ -4,7 +4,7 @@ from typing import List
 
 from api.app.constants import RoleType, SortOrderEnum
 from api.app.models import model as models
-from api.app.models.model import FamRole, FamUser, FamUserRoleXref
+from api.app.models.model import FamApplication, FamRole, FamUser, FamUserRoleXref
 from sqlalchemy import not_, select
 from sqlalchemy.orm import Session
 from testspg.constants import TEST_CREATOR
@@ -113,3 +113,36 @@ def create_role(db_pg_session, application_id, role_name, display_name, parent_r
         role.forest_client_relation = MagicMock()
         role.forest_client_relation.forest_client_number = forest_client_number
     return role
+
+def create_role_for_existing_application(
+    db_pg_session,
+    application_name,
+    role_name,
+    display_name=None,
+    parent_role=None,
+    forest_client_number=None,
+):
+    """
+    Create a throwaway FamRole under an existing (flyway-seeded) application,
+    looked up by name.
+
+    Note: this backend's test DB user only has SELECT privilege on
+    fam_application, so unlike roles, a new application can't be created
+    on the fly here; only a lookup by name is possible. Roles do have INSERT
+    granted, so this still avoids hardcoding a role_id number for the "some
+    role under an existing app" case.
+    """
+    application = (
+        db_pg_session.query(FamApplication)
+        .filter_by(application_name=application_name)
+        .one()
+    )
+    role = create_role(
+        db_pg_session,
+        application.application_id,
+        role_name,
+        display_name or role_name,
+        parent_role=parent_role,
+        forest_client_number=forest_client_number,
+    )
+    return application, role
