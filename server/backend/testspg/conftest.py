@@ -33,7 +33,8 @@ from api.app.schemas.fam_user import FamUserSchema
 from api.app.schemas.pagination import UserRolePageParamsSchema
 from api.app.schemas.target_user_validation_result import TargetUserValidationResultSchema
 from testspg.constants import (ACCESS_GRANT_FOM_DEV_CR_IDIR,
-                               FOM_DEV_ADMIN_ROLE, FOM_TEST_ADMIN_ROLE,
+                               FOM_DEV_ADMIN_ROLE, FOM_PROD_ADMIN_ROLE,
+                               FOM_TEST_ADMIN_ROLE,
                                TEST_BCEID_REQUESTER_DICT, TEST_CREATOR)
 
 LOGGER = logging.getLogger(__name__)
@@ -159,6 +160,12 @@ def fom_dev_access_admin_token(test_rsa_key):
 @pytest.fixture(scope="function")
 def fom_test_access_admin_token(test_rsa_key):
     access_roles = [FOM_TEST_ADMIN_ROLE]
+    return jwt_utils.create_jwt_token(test_rsa_key, access_roles)
+
+
+@pytest.fixture(scope="function")
+def fom_prod_access_admin_token(test_rsa_key):
+    access_roles = [FOM_PROD_ADMIN_ROLE]
     return jwt_utils.create_jwt_token(test_rsa_key, access_roles)
 
 

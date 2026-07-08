@@ -5,7 +5,8 @@ import Button from "@/components/UI/Button.vue";
 import Dropdown from "@/components/UI/Dropdown.vue";
 import HelperText from "@/components/UI/HelperText.vue";
 import useAuth from "@/composables/useAuth";
-import { PERMISSION_REQUIRED_FOR_OPERATION, useUserSearchApiService } from "@/composables/useUserSearchApiService";
+import { useUserSearchApiService } from "@/composables/useUserSearchApiService";
+import { PERMISSION_REQUIRED_FOR_OPERATION } from "@/constants/ApiErrorCodes";
 import type { SelectedUser } from "@/types/SelectUserType";
 import type { UserSearchType } from "@/types/UserSearchTypes";
 import SearchIcon from "@carbon/icons-vue/es/search/16";
@@ -46,6 +47,7 @@ interface Props {
     disabled?: boolean;
     searchButtonLabel?: string;
     helperText?: string; // helper text to show below search input, can be used to provide guidance.
+    allowSelfSelection?: boolean; // allow the logged on user to select/grant themselves (e.g. app admin self-granting on dev/test apps).
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -53,6 +55,7 @@ const props = withDefaults(defineProps<Props>(), {
     disabled: false,
     searchButtonLabel: "Search",
     helperText: "",
+    allowSelfSelection: false,
 });
 
 // Emits for parent component to react for changes in search.
@@ -291,8 +294,8 @@ const handlePaste = (event: ClipboardEvent) => {
 const syncSelectedUsers = (selectedDataRows: SelectedUser[]) => {
     const currentUsername = (auth.authState.famLoginUser?.username || "").toLowerCase();
 
-    // self is filtered out if among selected users.
-    const usersExcludingCurrentUser = currentUsername
+    // self is filtered out if among selected users, unless self-selection is allowed.
+    const usersExcludingCurrentUser = currentUsername && !props.allowSelfSelection
         ? selectedDataRows.filter(
               (user) => user.userId.toLowerCase() !== currentUsername
           )
@@ -390,8 +393,10 @@ const handleSearch = () => {
         return;
     }
 
-    // Prevent searching for self when search type is 'username' - cannot grant permission to self.
+    // Prevent searching for self when search type is 'username' - cannot grant permission to self,
+    // unless self-selection is allowed (e.g. app admin self-granting on dev/test apps).
     if (
+        !props.allowSelfSelection &&
         isUsernameSearch.value &&
         searchText.value.trim().toLowerCase() === (auth.authState.famLoginUser?.username || '').toLowerCase()
     ) {

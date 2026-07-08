@@ -1,5 +1,47 @@
 # Changelog
 
+## [2.19.3](https://github.com/bcgov/nr-forests-access-management/compare/v2.19.2...v2.19.3) (2026-07-08)
+
+
+### Bug Fixes
+
+* [#2237](https://github.com/bcgov/nr-forests-access-management/issues/2237) Dependabot issues backend ([#2249](https://github.com/bcgov/nr-forests-access-management/issues/2249)) ([74bd2fd](https://github.com/bcgov/nr-forests-access-management/commit/74bd2fd032bcdb68a1d80b5e72290425a6b28140))
+
+## [2.19.2](https://github.com/bcgov/nr-forests-access-management/compare/v2.19.1...v2.19.2) (2026-07-08)
+
+
+### Bug Fixes
+
+* [#2237](https://github.com/bcgov/nr-forests-access-management/issues/2237) Dependabot issues  frontend ([#2247](https://github.com/bcgov/nr-forests-access-management/issues/2247)) ([46bd6b1](https://github.com/bcgov/nr-forests-access-management/commit/46bd6b1287012f3e0b9499488747546453efde0f))
+* [#2237](https://github.com/bcgov/nr-forests-access-management/issues/2237) Dependabot issues frontend ([#2248](https://github.com/bcgov/nr-forests-access-management/issues/2248)) ([2fa74c1](https://github.com/bcgov/nr-forests-access-management/commit/2fa74c1cdb284e256390278d7536cb686b679b16))
+* [#2237](https://github.com/bcgov/nr-forests-access-management/issues/2237) Resolve some dependabot issues backend ([#2245](https://github.com/bcgov/nr-forests-access-management/issues/2245)) ([517035f](https://github.com/bcgov/nr-forests-access-management/commit/517035f1de593765d613dfe70ad1bedaed4f44ef))
+
+## [2.19.1](https://github.com/bcgov/nr-forests-access-management/compare/v2.19.0...v2.19.1) (2026-07-07)
+
+
+### Bug Fixes
+
+* frontend page header distortion on relase 2.19.0 ([#2243](https://github.com/bcgov/nr-forests-access-management/issues/2243)) ([652deab](https://github.com/bcgov/nr-forests-access-management/commit/652deab923f44db9e3f8d83971b9ea57e6996696))
+
+## [2.19.0](https://github.com/bcgov/nr-forests-access-management/compare/v2.18.0...v2.19.0) (2026-07-07)
+
+
+### Features
+
+* [#2218](https://github.com/bcgov/nr-forests-access-management/issues/2218) Cognito service account setup ([#2225](https://github.com/bcgov/nr-forests-access-management/issues/2225)) ([4aa33ac](https://github.com/bcgov/nr-forests-access-management/commit/4aa33ac427cee3fac2251515b29354d6e03c3334))
+* [#2219](https://github.com/bcgov/nr-forests-access-management/issues/2219) Allow self granting user roles ([#2236](https://github.com/bcgov/nr-forests-access-management/issues/2236)) ([c2e388a](https://github.com/bcgov/nr-forests-access-management/commit/c2e388ac4700bde4f6bd46dba6d2eae744ccda70))
+
+
+### Bug Fixes
+
+* [#2228](https://github.com/bcgov/nr-forests-access-management/issues/2228) Post LZA Terraform and Workflow Cleanup ([#2229](https://github.com/bcgov/nr-forests-access-management/issues/2229)) ([f91cf0a](https://github.com/bcgov/nr-forests-access-management/commit/f91cf0a51423e6fa20b1676fe677d5fa1dd3701d))
+* [#2237](https://github.com/bcgov/nr-forests-access-management/issues/2237) Dependabot issues  frontend ([#2241](https://github.com/bcgov/nr-forests-access-management/issues/2241)) ([4a4f51f](https://github.com/bcgov/nr-forests-access-management/commit/4a4f51f4c6a2c37b66c4a1d1b076f27453333d93))
+* [#2237](https://github.com/bcgov/nr-forests-access-management/issues/2237) Update axios version to resolve Dependabots issues. ([#2238](https://github.com/bcgov/nr-forests-access-management/issues/2238)) ([780ad1a](https://github.com/bcgov/nr-forests-access-management/commit/780ad1afdb816c2c578ac6695198bbcbdee3fa7c))
+* [#2237](https://github.com/bcgov/nr-forests-access-management/issues/2237) Upgrade axios version to resolve dependabot form-data ([#2239](https://github.com/bcgov/nr-forests-access-management/issues/2239)) ([d0ac76d](https://github.com/bcgov/nr-forests-access-management/commit/d0ac76d3480ad2e0d8679ee41072521afa5a931c))
+* Update dependency to resolve security/dependabot/407 ([#2233](https://github.com/bcgov/nr-forests-access-management/issues/2233)) ([92d0318](https://github.com/bcgov/nr-forests-access-management/commit/92d03184cf00f2d1c556ec5c659f8ba817d639ca))
+* Upgrade @vitest/coverage-v8 to resolve security/dependabot/406 ([#2234](https://github.com/bcgov/nr-forests-access-management/issues/2234)) ([40e541b](https://github.com/bcgov/nr-forests-access-management/commit/40e541b8ac4719324d4d5885916c98be78e81961))
+* Upgrade npm-run-all2 to resolve security/dependabot/408 ([#2232](https://github.com/bcgov/nr-forests-access-management/issues/2232)) ([9d5680d](https://github.com/bcgov/nr-forests-access-management/commit/9d5680db86b26953c55294278c9cef8e4e4c888e))
+
 ## [2.18.0](https://github.com/bcgov/nr-forests-access-management/compare/v2.17.3...v2.18.0) (2026-06-17)
 
 

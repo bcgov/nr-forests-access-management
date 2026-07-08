@@ -5,7 +5,8 @@ from http import HTTPStatus
 from typing import List
 
 from api.app import database
-from api.app.constants import (CURRENT_TERMS_AND_CONDITIONS_VERSION,
+from api.app.constants import (APPLICATION_FAM,
+                               CURRENT_TERMS_AND_CONDITIONS_VERSION,
                                ERROR_CODE_DIFFERENT_ORG_GRANT_PROHIBITED,
                                ERROR_CODE_EXTERNAL_USER_ACTION_PROHIBITED,
                                ERROR_CODE_INVALID_OPERATION,
@@ -15,7 +16,8 @@ from api.app.constants import (CURRENT_TERMS_AND_CONDITIONS_VERSION,
                                ERROR_CODE_REQUESTER_NOT_EXISTS,
                                ERROR_CODE_SELF_GRANT_PROHIBITED,
                                ERROR_CODE_TERMS_CONDITIONS_REQUIRED,
-                               ERROR_CODE_UNKNOWN_STATE, RoleType, UserType)
+                               ERROR_CODE_UNKNOWN_STATE,
+                               SELF_GRANT_ALLOWED_ENVS, RoleType, UserType)
 from api.app.crud import (crud_access_control_privilege, crud_application,
                           crud_role, crud_user, crud_user_role, crud_utils)
 from api.app.jwt_validation import (ERROR_GROUPS_REQUIRED,
@@ -400,14 +402,43 @@ def external_delegated_admin_only_action(
         )
 
 
+def _is_self_grant_exempt(
+    role: FamRole, access_roles: List[str], db: Session
+) -> bool:
+    """
+    App admins (not delegated admins) may self-grant/self-revoke roles that belong
+    to one of FAM's downstream applications, and only when that application's
+    instance is DEV or TEST. Never exempt FAM itself, and never exempt PROD
+    (fail closed on unknown/NULL environment, e.g. the FAM app row).
+
+    :param role: the target FamRole being granted/revoked; its `application`
+        relationship is used to determine app name and app_environment.
+    :param access_roles: requester's Cognito JWT group memberships, used to
+        check `[APP]_ADMIN` membership via `crud_utils.is_app_admin`.
+    """
+    application = role.application
+    if application.application_name == APPLICATION_FAM:
+        return False
+    if application.app_environment not in SELF_GRANT_ALLOWED_ENVS:
+        return False
+    return crud_utils.is_app_admin(
+        application_id=application.application_id, db=db, access_roles=access_roles
+    )
+
+
 def enforce_self_grant_guard(
     _enforce_fam_access_validated = Depends(enforce_fam_client_token),
     requester: RequesterSchema = Depends(get_current_requester),
     target_users: list[TargetUserSchema] = Depends(get_target_users_from_ids),
+    role: FamRole = Depends(get_request_role_from_id),
+    access_roles: List[str] = Depends(get_access_roles),
+    db: Session = Depends(database.get_db),
 ):
     """
     Verify logged on admin (RequesterSchema):
-        Self granting/removing privilege currently isn't allowed.
+        Self granting/removing privilege currently isn't allowed, unless the
+        requester is an app admin acting on their own access for one of FAM's
+        downstream applications' DEV or TEST instance.
         Supports multi-user: checks all target users in the list.
     """
     LOGGER.debug(f"enforce_self_grant_guard: requester - {requester}")
@@ -418,6 +449,13 @@ def enforce_self_grant_guard(
             requester.user_type_code == target_user.user_type_code
             and requester.user_guid == target_user.user_guid
         ):
+            if _is_self_grant_exempt(role, access_roles, db):
+                LOGGER.info(
+                    f"Self-grant/revoke allowed: app admin '{requester.user_name}' "
+                    f"acting on own access for dev/test app "
+                    f"'{role.application.application_name}', role '{role.role_name}'."
+                )
+                return
             LOGGER.debug(
                 f"User '{requester.user_name}' should not "
                 f"grant/remove permission privilege to self."

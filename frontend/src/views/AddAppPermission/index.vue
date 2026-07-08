@@ -8,6 +8,7 @@ import Button from "@/components/UI/Button.vue";
 import PageTitle from "@/components/UI/PageTitle.vue";
 import StepContainer from "@/components/UI/StepContainer.vue";
 import useAuth from "@/composables/useAuth";
+import { FAM_APPLICATION_NAME } from "@/constants/constants";
 import { ManagePermissionsRoute } from "@/router/routes";
 import {
     AdminMgmtApiService,
@@ -37,7 +38,7 @@ import {
 import CheckmarkIcon from "@carbon/icons-vue/es/checkmark/16";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 import type { FamAccessControlPrivilegeCreateRequest } from "fam-admin-mgmt-api/model";
-import { AdminRoleAuthGroup } from "fam-admin-mgmt-api/model";
+import { AdminRoleAuthGroup, AppEnv } from "fam-admin-mgmt-api/model";
 import {
     UserType,
     type FamUserRoleAssignmentCreateSchema,
@@ -84,17 +85,20 @@ const adminUserAccessQuery = useQuery({
             .then((res) => res.data),
 });
 
+// Hoisted so it can also be used by "allowSelfSelection" below, not just
+// within "rolesUnderSelectedApp" - the self-selection rule must key off
+// which mutation this form will submit to (assignUserRoles vs
+// delegatedAdminMutation), not just the application's environment.
+const isDelegatedAdminOnly = computed(() =>
+    isUserDelegatedAdminOnly(props.appId, adminUserAccessQuery.data.value)
+);
+
 const rolesUnderSelectedApp = computed(() => {
     if (!adminUserAccessQuery.data.value) return null;
 
     const adminUserAccess = adminUserAccessQuery.data.value;
 
-    const isDelegatedAdminOnly = isUserDelegatedAdminOnly(
-        props.appId,
-        adminUserAccess
-    );
-
-    const availableRoles = isDelegatedAdminOnly
+    const availableRoles = isDelegatedAdminOnly.value
         ? adminUserAccess.access.find(
               (authGrantDto) =>
                   authGrantDto.auth_key === AdminRoleAuthGroup.DelegatedAdmin
@@ -105,6 +109,20 @@ const rolesUnderSelectedApp = computed(() => {
           )?.grants ?? [];
 
     return getRolesByAppId(availableRoles, props.appId);
+});
+
+// App admins (not delegated admins) may self-select on a non-FAM
+// application's DEV/TEST instance - mirrors the backend guard's allowlist
+// framing: check env === Dev || env === Test explicitly,
+// do not invert to env !== Prod, so a missing/unset env fails closed.
+const allowSelfSelection = computed(() => {
+    const application = rolesUnderSelectedApp.value?.application;
+    return (
+        !isDelegatedAdminOnly.value &&
+        !!application &&
+        application.name !== FAM_APPLICATION_NAME &&
+        (application.env === AppEnv.Dev || application.env === AppEnv.Test)
+    );
 });
 
 const {
@@ -340,6 +358,7 @@ const onInvalid = () => {
                                         : 'Search BCeID users by username.'
                                 "
                                 search-button-label="Search"
+                                :allow-self-selection="allowSelfSelection"
                                 @pre-user-domain-change="handlePreUserDomainChange"
                                 @user-domain-change="handleUserDomainChange"
                                 @user-selection-update="handleSearchUsersSelected"
@@ -369,12 +388,7 @@ const onInvalid = () => {
                         <RoleSelectTable
                             :app-id="appId"
                             :roleOptions="rolesUnderSelectedApp.roles"
-                            :is-delegated-admin-only="
-                                isUserDelegatedAdminOnly(
-                                    props.appId,
-                                    adminUserAccessQuery.data.value
-                                )
-                            "
+                            :is-delegated-admin-only="isDelegatedAdminOnly"
                             role-field-id="role"
                             forest-clients-field-id="forestClients"
                             :set-field-value="(field: string, value: any) => setFieldValue(field as any, value)"

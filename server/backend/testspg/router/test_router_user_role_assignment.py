@@ -40,7 +40,9 @@ from testspg.constants import (ACCESS_GRANT_FOM_DEV_AR_00000001_BCEID,
                                FC_NUMBER_NOT_EXISTS, FOM_DEV_APPLICATION_ID,
                                FOM_DEV_REVIEWER_ROLE_ID,
                                FOM_DEV_SUBMITTER_ROLE_ID,
-                               FOM_TEST_APPLICATION_ID)
+                               FOM_TEST_APPLICATION_ID,
+                               USER_GUID_BCEID_LOAD_3_TEST_CHILD_1,
+                               USER_NAME_BCEID_LOAD_3_TEST_CHILD_1)
 
 LOGGER = logging.getLogger(__name__)
 endPoint = f"{internal_api_prefix}/user-role-assignment"
@@ -739,20 +741,30 @@ def test_user_role_forest_client_number_inactive_bad_request(
     )
 
 
-def test_self_grant_fail(
+def test_self_grant_allowed_for_app_admin_on_dev_app(
     test_client_fixture: starlette.testclient.TestClient,
     fom_dev_access_admin_token,
     db_pg_session: Session,
     override_depends__get_verified_target_users,
 ):
-    # Setup challenge: The user in the json sent to the service must match the user
+    """
+    An app admin is now allowed to self-grant a role on their own app's
+    DEV/TEST instance. Uses a throwaway role under the existing (seeded)
+    FOM_DEV application, so this test isn't coupled to a hardcoded seeded
+    role_id.
+    """
+    _, role = utils.create_role_for_existing_application(
+        db_pg_session, "FOM_DEV", "TEST_SELFGRANT_REVIEWER"
+    )
+
+    # Setup: The user in the json sent to the service must match the user
     # in the JWT security token.
     user_role_assignment_request_data = {
         "users": [
             {   "user_name": jwt_utils.IDIR_USERNAME, "user_guid": jwt_utils.IDP_USER_GUID}
         ],
         "user_type_code": UserType.IDIR,
-        "role_id": FOM_DEV_REVIEWER_ROLE_ID,
+        "role_id": role.role_id,
     }
 
     # override router guard dependencies
@@ -764,8 +776,97 @@ def test_self_grant_fail(
         headers=jwt_utils.headers(fom_dev_access_admin_token),
     )
 
+    assert response.status_code == HTTPStatus.OK
+    assignment_detail = response.json()["assignments_detail"][0]
+    assert assignment_detail["status_code"] == HTTPStatus.OK
+
     row = utils.get_user_role_by_cognito_user_id_and_role_id(
-        db_pg_session, jwt_utils.COGNITO_USERNAME, FOM_DEV_REVIEWER_ROLE_ID
+        db_pg_session, jwt_utils.COGNITO_USERNAME, role.role_id
+    )
+    assert row is not None, "Expected user role assignment to be created"
+
+
+def test_self_grant_denied_on_prod_app(
+    test_client_fixture: starlette.testclient.TestClient,
+    fom_prod_access_admin_token,
+    db_pg_session: Session,
+    override_depends__get_verified_target_users,
+):
+    """
+    Self-grant must stay denied on an app's PROD instance, even for that
+    app's admin. Uses a throwaway role under the existing (seeded) FOM_PROD
+    application, so this test isn't coupled to a hardcoded seeded role_id.
+    """
+    _, role = utils.create_role_for_existing_application(
+        db_pg_session, "FOM_PROD", "TEST_SELFGRANT_REVIEWER"
+    )
+
+    user_role_assignment_request_data = {
+        "users": [
+            {   "user_name": jwt_utils.IDIR_USERNAME, "user_guid": jwt_utils.IDP_USER_GUID}
+        ],
+        "user_type_code": UserType.IDIR,
+        "role_id": role.role_id,
+    }
+
+    # override router guard dependencies
+    override_depends__get_verified_target_users(user_role_assignment_request_data)
+
+    response = test_client_fixture.post(
+        f"{endPoint}",
+        json=user_role_assignment_request_data,
+        headers=jwt_utils.headers(fom_prod_access_admin_token),
+    )
+
+    row = utils.get_user_role_by_cognito_user_id_and_role_id(
+        db_pg_session, jwt_utils.COGNITO_USERNAME, role.role_id
+    )
+    assert row is None, "Expected user role assignment not to be created"
+
+    jwt_utils.assert_error_response(response, 403, ERROR_CODE_SELF_GRANT_PROHIBITED)
+
+
+def test_self_grant_denied_for_delegated_admin_on_dev_app(
+    test_client_fixture: starlette.testclient.TestClient,
+    test_rsa_key,
+    db_pg_session: Session,
+):
+    """
+    A delegated admin must stay blocked from self-grant, even on a DEV app
+    they have privilege over. "TEST-3-LOAD-CHILD-1" (BCEID) is preset in
+    local flyway sql as a delegated admin over FOM_DEV's FOM_REVIEWER role.
+
+    Note: unlike the other tests here, this one can't use a throwaway role,
+    because granting delegated-admin privilege (fam_access_control_privilege)
+    requires an INSERT the backend's DB user isn't granted (see
+    create_role_for_existing_application's docstring) - only
+    admin_management's DB user can write that table. So this stays pinned to
+    the one seeded (role, privilege) pair.
+    """
+    user_role_assignment_request_data = {
+        "users": [
+            {
+                "user_name": USER_NAME_BCEID_LOAD_3_TEST_CHILD_1,
+                "user_guid": USER_GUID_BCEID_LOAD_3_TEST_CHILD_1,
+            }
+        ],
+        "user_type_code": UserType.BCEID,
+        "role_id": FOM_DEV_REVIEWER_ROLE_ID,
+    }
+
+    token = jwt_utils.create_jwt_token(
+        test_rsa_key, [], jwt_utils.COGNITO_USERNAME_BCEID_DELEGATED_ADMIN
+    )
+    response = test_client_fixture.post(
+        f"{endPoint}",
+        json=user_role_assignment_request_data,
+        headers=jwt_utils.headers(token),
+    )
+
+    row = utils.get_user_role_by_cognito_user_id_and_role_id(
+        db_pg_session,
+        jwt_utils.COGNITO_USERNAME_BCEID_DELEGATED_ADMIN,
+        FOM_DEV_REVIEWER_ROLE_ID,
     )
     assert row is None, "Expected user role assignment not to be created"
 
@@ -1153,11 +1254,57 @@ def test_delete_user_role_assignment(
     assert len(assignment_user_role_items) == 0
 
 
-def test_self_remove_grant_fail(
+def test_self_revoke_allowed_for_app_admin_on_dev_app(
     test_client_fixture: starlette.testclient.TestClient,
     fom_dev_access_admin_token,
     db_pg_session: Session,
 ):
+    """
+    An app admin is now allowed to self-revoke a role on their own app's
+    DEV/TEST instance. Uses a throwaway role under the existing (seeded)
+    FOM_DEV application, so this test isn't coupled to a hardcoded seeded
+    role_id.
+    """
+    _, role = utils.create_role_for_existing_application(
+        db_pg_session, "FOM_DEV", "TEST_SELFREVOKE_REVIEWER"
+    )
+
+    # Setup: the user_role_assignment record already exists
+    user = crud_user.get_user_by_cognito_user_id(
+        db=db_pg_session, cognito_user_id=jwt_utils.COGNITO_USERNAME
+    )
+    user_role = crud_user_role.create(
+        db=db_pg_session,
+        user_id=user.user_id,
+        role_id=role.role_id,
+        requester_cognito_user_id=jwt_utils.COGNITO_USERNAME,
+    )
+
+    response = test_client_fixture.delete(
+        f"{endPoint}/{user_role.user_role_xref_id}",
+        headers=jwt_utils.headers(fom_dev_access_admin_token),
+    )
+    assert response.status_code == HTTPStatus.NO_CONTENT
+
+    row = utils.get_user_role_by_cognito_user_id_and_role_id(
+        db_pg_session, jwt_utils.COGNITO_USERNAME, role.role_id
+    )
+    assert row is None, "Expected user role assignment to be deleted"
+
+
+def test_self_revoke_denied_on_prod_app(
+    test_client_fixture: starlette.testclient.TestClient,
+    fom_prod_access_admin_token,
+    db_pg_session: Session,
+):
+    """
+    Self-revoke must stay denied on an app's PROD instance, even for that
+    app's admin. Uses a throwaway role under the existing (seeded) FOM_PROD
+    application, so this test isn't coupled to a hardcoded seeded role_id.
+    """
+    _, role = utils.create_role_for_existing_application(
+        db_pg_session, "FOM_PROD", "TEST_SELFREVOKE_REVIEWER"
+    )
 
     # Setup: the user_role_assignment record already exists
     # It should NOT get deleted
@@ -1167,17 +1314,17 @@ def test_self_remove_grant_fail(
     user_role = crud_user_role.create(
         db=db_pg_session,
         user_id=user.user_id,
-        role_id=FOM_DEV_REVIEWER_ROLE_ID,
+        role_id=role.role_id,
         requester_cognito_user_id=jwt_utils.COGNITO_USERNAME,
     )
 
     response = test_client_fixture.delete(
         f"{endPoint}/{user_role.user_role_xref_id}",
-        headers=jwt_utils.headers(fom_dev_access_admin_token),
+        headers=jwt_utils.headers(fom_prod_access_admin_token),
     )
 
     row = utils.get_user_role_by_cognito_user_id_and_role_id(
-        db_pg_session, jwt_utils.COGNITO_USERNAME, FOM_DEV_REVIEWER_ROLE_ID
+        db_pg_session, jwt_utils.COGNITO_USERNAME, role.role_id
     )
     assert row is not None, "Expected user role assignment not to be deleted"
 

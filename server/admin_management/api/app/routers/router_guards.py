@@ -229,6 +229,15 @@ def enforce_self_grant_guard(
     """
     Verify logged on admin (requester):
         Self granting/removing privilege currently isn't allowed.
+
+    Note: unlike the server/backend's self-grant guard
+    (server/backend/api/app/routers/router_guards.py), this guard stays
+    unconditional by design - self-grant/self-revoke of delegated-admin
+    privilege (/access-control-privileges) and app-admin authority
+    (/application-admins) remains fully blocked here, even on dev/test
+    applications. This is a deliberate scope decision: those two
+    actions are a trust escalation rather than "a role of the app" in
+    the end-user sense the self-granting feature targets.
     """
     LOGGER.debug(f"enforce_self_grant_guard: requester - {requester}")
     LOGGER.debug(f"enforce_self_grant_guard: target_user - {target_user}")

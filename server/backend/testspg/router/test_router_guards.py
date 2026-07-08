@@ -1,7 +1,7 @@
 from unittest.mock import MagicMock, patch
 
 import pytest
-from api.app.constants import UserType
+from api.app.constants import APPLICATION_FAM, AppEnv, UserType
 from api.app.models.model import FamUser
 from api.app.routers import router_guards
 from sqlalchemy import insert
@@ -494,3 +494,55 @@ async def test_get_target_users_from_ids_body_empty_users_list():
         )
 
     assert "The 'users' list in the request body is empty or missing." in str(excinfo.value)
+
+
+# --- Tests for _is_self_grant_exempt
+
+def mock_role_for_app(application_name, app_environment):
+    role = MagicMock()
+    role.application = MagicMock()
+    role.application.application_id = 999
+    role.application.application_name = application_name
+    role.application.app_environment = app_environment
+    return role
+
+
+def test_is_self_grant_exempt_false_for_fam_app():
+    """
+    FAM's own application is never self-grant exempt, regardless of
+    app_environment or admin status.
+    """
+    role = mock_role_for_app(APPLICATION_FAM, AppEnv.APP_ENV_TYPE_DEV)
+    with patch("api.app.crud.crud_utils.is_app_admin", return_value=True) as mock_is_app_admin:
+        assert router_guards._is_self_grant_exempt(role, ["FAM_ADMIN"], MagicMock()) is False
+        mock_is_app_admin.assert_not_called()
+
+
+@pytest.mark.parametrize("app_environment", [AppEnv.APP_ENV_TYPE_PROD, None, "UNKNOWN"])
+def test_is_self_grant_exempt_false_for_non_dev_test_env(app_environment):
+    """
+    Only DEV/TEST app_environment can be self-grant exempt; PROD and any
+    unset/unrecognized value must fail closed.
+    """
+    role = mock_role_for_app("FOM_DEV", app_environment)
+    with patch("api.app.crud.crud_utils.is_app_admin", return_value=True) as mock_is_app_admin:
+        assert router_guards._is_self_grant_exempt(role, ["FOM_DEV_ADMIN"], MagicMock()) is False
+        mock_is_app_admin.assert_not_called()
+
+
+@pytest.mark.parametrize("app_environment", [AppEnv.APP_ENV_TYPE_DEV, AppEnv.APP_ENV_TYPE_TEST])
+def test_is_self_grant_exempt_true_for_app_admin_on_dev_or_test(app_environment):
+    role = mock_role_for_app("FOM_DEV", app_environment)
+    with patch("api.app.crud.crud_utils.is_app_admin", return_value=True) as mock_is_app_admin:
+        assert router_guards._is_self_grant_exempt(role, ["FOM_DEV_ADMIN"], MagicMock()) is True
+        mock_is_app_admin.assert_called_once()
+
+
+@pytest.mark.parametrize("app_environment", [AppEnv.APP_ENV_TYPE_DEV, AppEnv.APP_ENV_TYPE_TEST])
+def test_is_self_grant_exempt_false_for_non_app_admin_on_dev_or_test(app_environment):
+    """
+    Delegated admins (is_app_admin=False) are not exempt, even on DEV/TEST.
+    """
+    role = mock_role_for_app("FOM_DEV", app_environment)
+    with patch("api.app.crud.crud_utils.is_app_admin", return_value=False):
+        assert router_guards._is_self_grant_exempt(role, [], MagicMock()) is False

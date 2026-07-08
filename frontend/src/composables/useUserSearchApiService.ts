@@ -1,3 +1,4 @@
+import { PERMISSION_REQUIRED_FOR_OPERATION } from "@/constants/ApiErrorCodes";
 import { AppActlApiService } from "@/services/ApiServiceFactory";
 import type { SelectedUser } from "@/types/SelectUserType";
 import type { UserSearchParams } from "@/types/UserSearchTypes";
@@ -17,7 +18,6 @@ import { ref } from "vue";
  */
 
 const IDIR_SEARCH_PAGE_SIZE = 500;
-export const PERMISSION_REQUIRED_FOR_OPERATION = "permission_required_for_operation";
 
 export type UserSearchError = {
     message: string;

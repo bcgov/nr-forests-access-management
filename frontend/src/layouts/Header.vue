@@ -90,7 +90,6 @@ li {
 
     font-size: 1rem;
 
-    height: 100;
     width: 100vw;
     background: var(--semantic-color-background-brand);
 

@@ -1,12 +1,14 @@
 import FailedGrantAppUsersNtfnTemplate from "@/components/NotificationContent/FailedGrantAppUsersNtfnTemplate.vue";
 import SccssGrantAppUsersNtfnTemplate from "@/components/NotificationContent/SccssGrantAppUsersNtfnTemplate.vue";
+import { SELF_GRANT_PROHIBITED_ERROR_CODE } from "@/constants/ApiErrorCodes";
 import type { PermissionNotificationType } from "@/types/NotificationTypes";
 import { Severity } from "@/types/NotificationTypes";
-import { mapAppUserGrantResponseByUserId } from "@/utils/ApiUtils";
+import { formatAxiosError, mapAppUserGrantResponseByUserId } from "@/utils/ApiUtils";
 import { formatForestClientDisplayName } from "@/utils/ForestClientUtils";
 import { formatUserNameAndId } from "@/utils/UserUtils";
 import { AddAppUserPermissionErrorQuerykey, AddAppUserPermissionSuccessQuerykey, AddDelegatedAdminErrorQuerykey, AddDelegatedAdminSuccessQuerykey, type AppPermissionQueryErrorType } from "@/views/AddAppPermission/utils";
 import type { QueryClient } from "@tanstack/vue-query";
+import { isAxiosError } from "axios";
 import type {
     FamAccessControlPrivilegeCreateResponse,
     FamAccessControlPrivilegeResponse,
@@ -259,6 +261,29 @@ export const toDelegatedAdminGrantReqErrorNotifications = (
         users[0].lastName
     );
     const roleName = role?.display_name;
+
+    const err = errData.error;
+    if (
+        isAxiosError(err) &&
+        (err.response?.data as any)?.detail?.code === SELF_GRANT_PROHIBITED_ERROR_CODE
+    ) {
+        return {
+            severity: Severity.Error,
+            message: `You can't assign a delegated admin role to yourself. Delegated admin roles can only be assigned to other users.`,
+            hasFullMsg: false,
+        };
+    }
+
+    // Concrete roles are not organization-scoped
+    if (!forestClients.length) {
+        return {
+            severity: Severity.Error,
+            message: `
+            Failed to add ${userFullName} with the role ${roleName}
+            `,
+            hasFullMsg: false,
+        };
+    }
 
     return {
         severity: Severity.Error,
