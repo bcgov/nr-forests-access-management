@@ -34,6 +34,9 @@
         "vue-router": "^4.3.2",
         "wait-for-expect": "^3.0.2"
     },
+    "overrides": {
+        "form-data": "4.0.6"
+    },
     "devDependencies": {
         "@tanstack/vue-query-devtools": "^5.56.2",
         "@tsconfig/node20": "^20.1.4",
