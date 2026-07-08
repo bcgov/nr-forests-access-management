@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.19.3](https://github.com/bcgov/nr-forests-access-management/compare/v2.19.2...v2.19.3) (2026-07-08)
+
+
+### Bug Fixes
+
+* [#2237](https://github.com/bcgov/nr-forests-access-management/issues/2237) Dependabot issues backend ([#2249](https://github.com/bcgov/nr-forests-access-management/issues/2249)) ([74bd2fd](https://github.com/bcgov/nr-forests-access-management/commit/74bd2fd032bcdb68a1d80b5e72290425a6b28140))
+
 ## [2.19.2](https://github.com/bcgov/nr-forests-access-management/compare/v2.19.1...v2.19.2) (2026-07-08)
 
 
