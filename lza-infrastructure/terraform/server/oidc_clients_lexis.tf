@@ -13,9 +13,9 @@ resource "aws_cognito_user_pool_client" "dev_lexis_oidc_client" {
   logout_urls = concat(
     [
       var.oidc_sso_playground_url,
-      "${var.cognito_app_client_logout_chain_url.dev}http://localhost:3000",
+      "${var.cognito_app_client_logout_chain_url.dev}http://localhost:3000/logout",
     ],
-    [for i in range("${var.dev_pr_url_count}") : "${var.cognito_app_client_logout_chain_url.dev}https://nr-lexis-${i}.apps.gold.devops.gov.bc.ca"]
+    [for i in range("${var.dev_pr_url_count}") : "${var.cognito_app_client_logout_chain_url.dev}https://nr-lexis-${i}.apps.gold.devops.gov.bc.ca/logout"]
   )
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
@@ -49,7 +49,7 @@ resource "aws_cognito_user_pool_client" "test_lexis_oidc_client" {
     "https://nr-lexis-test.apps.gold.devops.gov.bc.ca/dashboard"
   ]
   logout_urls = [
-    "${var.cognito_app_client_logout_chain_url.test}https://nr-lexis-test.apps.gold.devops.gov.bc.ca"
+    "${var.cognito_app_client_logout_chain_url.test}https://nr-lexis-test.apps.gold.devops.gov.bc.ca/logout"
   ]
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
@@ -83,7 +83,7 @@ resource "aws_cognito_user_pool_client" "prod_lexis_oidc_client" {
     "https://nr-lexis-prod.apps.gold.devops.gov.bc.ca/dashboard"
   ]
   logout_urls = [
-    "${var.cognito_app_client_logout_chain_url.prod}https://nr-lexis-prod.apps.gold.devops.gov.bc.ca"
+    "${var.cognito_app_client_logout_chain_url.prod}https://nr-lexis-prod.apps.gold.devops.gov.bc.ca/logout"
   ]
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
