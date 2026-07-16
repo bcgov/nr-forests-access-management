@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.19.5](https://github.com/bcgov/nr-forests-access-management/compare/v2.19.4...v2.19.5) (2026-07-09)
+
+
+### Bug Fixes
+
+* remove lexis federal submitter role ([#2254](https://github.com/bcgov/nr-forests-access-management/issues/2254)) ([d354834](https://github.com/bcgov/nr-forests-access-management/commit/d354834e47328b9165ed43274439cf3458ce7470))
+
+## [2.19.4](https://github.com/bcgov/nr-forests-access-management/compare/v2.19.3...v2.19.4) (2026-07-08)
+
+
+### Bug Fixes
+
+* [#2242](https://github.com/bcgov/nr-forests-access-management/issues/2242) Remove unused service account draft template. ([#2252](https://github.com/bcgov/nr-forests-access-management/issues/2252)) ([9577046](https://github.com/bcgov/nr-forests-access-management/commit/9577046a80f5eba4e642eca0210bffab3c971a91))
+
 ## [2.19.3](https://github.com/bcgov/nr-forests-access-management/compare/v2.19.2...v2.19.3) (2026-07-08)
 
 
