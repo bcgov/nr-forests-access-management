@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.19.6](https://github.com/bcgov/nr-forests-access-management/compare/v2.19.5...v2.19.6) (2026-07-16)
+
+
+### Bug Fixes
+
+* Bump up Aurora db minor engine version ([#2264](https://github.com/bcgov/nr-forests-access-management/issues/2264)) ([f52b79b](https://github.com/bcgov/nr-forests-access-management/commit/f52b79b43b8a8e488457402e9f3cf33f4c3afbd8))
+
 ## [2.19.5](https://github.com/bcgov/nr-forests-access-management/compare/v2.19.4...v2.19.5) (2026-07-09)
 
 
