@@ -84,10 +84,10 @@ resource "aws_cognito_user_pool_client" "prod_fspts_oidc_client" {
   allowed_oauth_flows_user_pool_client          = "true"
   allowed_oauth_scopes                          = ["openid", "profile", "email"]
   callback_urls                                 = [
-    "https://nr-fspts-prod.apps.silver.devops.gov.bc.ca/auth/callback"
+    "https://fspts.nrs.gov.bc.ca/auth/callback"
   ]
   logout_urls                                   = [
-    "${var.cognito_app_client_logout_chain_url.prod}https://nr-fspts-prod.apps.silver.devops.gov.bc.ca/logout"
+    "${var.cognito_app_client_logout_chain_url.prod}https://fspts.nrs.gov.bc.ca/logout"
   ]
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
