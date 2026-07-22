@@ -19,12 +19,16 @@ resource "aws_cognito_user_pool_client" "dev_fspts_oidc_client" {
   )
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
-  explicit_auth_flows                           = ["ALLOW_REFRESH_TOKEN_AUTH"]
+  explicit_auth_flows                           = ["ALLOW_USER_SRP_AUTH"]
   id_token_validity                             = "5"
   name                                          = "fspts_dev"
   prevent_user_existence_errors                 = "ENABLED"
   read_attributes                               = var.minimum_oidc_attribute_list
   refresh_token_validity                        = "60"
+  refresh_token_rotation {
+    feature                    = "ENABLED"
+    retry_grace_period_seconds = 0
+  }
   supported_identity_providers                  = [
     "${aws_cognito_identity_provider.dev_idir_oidc_provider.provider_name}",
     "${aws_cognito_identity_provider.dev_bceid_business_oidc_provider.provider_name}"
@@ -57,12 +61,16 @@ resource "aws_cognito_user_pool_client" "test_fspts_oidc_client" {
   ]
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
-  explicit_auth_flows                           = ["ALLOW_REFRESH_TOKEN_AUTH"]
+  explicit_auth_flows                           = ["ALLOW_USER_SRP_AUTH"]
   id_token_validity                             = "5"
   name                                          = "fspts_test"
   prevent_user_existence_errors                 = "ENABLED"
   read_attributes                               = var.minimum_oidc_attribute_list
   refresh_token_validity                        = "60"
+  refresh_token_rotation {
+    feature                    = "ENABLED"
+    retry_grace_period_seconds = 0
+  }
   supported_identity_providers                  = [
     "${aws_cognito_identity_provider.test_idir_oidc_provider.provider_name}",
     "${aws_cognito_identity_provider.test_bceid_business_oidc_provider.provider_name}"
@@ -91,12 +99,16 @@ resource "aws_cognito_user_pool_client" "prod_fspts_oidc_client" {
   ]
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
-  explicit_auth_flows                           = ["ALLOW_REFRESH_TOKEN_AUTH"]
+  explicit_auth_flows                           = ["ALLOW_USER_SRP_AUTH"]
   id_token_validity                             = "5"
   name                                          = "fspts_prod"
   prevent_user_existence_errors                 = "ENABLED"
   read_attributes                               = var.minimum_oidc_attribute_list
   refresh_token_validity                        = "60"
+  refresh_token_rotation {
+    feature                    = "ENABLED"
+    retry_grace_period_seconds = 0
+  }
   supported_identity_providers                  = [
     "${aws_cognito_identity_provider.prod_idir_oidc_provider.provider_name}",
     "${aws_cognito_identity_provider.prod_bceid_business_oidc_provider.provider_name}"
