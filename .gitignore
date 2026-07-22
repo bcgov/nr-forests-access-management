@@ -92,9 +92,8 @@ server/backend/openapi.json
 # Copilot instructions
 **/*[-.]instructions.md
 **/*.prompt.md
-plan/**
-**/agents/**
 **/plans/**
-**/references/**
 **/requirements/**
+**/agents/**
+**/references/**
 **/skills/**

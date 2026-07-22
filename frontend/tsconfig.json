@@ -19,7 +19,7 @@
         },
         "allowJs": true,
         "skipLibCheck": true,
-        "moduleResolution": "node",
+        "moduleResolution": "bundler",
         "types": ["vite/client"],
         "esModuleInterop": true,
         "strict": true

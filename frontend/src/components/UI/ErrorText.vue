@@ -20,12 +20,12 @@ defineProps<{
 
     p {
         margin: 0;
-        color: var(--text-error);
+        color: var(--semantic-color-text-error);
     }
 
     svg {
         margin-right: 0.5rem;
-        fill: var(--support-error);
+        fill: var(--semantic-color-support-error);
     }
 }
 </style>

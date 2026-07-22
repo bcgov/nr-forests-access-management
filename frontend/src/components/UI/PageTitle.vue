@@ -31,11 +31,11 @@ const route = useRoute();
 <style lang="scss" scoped>
 .title {
     @include type.type-style("heading-05");
-    color: var(--text-primary);
+    color: var(--semantic-color-text-primary);
 }
 
 .subtitle {
     @include type.type-style("body-01");
-    color: var(--text-secondary);
+    color: var(--semantic-color-text-secondary);
 }
 </style>

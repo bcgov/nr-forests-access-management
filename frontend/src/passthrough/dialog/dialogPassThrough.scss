@@ -1,0 +1,125 @@
+/* ================================ Dialog Root ================================ */
+
+.p-dialog.fam-dialog-root {
+    border-radius: 0.5rem;
+    box-shadow: 0 0.125rem 0.375rem 0 rgba(0, 0, 0, 0.3);
+    border: none;
+}
+
+/* ================================ Dialog Header ================================ */
+
+.p-dialog.fam-dialog-root .fam-dialog-header {
+    border-top-right-radius: 0.5rem;
+    border-top-left-radius: 0.5rem;
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+/* ================================ Dialog Content ================================ */
+
+.p-dialog.fam-dialog-root .fam-dialog-content {
+    font-size: var(--typography-body-compact-01-font-size);
+    letter-spacing: var(--typography-body-compact-01-letter-spacing);
+    padding: 0 1rem 0 1.5rem;
+}
+
+.p-dialog.fam-dialog-root .fam-dialog-content p:last-child {
+    font-size: var(--typography-heading-03-font-size);
+    line-height: var(--typography-heading-03-line-height);
+    font-weight: 400;
+    padding-bottom: 3rem;
+    margin: 0;
+    width: 85%;
+}
+
+.p-dialog.fam-dialog-root .fam-dialog-content:last-of-type {
+    padding-bottom: 3rem;
+    border-bottom-right-radius: 0.5rem;
+    border-bottom-left-radius: 0.5rem;
+}
+
+/* ================================ Dialog Footer ================================ */
+
+.p-dialog.fam-dialog-root .fam-dialog-footer {
+    display: flex;
+    border-top: none;
+    padding-bottom: 1rem;
+    padding-top: 1rem;
+    border-bottom-right-radius: 0.5rem;
+    border-bottom-left-radius: 0.5rem;
+}
+
+/* Use fam-dialog-footer passthrough class for button layout and styling */
+.p-dialog.fam-dialog-root .fam-dialog-footer .p-button {
+    flex-basis: 100%;
+    padding: 0.75rem;
+    justify-content: flex-start;
+}
+
+/* ================================ Confirm Dialog - Button Label ================================ */
+
+.p-dialog.fam-dialog-root .fam-dialog-footer .fam-confirm-dialog-button-label {
+    font-weight: 400;
+}
+
+/* ================================ Confirm Dialog - Reject Button ================================ */
+
+.p-dialog.fam-dialog-root .fam-dialog-footer .fam-confirm-dialog-reject {
+    margin-right: 0.5rem;
+}
+
+.p-dialog.fam-dialog-root .fam-dialog-footer .fam-confirm-dialog-reject:enabled:hover .fam-confirm-dialog-button-label,
+.p-dialog.fam-dialog-root .fam-dialog-footer .fam-confirm-dialog-reject:enabled:active .fam-confirm-dialog-button-label {
+    color: var(--primitive-color-white);
+}
+
+/* ================================ ConfirmDialog Specific Overrides ================================ */
+
+.p-dialog-header.fam-dialog-header {
+    padding-top: 1rem;
+}
+
+.p-dialog.fam-dialog-root .fam-dialog-title {
+    font-size: var(--typography-label-01-font-size);
+    font-style: normal;
+    font-weight: 400;
+    line-height: var(--typography-label-01-line-height);
+    letter-spacing: .32px;
+}
+
+/* ================================ Dialog Header Actions & Close Button ================================ */
+
+.fam-dialog-header-actions {
+    margin-left: auto;
+}
+
+.fam-dialog-close-button.p-button {
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    padding: 0;
+    width: 0.65rem;
+    min-width: 0.5rem;
+    height: 0.5rem;
+}
+
+.fam-dialog-close-button .p-button-icon {
+    font-size: 0.875rem;
+}
+
+.fam-dialog-close-button svg {
+    width: 0.875rem;
+    height: 0.875rem;
+}
+
+.p-dialog .p-dialog-header .fam-dialog-close-button:enabled:hover,
+.p-dialog .p-dialog-header .fam-dialog-close-button:enabled:active,
+.p-dialog .p-dialog-header .fam-dialog-close-button:focus {
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+}
+
+.fam-dynamic-dialog-close-button {
+    border-radius: 0;
+}

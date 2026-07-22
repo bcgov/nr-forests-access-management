@@ -39,6 +39,10 @@ npm run dev
 npm run build
 ```
 
+## Developer Guides
+
+- [Frontend Styling Guide](docs/frontend-styling-guide.md) — design tokens, PrimeVue theming, typography system, and customization workflows.
+
 ### Note
 
 For FAM local and dev environment, we connect with TEST identity provider (TEST-IDIR, TEST-BUSINESSBCEID) for login options. The main reason of that is because we don't have any dev business bceid account can used for testing, so we have to use the TEST-BUSINESSBCEID. And it's better to use the same environment for both IDIR and BUSINESSBCEID, so we can config the same logout chain for both. Use TEST-IDIR in local won't impact any login functionality, work same as DEV-IDIR.

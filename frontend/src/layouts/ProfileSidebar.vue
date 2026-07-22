@@ -203,8 +203,8 @@ const adminUserAccessQuery = useQuery({
         margin-right: 2rem;
         margin-top: 0.5rem;
         flex-shrink: 0;
-        background: var(--background-brand);
-        color: var(--text-on-color);
+        background: var(--semantic-color-background-brand);
+        color: var(--semantic-color-text-on-color);
     }
 
     .profile-info {
@@ -235,15 +235,21 @@ const adminUserAccessQuery = useQuery({
     display: flex;
     border: none;
     padding: 0;
+    justify-content: flex-start;
+    text-align: left;
 }
 
 .profile-sidebar-btn:enabled:hover,
 .profile-sidebar-btn:enabled:active,
 .profile-sidebar-btn:enabled:focus {
-    background-color: var(--border-subtle-00);
+    background-color: var(--semantic-color-surface-layer-selected);
     box-shadow: none;
     outline: none;
+    border: none;
+    border-radius: 0;
+    color: var(--semantic-color-text);
 }
+
 
 .profile-userid,
 .profile-organization,

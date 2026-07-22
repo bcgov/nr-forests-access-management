@@ -1,0 +1,73 @@
+/**
+ * PrimeVue v4 DataTable Component Styling
+ * Migrated from primevue-components-overrides.scss
+ *
+ */
+
+/* ================================ Header Cell ================================ */
+
+/**
+ * <th> — body-compact-01 typography, bold weight, no border
+ */
+.p-datatable th.fam-table-header-cell {
+  font-size: var(--typography-body-compact-01-font-size);
+  font-weight: 700;
+  line-height: var(--typography-body-compact-01-line-height);
+  letter-spacing: var(--typography-body-compact-01-letter-spacing);
+  text-align: left;
+  border: none;
+}
+
+/**
+ * Column header content div — minimum height for consistent row sizing
+ */
+.p-datatable th.fam-table-header-cell .fam-table-header-content {
+  min-height: 1.625rem;
+}
+
+/**
+ * Column title span — right-side padding keeps text away from sort icon
+ */
+.p-datatable th.fam-table-header-cell .fam-table-header-content .fam-table-column-title {
+  padding: 0 1rem 0 0;
+}
+
+/* ================================ Body Cell ================================ */
+
+/**
+ * <td> — body-compact-01 typography, fixed height, no border
+ */
+.p-datatable td.fam-table-body-cell {
+  font-size: var(--typography-body-compact-01-font-size);
+  font-weight: 400;
+  line-height: var(--typography-body-compact-01-line-height);
+  letter-spacing: var(--typography-body-compact-01-letter-spacing);
+  min-height: 3rem;
+  text-align: left;
+  border: none;
+}
+
+/* ================================ Body Row ================================ */
+
+/**
+ * <tr> — inset box-shadow draws the row separator line using the border-subtle token
+ */
+.p-datatable tr.fam-table-body-row {
+  box-shadow: inset 0 0 0 0.031rem var(--semantic-color-border-subtle);
+}
+
+/**
+ * Row hover
+ */
+.p-datatable tr.fam-table-body-row:hover {
+  background-color: var(--semantic-color-surface-layer-hover);
+}
+
+/* ================================ Sort Icon ================================ */
+
+/**
+ * Sort icon — nudged down to vertically align with header text baseline
+ */
+.p-datatable .fam-table-sort-icon {
+  margin-bottom: 0.5rem;
+}

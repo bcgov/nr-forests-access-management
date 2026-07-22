@@ -15,30 +15,28 @@ const customColorClass =
 
 <style lang="scss">
 .fam-chip {
+    --p-chip-padding-y: 0.25rem;
+    --p-chip-padding-x: 0.75em;
     width: fit-content;
-    height: 1.5rem;
-    min-height: fit-content;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
 
-    .p-chip-text {
+    .p-chip-label {
         @include type.type-style("label-01");
         text-align: center;
     }
 }
 
-.fam-chip-blue {
+.fam-chip-blue.p-chip {
     background: colors.$blue-10;
-    .p-chip-text {
+    .p-chip-label {
         color: colors.$blue-80;
     }
 }
 
-.fam-chip-green {
+.fam-chip-green.p-chip {
     background: colors.$green-10;
-    .p-chip-text {
+    .p-chip-label {
         color: colors.$green-80;
     }
 }
+
 </style>

@@ -111,10 +111,13 @@ const getEmailSuffix = (
     > svg {
         flex-shrink: 0;
         margin-top: 0.15em;
+        color: var(--semantic-color-support-success);
     }
 
     .notification-body {
         flex: 1 1 0%;
+        margin-left: 1rem;
+        font-size: 0.875rem;
     }
 
     .notification-header {

@@ -176,7 +176,6 @@ const handlePreUserDomainChange = (payload: {
             header: "Changing User Domain",
             rejectLabel: "Cancel",
             acceptLabel: "Continue",
-            acceptClass: "dialog-accept-button",
             accept: () => payload.approveChange(),
             reject: () => payload.cancelChange(),
         });
@@ -294,7 +293,6 @@ const onSubmit = () => {
                 header: "Add a delegated admin",
                 rejectLabel: "Cancel",
                 acceptLabel: "Submit delegated admin",
-                acceptClass: "dialog-accept-button",
                 accept: () => {
                     isSubmitting.value = true;
                     delegatedAdminMutation.mutate(payload as FamAccessControlPrivilegeCreateRequest);
@@ -315,7 +313,6 @@ const onInvalid = () => {
     <div class="add-app-permission-container">
         <ConfirmDialog
             group="changeDomain"
-            class="confirm-dialog-with-blue-button"
         >
             <template #message>
                 <p>
@@ -327,7 +324,6 @@ const onInvalid = () => {
         </ConfirmDialog>
         <ConfirmDialog
             group="addDelegatedAdmin"
-            class="confirm-dialog-with-blue-button"
         >
             <template #message>
                 <p>
@@ -405,7 +401,7 @@ const onInvalid = () => {
                         v-if="!values?.isAddingDelegatedAdmin"
                     >
                         <DatePicker
-                            :modelValue="values.expiryDate"
+                            :model-value="values.expiryDate ?? undefined"
                             @update:datePickerValue="setFieldValue('expiryDate', $event)"
                             title="Expiry date (optional)"
                             description="By default, this role does not expire. Set an expiry date if you want the permission to end automatically."

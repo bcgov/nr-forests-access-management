@@ -98,7 +98,6 @@ const handleRoleSelect = (role: FamRoleGrantDto) => {
             header: "Changing Role",
             rejectLabel: "Cancel",
             acceptLabel: "Continue",
-            acceptClass: "dialog-accept-button",
             accept: () => setRoleAndClearClients(role),
         });
     } else {
@@ -137,12 +136,33 @@ const handleRoleSelect = (role: FamRoleGrantDto) => {
                 <template #empty> No role found. </template>
                 <Column class="align-top-col" field="roleSelect">
                     <template #body="{ data }">
-                        <RadioButton
-                            :value="data"
-                            :model-value="selectedRole"
-                            @update:model-value="handleRoleSelect"
-                            :disabled="props.formValues.forestClientInput.isVerifying"
-                        />
+                        <div class="radio-wrapper">
+                            <RadioButton
+                                :value="data"
+                                :model-value="selectedRole"
+                                @update:model-value="handleRoleSelect"
+                                :disabled="props.formValues.forestClientInput.isVerifying"
+                            />
+                            <!--
+                                PrimeVue v4 RadioButton updates internal d_value optimistically
+                                before emitting update:modelValue, so we can't defer the visual
+                                change from within the event handler. This overlay intercepts
+                                mouse clicks before they reach the input, preventing d_value from
+                                being set at all when a confirmation dialog is needed.
+                                This seems to be PrimeVue bug. See similar issues:
+                                https://github.com/primefaces/primevue/issues/7871
+                                and https://github.com/primefaces/primevue/issues/6961
+                            -->
+                            <div
+                                v-if="
+                                    (props.formValues.forestClients?.length ?? 0) > 0 &&
+                                    selectedRole?.id !== data.id &&
+                                    !props.formValues.forestClientInput.isVerifying
+                                "
+                                class="radio-click-guard"
+                                @click="handleRoleSelect(data)"
+                            />
+                        </div>
                     </template>
                 </Column>
                 <Column class="align-top-col" field="roleName" header="Role">
@@ -217,6 +237,32 @@ const handleRoleSelect = (role: FamRoleGrantDto) => {
 
     .role-display-name {
         white-space: nowrap;
+    }
+
+    // Provides a positioning context so the click guard below can cover
+    // the RadioButton precisely.
+    .radio-wrapper {
+        position: relative;
+        display: inline-flex;
+
+        // In PrimeVue v3, a radio button only appeared selected after the parent
+        // confirmed the change — clicking it had no visual effect on its own.
+        // In PrimeVue v4, the radio visually selects itself the moment it is clicked,
+        // before our code has a chance to respond. If we then show a confirm dialog
+        // and the user cancels, the radio stays visually selected with no reliable
+        // way to deselect it, leaving multiple radios appearing selected at once.
+        //
+        // This guard is an invisible div that sits over the RadioButton (z-index: 2
+        // beats the PrimeVue input's built-in z-index: 1). When a role change would
+        // require confirmation, the guard catches the click instead of the radio,
+        // so the radio never registers the click and its visual state never changes.
+        // The confirm dialog is opened by the guard's own click handler instead.
+        .radio-click-guard {
+            position: absolute;
+            inset: 0;
+            cursor: pointer;
+            z-index: 2;
+        }
     }
 }
 </style>

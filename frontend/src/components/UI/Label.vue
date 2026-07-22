@@ -30,11 +30,11 @@ const props = defineProps<{
     margin-bottom: 0.5rem;
 
     .required-symbol {
-        color: var(--text-error);
+        color: var(--semantic-color-text-error);
     }
 
     .label-text {
-        color: var(--text-primary);
+        color: var(--semantic-color-text-primary);
     }
 }
 </style>

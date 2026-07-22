@@ -29,14 +29,14 @@ const props = withDefaults(defineProps<Props>(), {
   gap: 0.75rem;
   margin: 0.5rem 0 1rem 0;
   padding: 0.5rem 1rem;
-  border: 1px solid var(--support-error, #da1e28);
-  border-left: 0.375rem solid var(--support-error, #da1e28);
+  border: 1px solid var(--semantic-color-support-error);
+  border-left: 0.375rem solid var(--semantic-color-support-error);
   border-radius: 0.125rem;
   background-color: #fff1f1;
-  color: var(--text-primary, #161616);
+  color: var(--semantic-color-text-primary);
 
   .warning-icon {
-    fill: var(--support-error, #da1e28);
+    fill: var(--semantic-color-support-error);
     flex-shrink: 0;
     margin-top: 0.15rem;
   }

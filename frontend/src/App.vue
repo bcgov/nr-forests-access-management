@@ -28,7 +28,8 @@ const layoutComponent = computed(() => {
 
 <style lang="scss">
 @use "@/assets/styles/styles";
-@use "@/assets/styles/themes";
-@import "primevue/resources/primevue.min.css";
-@import "primevue/resources/themes/bootstrap4-light-blue/theme.css";
+@use "@/passthrough/dialog/dialogPassThrough.scss";
+@use "@/passthrough/input/inputPassThrough.scss";
+@use "@/passthrough/button/buttonPassThrough.scss";
+@use "@/passthrough/radiobutton/radioButtonPassThrough.scss";
 </style>

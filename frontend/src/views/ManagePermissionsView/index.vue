@@ -39,9 +39,12 @@ import {
     type FamAccessControlPrivilegeResponse,
 } from "fam-admin-mgmt-api/model";
 import type { FamUserRoleAssignmentRes } from "fam-app-acsctl-api/model";
-import type { DropdownChangeEvent } from "primevue/dropdown";
+import type { SelectChangeEvent } from "primevue/select";
+import Tab from "primevue/tab";
+import TabList from "primevue/tablist";
 import TabPanel from "primevue/tabpanel";
-import TabView, { type TabViewChangeEvent } from "primevue/tabview";
+import TabPanels from "primevue/tabpanels";
+import Tabs from "primevue/tabs";
 import { computed, onUnmounted, ref, watch, type Component } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import {
@@ -84,7 +87,7 @@ const addFamPermissionErrorData = queryClient.getQueryData<string>([
     AddAppAdminErrorQueryKey,
 ]);
 
-const handleApplicationChange = (e: DropdownChangeEvent) => {
+const handleApplicationChange = (e: SelectChangeEvent) => {
     setSelectedApp(e.value);
     router.replace({ query: { appId: e.value.id } });
     clearNotifications(queryClient, notifications);
@@ -235,8 +238,8 @@ watch(
     { immediate: true }
 );
 
-const onTabChange = (event: TabViewChangeEvent) => {
-    activeTabIndex.value = event.index;
+const onTabValueChange = (value: string | number) => {
+    activeTabIndex.value = Number(value);
     clearNotifications(queryClient, notifications);
 };
 
@@ -309,30 +312,39 @@ onUnmounted(() => {
             />
             <TablePlaceholder v-if="!selectedApp" />
             <div v-else class="tab-view-container">
-                <TabView
-                    :active-index="activeTabIndex"
-                    @tab-change="onTabChange"
+                <Tabs
+                    :value="activeTabIndex"
+                    @update:value="onTabValueChange"
                 >
-                    <TabPanel
-                        v-for="tab in visibleTabs"
-                        :key="tab.key"
-                        :header="tabHeaders[tab.key]"
-                    >
-                        <template #header>
+                    <TabList>
+                        <Tab
+                            v-for="(tab, idx) in visibleTabs"
+                            :key="tab.key"
+                            :value="idx"
+                        >
                             <component :is="tab.icon" />
-                        </template>
-                        <ManagePermissionsTable
-                            :key="selectedApp.id"
-                            class="tab-table"
-                            :table-type="tab.key"
-                            :app-name="
-                                selectedApp.description ?? selectedApp.name
-                            "
-                            :app-id="selectedApp.id"
-                            :add-notifications="addNotifications"
-                        />
-                    </TabPanel>
-                </TabView>
+                            {{ tabHeaders[tab.key] }}
+                        </Tab>
+                    </TabList>
+                    <TabPanels>
+                        <TabPanel
+                            v-for="(tab, idx) in visibleTabs"
+                            :key="tab.key"
+                            :value="idx"
+                        >
+                            <ManagePermissionsTable
+                                :key="selectedApp.id"
+                                class="tab-table"
+                                :table-type="tab.key"
+                                :app-name="
+                                    selectedApp.description ?? selectedApp.name
+                                "
+                                :app-id="selectedApp.id"
+                                :add-notifications="addNotifications"
+                            />
+                        </TabPanel>
+                    </TabPanels>
+                </Tabs>
             </div>
         </div>
     </div>
@@ -362,13 +374,13 @@ onUnmounted(() => {
         display: flex;
         flex-direction: column;
         margin: 2.5rem -2.5rem 0 -2.5rem;
-        background: var(--layer-01);
+        background: var(--semantic-color-surface-layer-1);
         min-height: calc(100vh - 19rem);
         padding: 2.5rem;
     }
 
-    .p-tabview-header {
-        .p-tabview-nav-link {
+    .p-tablist {
+        .p-tab {
             height: 3rem;
         }
     }

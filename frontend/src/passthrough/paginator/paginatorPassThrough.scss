@@ -1,0 +1,131 @@
+/**
+ * PrimeVue v4 Paginator Component Styling
+ * Migrated from primevue-components-overrides.scss (lines 246-307)
+ *
+ * Uses CSS custom properties from fam-custom-tokens.css for design consistency.
+ */
+
+/* ================================ Paginator Root Container ================================ */
+
+.p-paginator.fam-paginator {
+  padding: 0;
+  flex-wrap: nowrap;
+}
+
+/* ================================ Paginator Content Container ================================ */
+
+.p-paginator.fam-paginator .fam-paginator-content {
+  width: 100%;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+}
+
+/* ================================ Rows Per Page Select Dropdown ================================ */
+
+/**
+ * Rows per page select styling
+ */
+.fam-paginator-content .p-select {
+  border: none;
+  height: 3.2rem;
+  font-size: 0.875rem;
+  font-weight: 400;
+  background-color: transparent;
+  margin-left: 0;
+  margin-right: 0.144rem;
+  border-radius: 0;
+
+  .p-select-label {
+    padding: 0 0.2rem 0 1.4rem;
+    align-self: center;
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 1rem;
+    color: var(--semantic-color-text-secondary);
+  }
+
+  .p-select-dropdown-icon,
+  .p-select-dropdown-icon svg {
+    width: 0.7rem;
+    height: 0.7rem;
+  }
+}
+
+.fam-paginator-content .p-select:hover,
+.fam-paginator-content .p-select:focus,
+.fam-paginator-content .p-select.p-focus {
+  background-color: transparent;
+  border-radius: 0;
+}
+
+/* ================================ Paginator Elements (Current, Nav Buttons) ================================ */
+
+/**
+ * Current page indicator styling
+ * Displays the current page information
+ */
+.fam-paginator .fam-paginator-current,
+.fam-paginator .p-paginator-current {
+  border: none;
+  height: 3.2rem;
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: var(--semantic-color-text-secondary);
+  border-left: solid 0.063rem var(--semantic-color-border-subtle);
+  flex: 1 1 auto;
+  min-width: 0;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  cursor: auto;
+  display: flex;
+  align-items: center;
+}
+
+/**
+ * Navigation button styling (first/previous/page numbers/next/last)
+ * Targets buttons that navigate between pages
+ */
+.fam-paginator .p-paginator-first,
+.fam-paginator .p-paginator-prev,
+.fam-paginator .p-paginator-page,
+.fam-paginator .p-paginator-next,
+.fam-paginator .p-paginator-last {
+  border: none;
+  height: 3.2rem;
+  font-size: 0.875rem;
+  color: var(--semantic-color-text-secondary);
+  border-left: solid 0.063rem var(--semantic-color-border-subtle);
+  border-radius: 0;
+}
+
+.fam-paginator .p-paginator-prev {
+  margin-left: auto;
+}
+
+/* ================================ Focus States ================================ */
+
+/**
+ * Focus state for navigation buttons
+ * Applies focus styling to prev/next buttons for accessibility
+ */
+.fam-paginator .p-paginator-first:focus,
+.fam-paginator .p-paginator-prev:focus,
+.fam-paginator .p-paginator-page:focus,
+.fam-paginator .p-paginator-next:focus,
+.fam-paginator .p-paginator-last:focus {
+  border-color: var(--semantic-color-focus-default);
+  border: 0.125rem solid var(--semantic-color-focus-default);
+  box-shadow: unset;
+}
+
+/**
+ * Focus state for select dropdown
+ * Ensures proper focus styling for the rows per page dropdown
+ */
+.fam-paginator-content .p-select:focus {
+  border-color: var(--semantic-color-focus-default);
+  box-shadow: 0 0 0 0.1rem var(--semantic-color-focus-default);
+}
+
+

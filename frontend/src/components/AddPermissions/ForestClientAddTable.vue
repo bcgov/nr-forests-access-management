@@ -201,9 +201,7 @@ onUnmounted(() => {
                         @input="enforceNumber"
                         @keydown.enter.prevent="addOrganization()"
                         :maxlength="FOREST_CLIENT_INPUT_MAX_LENGTH"
-                        :class="{
-                            'is-invalid': errorMessage || !props.formValues.forestClientInput.isValid,
-                        }"
+                        :invalid="!!(errorMessage || !props.formValues.forestClientInput.isValid)"
                         :disabled="props.formValues.forestClientInput.isVerifying"
                     />
                     <HelperText
@@ -286,7 +284,7 @@ onUnmounted(() => {
         margin-top: 1.5rem;
 
         .p-datatable-emptymessage {
-            background-color: var(--layer-01);
+            background-color: var(--semantic-color-surface-layer-1);
         }
     }
 }

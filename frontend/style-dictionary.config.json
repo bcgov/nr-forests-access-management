@@ -1,0 +1,28 @@
+{
+  "source": [
+    "src/assets/tokens/fam-custom-tokens.json"
+  ],
+  "platforms": {
+    "css": {
+      "transformGroup": "css",
+      "buildPath": "src/assets/generated/css/",
+      "files": [
+        {
+          "destination": "fam-custom-tokens.css",
+          "format": "css/variables"
+        }
+      ]
+    },
+
+    "js": {
+      "transformGroup": "js",
+      "buildPath": "src/assets/generated/ts/",
+      "files": [
+        {
+          "destination": "fam-custom-tokens.js",
+          "format": "javascript/es6"
+        }
+      ]
+    }
+  }
+}
