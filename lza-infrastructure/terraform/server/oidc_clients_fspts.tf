@@ -13,9 +13,9 @@ resource "aws_cognito_user_pool_client" "dev_fspts_oidc_client" {
   logout_urls                                   = concat(
     [
       var.oidc_sso_playground_url,
-      "${var.cognito_app_client_logout_chain_url.dev}http://localhost:3000",
+      "http://localhost:3000",
     ],
-    [for i in range("${var.dev_pr_url_count}") : "${var.cognito_app_client_logout_chain_url.dev}https://nr-fspts-${i}.apps.silver.devops.gov.bc.ca"]
+    [for i in range("${var.dev_pr_url_count}") : "https://nr-fspts-${i}.apps.silver.devops.gov.bc.ca"]
   )
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
@@ -50,14 +50,12 @@ resource "aws_cognito_user_pool_client" "test_fspts_oidc_client" {
   allowed_oauth_flows_user_pool_client          = "true"
   allowed_oauth_scopes                          = ["openid", "profile", "email"]
   callback_urls                                 = [
-    var.oidc_sso_playground_url,
     "http://localhost:3000/auth/callback",
     "https://nr-fspts-test.apps.silver.devops.gov.bc.ca/auth/callback"
   ]
   logout_urls                                   = [
-    var.oidc_sso_playground_url,
-    "${var.cognito_app_client_logout_chain_url.test}http://localhost:3000",
-    "${var.cognito_app_client_logout_chain_url.test}https://nr-fspts-test.apps.silver.devops.gov.bc.ca/logout"
+    "http://localhost:3000",
+    "https://nr-fspts-test.apps.silver.devops.gov.bc.ca"
   ]
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
@@ -95,7 +93,7 @@ resource "aws_cognito_user_pool_client" "prod_fspts_oidc_client" {
     "https://fspts.nrs.gov.bc.ca/auth/callback"
   ]
   logout_urls                                   = [
-    "${var.cognito_app_client_logout_chain_url.prod}https://fspts.nrs.gov.bc.ca/logout"
+    "https://fspts.nrs.gov.bc.ca"
   ]
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
