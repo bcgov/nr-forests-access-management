@@ -1,5 +1,23 @@
 # Changelog
 
+## [2.20.0](https://github.com/bcgov/nr-forests-access-management/compare/v2.19.6...v2.20.0) (2026-07-24)
+
+
+### Features
+
+* [#2169](https://github.com/bcgov/nr-forests-access-management/issues/2169) Primevue v4 upgrade ([#2231](https://github.com/bcgov/nr-forests-access-management/issues/2231)) ([d931148](https://github.com/bcgov/nr-forests-access-management/commit/d9311481e22dc1c7eb0b183b3c369a8375076562))
+* enable lexis refresh token rotation ([#2279](https://github.com/bcgov/nr-forests-access-management/issues/2279)) ([53d0ac3](https://github.com/bcgov/nr-forests-access-management/commit/53d0ac32fb3a88737cad67de162b0a9a0c4ceb65))
+* small change for FSP vanity URL ([#2271](https://github.com/bcgov/nr-forests-access-management/issues/2271)) ([62bec99](https://github.com/bcgov/nr-forests-access-management/commit/62bec996efa9536bc4d467eb24b49a61e2e5e096))
+* small redirectURI update for FSP clients ([#2278](https://github.com/bcgov/nr-forests-access-management/issues/2278)) ([2c0f558](https://github.com/bcgov/nr-forests-access-management/commit/2c0f5585001cf0f209e6fc5b94bdfd361066f120))
+* small redirectURI update for REPT clients ([#2282](https://github.com/bcgov/nr-forests-access-management/issues/2282)) ([b30e47e](https://github.com/bcgov/nr-forests-access-management/commit/b30e47e6c6ce3805c96bfc0d798a471a6dce9666))
+* small refresh token update for FSP clients ([#2276](https://github.com/bcgov/nr-forests-access-management/issues/2276)) ([23eb4db](https://github.com/bcgov/nr-forests-access-management/commit/23eb4dbcccef12289e79141973cd228e0879b1db))
+
+
+### Bug Fixes
+
+* return lexis logout to application ([#2275](https://github.com/bcgov/nr-forests-access-management/issues/2275)) ([7a85db6](https://github.com/bcgov/nr-forests-access-management/commit/7a85db62bf6f48bae26c35ab07c8ed13389d31af))
+* some renovate prs ([#2267](https://github.com/bcgov/nr-forests-access-management/issues/2267)) ([3e58148](https://github.com/bcgov/nr-forests-access-management/commit/3e5814841bde6280a10ebc36e7c2193234dfd1ee))
+
 ## [2.19.6](https://github.com/bcgov/nr-forests-access-management/compare/v2.19.5...v2.19.6) (2026-07-16)
 
 
