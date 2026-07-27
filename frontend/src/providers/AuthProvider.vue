@@ -14,6 +14,8 @@ import { AUTH_KEY } from "@/constants/InjectionKeys";
 import { ONE_SECOND, THREE_MINUTES, HALF_HOUR } from "@/constants/TimeUnits";
 import { IdpProvider } from "@/enum/IdpEnum";
 import { EnvironmentSettings } from "@/services/EnvironmentSettings";
+import { buildFederatedLogoutUrl } from "@/utils/logoutChain";
+import { clearStoredTokens } from "@/utils/AuthUtils";
 import { authState } from "@/providers/authState";
 import { useRouter } from "vue-router";
 import Spinner from "@/components/UI/Spinner.vue";
@@ -79,12 +81,31 @@ const login = async (idP: IdpTypes) => {
 
 /**
  * Logs the user out and resets authentication state.
+ *
+ * When the federated logout chain is configured, this drives a full-page
+ * navigation through Siteminder → Keycloak → Cognito → app so every upstream
+ * session is terminated (not just Cognito). Local Amplify tokens are cleared
+ * first so the post-chain landing renders logged-out. If the chain config is
+ * incomplete, it falls back to a plain Amplify `signOut()` (Cognito-only).
  */
 const logout = async () => {
     stopSilentRefresh();
 
     delete axios.defaults.headers.common["Authorization"];
 
+    const chainUrl = buildFederatedLogoutUrl(
+        environmentSettings.getFrontEndRedirectBaseUrl(),
+        authState.value.famLoginUser?.idpProvider
+    );
+    if (chainUrl) {
+        clearStoredTokens();
+        // Full-page navigation hands the browser to the chain; the SPA is
+        // discarded, so nothing after this runs and no authState reset is needed.
+        window.location.assign(chainUrl);
+        return;
+    }
+
+    // Fallback: chain not configured → Cognito-only sign-out via Amplify.
     authState.value = {
         isAuthenticated: false,
         famLoginUser: null,
