@@ -30,9 +30,24 @@ output "fam_cognito_domain" {
   value       = aws_cognito_user_pool_domain.main.domain
 }
 
-output "frontend_logout_chain_url" {
-  description = "Url of Siteminder and Keycloak logout chain for FAM frontend"
-  value = var.target_env == "prod" ? var.cognito_app_client_logout_chain_url.prod : var.cognito_app_client_logout_chain_url.test
+output "logout_siteminder_url" {
+  description = "Siteminder logoff endpoint for the FAM frontend federated logout chain"
+  value       = var.target_env == "prod" ? var.prod_siteminder_logout_url : var.test_siteminder_logout_url
+}
+
+output "logout_keycloak_url" {
+  description = "Keycloak (loginproxy) end-session endpoint for the FAM frontend federated logout chain"
+  value       = var.target_env == "prod" ? "${var.prod_oidc_idp_issuer}/protocol/openid-connect/logout" : "${var.test_oidc_idp_issuer}/protocol/openid-connect/logout"
+}
+
+output "logout_keycloak_client_id_idir" {
+  description = "Keycloak (Cognito-as-OIDC-client) client id for IDIR — used by the logout chain"
+  value       = var.oidc_idir_idp_client_id
+}
+
+output "logout_keycloak_client_id_bceidbusiness" {
+  description = "Keycloak (Cognito-as-OIDC-client) client id for BCeID Business — used by the logout chain"
+  value       = var.oidc_bceid_business_idp_client_id
 }
 
 output "front_end_redirect_base_url" {

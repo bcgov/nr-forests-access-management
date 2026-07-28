@@ -64,6 +64,18 @@ variable "prod_oidc_idp_issuer" {
   default = "https://loginproxy.gov.bc.ca/auth/realms/standard"
 }
 
+# Siteminder logoff endpoints (IDIR / BCeID CLP session) for the FAM frontend
+# federated logout chain.
+variable "test_siteminder_logout_url" {
+  type    = string
+  default = "https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi"
+}
+
+variable "prod_siteminder_logout_url" {
+  type    = string
+  default = "https://logon7.gov.bc.ca/clp-cgi/logoff.cgi"
+}
+
 # OIDC issuers at BCSC
 
 variable "dev_bcsc_oidc_idp_issuer" {

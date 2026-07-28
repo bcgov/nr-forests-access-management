@@ -8,11 +8,9 @@
  * optional "?" simply let the Amplify to throw more meaningful error.
  */
 
-const rawEnv = window.localStorage.getItem("env_data");
-if (!rawEnv) {
-    throw new Error("Missing env_data in localStorage");
-}
-const env = JSON.parse(rawEnv);
+import { requireEnvData } from "@/utils/EnvUtils";
+
+const env = requireEnvData();
 
 const verificationMethods: "code" | "token" = "code";
 
@@ -28,9 +26,10 @@ const config = {
                     redirectSignIn: [
                         `${env.front_end_redirect_base_url.value}/authCallback`,
                     ], // For some reason, vue nested path (/cognito/callback) does not work yet.
-                    redirectSignOut: [
-                        `${env.frontend_logout_chain_url.value}${env.front_end_redirect_base_url.value}`,
-                    ],
+                    // Plain app origin. The federated logout chain is now driven
+                    // in code (see utils/logoutChain.ts); this value backs only
+                    // the Amplify fallback sign-out (Cognito-only).
+                    redirectSignOut: [`${env.front_end_redirect_base_url.value}`],
                     responseType: verificationMethods,
                 },
             },

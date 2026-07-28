@@ -33,7 +33,7 @@ generate "prod_tfvars" {
     "https://fam.nrs.gov.bc.ca/authCallback"
   ]
   fam_logout_urls = [
-    "${local.common_vars.inputs.idp_logout_chain_prod_url}https://fam.nrs.gov.bc.ca"
+    "https://fam.nrs.gov.bc.ca"
   ]
   fam_console_idp_name = "PROD-IDIR"
   fam_console_idp_name_bceid = "PROD-BCEIDBUSINESS"
