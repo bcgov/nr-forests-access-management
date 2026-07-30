@@ -1,3 +1,4 @@
+import { getEnvData } from '@/utils/EnvUtils';
 
 export enum DeployEnv {
     TOOLS = 'tools',
@@ -17,9 +18,7 @@ export class EnvironmentSettings {
     };
 
     constructor() {
-        this.env = JSON.parse(
-            window.localStorage.getItem('env_data') as string
-        );
+        this.env = getEnvData();
         // This is deployment environment (AWS)
         const environment = this.env?.target_env.value as string;
         if (
@@ -40,6 +39,11 @@ export class EnvironmentSettings {
 
     getIdentityProviderBceid(): string {
         return this.env?.fam_console_idp_name_bceid.value;
+    }
+
+    // App origin the browser lands on after login/logout redirects.
+    getFrontEndRedirectBaseUrl(): string {
+        return this.env?.front_end_redirect_base_url.value;
     }
 
     // Admin Management API
