@@ -406,6 +406,31 @@ variable "gc_notify_email_api_key" {
   sensitive = true
 }
 
+# CHES (Common Hosted Email Service) — email provider.
+variable "ches_client_id" {
+  type = string
+  sensitive = true
+  default = ""
+}
+
+variable "ches_client_secret" {
+  type = string
+  sensitive = true
+  default = ""
+}
+
+variable "ches_token_url" {
+  type = string
+  # OAuth2 token endpoint (Keycloak realm 'comsvcauth'). Test host by default;
+  # prod overrides this in landing-zone/server/prod/terragrunt.hcl.
+  default = "https://test.loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token"
+}
+
+variable "ches_email_from" {
+  type = string
+  default = "Forest Access Management <do-not-reply-fam@gov.bc.ca>"
+}
+
 variable "fam_update_user_info_api_key" {
   type = string
   sensitive = true

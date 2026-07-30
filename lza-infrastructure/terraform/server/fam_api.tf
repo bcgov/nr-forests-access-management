@@ -143,6 +143,13 @@ resource "aws_lambda_function" "fam-api-function" {
       IDIM_PROXY_BASE_URL_PROD = "${var.idim_proxy_api_base_url_prod}"
       IDIM_PROXY_API_KEY = "${var.idim_proxy_api_api_key}"
       GC_NOTIFY_EMAIL_API_KEY = "${var.gc_notify_email_api_key}"
+      # Email provider switch: defaults to gc_notify in every environment. Flip a
+      # Lambda's EMAIL_PROVIDER to "ches" manually to test CHES (reset on next deploy).
+      EMAIL_PROVIDER = "gc_notify"
+      CHES_CLIENT_ID = "${var.ches_client_id}"
+      CHES_CLIENT_SECRET = "${var.ches_client_secret}"
+      CHES_TOKEN_URL = "${var.ches_token_url}"
+      CHES_EMAIL_FROM = "${var.ches_email_from}"
       TARGET_ENV = "${var.target_env}"
     }
 

@@ -41,5 +41,6 @@ generate "prod_tfvars" {
   forest_client_api_base_url_prod = "${local.common_vars.inputs.forest_client_api_prod_base_url}"
   use_override_proxy_endpoints = false
   idim_proxy_api_base_url_prod = "https://nr-fam-idim-lookup-proxy-prod-backend.apps.silver.devops.gov.bc.ca"
+  ches_token_url = "https://loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token"
 EOF
 }
