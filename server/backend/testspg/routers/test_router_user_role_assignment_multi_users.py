@@ -56,8 +56,8 @@ def mock_crud_create_user_role_assignment_many(mocker):
 
 @pytest.fixture
 def mock_email_send(mocker):
-    """Mock GC Notify email send used by send_users_access_granted_emails."""
-    return mocker.patch("api.app.crud.crud_user_role.GCNotifyEmailService.send_user_access_granted_email")
+    """Mock the email send used by send_users_access_granted_emails."""
+    return mocker.patch("api.app.integration.gc_notify.GCNotifyEmailService.send_user_access_granted_email")
 
 
 @pytest.fixture
