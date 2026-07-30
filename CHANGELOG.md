@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.22.0](https://github.com/bcgov/nr-forests-access-management/compare/v2.21.0...v2.22.0) (2026-07-30)
+
+
+### Features
+
+* Added bceid FAM config for SCS ([#2286](https://github.com/bcgov/nr-forests-access-management/issues/2286)) ([a7fe77b](https://github.com/bcgov/nr-forests-access-management/commit/a7fe77bf1af18c4a477d9099d2fa87ca43f3ebc9))
+
 ## [2.21.0](https://github.com/bcgov/nr-forests-access-management/compare/v2.20.0...v2.21.0) (2026-07-30)
 
 
