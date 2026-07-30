@@ -95,6 +95,14 @@ class EmailSendingStatus(str, Enum):
     SENT_TO_EMAIL_SERVICE_FAILURE = "SENT_TO_EMAIL_SERVICE_FAILURE"  # technical/validation failure during sending to external service.
 
 
+class EmailProvider(str, Enum):
+    # Selects which email integration the factory returns. Controlled by the
+    # EMAIL_PROVIDER env var; defaults to GC_NOTIFY. During the CHES migration both
+    # coexist so an environment can be flipped for testing before permanent cutover.
+    GC_NOTIFY = "gc_notify"
+    CHES = "ches"
+
+
 class UserRoleSortByEnum(str, Enum):
     # Note: this is not the exact model column name, requires table column mapping.
     CREATE_DATE = "create_date"  # first one is the default sort field

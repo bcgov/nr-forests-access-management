@@ -13,7 +13,7 @@ from api.app.crud.validator.forest_client_validator import (
     get_forest_client_status)
 from api.app.integration.forest_client_integration import \
     ForestClientIntegrationService
-from api.app.integration.gc_notify import GCNotifyEmailService
+from api.app.integration.email_service_factory import get_email_service
 from api.app.models import model as models
 from api.app.schemas import (FamApplicationUserRoleAssignmentGetSchema,
                              FamRoleCreateSchema,
@@ -396,7 +396,7 @@ def send_users_access_granted_emails(
                 if is_forest_client_scoped_role
                 else None
             )
-            email_service = GCNotifyEmailService()
+            email_service = get_email_service()
             email_params = GCNotifyGrantAccessEmailParamSchema(
                 **{
                     "user_name": target_user.user_name,
