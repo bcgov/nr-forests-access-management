@@ -24,7 +24,7 @@ resource "aws_cognito_user_pool_client" "dev_frep_oidc_client" {
   name                                          = "frep_dev"
   prevent_user_existence_errors                 = "ENABLED"
   read_attributes                               = var.minimum_oidc_attribute_list
-  refresh_token_validity                        = "60"
+  refresh_token_validity                        = "600"
   refresh_token_rotation {
       feature                    = "ENABLED"
       retry_grace_period_seconds = 0
@@ -64,7 +64,7 @@ resource "aws_cognito_user_pool_client" "test_frep_oidc_client" {
   name                                          = "frep_test"
   prevent_user_existence_errors                 = "ENABLED"
   read_attributes                               = var.minimum_oidc_attribute_list
-  refresh_token_validity                        = "60"
+  refresh_token_validity                        = "600"
   refresh_token_rotation {
       feature                    = "ENABLED"
       retry_grace_period_seconds = 0
@@ -102,7 +102,7 @@ resource "aws_cognito_user_pool_client" "prod_frep_oidc_client" {
   name                                          = "frep_prod"
   prevent_user_existence_errors                 = "ENABLED"
   read_attributes                               = var.minimum_oidc_attribute_list
-  refresh_token_validity                        = "60"
+  refresh_token_validity                        = "600"
   refresh_token_rotation {
       feature                    = "ENABLED"
       retry_grace_period_seconds = 0
