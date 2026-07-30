@@ -6,7 +6,7 @@ from api.app import constants as famConstants
 from api.app.decorators.forest_client_dec import post_sync_forest_clients_dec
 from api.app.integration.forest_client_integration import \
     ForestClientIntegrationService
-from api.app.integration.gc_notify import GCNotifyEmailService
+from api.app.integration.email_service_factory import get_email_service
 from api.app.repositories.access_control_privilege_repository import \
     AccessControlPrivilegeRepository
 from api.app.schemas.forest_client_integration import \
@@ -294,7 +294,7 @@ class AccessControlPrivilegeService:
             if len(granted_roles_res) == 0:  # no role is granted
                 return
 
-            gc_notify_email_service = GCNotifyEmailService()
+            email_service = get_email_service()
             is_bceid_user = "yes" if target_user.user_type_code == famConstants.UserType.BCEID else "no"
             granted_role = access_control_priviliege_response[0].detail.role
             is_forest_client_scoped_role = granted_role.forest_client is not None
@@ -303,7 +303,7 @@ class AccessControlPrivilegeService:
                 if is_forest_client_scoped_role
                 else None
             )
-            email_response = gc_notify_email_service.send_delegated_admin_granted_email(
+            email_response = email_service.send_delegated_admin_granted_email(
                 GCNotifyGrantDelegatedAdminEmailParam(
                     ** {
                         "send_to_email_address": target_user.email,

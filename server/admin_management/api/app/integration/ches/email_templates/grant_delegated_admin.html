@@ -1,0 +1,45 @@
+<!--
+  FAM "delegated administrator granted" email (admin_management).
+
+  Rendered server-side by CHES (nunjucks). Available context variables:
+    user_name, first_name, last_name, application_name, role_display_name,
+    organization_list (array of {client_name, forest_client_number}),
+    application_team_contact_email (string, "" when none),
+    is_bceid_user (bool), login_url, terms_conditions_url.
+-->
+<p>Hello {{ first_name }} {{ last_name }} (username: {{ user_name }}),</p>
+
+<p>You've been assigned the <strong>Delegated Administrator</strong> role for
+<strong>{{ application_name }}</strong>.</p>
+
+<p>With this role, you can:</p>
+<p>
+  ✅ Manage user access for your organization<br>
+  {% if organization_list.length %}
+  ✅ Grant <strong>{{ role_display_name }}</strong> role to users in:
+  {% else %}
+  ✅ Grant <strong>{{ role_display_name }}</strong> role to users.
+  {% endif %}
+</p>
+{% if organization_list.length %}
+<ul>
+  {% for org in organization_list %}
+  <li><strong>{{ org.client_name }}</strong> (Forest Client: {{ org.forest_client_number }})</li>
+  {% endfor %}
+</ul>
+{% endif %}
+
+<p>👉 Log in now: <a href="{{ login_url }}">{{ login_url }}</a> to manage access.</p>
+
+{% if is_bceid_user %}
+<p>As a Delegated Administrator, you must comply with our
+<a href="{{ terms_conditions_url }}">terms and conditions</a>.</p>
+{% endif %}
+
+{% if application_team_contact_email %}
+<p>Please contact your administrator {{ application_team_contact_email }} if you have any question.</p>
+{% else %}
+<p>If you have any question, please contact your administrator.</p>
+{% endif %}
+
+<p><em>This is an automated email. Please do not reply.</em></p>

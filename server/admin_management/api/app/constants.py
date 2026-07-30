@@ -58,6 +58,13 @@ class EmailSendingStatus(str, Enum):
     SENT_TO_EMAIL_SERVICE_SUCCESS = "SENT_TO_EMAIL_SERVICE_SUCCESS"  # send to external service successful.
     SENT_TO_EMAIL_SERVICE_FAILURE = "SENT_TO_EMAIL_SERVICE_FAILURE"  # technical/validation failure during sending to external service.
 
+
+class EmailProvider(str, Enum):
+    # Selects which email integration the factory returns. Controlled by the
+    # EMAIL_PROVIDER env var; defaults to GC_NOTIFY.
+    GC_NOTIFY = "gc_notify"
+    CHES = "ches"
+
 # Note! There is an issue for openapi generator to generate an enum with only 1 constant.
 # Since in future we plan to use "District", it is added (and can be used later) here
 # so openapi can generate it with no prolbme but for now it is a holder.

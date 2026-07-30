@@ -3,7 +3,7 @@ import logging
 import os
 
 import boto3
-from api.app.constants import ApiInstanceEnv
+from api.app.constants import ApiInstanceEnv, EmailProvider
 
 LOGGER = logging.getLogger(__name__)
 
@@ -169,3 +169,33 @@ def get_idim_proxy_api_key():
 def get_gc_notify_email_api_key():
     gc_notify_email_api_key = get_env_var("GC_NOTIFY_EMAIL_API_KEY")
     return gc_notify_email_api_key
+
+
+def get_email_provider():
+    # Selects the email integration used by the email service factory.
+    # Defaults to GC Notify so merging/deploying does not change behaviour until an
+    # environment is explicitly flipped to CHES. See EmailProvider enum.
+    return os.environ.get("EMAIL_PROVIDER", EmailProvider.GC_NOTIFY.value).lower()
+
+
+def get_ches_client_id():
+    return get_env_var("CHES_CLIENT_ID")
+
+
+def get_ches_client_secret():
+    return get_env_var("CHES_CLIENT_SECRET")
+
+
+def get_ches_token_url():
+    # OAuth2 client-credentials token endpoint.
+    # Differs per environment (test.loginproxy vs loginproxy), so kept as an env var.
+    return get_env_var("CHES_TOKEN_URL")
+
+
+def get_ches_email_from():
+    # 'from' sender for CHES emails.
+    # Override via CHES_EMAIL_FROM if needed.
+    return os.environ.get(
+        "CHES_EMAIL_FROM",
+        "Forest Access Management <do-not-reply-fam@gov.bc.ca>",
+    )
