@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.21.0](https://github.com/bcgov/nr-forests-access-management/compare/v2.20.0...v2.21.0) (2026-07-30)
+
+
+### Features
+
+* New FREP CHR roles and redirect uris ([#2283](https://github.com/bcgov/nr-forests-access-management/issues/2283)) ([8d0635a](https://github.com/bcgov/nr-forests-access-management/commit/8d0635a7c40475ec5eb8042dc81bbb5cc28d529c))
+
+
+### Bug Fixes
+
+* [#2281](https://github.com/bcgov/nr-forests-access-management/issues/2281) FAM Logout Fix ([#2284](https://github.com/bcgov/nr-forests-access-management/issues/2284)) ([adc40cd](https://github.com/bcgov/nr-forests-access-management/commit/adc40cd19be560c0292511de10f1367f08fccbfe))
+
 ## [2.20.0](https://github.com/bcgov/nr-forests-access-management/compare/v2.19.6...v2.20.0) (2026-07-24)
 
 
