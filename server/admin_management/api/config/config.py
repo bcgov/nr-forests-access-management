@@ -169,3 +169,26 @@ def get_idim_proxy_api_key():
 def get_gc_notify_email_api_key():
     gc_notify_email_api_key = get_env_var("GC_NOTIFY_EMAIL_API_KEY")
     return gc_notify_email_api_key
+
+
+# ------------------------------- CSS (Keycloak) API -------------------------------- #
+# Proof of concept: the BC Gov Common Hosted Single Sign-On API, used to source
+# integrations (the CSS equivalent of a FAM application) rather than fam_application.
+# See .ai/keycloak-css-feasibility.md
+def get_css_api_baseurl():
+    return os.environ.get("CSS_API_URL", "https://api.loginproxy.gov.bc.ca/api/v1")
+
+
+def get_css_token_url():
+    return os.environ.get(
+        "CSS_TOKEN_URL",
+        "https://loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/token",
+    )
+
+
+def get_css_client_id():
+    return get_env_var("CSS_CLIENT_ID")
+
+
+def get_css_client_secret():
+    return get_env_var("CSS_CLIENT_SECRET")

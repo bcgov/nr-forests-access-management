@@ -2,6 +2,7 @@
 import {
     isAbstractRoleSelected,
     type AppPermissionFormType,
+    type RoleOption,
 } from "@/views/AddAppPermission/utils";
 import type { FamRoleGrantDto } from "fam-admin-mgmt-api/model";
 import type { SelectChangeEvent } from "primevue/select";
@@ -27,7 +28,7 @@ import { watch } from "vue";
  * manipulate parent form values.
  */
 const props = defineProps<{
-    roleOptions: FamRoleGrantDto[];
+    roleOptions: RoleOption[];
     appId: number;
     forestClientsFieldId: string;
     formValues: AppPermissionFormType;

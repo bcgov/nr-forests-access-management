@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import {
-    isAbstractRoleSelected,
+    isClientScopedRoleSelected,
+    isDistrictScopedRoleSelected,
     type AppPermissionFormType,
+    type RoleOption,
 } from "@/views/AddAppPermission/utils";
-import { RoleType, type FamRoleGrantDto } from "fam-admin-mgmt-api/model";
+import { RoleType } from "fam-admin-mgmt-api/model";
 import Column from "primevue/column";
 import ConfirmDialog from "primevue/confirmdialog";
 import DataTable from "primevue/datatable";
@@ -13,14 +15,16 @@ import { ErrorMessage, Field } from "vee-validate";
 import { computed, ref } from "vue";
 import Label from "../UI/Label.vue";
 import DelegatedAdminSection from "./DelegatedAdminSection.vue";
+import DistrictSelectTable from "./DistrictSelectTable.vue";
 import ForestClientAddTable from "./ForestClientAddTable.vue";
 import ForestClientSelectTable from "./ForestClientSelectTable.vue";
 
 const props = defineProps<{
     appId: number;
-    roleOptions: FamRoleGrantDto[];
+    roleOptions: RoleOption[];
     roleFieldId: string;
     forestClientsFieldId: string;
+    districtsFieldId: string;
     /**
      * Determines whether the logged in user is only a d-admin and not an app admin
      */
@@ -45,12 +49,12 @@ const confirm = useConfirm();
 /**
  * An intermediate value to accommodate the fake delegated admin role.
  */
-const selectedRole = ref<FamRoleGrantDto | null>(props.formValues.role);
+const selectedRole = ref<RoleOption | null>(props.formValues.role);
 
 /**
  * A fake d-admin row data for display purpose in the role table.
  */
-const delegatedAdminRow: FamRoleGrantDto = {
+const delegatedAdminRow: RoleOption = {
     id: -999,
     name: "delegated_admin",
     display_name: "Delegated admin",
@@ -61,7 +65,7 @@ const delegatedAdminRow: FamRoleGrantDto = {
 };
 
 // Rows with or without the custom row for delegated admin
-const rows = computed<FamRoleGrantDto[]>(() => {
+const rows = computed<RoleOption[]>(() => {
     if (!props.isDelegatedAdminOnly) {
         return [...props.roleOptions, delegatedAdminRow];
     }
@@ -71,7 +75,7 @@ const rows = computed<FamRoleGrantDto[]>(() => {
 /**
  * Sets the role selectedRole then formData accordingly.
  */
-const setRoleAndClearClients = (role: FamRoleGrantDto) => {
+const setRoleAndClearClients = (role: RoleOption) => {
     if (role.id === delegatedAdminRow.id) {
         selectedRole.value = role;
         props.setFieldValue('role', null);
@@ -83,6 +87,7 @@ const setRoleAndClearClients = (role: FamRoleGrantDto) => {
     }
 
     props.setFieldValue('forestClients', []);
+    props.setFieldValue('districts', []);
     props.setFieldValue('forestClientInput', {
         ...props.formValues.forestClientInput,
         value: '',
@@ -91,8 +96,24 @@ const setRoleAndClearClients = (role: FamRoleGrantDto) => {
     });
 };
 
-const handleRoleSelect = (role: FamRoleGrantDto) => {
-    if ((props.formValues.forestClients?.length ?? 0) > 0) {
+/**
+ * Wording for the "changing role" confirmation, which covers both scope kinds.
+ */
+const scopeSelectionLabel = computed(() => {
+    const districtCount = props.formValues.districts?.length ?? 0;
+    if (districtCount > 0) {
+        return `district${districtCount > 1 ? "s" : ""}`;
+    }
+    const clientCount = props.formValues.forestClients?.length ?? 0;
+    return `organization${clientCount > 1 ? "s" : ""}`;
+});
+
+const handleRoleSelect = (role: RoleOption) => {
+    const hasScopeSelections =
+        (props.formValues.forestClients?.length ?? 0) > 0 ||
+        (props.formValues.districts?.length ?? 0) > 0;
+
+    if (hasScopeSelections) {
         confirm.require({
             group: "changeRole",
             header: "Changing Role",
@@ -114,9 +135,9 @@ const handleRoleSelect = (role: FamRoleGrantDto) => {
         >
             <template #message>
                 <p>
-                    Changing the role will remove the associated organization{{
-                        props.formValues.forestClients.length > 1 ? "s" : ""
-                    }}. Are you sure you want to continue?
+                    Changing the role will remove the associated
+                    {{ scopeSelectionLabel }}. Are you sure you want to
+                    continue?
                 </p>
             </template>
         </ConfirmDialog>
@@ -175,10 +196,21 @@ const handleRoleSelect = (role: FamRoleGrantDto) => {
                 <Column field="roleDescription" header="Description">
                     <template #body="{ data }">
                         <span>{{ data.description }}</span>
-                        <ForestClientSelectTable
+                        <DistrictSelectTable
                             v-if="
+                                selectedRole?.id !== delegatedAdminRow.id &&
+                                isDistrictScopedRoleSelected(props.formValues) &&
+                                props.formValues.role?.id === data.id
+                            "
+                            :field-id="props.districtsFieldId"
+                            :form-values="props.formValues"
+                            :set-field-value="props.setFieldValue"
+                        />
+
+                        <ForestClientSelectTable
+                            v-else-if="
                                 isDelegatedAdminOnly &&
-                                isAbstractRoleSelected(props.formValues) &&
+                                isClientScopedRoleSelected(props.formValues) &&
                                 props.formValues.role?.id === data.id
                             "
                             :app-id="props.appId"
@@ -190,7 +222,7 @@ const handleRoleSelect = (role: FamRoleGrantDto) => {
                         <ForestClientAddTable
                             v-else-if="
                                 selectedRole?.id !== delegatedAdminRow.id &&
-                                isAbstractRoleSelected(props.formValues) &&
+                                isClientScopedRoleSelected(props.formValues) &&
                                 props.formValues.role?.id === data.id
                             "
                             :app-id="props.appId"

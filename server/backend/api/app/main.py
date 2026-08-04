@@ -17,7 +17,7 @@ from starlette.responses import RedirectResponse
 
 from .jwt_validation import init_jwks
 from .kms_lookup import init_bcsc_public_key
-from .routers import (router_application, router_bcsc_proxy,
+from .routers import (router_application, router_bcsc_proxy, router_district,
                       router_forest_client, router_guards, router_idim_proxy,
                       router_permission_audit, router_smoke_test, router_user,
                       router_user_role_assignment,
@@ -114,6 +114,12 @@ app.include_router(
     prefix=internal_api_prefix + "/forest-clients",
     dependencies=[Depends(router_guards.authorize)],
     tags=["FAM Forest Clients"],
+)
+app.include_router(
+    router_district.router,
+    prefix=internal_api_prefix + "/districts",
+    dependencies=[Depends(router_guards.authorize)],
+    tags=["FAM Districts"],
 )
 app.include_router(
     router_idim_proxy.router,

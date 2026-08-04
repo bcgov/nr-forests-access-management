@@ -1,0 +1,19 @@
+# Copy to css-poc.env and fill in. *.env is gitignored at the repo root,
+# so css-poc.env will not be committed. Do not put the secret in this file.
+#
+#   cp scripts/css_api_poc/envExample scripts/css_api_poc/css-poc.env
+#   set -o allexport; source scripts/css_api_poc/css-poc.env; set +o allexport
+
+# From CSS app -> My Teams -> FDS: FAM -> CSS API Account
+CSS_CLIENT_ID=
+CSS_CLIENT_SECRET=
+
+# Integration request id, e.g. 6538 for the FREP POC
+CSS_INTEGRATION_ID=6538
+
+# dev | test | prod
+CSS_ENV=dev
+
+# Defaults, override only if needed
+# CSS_API_URL=https://api.loginproxy.gov.bc.ca/api/v1
+# CSS_TOKEN_URL=https://loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/token

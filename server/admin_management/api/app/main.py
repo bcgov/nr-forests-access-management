@@ -7,7 +7,8 @@ from api.app.exception_handlers import (requests_http_error_handler,
                                         validation_exception_handler)
 from api.app.routers import (router_access_control_privilege,
                              router_admin_user_accesses,
-                             router_application_admin, router_smoke_test)
+                             router_application_admin, router_css_integration,
+                             router_smoke_test)
 from api.config.config import get_allow_origins, get_root_path
 from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -92,6 +93,11 @@ app.include_router(
     router_admin_user_accesses.router,
     prefix=apiPrefix + "/admin-user-accesses",
     tags=["Admin User Accesses"],
+)
+app.include_router(
+    router_css_integration.router,
+    prefix=apiPrefix + "/css-applications",
+    tags=["CSS Integrations"],
 )
 
 

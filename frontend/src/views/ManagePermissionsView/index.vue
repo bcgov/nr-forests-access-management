@@ -6,6 +6,7 @@ import Dropdown from "@/components/UI/Dropdown.vue";
 import PageTitle from "@/components/UI/PageTitle.vue";
 import { AddAppPermissionRoute, AddFamPermissionRoute } from "@/router/routes";
 import { AdminMgmtApiService } from "@/services/ApiServiceFactory";
+import type { FamApplicationGrantDto } from "fam-admin-mgmt-api/model";
 import {
     activeTabIndex,
     selectedApp,
@@ -100,6 +101,54 @@ const adminUserAccessQuery = useQuery({
             .adminUserAccessPrivilege()
             .then((res) => res.data),
     refetchOnMount: true,
+});
+
+/**
+ * POC: applications sourced from CSS integrations rather than fam_application.
+ * See .ai/keycloak-css-feasibility.md
+ */
+const cssApplicationsQuery = useQuery({
+    queryKey: ["css-applications"],
+    queryFn: () =>
+        AdminMgmtApiService.cssIntegrationsApi
+            .getCssApplications()
+            .then((res) => res.data),
+    refetchOnMount: true,
+});
+
+/**
+ * The application dropdown's options.
+ *
+ * CSS is the source for which applications *exist* and for their labels. FAM
+ * still supplies the application id, because every downstream call
+ * (/application-admins/application/{id}, /access-control-privileges?application_id=)
+ * keys on it - CSS integration ids are not interchangeable with FAM ids, and one
+ * CSS integration spans environments.
+ *
+ * Matching is on description, which is identical on both sides today
+ * ("Forest and Range Evaluation Program (DEV)").
+ *
+ * Note what a failed match actually means: getUniqueApplications() returns only
+ * the applications *this requester may administer*, so an unmatched entry means
+ * "you have no admin grant here" - not "this application is unknown to FAM".
+ * Such entries still appear, with id -1, so the difference between what CSS
+ * exposes and what the requester can act on stays visible.
+ */
+const applicationOptions = computed<FamApplicationGrantDto[]>(() => {
+    const famApplications = getUniqueApplications(adminUserAccessQuery.data.value);
+    return (cssApplicationsQuery.data.value ?? []).map((cssApp) => {
+        const famMatch = famApplications.find(
+            (famApp) => famApp.description === cssApp.description
+        );
+        return {
+            id: famMatch?.id ?? -1,
+            name: famMatch?.name ?? cssApp.name,
+            description: famMatch
+                ? cssApp.description
+                : `${cssApp.description} — no admin access`,
+            env: famMatch?.env ?? null,
+        } as FamApplicationGrantDto;
+    });
 });
 
 watch(
@@ -276,13 +325,17 @@ onUnmounted(() => {
                     label-text="Application:"
                     :value="selectedApp"
                     @change="handleApplicationChange"
-                    :options="
-                        getUniqueApplications(adminUserAccessQuery.data.value)
-                    "
+                    :options="applicationOptions"
                     option-label="description"
                     placeholder="Choose an application to manage permissions"
-                    :is-fetching="adminUserAccessQuery.isLoading.value"
-                    :is-error="adminUserAccessQuery.isError.value"
+                    :is-fetching="
+                        cssApplicationsQuery.isLoading.value ||
+                        adminUserAccessQuery.isLoading.value
+                    "
+                    :is-error="
+                        cssApplicationsQuery.isError.value ||
+                        adminUserAccessQuery.isError.value
+                    "
                     :error-msg="
                         isAxiosError(adminUserAccessQuery.error.value)
                             ? formatAxiosError(adminUserAccessQuery.error.value)

@@ -2,12 +2,14 @@ import { EnvironmentSettings } from "@/services/EnvironmentSettings";
 import axios from "axios";
 import {
     AdminUserAccessesApi,
+    CSSIntegrationsApi,
     FAMAccessControlPrivilegesApi,
     FAMApplicationAdminApi,
 } from "fam-admin-mgmt-api/api";
 import {
     Configuration,
     FAMApplicationsApi,
+    FAMDistrictsApi,
     FAMForestClientsApi,
     FAMUserRoleAssignmentApi,
     IDIRBCeIDProxyApi,
@@ -20,6 +22,7 @@ type AppAccessControlApiType = {
     applicationsApi: FAMApplicationsApi;
     userRoleAssignmentApi: FAMUserRoleAssignmentApi;
     forestClientsApi: FAMForestClientsApi;
+    districtsApi: FAMDistrictsApi;
     idirBceidProxyApi: IDIRBCeIDProxyApi;
     userTermsAndConditionsApi: FAMUserTermsAndConditionsApi;
     permissionAuditApi: PermissionAuditApi;
@@ -29,6 +32,7 @@ type AdminManagementApiType = {
     applicationAdminApi: FAMApplicationAdminApi;
     delegatedAdminApi: FAMAccessControlPrivilegesApi;
     adminUserAccessesApi: AdminUserAccessesApi;
+    cssIntegrationsApi: CSSIntegrationsApi;
 };
 
 axios.defaults.headers.common["Content-Type"] = "application/json";
@@ -65,6 +69,10 @@ export default class ApiServiceFactory {
                 FAMForestClientsApi,
                 appAccessControlBaseURL
             ),
+            districtsApi: this.createApiInstance(
+                FAMDistrictsApi,
+                appAccessControlBaseURL
+            ),
             idirBceidProxyApi: this.createApiInstance(
                 IDIRBCeIDProxyApi,
                 appAccessControlBaseURL
@@ -86,6 +94,10 @@ export default class ApiServiceFactory {
             ),
             delegatedAdminApi: this.createApiInstance(
                 FAMAccessControlPrivilegesApi,
+                adminManagementBaseURL
+            ),
+            cssIntegrationsApi: this.createApiInstance(
+                CSSIntegrationsApi,
                 adminManagementBaseURL
             ),
             adminUserAccessesApi: this.createApiInstance(

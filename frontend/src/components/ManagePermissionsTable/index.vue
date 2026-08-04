@@ -184,6 +184,70 @@ const appUserQuery = useQuery({
     enabled: isAppUserTable,
 });
 
+/**
+ * POC: app users sourced from CSS instead of fam_user_role_xref.
+ *
+ * CSS has no "all users of an integration" endpoint, so the API fans out over
+ * every role. That also means no server-side pagination, sorting or search -
+ * the whole set comes back at once and PrimeVue handles it client side.
+ *
+ * See .ai/keycloak-css-feasibility.md
+ */
+const cssApplicationsQuery = useQuery({
+    queryKey: ["css-applications"],
+    queryFn: () =>
+        AdminMgmtApiService.cssIntegrationsApi
+            .getCssApplications()
+            .then((res) => res.data),
+    enabled: isAppUserTable,
+});
+
+const cssAppForSelected = computed(() =>
+    cssApplicationsQuery.data.value?.find(
+        (cssApp) => cssApp.description === selectedApp.value?.description
+    ) ?? null
+);
+
+const cssAppUserQuery = useQuery({
+    queryKey: ["css-user-role-assignments", cssAppForSelected],
+    enabled: computed(() => isAppUserTable && Boolean(cssAppForSelected.value)),
+    queryFn: () =>
+        AdminMgmtApiService.cssIntegrationsApi
+            .getCssUserRoleAssignments(
+                cssAppForSelected.value!.integration_id,
+                cssAppForSelected.value!.environment
+            )
+            .then((res) => res.data),
+    refetchOnMount: "always",
+});
+
+/**
+ * Shape CSS rows like the FAM records this table already renders, so the column
+ * definitions do not change.
+ *
+ * Organization, Added On and Expiry Date are null throughout - CSS has no
+ * equivalent of a forest client, a granted-on date, or an expiry.
+ */
+const cssTableRows = computed(() =>
+    (cssAppUserQuery.data.value ?? []).map((row) => ({
+        user: {
+            user_name: row.username,
+            user_type: { description: row.domain ?? "" },
+            first_name: row.first_name,
+            last_name: row.last_name,
+            email: row.email,
+        },
+        role: {
+            display_name: row.scope_value
+                ? `${row.role_name} (${row.scope_value})`
+                : row.role_name,
+            forest_client: null,
+        },
+        create_date: null,
+        expiry_date: null,
+    }))
+);
+
 // Delegated admin data query
 const delegatedAdminQuery = useQuery({
     queryKey: [
@@ -243,7 +307,7 @@ const getTotalRecords = (): number => {
         case ManagePermissionsTableEnum.FamAppAdmin:
             return famAppAdminQuery.data.value?.length ?? 0;
         case ManagePermissionsTableEnum.AppUser:
-            return appUserQuery.data.value?.meta.total ?? 0;
+            return cssTableRows.value.length;
         case ManagePermissionsTableEnum.DelegatedAdmin:
             return delegatedAdminQuery.data.value?.meta.total ?? 0;
         default:
@@ -257,7 +321,7 @@ const getTableRows = computed(() => {
         case ManagePermissionsTableEnum.FamAppAdmin:
             return famAppAdminQuery.data.value ?? [];
         case ManagePermissionsTableEnum.AppUser:
-            const records = appUserQuery.data.value?.results ?? [];
+            const records = cssTableRows.value;
             hasUserRoleRecords.value = records.length > 0 ? true : false;
             return records;
         case ManagePermissionsTableEnum.ApplicationAdmin:

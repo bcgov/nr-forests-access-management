@@ -9,6 +9,7 @@ import {
 } from "fam-admin-mgmt-api/model";
 import {
     UserType,
+    type FamDistrictSchema,
     type FamForestClientSchema,
     type FamUserRoleAssignmentCreateSchema,
 } from "fam-app-acsctl-api/model";
@@ -25,11 +26,26 @@ export const NewDelegatedAddminQueryParamKey = "newDelegatedAdminIds";
 
 export const MAX_USERS_GRANTING_ALLOWED = 50;
 
+/**
+ * A selectable role in the permission form.
+ *
+ * Extends the FAM DTO with the scope flags, which under the CSS POC are derived
+ * from composite membership in CSS rather than stored on fam_role.
+ * See .ai/keycloak-css-feasibility.md
+ */
+export type RoleOption = Omit<FamRoleGrantDto, "type_code"> & {
+    /** Absent on CSS-sourced roles — CSS has no abstract/concrete concept. */
+    type_code?: RoleType;
+    role_type_client?: boolean;
+    role_type_district?: boolean;
+};
+
 export type AppPermissionFormType = {
     domain: UserType;
     users: SelectedUser[];
     forestClients: FamForestClientSchema[];
-    role: FamRoleGrantDto | null;
+    districts: FamDistrictSchema[];
+    role: RoleOption | null;
     sendUserEmail: boolean;
     forestClientInput: TextInputType & {
         /**
@@ -52,6 +68,7 @@ const defaultFormData: AppPermissionFormType = {
     domain: UserType.B,
     users: [],
     forestClients: [],
+    districts: [],
     role: null,
     sendUserEmail: false,
     forestClientInput: {
@@ -93,7 +110,7 @@ export const validateAppPermissionForm = () => {
                         .min(1, "A valid user is required")
                         .max(1, "Only one user is allowed for delegated admin"),
             }),
-        role: mixed<FamRoleGrantDto>().required("Please select a role"),
+        role: mixed<RoleOption>().required("Please select a role"),
         forestClients: array()
             .of(
                 mixed<FamForestClientSchema>()
@@ -105,10 +122,27 @@ export const validateAppPermissionForm = () => {
                     )
             )
             .when("role", {
-                is: (role: FamRoleGrantDto | null) =>
-                    role?.type_code === RoleType.A,
+                is: (role: RoleOption | null) =>
+                    Boolean(role?.role_type_client),
                 then: (schema) =>
                     schema.min(1, "At least one organization is required"),
+                otherwise: (schema) => schema.default([]).nullable(),
+            }),
+        districts: array()
+            .of(
+                mixed<FamDistrictSchema>()
+                    .required("Each district must be a valid object")
+                    .test(
+                        "not-empty-object",
+                        "District cannot be empty",
+                        (item) => item && Object.keys(item).length > 0
+                    )
+            )
+            .when("role", {
+                is: (role: RoleOption | null) =>
+                    Boolean(role?.role_type_district),
+                then: (schema) =>
+                    schema.min(1, "At least one district is required"),
                 otherwise: (schema) => schema.default([]).nullable(),
             }),
     });
@@ -166,9 +200,31 @@ export const getRolesByAppId = (data: FamGrantDetailDto[], appId: number) => {
     return null;
 };
 
+/**
+ * True when the selected role is abstract, i.e. scoped by forest client in FAM's
+ * own model. Used by the delegated admin flow, which still grants through FAM.
+ */
 export const isAbstractRoleSelected = (
     formData?: AppPermissionFormType
 ): boolean => formData?.role?.type_code === RoleType.A;
+
+/**
+ * True when the selected role requires a forest client to be chosen before it
+ * can be granted. Note this describes the grant workflow, not the role data: a
+ * template role such as FOM_SUBMITTER is true, while a generated child such as
+ * FOM_SUBMITTER_00001018 is false.
+ */
+export const isClientScopedRoleSelected = (
+    formData?: AppPermissionFormType
+): boolean => Boolean(formData?.role?.role_type_client);
+
+/**
+ * True when the selected role is scoped by district, meaning one or more
+ * districts must be chosen before it can be granted.
+ */
+export const isDistrictScopedRoleSelected = (
+    formData?: AppPermissionFormType
+): boolean => Boolean(formData?.role?.role_type_district);
 
 export const getUserNameInputHelperText = (domain: UserType) =>
     `Type user's ${

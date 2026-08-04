@@ -7,6 +7,7 @@ export * from './ext-user-role-metadata-role-schema';
 export * from './ext-user-search-paged-results-schema-ext-application-user-search-get-schema';
 export * from './fam-application-schema';
 export * from './fam-application-user-role-assignment-get-schema';
+export * from './fam-district-schema';
 export * from './fam-forest-client-schema';
 export * from './fam-forest-client-status-schema';
 export * from './fam-forest-client-status-type';

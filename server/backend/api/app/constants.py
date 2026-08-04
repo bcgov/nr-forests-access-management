@@ -1,6 +1,6 @@
 # User Type
 from enum import Enum
-from typing import TypeVar
+from typing import NamedTuple, TypeVar
 
 # ----------------------- Generic Type Variable Declaration ----------------------- #
 T = TypeVar('T')
@@ -114,6 +114,46 @@ class IDPType(str, Enum):
 
 class ScopeType(str, Enum):
     FOREST_CLIENT = "FOREST_CLIENT"
+
+
+class DistrictInfo(NamedTuple):
+    org_unit_code: str
+    orgUnitName: str
+    isExpired: bool
+
+
+class District(DistrictInfo, Enum):
+    """
+    BC natural resource districts, used to scope roles that have
+    role_type_district set.
+
+    Field names mirror the org unit source data, which is why orgUnitName and
+    isExpired are camelCase while org_unit_code is not.
+    """
+
+    DCC = ("DCC", "Cariboo-Chilcotin Natural Resource District", False)
+    DCS = ("DCS", "Cascades Natural Resource District", False)
+    DOS = ("DOS", "Okanagan Shuswap Natural Resource District", False)
+    DRM = ("DRM", "Rocky Mountain Natural Resource District", False)
+    DNI = ("DNI", "North Island - Central Coast Natural Resource District", False)
+    DPG = ("DPG", "Prince George Natural Resource District", False)
+    DVA = ("DVA", "Stuart Nechako Natural Resource District", False)
+    DKM = ("DKM", "Coast Mountains Natural Resource District", False)
+    DMK = ("DMK", "Mackenzie Natural Resource District", False)
+    DFN = ("DFN", "Fort Nelson Natural Resource District", False)
+    DKA = ("DKA", "Thompson Rivers Natural Resource District", False)
+    DMH = ("DMH", "100 Mile House Natural Resource District", False)
+    DQU = ("DQU", "Quesnel Natural Resource District", False)
+    DCK = ("DCK", "Chilliwack Natural Resource District", False)
+    DSQ = ("DSQ", "Sea to Sky Natural Resource District", False)
+    DSC = ("DSC", "Sunshine Coast Natural Resource District", False)
+    DCR = ("DCR", "Campbell River Natural Resource District", False)
+    DQC = ("DQC", "Haida Gwaii Natural Resource District", False)
+    DSI = ("DSI", "South Island Natural Resource District", False)
+    DND = ("DND", "Nadina Natural Resource District", False)
+    DSS = ("DSS", "Skeena Stikine Natural Resource District", False)
+    DPC = ("DPC", "Peace Natural Resource District", False)
+    DSE = ("DSE", "Selkirk Natural Resource District", False)
 
 # -------------------------------- Schema Constants ------------------------------- #
 SYSTEM_ACCOUNT_NAME = "system"

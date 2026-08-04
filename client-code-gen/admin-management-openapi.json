@@ -487,6 +487,228 @@
                 }
             }
         },
+            "/css-applications": {
+                "get": {
+                    "tags": [
+                        "CSS Integrations"
+                    ],
+                    "summary": "Get Css Applications",
+                    "description": "Applications available to administer, sourced from CSS integrations instead of\nthe fam_application table.\n\nEach CSS integration is fanned out over its `environments` array, so\n\"Forest and Range Evaluation Program\" with environments [\"dev\", \"test\"]\nyields two options - matching FAM's one-row-per-environment model.\n\nCaveat: a CSS API account is team scoped, so this returns every integration the\nteam owns with no per-requester filtering. FAM's fam_application_admin and\nfam_access_control_privilege tables remain the authority on which applications\na given requester may administer.\n\nSee .ai/keycloak-css-feasibility.md",
+                    "operationId": "get_css_applications",
+                    "responses": {
+                        "200": {
+                            "description": "Successful Response",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "items": {
+                                            "$ref": "#/components/schemas/CssApplicationOptionSchema"
+                                        },
+                                        "type": "array",
+                                        "title": "Response Get Css Applications"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "security": [
+                        {
+                            "7qtdtska897dt6kandveusvd88": []
+                        }
+                    ]
+                }
+            },
+            "/css-applications/{integration_id}/{environment}/roles": {
+                "get": {
+                    "tags": [
+                        "CSS Integrations"
+                    ],
+                    "summary": "Get Css Application Roles",
+                    "description": "Selectable roles for one CSS integration + environment.\n\nCSS roles hold only a name - no display name, no description, no attributes -\nso meaning is expressed by nesting roles as composites:\n\n    Submitter (CHR)  ->  CHR_FREP_EDITOR  ->  HAS_DISTRICT_ROLE\n    Submitter (SLR)  ->  FREP_EDITOR\n    Administrator    ->  FREP_ADMINISTRATOR\n\nA role is selectable when nothing else composes it - i.e. it sits at the top of\nits chain. That is what makes \"Submitter (SLR)\" a row while its child\nFREP_EDITOR is not, without relying on a naming convention.\n\nScope type is resolved by walking the whole chain for marker roles, so\n\"Submitter (CHR)\" is district scoped via its grandchild HAS_DISTRICT_ROLE.\n\nCost: one composite lookup per composite role, since GET /roles already reports\nthe composite flag for leaves.",
+                    "operationId": "get_css_application_roles",
+                    "security": [
+                        {
+                            "7qtdtska897dt6kandveusvd88": []
+                        }
+                    ],
+                    "parameters": [
+                        {
+                            "name": "integration_id",
+                            "in": "path",
+                            "required": true,
+                            "schema": {
+                                "type": "integer",
+                                "title": "Integration Id"
+                            }
+                        },
+                        {
+                            "name": "environment",
+                            "in": "path",
+                            "required": true,
+                            "schema": {
+                                "type": "string",
+                                "title": "Environment"
+                            }
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "Successful Response",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/components/schemas/CssRoleOptionSchema"
+                                        },
+                                        "title": "Response Get Css Application Roles"
+                                    }
+                                }
+                            }
+                        },
+                        "422": {
+                            "description": "Validation Error",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/HTTPValidationError"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+                "/css-applications/{integration_id}/{environment}/user-role-assignments": {
+                "post": {
+                    "tags": [
+                        "CSS Integrations"
+                    ],
+                    "summary": "Create Css User Role Assignment",
+                    "description": "Grant a role to a user in CSS, creating a scope-specific role on demand.\n\nUnscoped: the role is assigned as-is.\n\nScoped: one role per scope value is created if it does not already exist,\nnamed <role>_<SCOPE_TYPE>-<value> (e.g. CHR_FREP_EDITOR_DISTRICT-DCC), and\nthose are assigned instead of the base role. That mirrors how FAM generates\nforest client child roles today - the scope has to live in the role name\nbecause CSS roles carry no attributes and the name is what reaches the token.\n\nNote the generated role is a plain leaf: it is NOT composed of the base role,\nso a token will contain CHR_FREP_EDITOR_DISTRICT-DCC but not CHR_FREP_EDITOR.\nConsumers authorising on the base role name will need to match on the prefix.\n\nRoles are created but never removed, so revoking a user leaves the role behind.",
+                    "operationId": "create_css_user_role_assignment",
+                    "security": [
+                        {
+                            "7qtdtska897dt6kandveusvd88": []
+                        }
+                    ],
+                    "parameters": [
+                        {
+                            "name": "integration_id",
+                            "in": "path",
+                            "required": true,
+                            "schema": {
+                                "type": "integer",
+                                "title": "Integration Id"
+                            }
+                        },
+                        {
+                            "name": "environment",
+                            "in": "path",
+                            "required": true,
+                            "schema": {
+                                "type": "string",
+                                "title": "Environment"
+                            }
+                        }
+                    ],
+                    "requestBody": {
+                        "required": true,
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CssUserRoleAssignmentRequest"
+                                }
+                            }
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "description": "Successful Response",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/components/schemas/CssUserRoleAssignmentResult"
+                                        },
+                                        "title": "Response Create Css User Role Assignment"
+                                    }
+                                }
+                            }
+                        },
+                        "422": {
+                            "description": "Validation Error",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/HTTPValidationError"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "get": {
+                    "tags": [
+                        "CSS Integrations"
+                    ],
+                    "summary": "Get Css User Role Assignments",
+                    "description": "Every user/role assignment in an integration, one row per pair.\n\nCSS has no endpoint listing all users of an integration - only\nGET /roles/{name}/users - so this fans out over every role and merges. Cost is\none request per role, which grows with every scope-specific role created at\ngrant time.\n\nScope is recovered by parsing the role name, because that is the only place it\nis recorded. Columns FAM shows but CSS cannot supply - granted-on date, expiry,\norganization - are omitted entirely rather than faked.",
+                    "operationId": "get_css_user_role_assignments",
+                    "security": [
+                        {
+                            "7qtdtska897dt6kandveusvd88": []
+                        }
+                    ],
+                    "parameters": [
+                        {
+                            "name": "integration_id",
+                            "in": "path",
+                            "required": true,
+                            "schema": {
+                                "type": "integer",
+                                "title": "Integration Id"
+                            }
+                        },
+                        {
+                            "name": "environment",
+                            "in": "path",
+                            "required": true,
+                            "schema": {
+                                "type": "string",
+                                "title": "Environment"
+                            }
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "Successful Response",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/components/schemas/CssUserRoleRowSchema"
+                                        },
+                                        "title": "Response Get Css User Role Assignments"
+                                    }
+                                }
+                            }
+                        },
+                        "422": {
+                            "description": "Validation Error",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/HTTPValidationError"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
         "/admin-user-accesses": {
             "get": {
                 "tags": ["Admin User Accesses"],
@@ -562,6 +784,279 @@
                 ],
                 "title": "EmailSendingStatus"
             },
+                "CssApplicationOptionSchema": {
+                    "properties": {
+                        "integration_id": {
+                            "type": "integer",
+                            "title": "Integration Id"
+                        },
+                        "environment": {
+                            "type": "string",
+                            "title": "Environment"
+                        },
+                        "name": {
+                            "type": "string",
+                            "title": "Name"
+                        },
+                        "description": {
+                            "type": "string",
+                            "title": "Description"
+                        },
+                        "status": {
+                            "anyOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "title": "Status"
+                        }
+                    },
+                    "type": "object",
+                    "required": [
+                        "integration_id",
+                        "environment",
+                        "name",
+                        "description"
+                    ],
+                    "title": "CssApplicationOptionSchema",
+                    "description": "One selectable application in the FAM admin UI, derived from a CSS integration\nby fanning out its `environments` array.\n\nA CSS integration \"Forest and Range Evaluation Program\" with\nenvironments [\"dev\", \"test\"] produces two options."
+                },
+                "CssRoleOptionSchema": {
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "title": "Name"
+                        },
+                        "display_name": {
+                            "anyOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "title": "Display Name"
+                        },
+                        "description": {
+                            "anyOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "title": "Description"
+                        },
+                        "role_code": {
+                            "anyOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "title": "Role Code"
+                        },
+                        "composite": {
+                            "type": "boolean",
+                            "title": "Composite",
+                            "default": false
+                        },
+                        "composites": {
+                            "items": {
+                                "type": "string"
+                            },
+                            "type": "array",
+                            "title": "Composites",
+                            "default": []
+                        },
+                        "role_type_district": {
+                            "type": "boolean",
+                            "title": "Role Type District",
+                            "default": false
+                        },
+                        "role_type_client": {
+                            "type": "boolean",
+                            "title": "Role Type Client",
+                            "default": false
+                        }
+                    },
+                    "type": "object",
+                    "required": [
+                        "name"
+                    ],
+                    "title": "CssRoleOptionSchema",
+                    "description": "One selectable role in the FAM admin UI, sourced from CSS.\n\nCSS roles cannot carry a display name, so the convention is to nest them:\na human readable role composed of the machine role code, which in turn may be\ncomposed of scope markers.\n\n    Submitter (CHR)  ->  CHR_FREP_EDITOR  ->  HAS_DISTRICT_ROLE\n    Submitter (SLR)  ->  FREP_EDITOR\n    Administrator    ->  FREP_ADMINISTRATOR\n\n`display_name` is the outermost (human readable) role, `role_code` the machine\nrole beneath it, and the scope flags are resolved by walking the whole chain.\n\n`description` stays None - there is nowhere in CSS to put one."
+                },
+                "CssUserRoleAssignmentRequest": {
+                    "properties": {
+                        "user_guid": {
+                            "type": "string",
+                            "title": "User Guid"
+                        },
+                        "user_type_code": {
+                            "type": "string",
+                            "title": "User Type Code"
+                        },
+                        "role_name": {
+                            "type": "string",
+                            "title": "Role Name"
+                        },
+                        "scope_type": {
+                            "anyOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "title": "Scope Type"
+                        },
+                        "scope_values": {
+                            "items": {
+                                "type": "string"
+                            },
+                            "type": "array",
+                            "title": "Scope Values",
+                            "default": []
+                        }
+                    },
+                    "type": "object",
+                    "required": [
+                        "user_guid",
+                        "user_type_code",
+                        "role_name"
+                    ],
+                    "title": "CssUserRoleAssignmentRequest",
+                    "description": "A grant of one role, optionally scoped, to one user."
+                },
+                "CssUserRoleAssignmentResult": {
+                    "properties": {
+                        "role_name": {
+                            "type": "string",
+                            "title": "Role Name"
+                        },
+                        "role_created": {
+                            "type": "boolean",
+                            "title": "Role Created",
+                            "default": false
+                        },
+                        "assigned": {
+                            "type": "boolean",
+                            "title": "Assigned",
+                            "default": false
+                        },
+                        "error_message": {
+                            "anyOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "title": "Error Message"
+                        }
+                    },
+                    "type": "object",
+                    "required": [
+                        "role_name"
+                    ],
+                    "title": "CssUserRoleAssignmentResult",
+                    "description": "Outcome per role actually assigned."
+                },
+                "CssUserRoleRowSchema": {
+                    "properties": {
+                        "username": {
+                            "type": "string",
+                            "title": "Username"
+                        },
+                        "domain": {
+                            "anyOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "title": "Domain"
+                        },
+                        "first_name": {
+                            "anyOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "title": "First Name"
+                        },
+                        "last_name": {
+                            "anyOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "title": "Last Name"
+                        },
+                        "email": {
+                            "anyOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "title": "Email"
+                        },
+                        "role_name": {
+                            "type": "string",
+                            "title": "Role Name"
+                        },
+                        "scope_type": {
+                            "anyOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "title": "Scope Type"
+                        },
+                        "scope_value": {
+                            "anyOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "title": "Scope Value"
+                        }
+                    },
+                    "type": "object",
+                    "required": [
+                        "username",
+                        "role_name"
+                    ],
+                    "title": "CssUserRoleRowSchema",
+                    "description": "One user's assignment of one role, for the permissions table.\n\nAssembled by fanning out over every role in the integration - CSS has no\n\"all users in this integration\" endpoint, only GET /roles/{name}/users.\n\nSeveral columns FAM shows have no CSS source: there is no granted-on date, no\nexpiry, and no forest client / organization. Those come back None."
+                },
             "FamAccessControlPrivilegeCreateRequest": {
                 "properties": {
                     "user_name": {
@@ -895,78 +1390,94 @@
                 "required": ["application"],
                 "title": "FamGrantDetailDto"
             },
+                    "RoleType": {
+                    "type": "string",
+                    "enum": [
+                        "A",
+                        "C"
+                    ],
+                    "title": "RoleType"
+                },
             "FamRoleBase": {
-                "properties": {
-                    "role_name": {
-                        "type": "string",
-                        "maxLength": 100,
-                        "title": "Role Name"
+                    "properties": {
+                        "role_name": {
+                            "type": "string",
+                            "maxLength": 100,
+                            "title": "Role Name"
+                        },
+                        "role_type_code": {
+                            "$ref": "#/components/schemas/RoleType"
+                        }
                     },
-                    "role_type_code": {
-                        "$ref": "#/components/schemas/RoleType"
-                    }
+                    "type": "object",
+                    "required": [
+                        "role_name",
+                        "role_type_code"
+                    ],
+                    "title": "FamRoleBase"
                 },
-                "type": "object",
-                "required": ["role_name", "role_type_code"],
-                "title": "FamRoleBase"
-            },
-            "FamRoleGrantDto": {
-                "properties": {
-                    "id": {
-                        "type": "integer",
-                        "title": "Id"
-                    },
-                    "name": {
-                        "type": "string",
-                        "maxLength": 100,
-                        "title": "Name"
-                    },
-                    "display_name": {
-                        "anyOf": [
-                            {
-                                "type": "string",
-                                "maxLength": 100
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Display Name"
-                    },
-                    "description": {
-                        "anyOf": [
-                            {
-                                "type": "string",
-                                "maxLength": 300
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Description"
-                    },
-                    "type_code": {
-                        "$ref": "#/components/schemas/RoleType"
-                    },
-                    "forest_clients": {
-                        "anyOf": [
-                            {
-                                "items": {
-                                    "$ref": "#/components/schemas/FamForestClientBase"
+                "FamRoleGrantDto": {
+                    "properties": {
+                        "id": {
+                            "type": "integer",
+                            "title": "Id"
+                        },
+                        "name": {
+                            "type": "string",
+                            "maxLength": 100,
+                            "title": "Name"
+                        },
+                        "display_name": {
+                            "anyOf": [
+                                {
+                                    "type": "string",
+                                    "maxLength": 100
                                 },
-                                "type": "array"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Forest Clients"
-                    }
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "title": "Display Name"
+                        },
+                        "description": {
+                            "anyOf": [
+                                {
+                                    "type": "string",
+                                    "maxLength": 300
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "title": "Description"
+                        },
+                        "type_code": {
+                            "$ref": "#/components/schemas/RoleType"
+                        },
+                        "forest_clients": {
+                            "anyOf": [
+                                {
+                                    "items": {
+                                        "$ref": "#/components/schemas/FamForestClientBase"
+                                    },
+                                    "type": "array"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "title": "Forest Clients"
+                        }
+                    },
+                    "type": "object",
+                    "required": [
+                        "id",
+                        "name",
+                        "description",
+                        "type_code"
+                    ],
+                    "title": "FamRoleGrantDto"
                 },
-                "type": "object",
-                "required": ["id", "name", "description", "type_code"],
-                "title": "FamRoleGrantDto"
-            },
             "FamRoleWithClientDto": {
                 "properties": {
                     "role_id": {
@@ -1164,11 +1675,6 @@
                 "type": "object",
                 "required": ["meta", "results"],
                 "title": "PagedResultsSchema[FamAccessControlPrivilegeGetResponse]"
-            },
-            "RoleType": {
-                "type": "string",
-                "enum": ["A", "C"],
-                "title": "RoleType"
             },
             "SortOrderEnum": {
                 "type": "string",

@@ -428,6 +428,37 @@
         }
       }
     },
+    "/districts": {
+      "get": {
+        "tags": [
+          "FAM Districts"
+        ],
+        "summary": "Get Districts",
+        "description": "List the BC natural resource districts available for scoping roles that\nhave role_type_district set.\n\nDistricts are a fixed reference set held in the District enum, not database\nrecords, so this returns the full list and expects the caller to filter.",
+        "operationId": "get_districts",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/FamDistrictSchema"
+                  },
+                  "type": "array",
+                  "title": "Response Get Districts"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "7qtdtska897dt6kandveusvd88": []
+          }
+        ]
+      }
+    },
     "/identity-lookup/idir": {
       "get": {
         "tags": [
@@ -1736,6 +1767,30 @@
         ],
         "title": "FamForestClientStatusSchema"
       },
+      "FamDistrictSchema": {
+        "properties": {
+          "org_unit_code": {
+            "type": "string",
+            "title": "Org Unit Code"
+          },
+          "orgUnitName": {
+            "type": "string",
+            "title": "Orgunitname"
+          },
+          "isExpired": {
+            "type": "boolean",
+            "title": "Isexpired"
+          }
+        },
+        "type": "object",
+        "required": [
+          "org_unit_code",
+          "orgUnitName",
+          "isExpired"
+        ],
+        "title": "FamDistrictSchema",
+        "description": "A BC natural resource district, used to scope roles that have\nrole_type_district set.\n\nField names mirror the org unit source data, which is why orgUnitName and\nisExpired are camelCase while org_unit_code is not."
+      },
       "FamForestClientStatusType": {
         "type": "string",
         "enum": [
@@ -1744,101 +1799,109 @@
         ],
         "title": "FamForestClientStatusType"
       },
+              "RoleType": {
+              "type": "string",
+              "enum": [
+                  "A",
+                  "C"
+              ],
+              "title": "RoleType"
+          },
       "FamRoleMinSchema": {
-        "properties": {
-          "role_name": {
-            "type": "string",
-            "maxLength": 100,
-            "title": "Role Name"
-          },
-          "role_type_code": {
-            "$ref": "#/components/schemas/RoleType"
-          },
-          "application": {
-            "$ref": "#/components/schemas/FamApplicationSchema"
-          }
-        },
-        "type": "object",
-        "required": [
-          "role_name",
-          "role_type_code",
-          "application"
-        ],
-        "title": "FamRoleMinSchema"
-      },
-      "FamRoleWithClientSchema": {
-        "properties": {
-          "role_name": {
-            "type": "string",
-            "maxLength": 100,
-            "title": "Role Name"
-          },
-          "role_type_code": {
-            "$ref": "#/components/schemas/RoleType"
-          },
-          "application": {
-            "$ref": "#/components/schemas/FamApplicationSchema"
-          },
-          "role_id": {
-            "type": "integer",
-            "title": "Role Id"
-          },
-          "display_name": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 100
+              "properties": {
+                  "role_name": {
+                      "type": "string",
+                      "maxLength": 100,
+                      "title": "Role Name"
+                  },
+                  "role_type_code": {
+                      "$ref": "#/components/schemas/RoleType"
+                  },
+                  "application": {
+                      "$ref": "#/components/schemas/FamApplicationSchema"
+                  }
               },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Display Name"
+              "type": "object",
+              "required": [
+                  "role_name",
+                  "role_type_code",
+                  "application"
+              ],
+              "title": "FamRoleMinSchema"
           },
-          "description": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 300
+          "FamRoleWithClientSchema": {
+              "properties": {
+                  "role_name": {
+                      "type": "string",
+                      "maxLength": 100,
+                      "title": "Role Name"
+                  },
+                  "role_type_code": {
+                      "$ref": "#/components/schemas/RoleType"
+                  },
+                  "application": {
+                      "$ref": "#/components/schemas/FamApplicationSchema"
+                  },
+                  "role_id": {
+                      "type": "integer",
+                      "title": "Role Id"
+                  },
+                  "display_name": {
+                      "anyOf": [
+                          {
+                              "type": "string",
+                              "maxLength": 100
+                          },
+                          {
+                              "type": "null"
+                          }
+                      ],
+                      "title": "Display Name"
+                  },
+                  "description": {
+                      "anyOf": [
+                          {
+                              "type": "string",
+                              "maxLength": 300
+                          },
+                          {
+                              "type": "null"
+                          }
+                      ],
+                      "title": "Description"
+                  },
+                  "forest_client": {
+                      "anyOf": [
+                          {
+                              "$ref": "#/components/schemas/FamForestClientSchema"
+                          },
+                          {
+                              "type": "null"
+                          }
+                      ]
+                  },
+                  "parent_role": {
+                      "anyOf": [
+                          {
+                              "$ref": "#/components/schemas/FamRoleMinSchema"
+                          },
+                          {
+                              "type": "null"
+                          }
+                      ]
+                  }
               },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Description"
+              "type": "object",
+              "required": [
+                  "role_name",
+                  "role_type_code",
+                  "application",
+                  "role_id",
+                  "description",
+                  "forest_client"
+              ],
+              "title": "FamRoleWithClientSchema"
           },
-          "forest_client": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/FamForestClientSchema"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "parent_role": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/FamRoleMinSchema"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          }
-        },
-        "type": "object",
-        "required": [
-          "role_name",
-          "role_type_code",
-          "application",
-          "role_id",
-          "description",
-          "forest_client"
-        ],
-        "title": "FamRoleWithClientSchema"
-      },
       "FamUserInfoSchema": {
         "properties": {
           "user_name": {
@@ -2659,14 +2722,6 @@
           "District"
         ],
         "title": "PrivilegeDetailsScopeTypeEnum"
-      },
-      "RoleType": {
-        "type": "string",
-        "enum": [
-          "A",
-          "C"
-        ],
-        "title": "RoleType"
       },
       "ScopeType": {
         "type": "string",

@@ -34,10 +34,14 @@ import {
     NewRegularUserQueryParamKey,
     validateAppPermissionForm,
     type AppPermissionFormType,
+    type RoleOption,
 } from "@/views/AddAppPermission/utils";
 import CheckmarkIcon from "@carbon/icons-vue/es/checkmark/16";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
-import type { FamAccessControlPrivilegeCreateRequest } from "fam-admin-mgmt-api/model";
+import type {
+    FamAccessControlPrivilegeCreateRequest,
+    FamRoleGrantDto,
+} from "fam-admin-mgmt-api/model";
 import { AdminRoleAuthGroup, AppEnv } from "fam-admin-mgmt-api/model";
 import {
     UserType,
@@ -110,6 +114,83 @@ const rolesUnderSelectedApp = computed(() => {
 
     return getRolesByAppId(availableRoles, props.appId);
 });
+
+/**
+ * POC: role options sourced from CSS instead of fam_role.
+ * See .ai/keycloak-css-feasibility.md
+ *
+ * Resolves the CSS integration + environment for the selected FAM application by
+ * matching on description, the same join the application dropdown uses.
+ */
+const cssApplicationsQuery = useQuery({
+    queryKey: ["css-applications"],
+    queryFn: () =>
+        AdminMgmtApiService.cssIntegrationsApi
+            .getCssApplications()
+            .then((res) => res.data),
+});
+
+const cssApplicationForSelectedApp = computed(() => {
+    const description = rolesUnderSelectedApp.value?.application.description;
+    if (!description) return null;
+    return (
+        cssApplicationsQuery.data.value?.find(
+            (cssApp) => cssApp.description === description
+        ) ?? null
+    );
+});
+
+const cssRolesQuery = useQuery({
+    queryKey: ["css-application-roles", cssApplicationForSelectedApp],
+    enabled: computed(() => Boolean(cssApplicationForSelectedApp.value)),
+    queryFn: () =>
+        AdminMgmtApiService.cssIntegrationsApi
+            .getCssApplicationRoles(
+                cssApplicationForSelectedApp.value!.integration_id,
+                cssApplicationForSelectedApp.value!.environment
+            )
+            .then((res) => res.data),
+});
+
+/**
+ * The role table's options — sourced from CSS only.
+ *
+ * CSS supplies which roles exist and, via composite membership against
+ * HAS_DISTRICT_ROLE / HAS_FOREST_CLIENT, their scope type. Nothing is merged in
+ * from fam_role, so the table shows exactly what CSS can express.
+ *
+ * Consequence: no display name and no description. A CSS role is a name and a
+ * composite flag, so `display_name` falls back to the raw role name and the
+ * description column is empty. That is the point of this configuration — it shows
+ * what a CSS-only role table actually looks like. See .ai/keycloak-css-feasibility.md
+ *
+ * CSS expresses a display name by nesting roles: a human readable role composed of
+ * the machine role code, which may itself be composed of scope markers. So
+ * `display_name` is the outer role ("Submitter (CHR)") and `name` the code beneath
+ * it ("CHR_FREP_EDITOR"), with scope resolved down the whole chain server-side.
+ *
+ * `description` stays empty — CSS has nowhere to store one.
+ *
+ * CSS has no FAM role_id, but the role table uses `id` for row identity — it is
+ * how RoleSelectTable decides which row to expand. So each role gets a distinct
+ * synthetic negative id, starting at -1000 to stay clear of the -999 sentinel used
+ * by the fake "Delegated admin" row. These are not FAM role_ids, so nothing here
+ * can be submitted to FAM's grant endpoint as-is.
+ */
+const cssRoleOptions = computed<RoleOption[]>(() =>
+    (cssRolesQuery.data.value ?? []).map(
+        (cssRole, index) =>
+            ({
+                id: -(1000 + index),
+                name: cssRole.role_code ?? cssRole.name,
+                display_name: cssRole.display_name ?? cssRole.name,
+                description: null,
+                role_type_district: cssRole.role_type_district,
+                role_type_client: cssRole.role_type_client,
+                forest_clients: [],
+            }) as RoleOption
+    )
+);
 
 // App admins (not delegated admins) may self-select on a non-FAM
 // application's DEV/TEST instance - mirrors the backend guard's allowlist
@@ -276,6 +357,73 @@ const delegatedAdminMutation = useMutation({
 const isSubmitting = ref<boolean>(false);
 const confirm = useConfirm();
 
+/**
+ * POC: grant the selected role in CSS rather than FAM.
+ *
+ * The role options come from CSS (see cssRoleOptions), so their `id` is a
+ * synthetic negative — there is no FAM role_id to post to FAM's grant endpoint.
+ * Scope-specific roles are created on demand by the API: selecting
+ * CHR_FREP_EDITOR with districts DCC/DCS yields CHR_FREP_EDITOR_DISTRICT-DCC and
+ * -DCS, which are created if absent and then assigned.
+ *
+ * CSS assigns one user at a time, so multiple selected users are submitted
+ * sequentially. See .ai/keycloak-css-feasibility.md
+ */
+const cssAssignUserRoles = useMutation({
+    mutationFn: async () => {
+        const cssApp = cssApplicationForSelectedApp.value;
+        if (!cssApp) throw new Error("No CSS integration for the selected application");
+        if (!values.role) throw new Error("No role selected");
+
+        const districtCodes = (values.districts ?? []).map((d) => d.org_unit_code);
+
+        const responses = [];
+        for (const user of values.users) {
+            const res =
+                await AdminMgmtApiService.cssIntegrationsApi.createCssUserRoleAssignment(
+                    cssApp.integration_id,
+                    cssApp.environment,
+                    {
+                        user_guid: user.guid ?? "",
+                        user_type_code: values.domain,
+                        role_name: values.role.name,
+                        scope_type: districtCodes.length ? "DISTRICT" : null,
+                        scope_values: districtCodes,
+                    }
+                );
+            responses.push(...res.data);
+        }
+        return responses;
+    },
+    onSuccess: (results) => {
+        isSubmitting.value = false;
+        const failed = results.filter((r) => r.error_message);
+        // eslint-disable-next-line no-console
+        console.info("CSS role assignment result:", results);
+        if (failed.length) {
+            queryClient.setQueryData([AddAppUserPermissionErrorQuerykey], {
+                error: new Error(
+                    failed.map((r) => `${r.role_name}: ${r.error_message}`).join("; ")
+                ),
+                formData: values,
+            });
+            return;
+        }
+        activeTabIndex.value = 0;
+        router.push({
+            name: ManagePermissionsRoute.name,
+            query: { appId: props.appId },
+        });
+    },
+    onError: (error) => {
+        isSubmitting.value = false;
+        queryClient.setQueryData([AddAppUserPermissionErrorQuerykey], {
+            error,
+            formData: values,
+        });
+    },
+});
+
 const onSubmit = () => {
     hasSubmitted.value = true;
     if (
@@ -286,7 +434,8 @@ const onSubmit = () => {
         const payload = generatePayload(values);
         if (!values.isAddingDelegatedAdmin) {
             isSubmitting.value = true;
-            assignUserRoles.mutate(payload as FamUserRoleAssignmentCreateSchema);
+            // POC: roles come from CSS, so the grant goes to CSS too.
+            cssAssignUserRoles.mutate();
         } else {
             confirm.require({
                 group: "addDelegatedAdmin",
@@ -375,7 +524,7 @@ const onInvalid = () => {
                         title="User roles"
                         subtitle="Select a role for this user"
                         divider
-                        v-if="rolesUnderSelectedApp?.roles"
+                        v-if="cssRoleOptions.length"
                     >
                         <!--
                           Use an arrow function to cast 'field' to 'any' before passing to setFieldValue.
@@ -387,10 +536,11 @@ const onInvalid = () => {
                         -->
                         <RoleSelectTable
                             :app-id="appId"
-                            :roleOptions="rolesUnderSelectedApp.roles"
+                            :roleOptions="cssRoleOptions"
                             :is-delegated-admin-only="isDelegatedAdminOnly"
                             role-field-id="role"
                             forest-clients-field-id="forestClients"
+                            districts-field-id="districts"
                             :set-field-value="(field: string, value: any) => setFieldValue(field as any, value)"
                             :formValues="values"
                         />
