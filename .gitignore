@@ -89,7 +89,8 @@ server/backend/openapi.json
 # Ds Store files
 .DS_Store
 
-# Copilot instructions
+# Copilot/Claude
+**/CLAUDE.md
 **/*[-.]instructions.md
 **/*.prompt.md
 **/plans/**
