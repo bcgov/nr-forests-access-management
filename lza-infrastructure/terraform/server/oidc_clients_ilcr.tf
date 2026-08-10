@@ -62,9 +62,18 @@ resource "aws_cognito_user_pool_client" "test_ilcr_oidc_client" {
   allowed_oauth_flows                  = ["code"]
   allowed_oauth_flows_user_pool_client = "true"
   allowed_oauth_scopes                 = ["openid", "profile", "email"]
-  callback_urls                        = concat([var.oidc_sso_playground_url], local.ilcr_test_host_urls)
+  callback_urls = concat(
+    [
+      var.oidc_sso_playground_url,
+      "http://localhost:3000/"
+    ],
+    local.ilcr_test_host_urls
+  )
   logout_urls = concat(
-    [var.oidc_sso_playground_url],
+    [
+      var.oidc_sso_playground_url,
+      "${var.cognito_app_client_logout_chain_url.test}http://localhost:3000/logout",
+    ],
     [for url in local.ilcr_test_host_urls : "${var.cognito_app_client_logout_chain_url.test}${url}/logout"]
   )
   enable_propagate_additional_user_context_data = "false"
