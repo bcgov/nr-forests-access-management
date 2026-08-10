@@ -45,11 +45,13 @@ resource "aws_cognito_user_pool_client" "test_scs_oidc_client" {
   allowed_oauth_scopes                          = ["openid", "profile", "email"]
   callback_urls                                 = [
     var.oidc_sso_playground_url,
+    "http://localhost:3000/",
     "https://testapps.nrs.gov.bc.ca/int/scs",
     "https://testapps.nrs.gov.bc.ca/pub/scs"
   ]
   logout_urls                                   = [
     var.oidc_sso_playground_url,
+    "${var.cognito_app_client_logout_chain_url.test}http://localhost:3000/logout",
     "${var.cognito_app_client_logout_chain_url.test}https://testapps.nrs.gov.bc.ca/int/scs/logout",
     "${var.cognito_app_client_logout_chain_url.test}https://testapps.nrs.gov.bc.ca/pub/scs/logout"
   ]
