@@ -88,10 +88,12 @@ resource "aws_cognito_user_pool_client" "prod_lexis_oidc_client" {
   allowed_oauth_flows_user_pool_client = "true"
   allowed_oauth_scopes                 = ["openid", "profile", "email"]
   callback_urls = [
-    "https://nr-lexis-prod.apps.gold.devops.gov.bc.ca/dashboard"
+    "https://nr-lexis-prod.apps.gold.devops.gov.bc.ca/dashboard",
+    "https://lexis.nrs.gov.bc.ca/dashboard"
   ]
   logout_urls = [
-    "https://nr-lexis-prod.apps.gold.devops.gov.bc.ca"
+    "https://nr-lexis-prod.apps.gold.devops.gov.bc.ca",
+    "https://lexis.nrs.gov.bc.ca"
   ]
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
