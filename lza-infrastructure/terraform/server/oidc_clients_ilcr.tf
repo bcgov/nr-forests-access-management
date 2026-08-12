@@ -28,6 +28,7 @@ resource "aws_cognito_user_pool_client" "dev_ilcr_oidc_client" {
     [
       var.oidc_sso_playground_url,
       "${var.cognito_app_client_logout_chain_url.dev}http://localhost:3000/logout",
+      "http://localhost:3000/logout",
     ],
     [
       for url in local.ilcr_dev_host_urls :
@@ -73,8 +74,10 @@ resource "aws_cognito_user_pool_client" "test_ilcr_oidc_client" {
     [
       var.oidc_sso_playground_url,
       "${var.cognito_app_client_logout_chain_url.test}http://localhost:3000/logout",
+      "http://localhost:3000/logout",
     ],
-    [for url in local.ilcr_test_host_urls : "${var.cognito_app_client_logout_chain_url.test}${url}/logout"]
+    [for url in local.ilcr_test_host_urls : "${var.cognito_app_client_logout_chain_url.test}${url}/logout"],
+    [for url in local.ilcr_test_host_urls : "${url}/logout"]
   )
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
@@ -107,7 +110,8 @@ resource "aws_cognito_user_pool_client" "prod_ilcr_oidc_client" {
   callback_urls                        = concat([var.oidc_sso_playground_url], local.ilcr_prod_host_urls)
   logout_urls = concat(
     [var.oidc_sso_playground_url],
-    [for url in local.ilcr_prod_host_urls : "${var.cognito_app_client_logout_chain_url.prod}${url}/logout"]
+    [for url in local.ilcr_prod_host_urls : "${var.cognito_app_client_logout_chain_url.prod}${url}/logout"],
+    [for url in local.ilcr_prod_host_urls : "${url}/logout"]
   )
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"

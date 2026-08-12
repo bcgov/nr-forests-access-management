@@ -13,7 +13,9 @@ resource "aws_cognito_user_pool_client" "dev_scs_oidc_client" {
     var.oidc_sso_playground_url,
     "${var.cognito_app_client_logout_chain_url.dev}http://localhost:3000/logout",
     "${var.cognito_app_client_logout_chain_url.dev}https://dlvrapps.nrs.gov.bc.ca/int/scs/logout",
-    "${var.cognito_app_client_logout_chain_url.dev}https://dlvrapps.nrs.gov.bc.ca/pub/scs/logout"
+    "${var.cognito_app_client_logout_chain_url.dev}https://dlvrapps.nrs.gov.bc.ca/pub/scs/logout",
+    "http://localhost:3000/logout",
+    "https://dlvrapps.nrs.gov.bc.ca/pub/scs/logout"
   ]
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
@@ -53,7 +55,9 @@ resource "aws_cognito_user_pool_client" "test_scs_oidc_client" {
     var.oidc_sso_playground_url,
     "${var.cognito_app_client_logout_chain_url.test}http://localhost:3000/logout",
     "${var.cognito_app_client_logout_chain_url.test}https://testapps.nrs.gov.bc.ca/int/scs/logout",
-    "${var.cognito_app_client_logout_chain_url.test}https://testapps.nrs.gov.bc.ca/pub/scs/logout"
+    "${var.cognito_app_client_logout_chain_url.test}https://testapps.nrs.gov.bc.ca/pub/scs/logout",
+    "http://localhost:3000/logout",
+    "https://testapps.nrs.gov.bc.ca/pub/scs/logout"
   ]
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
@@ -91,7 +95,8 @@ resource "aws_cognito_user_pool_client" "prod_scs_oidc_client" {
   logout_urls                                   = [
     var.oidc_sso_playground_url,
     "${var.cognito_app_client_logout_chain_url.prod}https://apps.nrs.gov.bc.ca/int/scs/logout",
-    "${var.cognito_app_client_logout_chain_url.prod}https://apps.nrs.gov.bc.ca/pub/scs/logout"
+    "${var.cognito_app_client_logout_chain_url.prod}https://apps.nrs.gov.bc.ca/pub/scs/logout",
+    "https://apps.nrs.gov.bc.ca/pub/scs/logout"
   ]
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"

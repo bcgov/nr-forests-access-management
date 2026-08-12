@@ -12,7 +12,8 @@ resource "aws_cognito_user_pool_client" "dev_fom_oidc_client" {
   logout_urls                                   = concat(
     [
       var.oidc_sso_playground_url,
-      "${var.cognito_app_client_logout_chain_url.dev}http://localhost:4200/admin/not-authorized?loggedout=true"
+      "${var.cognito_app_client_logout_chain_url.dev}http://localhost:4200/admin/not-authorized?loggedout=true",
+      "http://localhost:4200/admin/logout"
     ],
     [for i in range("${var.dev_pr_url_count}") : "${var.cognito_app_client_logout_chain_url.dev}https://fom-${i}.apps.silver.devops.gov.bc.ca/admin/not-authorized?loggedout=true"])
   enable_propagate_additional_user_context_data = "false"
@@ -51,6 +52,8 @@ resource "aws_cognito_user_pool_client" "test_fom_oidc_client" {
   logout_urls                                   = [
     var.oidc_sso_playground_url,
     "${var.cognito_app_client_logout_chain_url.test}https://fom-test.apps.silver.devops.gov.bc.ca/admin/not-authorized?loggedout=true",
+    "https://fom-test.apps.silver.devops.gov.bc.ca/admin/logout",
+    "http://localhost:4200/admin/logout"
   ]
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
@@ -86,7 +89,8 @@ resource "aws_cognito_user_pool_client" "prod_fom_oidc_client" {
   ]
   logout_urls                                   = [
     var.oidc_sso_playground_url,
-    "${var.cognito_app_client_logout_chain_url.prod}https://fom.nrs.gov.bc.ca/admin/not-authorized?loggedout=true"
+    "${var.cognito_app_client_logout_chain_url.prod}https://fom.nrs.gov.bc.ca/admin/not-authorized?loggedout=true",
+    "https://fom.nrs.gov.bc.ca/admin/logout"
   ]
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
