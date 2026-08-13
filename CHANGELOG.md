@@ -1,5 +1,20 @@
 # Changelog
 
+## [2.23.0](https://github.com/bcgov/nr-forests-access-management/compare/v2.22.0...v2.23.0) (2026-08-13)
+
+
+### Features
+
+* add lexis prod vanity url ([#2289](https://github.com/bcgov/nr-forests-access-management/issues/2289)) ([78add59](https://github.com/bcgov/nr-forests-access-management/commit/78add591df0e5b3c40fe984acbcf1841f444434a))
+
+
+### Bug Fixes
+
+* Add plain logout URLs for CSP clients ([#2294](https://github.com/bcgov/nr-forests-access-management/issues/2294)) ([95ba250](https://github.com/bcgov/nr-forests-access-management/commit/95ba250852a419f741f9ba0ffbc02379c5216c9d))
+* Logout URL adjustment for fom, ilcr, scs ([#2293](https://github.com/bcgov/nr-forests-access-management/issues/2293)) ([a5b053a](https://github.com/bcgov/nr-forests-access-management/commit/a5b053a519e13d2a74d89c4fc32b2d65cb43a6f9))
+* Logout url fom scs ilcr ([#2295](https://github.com/bcgov/nr-forests-access-management/issues/2295)) ([3ba09c1](https://github.com/bcgov/nr-forests-access-management/commit/3ba09c1afa9eb3ad78c10dac4277e708578f8223))
+* SCS and ILCR callback adjustment. ([#2290](https://github.com/bcgov/nr-forests-access-management/issues/2290)) ([7b1d646](https://github.com/bcgov/nr-forests-access-management/commit/7b1d64603c89072b2abcd01ddad24c919174b853))
+
 ## [2.22.0](https://github.com/bcgov/nr-forests-access-management/compare/v2.21.0...v2.22.0) (2026-07-30)
 
 
