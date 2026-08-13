@@ -12,10 +12,9 @@ resource "aws_cognito_user_pool_client" "dev_fom_oidc_client" {
   logout_urls                                   = concat(
     [
       var.oidc_sso_playground_url,
-      "${var.cognito_app_client_logout_chain_url.dev}http://localhost:4200/admin/not-authorized?loggedout=true",
       "http://localhost:4200/admin/logout"
     ],
-    [for i in range("${var.dev_pr_url_count}") : "${var.cognito_app_client_logout_chain_url.dev}https://fom-${i}.apps.silver.devops.gov.bc.ca/admin/not-authorized?loggedout=true"])
+    [for i in range("${var.dev_pr_url_count}") : "https://fom-${i}.apps.silver.devops.gov.bc.ca/admin/logout"])
   enable_propagate_additional_user_context_data = "false"
   enable_token_revocation                       = "true"
   explicit_auth_flows                           = ["ALLOW_REFRESH_TOKEN_AUTH"]

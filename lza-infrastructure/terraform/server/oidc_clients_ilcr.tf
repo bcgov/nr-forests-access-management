@@ -32,7 +32,7 @@ resource "aws_cognito_user_pool_client" "dev_ilcr_oidc_client" {
     ],
     [
       for url in local.ilcr_dev_host_urls :
-      "${var.cognito_app_client_logout_chain_url.dev}${url}/logout"
+      "${url}/logout"
     ]
   )
   enable_propagate_additional_user_context_data = "false"
