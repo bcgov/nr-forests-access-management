@@ -14,7 +14,6 @@
         "@openapitools/openapi-generator-cli": "^2.39.1"
     },
     "overrides": {
-        "form-data": "4.0.6",
-        "brace-expansion": "5.0.6"
+        "form-data": "4.0.6"
     }
 }
