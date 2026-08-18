@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.23.1](https://github.com/bcgov/nr-forests-access-management/compare/v2.23.0...v2.23.1) (2026-08-18)
+
+
+### Bug Fixes
+
+* Dependabot alerts ([#2301](https://github.com/bcgov/nr-forests-access-management/issues/2301)) ([476ca14](https://github.com/bcgov/nr-forests-access-management/commit/476ca140b2ed43a8894349dc1036e74eca39cb6e))
+* Resolve some dependabot alerts ([#2296](https://github.com/bcgov/nr-forests-access-management/issues/2296)) ([df9bfb1](https://github.com/bcgov/nr-forests-access-management/commit/df9bfb1a7ab4572366ef5b65768ca6f540abbf74))
+
 ## [2.23.0](https://github.com/bcgov/nr-forests-access-management/compare/v2.22.0...v2.23.0) (2026-08-13)
 
 
