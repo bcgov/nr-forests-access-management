@@ -5,8 +5,8 @@ mangum==0.21.0
 boto3==1.43.68
 psycopg2-binary==2.9.12
 httpx==0.28.1
-pydantic==2.10.3
-pydantic_core==2.27.1
+pydantic==2.13.4
+pydantic_core==2.48.0
 email-validator==2.3.0
 requests==2.34.2
 cryptography==50.0.0
