@@ -2,7 +2,7 @@ fastapi==0.141.1
 uvicorn[standard]==0.52.1
 SQLAlchemy==2.0.51
 mangum==0.21.0
-boto3==1.43.68
+boto3==1.43.71
 psycopg2-binary==2.9.12
 httpx==0.28.1
 pydantic==2.10.3
