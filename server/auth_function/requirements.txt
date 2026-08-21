@@ -1,4 +1,4 @@
 #aws-xray-sdk==2.4.3
-boto3==1.43.68
+boto3==1.43.71
 psycopg2-binary==2.9.12
 python-dotenv==1.2.2
