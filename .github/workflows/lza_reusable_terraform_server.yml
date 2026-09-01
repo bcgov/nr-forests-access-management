@@ -73,7 +73,7 @@ jobs:
       - name: Set up Python 3.12
         uses: actions/setup-python@v6
         with:
-          python-version: "3.12"
+          python-version: "3.14"
 
       - name: Auth function zip
         run: |
@@ -152,7 +152,7 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Setup Terragrunt
-        uses: datadrivers/terragrunt-action@v4.3.1
+        uses: datadrivers/terragrunt-action@v4.4.2
         env:
           TENV_GITHUB_TOKEN: ${{ github.token }}
         with:

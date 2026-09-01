@@ -55,7 +55,7 @@ jobs:
                   aws-region: ${{ env.AWS_REGION }}
 
             - name: Setup Terragrunt
-              uses: datadrivers/terragrunt-action@v4.3.1
+              uses: datadrivers/terragrunt-action@v4.4.2
               env:
                   TENV_GITHUB_TOKEN: ${{ github.token }}
               with:
