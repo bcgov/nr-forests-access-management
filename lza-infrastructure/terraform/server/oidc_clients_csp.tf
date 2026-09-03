@@ -68,9 +68,19 @@ resource "aws_cognito_user_pool_client" "test_csp_oidc_client" {
   allowed_oauth_flows                  = ["code"]
   allowed_oauth_flows_user_pool_client = "true"
   allowed_oauth_scopes                 = ["openid", "profile", "email"]
-  callback_urls                        = concat([var.oidc_sso_playground_url], local.csp_test_host_urls)
+  callback_urls = concat(
+    [
+      var.oidc_sso_playground_url,
+      "http://localhost:3000/"
+    ],
+    local.csp_test_host_urls
+  )
   logout_urls = concat(
-    [var.oidc_sso_playground_url],
+    [
+      var.oidc_sso_playground_url,
+      "${var.cognito_app_client_logout_chain_url.test}http://localhost:3000/logout",
+      "http://localhost:3000/logout",
+    ],
     [for url in local.csp_test_host_urls : "${var.cognito_app_client_logout_chain_url.test}${url}/logout"],
     [for url in local.csp_test_host_urls : "${url}/logout"]
   )
