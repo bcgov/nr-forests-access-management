@@ -1,12 +1,12 @@
 resource "aws_api_gateway_rest_api" "admin_management_api_gateway_rest_api" {
-  name = "${aws_lambda_function.fam_admin_management_api_function.function_name}-gateway"
+  name        = "${aws_lambda_function.fam_admin_management_api_function.function_name}-gateway"
   description = "Proxy API Gateway to handle request to fam-admin-management-api-lambda."
   endpoint_configuration {
     types = ["REGIONAL"]
   }
 
   tags = {
-    Name = "fam_admin_api_gateway"
+    Name       = "fam_admin_api_gateway"
     managed-by = "terraform"
   }
 }
@@ -46,17 +46,19 @@ resource "aws_api_gateway_deployment" "admin_management_api_gateway_deployment" 
   rest_api_id = aws_api_gateway_rest_api.admin_management_api_gateway_rest_api.id
 
   depends_on = [
-    aws_api_gateway_integration.admin_management_api_gateway_integration_proxy
+    aws_api_gateway_integration.admin_management_api_gateway_integration_proxy,
+    module.admin_management_api_cors
   ]
 
   triggers = {
+    # API deployments are snapshots. Include configuration, not just stable IDs,
+    # and wait for the CORS module so the snapshot contains its OPTIONS response.
     redeployment = sha1(jsonencode([
-      aws_api_gateway_resource.admin_management_api_gateway_resource_proxy.id,
-      aws_api_gateway_method.admin_management_api_gateway_method_proxy.id,
-      aws_api_gateway_integration.admin_management_api_gateway_integration_proxy.id
+      aws_api_gateway_resource.admin_management_api_gateway_resource_proxy,
+      aws_api_gateway_method.admin_management_api_gateway_method_proxy,
+      aws_api_gateway_integration.admin_management_api_gateway_integration_proxy,
+      filesha1("${path.module}/admin_management_api_gateway.tf")
     ]))
-    # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/api_gateway_deployment mentioned
-    # using whole resouce with filesha1() that may be consider in the future.
   }
 
   lifecycle {
