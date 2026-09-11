@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.25.0](https://github.com/bcgov/nr-forests-access-management/compare/v2.24.0...v2.25.0) (2026-09-11)
+
+
+### Features
+
+* add localhost callback and logout URLs to CSP test OIDC client ([#2306](https://github.com/bcgov/nr-forests-access-management/issues/2306)) ([1609e14](https://github.com/bcgov/nr-forests-access-management/commit/1609e14b8251b6a22cbd53301e96c4df31ece210))
+
+
+### Bug Fixes
+
+* refresh admin API snapshots and validate preflight ([#2308](https://github.com/bcgov/nr-forests-access-management/issues/2308)) ([c8f3423](https://github.com/bcgov/nr-forests-access-management/commit/c8f34238b41463d58f385b5efe3577d2a87eba68))
+
 ## [2.23.0](https://github.com/bcgov/nr-forests-access-management/compare/v2.22.0...v2.23.0) (2026-08-13)
 
 
