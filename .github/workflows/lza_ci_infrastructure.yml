@@ -1,5 +1,9 @@
 name: LZA Continuous Integration Infrastructure
 
+permissions:
+  contents: read
+  id-token: write # Required by the reusable Terraform workflows for AWS OIDC.
+
 on:
   workflow_dispatch:
   pull_request:
