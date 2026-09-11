@@ -9,12 +9,27 @@ on:
       - "lza-infrastructure/**"
       - ".github/workflows/lza_reusable_terraform_server.yml"
       - ".github/workflows/lza_reusable_terraform_frontend.yml"
+      - ".github/workflows/lza_ci_infrastructure.yml"
+      - ".github/scripts/check_admin_api_preflight.py"
+      - ".github/scripts/test_check_admin_api_preflight.py"
 
 concurrency:
   group: deploy-dev-global # Prevents this workflow from running if another deployment or CI workflow with the same group is in progress
 
 jobs:
+  admin-api-preflight-tests:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - run: python3 -m unittest discover -s .github/scripts -p 'test_*.py' -v
+
   backend-terraform-plan:
+    needs: admin-api-preflight-tests
     uses: ./.github/workflows/lza_reusable_terraform_server.yml
     with:
       environment_name: dev

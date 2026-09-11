@@ -221,8 +221,12 @@ jobs:
             if [[ "apply" == "${{ inputs.tf_subcommand }}" ]]
             then
               fam_api_base_url=`terragrunt run --all --non-interactive --log-level error -- output -raw fam_api_base_url`
+              fam_admin_api_base_url=`terragrunt run --all --non-interactive --log-level error -- output -raw fam_admin_management_api_base_url`
+              fam_frontend_origin=`terragrunt run --all --non-interactive --log-level error -- output -raw front_end_redirect_base_url`
               smoke_test_url="$fam_api_base_url/smoke_test"
+              admin_preflight_url="$fam_admin_api_base_url/admin-user-accesses"
               echo "Smoke test URL: [$smoke_test_url]"
+              echo "Admin API preflight URL: [$admin_preflight_url]"
 
               # retry setup for dealing smoke testing failing due to "cold start" with API Gateway.
               max_attempts=10
@@ -232,7 +236,11 @@ jobs:
 
               while [[ $attempt -le $max_attempts ]]; do
                 echo "Attempt $attempt/$max_attempts..."
-                if curl --silent --show-error --fail "$smoke_test_url"; then
+                # The permissions page also needs the separate admin API. Its
+                # browser preflight must succeed before authenticated requests run.
+                if curl --silent --show-error --fail "$smoke_test_url" &&
+                  python3 "${{ github.workspace }}/.github/scripts/check_admin_api_preflight.py" \
+                    "$admin_preflight_url" "$fam_frontend_origin"; then
                   echo "Smoke test succeeded"
                   success=1
                   break
