@@ -12,4 +12,4 @@ psycopg2-binary==2.9.12
 mangum==0.21.0
 cryptography==50.0.0
 authlib==1.7.2
-pyjwt==2.13.0
+pyjwt==2.15.0
