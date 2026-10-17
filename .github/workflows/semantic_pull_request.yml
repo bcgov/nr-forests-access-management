@@ -18,3 +18,15 @@ jobs:
       - uses: amannn/action-semantic-pull-request@v6
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  results:
+    name: Validate Results
+    needs: [main]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    permissions: {}
+    steps:
+      - uses: bcgov/actions/workflow-results@79aefe3a7abb2d0d00b1b3ea4cfbf12727a10638 # v0.9.0
+        with:
+          needs: ${{ toJson(needs) }}
