@@ -4,7 +4,7 @@ testcontainers==4.15.0
 testcontainers-core==0.0.1rc1
 
 # used to create test JWT
-pycryptodome==3.23.0
+pycryptodome==3.24.0
 
 # used to mock out sqlalchemy for testing
 mock==5.2.0
