@@ -9,7 +9,29 @@ on:
             - main
 
 jobs:
+    check:
+        name: Check Triggers
+        if: github.event_name == 'pull_request'
+        runs-on: ubuntu-latest
+        timeout-minutes: 2
+        permissions:
+            contents: read
+            pull-requests: read
+        outputs:
+            code: ${{ steps.diff.outputs.triggered }}
+        steps:
+            - uses: actions/checkout@v6
+            - id: diff
+              uses: bcgov/actions/diff-triggers@79aefe3a7abb2d0d00b1b3ea4cfbf12727a10638 # v0.9.0
+              with:
+                  triggers: |
+                      server/
+                      .github/workflows/sonar.yml
+                      !*.md
+
     ci-auth:
+        needs: check
+        if: ${{ !cancelled() && (github.event_name != 'pull_request' || needs.check.outputs.code == 'true') }}
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v6
@@ -52,6 +74,8 @@ jobs:
                       -Dsonar.tests=test
 
     ci-backend:
+        needs: check
+        if: ${{ !cancelled() && (github.event_name != 'pull_request' || needs.check.outputs.code == 'true') }}
         runs-on: ubuntu-latest
         env:
             environment: dev
@@ -108,6 +132,8 @@ jobs:
                       -Dsonar.tests=testspg
 
     ci-admin-management:
+        needs: check
+        if: ${{ !cancelled() && (github.event_name != 'pull_request' || needs.check.outputs.code == 'true') }}
         runs-on: ubuntu-latest
         env:
             environment: dev
@@ -160,6 +186,17 @@ jobs:
                       -Dsonar.sources=api
                       -Dsonar.tests=tests
                       -Dsonar.exclusions=**/tests/**/*,**/test_*.py,config.py
+
+    results:
+        name: Analysis Results
+        needs: [check, ci-auth, ci-backend, ci-admin-management]
+        if: always()
+        runs-on: ubuntu-latest
+        timeout-minutes: 1
+        steps:
+            - uses: bcgov/actions/workflow-results@79aefe3a7abb2d0d00b1b3ea4cfbf12727a10638 # v0.9.0
+              with:
+                  needs: ${{ toJson(needs) }}
 
     # Temporarily disabled frontend sonar test coverage as there is no frontend tests
     # ci-frontend:
